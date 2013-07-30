@@ -1,4 +1,4 @@
-miniPaint - Online graphics editing tool using HTML5
+miniPaint - Online graphics editing tool using HTML5.
 
 Demo: http://viliusle.github.io/miniPaint/
 
