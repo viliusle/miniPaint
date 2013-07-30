@@ -1,6 +1,6 @@
-miniPaint
+miniPaint - Online graphics editing tool using HTML5.
 
-Online graphics editing tool using HTML5.
+Demo: http://viliusle.github.io/miniPaint/
 
 Online graphics editing tool use HTML5 technologies like Canvas, Offline support,
 Drag and Drop.
