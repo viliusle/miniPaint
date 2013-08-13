@@ -1,23 +1,25 @@
 /*
 TODO:
-	git
+	Hermite
+		http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
+		http://bvdwolf.home.xs4all.nl/main/foto/down_sample/down_sample.htm
+	Differences
 */
 
 var MAIN = new MAIN_CLASS();
-var POP = new popup(WIDTH, HEIGHT);
 document.onload = MAIN.init(true);
 
 function MAIN_CLASS(){
 	this.grid = false;
 	this.TRANSPARENCY = true;
-	
-	var LAYERS_ARCHIVE = [{}, {}, {}];
-	var LAYERS_ARCHIVE_REDO = {};
+	var LAYERS_ARCHIVE = [{}, {}, {}];	
 	var undo_level = 0;
 	
 	this.init = function(first_load){
-		if(first_load===true)
+		if(first_load===true){
 			TOOLS.draw_helpers();
+			POP.height_mini = Math.round(POP.width_mini * HEIGHT / WIDTH);
+			}
 		CON.autosize = true;
 		TOOLS.EXIF = false;
 		TOOLS.select_data = false;
@@ -27,13 +29,18 @@ function MAIN_CLASS(){
 		canvas_main.clearRect(0, 0, WIDTH, HEIGHT);
 		LAYER.layer_add("Background");
 		LAYER.set_canvas_size();
-		DRAW.draw_background(canvas_back);
+		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 		document.getElementById("main_colour").style.backgroundColor = COLOUR;
 		document.getElementById("canvas_preview").width = DRAW.PREVIEW_SIZE.w;
 		document.getElementById("canvas_preview").height = DRAW.PREVIEW_SIZE.h;
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		document.getElementById("rgb_r").value = color_rgb.r;
+		document.getElementById("rgb_g").value = color_rgb.g;
+		document.getElementById("rgb_b").value = color_rgb.b;
+		document.getElementById("rgb_a").value = ALPHA;
 		DRAW.redraw_preview();
 		}
-	this.save_state = function(){	//log('save...');
+	this.save_state = function(){
 		undo_level = 0;
 		j = 0;
 		
@@ -49,12 +56,12 @@ function MAIN_CLASS(){
 		for(var i in LAYERS)
 			LAYERS_ARCHIVE[j].data[LAYERS[i].name] = document.getElementById(LAYERS[i].name).getContext("2d").getImageData(0, 0, WIDTH, HEIGHT);
 		}
-	//supports 3 levels undo system
-	this.undo = function(){		//log('loading...');
+	//supports 3 levels undo system - more levels requires more memory - max 1 gb?
+	this.undo = function(){	
 		if(LAYERS_ARCHIVE.length == 0) return false;
 		j = undo_level;
 		undo_level++;
-		if(LAYERS_ARCHIVE[j] == undefined) return false;
+		if(LAYERS_ARCHIVE[j] == undefined || LAYERS_ARCHIVE[j].width == undefined) return false;
 		if(WIDTH != LAYERS_ARCHIVE[j].width || HEIGHT != LAYERS_ARCHIVE[j].height){
 			WIDTH = LAYERS_ARCHIVE[j].width;
 			HEIGHT = LAYERS_ARCHIVE[j].height;
@@ -63,25 +70,12 @@ function MAIN_CLASS(){
 			return true;	//size changed, cant undo
 			}
 		
-		//save current state
-		LAYERS_ARCHIVE_REDO = {};
-		LAYERS_ARCHIVE_REDO.data = {};
-		for(var i in LAYERS)
-			LAYERS_ARCHIVE_REDO.data[LAYERS[i].name] = document.getElementById(LAYERS[i].name).getContext("2d").getImageData(0, 0, WIDTH, HEIGHT);
-		
 		//undo
 		for(var i in LAYERS){
 			if(LAYERS_ARCHIVE[j].data[LAYERS[i].name] != undefined)
 				document.getElementById(LAYERS[i].name).getContext("2d").putImageData(LAYERS_ARCHIVE[j].data[LAYERS[i].name], 0, 0);
 			}
 		DRAW.zoom();
-		}
-	this.redo = function(){
-		if(LAYERS_ARCHIVE_REDO.data == undefined) return false;
-		for(var i in LAYERS){
-			if(LAYERS_ARCHIVE_REDO.data[LAYERS[i].name] != undefined)
-				document.getElementById(LAYERS[i].name).getContext("2d").putImageData(LAYERS_ARCHIVE_REDO.data[LAYERS[i].name], 0, 0);
-			}
 		}
 	this.load_xml = function(data){
 		var xml = $.parseXML(data);

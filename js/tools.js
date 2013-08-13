@@ -4,7 +4,8 @@ function TOOLS_CLASS(){
 	this.select_square_action = '';
 	this.select_data = false;
 	this.EXIF = false;
-	
+	this.last_line_x;
+	this.last_line_y;
 	var clone_data = false;
 	var COLOUR_copy;
 	
@@ -44,6 +45,7 @@ function TOOLS_CLASS(){
 		for(var k in this.action_data().attributes){
 			if(k != object.id) continue;
 			if(this.action_data().attributes[k]===true || this.action_data().attributes[k]===false){
+				//true / false
 				var value;
 				if(next_value == 0)
 					value=true;
@@ -53,7 +55,13 @@ function TOOLS_CLASS(){
 				this.action_data().attributes[k] = value;
 				this.show_action_attributes();
 				}
+			else if(typeof this.action_data().attributes[k] == 'object'){
+				//select
+				var key = k.replace("_values","");
+				this.action_data().attributes[key] = object.value
+				}
 			else{
+				//numbers
 				if(next_value != undefined){
 					object.value = parseInt(this.action_data().attributes[k]) + next_value;
 					if(object.value < 0) object.value = 0;
@@ -66,6 +74,8 @@ function TOOLS_CLASS(){
 					if(object.value==0 || isNaN(object.value) || value > max_value)
 						object.value = this.action_data().attributes[k];
 					}
+				if(k == 'power' && object.value > 100)
+					object.value = 100;
 						
 				//save
 				this.action_data().attributes[k] = object.value;
@@ -96,18 +106,31 @@ function TOOLS_CLASS(){
 		}
 	this.show_action_attributes = function(){
 		html = '';
-		var step = 5;
+		var step = 10;
 		for(var k in this.action_data().attributes){
 			var title = k[0].toUpperCase() + k.slice(1);
+			if(TOOLS.action_data().attributes[k+"_values"] != undefined) continue;
 			if(this.action_data().attributes[k]===true || this.action_data().attributes[k]===false){
-				//select mode
+				//true / false
 				if(this.action_data().attributes[k]==true)
 					html += '<div onclick="TOOLS.update_attribute(this, 1)" style="background-color:#5680c1;" class="attribute-area" id="'+k+'">'+title+'</div>';
 				else
 					html += '<div onclick="TOOLS.update_attribute(this, 0)" class="attribute-area" id="'+k+'">'+title+'</div>';
 				}
+			else if(typeof TOOLS.action_data().attributes[k] == 'object'){
+				//drop down select
+				html += '<select style="font-size:11px;margin-bottom:10px;" onchange="TOOLS.update_attribute(this);" id="'+k+'">';
+				for(var j in TOOLS.action_data().attributes[k]){
+					var sel = '';
+					var key = k.replace("_values","");
+					if(TOOLS.action_data().attributes[key] == TOOLS.action_data().attributes[k][j])
+						sel = 'selected="selected"';
+					html += '<option '+sel+' name="'+TOOLS.action_data().attributes[k][j]+'">'+TOOLS.action_data().attributes[k][j]+'</option>';
+					}
+				html += '</select>';
+				}
 			else{
-				//number mode
+				//numbers
 				html += '<table style="width:100%;">';	//table for 100% width
 				html += '<tr>';
 				html += '<td style="font-weight:bold;padding-right:3px;">'+title+':</td>';
@@ -121,6 +144,7 @@ function TOOLS_CLASS(){
 		document.getElementById("action_attributes").innerHTML = html;
 		}
 	this.set_color = function(object){
+		COLOUR_LAST = COLOUR;
 		COLOUR = HELPER.rgb2hex_all(object.style.backgroundColor);
 		COLOUR_copy = COLOUR;
 		document.getElementById("main_colour").style.backgroundColor = COLOUR;
@@ -132,6 +156,7 @@ function TOOLS_CLASS(){
 		}
 	this.set_color_manual = function(object){
 		if(object.value.length == 7){
+			COLOUR_LAST = COLOUR;
 			COLOUR = object.value;
 			this.sync_colors();
 			}
@@ -150,7 +175,10 @@ function TOOLS_CLASS(){
 				object.value = colours[c];
 				return false;
 				}
+			COLOUR_LAST = COLOUR;
 			COLOUR = "#" + ("000000" + HELPER.rgbToHex(document.getElementById("rgb_r").value, document.getElementById("rgb_g").value, document.getElementById("rgb_b").value)).slice(-6);
+			ALPHA = document.getElementById("rgb_a").value;
+			document.getElementById("rgb_a").value = ALPHA;
 			this.sync_colors();
 			}
 		}
@@ -167,11 +195,22 @@ function TOOLS_CLASS(){
 			POP.add({title: 'Colour:', function: function(){
 				COLOUR_copy = COLOUR;
 				
-				var html = '<canvas style="position:relative;" id="c_all" width="175" height="187"></canvas>';
-				html += '<br /><b>Lum:</b> <input oninput="TOOLS.change_lum(this.value)" type="range" value="0" min="-255" max="255" step="1">';
+				var html = '<canvas style="position:relative;margin-bottom:5px;" id="c_all" width="300" height="300"></canvas>';
+				html += '<table>';
+				html += '<tr>';
+				html += '	<td><b>Lum:</b></td>';
+				html += '	<td><input id="lum_ranger" oninput="TOOLS.change_lum(this.value);document.getElementById(\'lum_preview\').innerHTML=this.value;" type="range" value="0" min="-255" max="255" step="1"></td>';
+				html += '	<td style="padding-left:10px;width:30px;" id="lum_preview">0</td>';
+				html += '</tr>';
+				html += '<tr>';
+				html += '	<td><b>Alpha:</b></td>';
+				html += '	<td><input oninput="TOOLS.change_alpha(this.value);document.getElementById(\'alpha_preview\').innerHTML=this.value;" type="range" value="'+ALPHA+'" min="0" max="255" step="1"></td>';
+				html += '	<td style="padding-left:10px;" id="alpha_preview">'+ALPHA+'</td></tr>';
+				html += '</tr>';
+				html += '</table>';
 				return html;
 				}});
-			POP.show('Select colour', function(user_response){
+			POP.show('Select color', function(user_response){
 				var param1 = parseInt(user_response.param1);
 				}, undefined, this.toggle_color_select_onload);
 			}
@@ -192,9 +231,14 @@ function TOOLS_CLASS(){
 		if(c3.g > 255) c3.g = 255;
 		if(c3.b > 255) c3.b = 255;
 		
+		COLOUR_LAST = COLOUR;
 		COLOUR = "#" + ("000000" + HELPER.rgbToHex(c3.r, c3.g, c3.b)).slice(-6);
 		this.sync_colors();
 		}
+	this.change_alpha = function(value){
+		ALPHA = parseInt(value);
+		document.getElementById("rgb_a").value = ALPHA;
+		};
 	this.toggle_color_select_onload = function(){
 		var img = new Image();
 		img.onload = function(){
@@ -209,15 +253,18 @@ function TOOLS_CLASS(){
 					mouse_y = event.layerY;
 					}
 				var c = document.getElementById("c_all").getContext("2d").getImageData(mouse_x, mouse_y, 1, 1).data;
+				COLOUR_LAST = COLOUR;
 				COLOUR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 				TOOLS.sync_colors();
 				COLOUR_copy = COLOUR;
+				document.getElementById("lum_ranger").value = 0;
 				};
 			}
-		img.src = 'img/colors.png';
+		img.src = 'img/colorwheel.png';
 		}
 	//type = click, right_click, drag, move, release
 	this.select_tool = function(type, mouse, event){
+		if(mouse == undefined) return false;
 		if(mouse.valid == false) return true;
 		if(mouse.click_valid == false) return true;
 		if(event.target.id == "canvas_preview") return true;
@@ -241,20 +288,38 @@ function TOOLS_CLASS(){
 			DRAW.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, TOOLS.action_data().attributes.sensitivity);
 			}
 		}
-	this.erase = function(type, mouse, event){
+	this.erase = function(type, mouse, event){				
 		if(mouse.valid == false) return true;
+		var strict = TOOLS.action_data().attributes.strict;
+		var size = TOOLS.action_data().attributes.size;
+		var is_circle = TOOLS.action_data().attributes.circle;
+		
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var is_circle = TOOLS.action_data().attributes.circle;
-			
-			if(is_circle == false)
-				canvas_active().clearRect(mouse.x-size/2, mouse.y-size/2, size, size);
+			if(is_circle == false){
+				canvas_active().save();
+				canvas_active().globalCompositeOperation = 'destination-out';
+				canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255+")";
+				canvas_active().fillRect(mouse.x-size/2, mouse.y-size/2, size, size);
+				canvas_active().restore();
+				}
 			else{
+				
+				if(strict == false){
+					var radgrad = canvas_active().createRadialGradient(
+						mouse.x, mouse.y, size/4,
+						mouse.x, mouse.y, size/2);
+					radgrad.addColorStop(0, "rgba(255, 255, 255, "+ALPHA/255+")");
+					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+					}
+		
 				//set Composite
 				canvas_active().save();
 				canvas_active().globalCompositeOperation = 'destination-out';
-				canvas_active().fillStyle = "#ffffff";
+				if(strict == true)
+					canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255+")";
+				else
+					canvas_active().fillStyle = radgrad;
 				canvas_active().beginPath();
 				canvas_active().arc(mouse.x, mouse.y, size/2, 0,Math.PI*2,true);
 				canvas_active().fill();
@@ -262,15 +327,38 @@ function TOOLS_CLASS(){
 				}
 			}
 		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var is_circle = TOOLS.action_data().attributes.circle;
-			if(is_circle == false)
-				canvas_active().clearRect(mouse.x - size/2, mouse.y - size/2, size, size);
+			if(is_circle == false){
+				canvas_active().save();
+				canvas_active().globalCompositeOperation = 'destination-out';
+				if(ALPHA < 255)
+					canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255/10+")";
+				else
+					canvas_active().fillStyle = COLOUR;
+				canvas_active().fillRect(mouse.x-size/2, mouse.y-size/2, size, size);
+				canvas_active().restore();
+				}
 			else{
+				if(strict == false){
+					var radgrad = canvas_active().createRadialGradient(
+						mouse.x, mouse.y, size/4,
+						mouse.x, mouse.y, size/2);
+					if(ALPHA < 255)
+						radgrad.addColorStop(0, "rgba(255, 255, 255, "+ALPHA/255/10+")");
+					else
+						radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
+					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+					}
 				//set Composite
 				canvas_active().save();
 				canvas_active().globalCompositeOperation = 'destination-out';
-				canvas_active().fillStyle = "#ffffff";
+				if(strict == true){
+					if(ALPHA < 255)
+						canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255/10+")";
+					else
+						canvas_active().fillStyle = COLOUR;
+					}
+				else
+					canvas_active().fillStyle = radgrad;
 				canvas_active().beginPath();
 				canvas_active().arc(mouse.x, mouse.y, size/2, 0,Math.PI*2,true);
 				canvas_active().fill();
@@ -279,8 +367,6 @@ function TOOLS_CLASS(){
 			DRAW.zoom(undefined, false);
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var is_circle = TOOLS.action_data().attributes.circle;
 			var size_half = round(size/2);
 			
 			//show size
@@ -290,6 +376,7 @@ function TOOLS_CLASS(){
 				HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
 			else{
 				canvas_front.beginPath();
+				canvas_front.strokeStyle = "#000000";
 				canvas_front.arc(mouse.x, mouse.y, size/2, 0,Math.PI*2,true);
 				canvas_front.stroke();
 				}
@@ -300,6 +387,7 @@ function TOOLS_CLASS(){
 		if(type == 'click'){
 			MAIN.save_state();
 			var color_to = HELPER.hex2rgb(COLOUR);
+			color_to.a = ALPHA;
 			DRAW.toolFiller(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, color_to, TOOLS.action_data().attributes.sensitivity);
 			}
 		}
@@ -307,12 +395,14 @@ function TOOLS_CLASS(){
 		if(mouse.valid == false) return true;
 		if(type == 'click'){
 			var c = canvas_active().getImageData(mouse.x, mouse.y, 1, 1).data;
+			COLOUR_LAST = COLOUR;
 			COLOUR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 			TOOLS.sync_colors();
 			}
 		}
 	this.pencil = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var color_rgb = HELPER.hex2rgb(COLOUR);
 		if(type == 'click'){
 			MAIN.save_state();
 			}
@@ -330,96 +420,203 @@ function TOOLS_CLASS(){
 					
 					x_tmp = Math.round(x_tmp);
 					y_tmp = Math.round(y_tmp);
-					canvas_active().fillStyle = COLOUR;
+					var my_color = HELPER.hex2rgb(COLOUR);
+					canvas_active().fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 					canvas_active().fillRect(x_tmp, y_tmp, 1, 1);
 					}
 				}
 			}
 		else if(type == 'release'){
-			canvas_active().fillStyle = COLOUR;
+			canvas_active().fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_active().fillRect (mouse.x, mouse.y, 1, 1);
 			}
 		}
 	this.line = function(type, mouse, event){
 		if(mouse.click_valid == false) return false;
-		if(type == 'click'){
-			MAIN.save_state();
-			}
-		else if(type == 'drag'){
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		if(type == 'drag'){
 			document.body.style.cursor = "crosshair";
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.beginPath();
-			canvas_front.strokeStyle = COLOUR;
+			canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_front.lineWidth = TOOLS.action_data().attributes.size;
 			var xx = mouse.x;
 			var yy = mouse.y;
+			var from_x = mouse.click_x;
+			var from_y = mouse.click_y;
+			if(TOOLS.action_data().attributes.multiline == true && TOOLS.last_line_x != undefined){
+				from_x = TOOLS.last_line_x;
+				from_y = TOOLS.last_line_y;
+				}
 			//horizontal/vertical only
 			if(CON.ctrl_pressed == true){
-				if(Math.abs(mouse.click_x - mouse.x) < Math.abs(mouse.click_y - mouse.y) )
-					xx = mouse.click_x;
+				if(Math.abs(from_x - mouse.x) < Math.abs(from_y - mouse.y) )
+					xx = from_x;
 				else
-					yy = mouse.click_y;
+					yy = from_y;
 				}
+			
 			if(TOOLS.action_data().attributes.arrow == true){
 				//arrow
 				var headlen = TOOLS.action_data().attributes.size * 5;
 				if(headlen < 15) headlen = 15;
-				DRAW.draw_arrow(canvas_front, mouse.click_x + 0.5, mouse.click_y + 0.5, xx + 0.5, yy + 0.5, headlen);
+				DRAW.draw_arrow(canvas_front, from_x + 0.5, from_y + 0.5, xx + 0.5, yy + 0.5, headlen);
 				}
 			else{
 				//line
-				canvas_front.moveTo(mouse.click_x + 0.5, mouse.click_y + 0.5);
+				canvas_front.moveTo(from_x + 0.5, from_y + 0.5);
 				canvas_front.lineTo(xx + 0.5, yy + 0.5);
 				canvas_front.stroke();
 				}
 			}
 		else if(type == 'release'){
+			MAIN.save_state();
 			canvas_active().beginPath();
-			canvas_active().strokeStyle = COLOUR;
+			canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_active().lineWidth = TOOLS.action_data().attributes.size;
 			var xx = mouse.x;
 			var yy = mouse.y;
+			var from_x = mouse.click_x;
+			var from_y = mouse.click_y;
+			if(TOOLS.action_data().attributes.multiline == true && TOOLS.last_line_x != undefined){
+				from_x = TOOLS.last_line_x;
+				from_y = TOOLS.last_line_y;
+				}
 			//horizontal/vertical only
 			if(CON.ctrl_pressed == true){
-				if(Math.abs(mouse.click_x - mouse.x) < Math.abs(mouse.click_y - mouse.y) )
-					xx = mouse.click_x;
+				if(Math.abs(from_x - mouse.x) < Math.abs(from_y - mouse.y) )
+					xx = from_x;
 				else
-					yy = mouse.click_y;
+					yy = from_y;
 				}
+				
 			if(TOOLS.action_data().attributes.arrow == true){
 				//arrow
 				var headlen = TOOLS.action_data().attributes.size * 5;
 				if(headlen < 15) headlen = 15;
-				DRAW.draw_arrow(canvas_active(), mouse.click_x + 0.5, mouse.click_y + 0.5, xx + 0.5, yy + 0.5, headlen);
+				DRAW.draw_arrow(canvas_active(), from_x + 0.5, from_y + 0.5, xx + 0.5, yy + 0.5, headlen);
+				TOOLS.last_line_x = xx;
+				TOOLS.last_line_y = yy;
 				}
 			else{
 				//line
-				canvas_active().moveTo(mouse.click_x + 0.5, mouse.click_y + 0.5);
+				canvas_active().moveTo(from_x + 0.5, from_y + 0.5);
 				canvas_active().lineTo(xx + 0.5, yy + 0.5);
 				canvas_active().stroke();
+				TOOLS.last_line_x = xx;
+				TOOLS.last_line_y = yy;
 				}
 			}
 		}
 	this.letters = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var xx = mouse.x;
+		var yy = mouse.y;
 		if(type == 'click'){
-			var text = prompt("Enter text", '');
-			if(text != null){
-				MAIN.save_state();
-				canvas_active().beginPath();
-				canvas_active().fillStyle = COLOUR;
-				canvas_active().font = "normal "+TOOLS.action_data().attributes.size+"px Arial";
-				canvas_active().fillText(text, mouse_x, mouse_y + HELPER.font_pixel_to_height(TOOLS.action_data().attributes.size));
-				DRAW.zoom();
-				}
+			POP.add({name: "text",		title: "Text:",	value: "", type: 'textarea',	});
+			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2,	});	
+			POP.add({name: "style",		title: "Font style:",	values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select',	});
+			POP.add({name: "family",	title: "Font family:",	values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],  type: 'select',	});
+			POP.add({name: "size_3d",	title: "3D size:",	value: 0, range: [0, 200], 	});	
+			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select', 	});
+			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"], 	});
+			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10], 	});
+			POP.preview_in_main = true;
+			POP.show('Text', function(user_response){
+					MAIN.save_state();
+					text = user_response.text.split("\n");
+					for(var i in text){
+						user_response.text = text[i];
+						var yyy = yy + i*(parseInt(user_response.size) + 2);
+						TOOLS.letters_render(canvas_active(), xx, yyy, user_response);
+						}
+					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+					},
+				function(user_response){
+					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+					text = user_response.text.split("\n");
+					for(var i in text){
+						user_response.text = text[i];
+						var yyy = yy + i*(parseInt(user_response.size) + 2);
+						TOOLS.letters_render(canvas_front, xx, yyy, user_response);
+						}
+					});
 			}
+		}
+	this.letters_render = function(canvas, xx, yy, user_response){
+		var text = user_response.text;
+		var size = parseInt(user_response.size);
+		var dpth = parseInt(user_response.size_3d);
+		var pos_3d = user_response.pos_3d;
+		var shadow = user_response.shadow;
+		var shadow_blur = parseInt(user_response.shadow_blur);
+		var font = user_response.family;
+		var font_style = user_response.style;
+		var dx;
+		var dy;
+		if(pos_3d == "Top-left"){
+			dx = -1;
+			dy = -1;
+			}
+		else if(pos_3d == "Top-right"){
+			dx = 1;
+			dy = -1;
+			}
+		else if(pos_3d == "Bottom-left"){
+			dx = -1;
+			dy = 1;
+			}
+		else if(pos_3d == "Bottom-right"){
+			dx = 1;
+			dy = 1;
+			}
+		
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+		canvas.font = font_style+" "+size+"px "+font;
+		var letters_height = HELPER.font_pixel_to_height(size);
+	
+		//shadow
+		if(shadow == 'Yes'){
+			canvas.save();
+			canvas.shadowColor = "#000000";
+			canvas.shadowBlur = shadow_blur;
+			canvas.shadowOffsetX = dx;
+			canvas.shadowOffsetY = dy;
+			canvas.fillText(text, xx + dx * (dpth-1), yy + letters_height + dy * (dpth-1));
+			canvas.restore();
+			}
+		
+		//3d
+		if(dpth > 0){
+			canvas.fillStyle = HELPER.darkenColor(COLOUR, -30);
+			alpha_tmp = ALPHA;
+			if(alpha_tmp < 255)
+				alpha_tmp /= 10; 
+				
+			color_rgb.r -= 50;
+			color_rgb.g -= 50;
+			color_rgb.b -= 50;
+			if(color_rgb.r < 0) color_rgb.r *= -1;
+			if(color_rgb.g < 0) color_rgb.g *= -1;
+			if(color_rgb.b < 0) color_rgb.b *= -1;
+				
+			canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+alpha_tmp/255+")";
+			for (cnt = 0; cnt < dpth; cnt++)
+				canvas.fillText(text, xx + dx * cnt, yy + letters_height + dy * cnt);
+			color_rgb = HELPER.hex2rgb(COLOUR);
+			}
+	
+		//main text
+		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+		canvas.fillText(text, xx, yy + letters_height);
+		
+		DRAW.zoom();
 		}
 	this.draw_square = function(type, mouse, event){
 		if(mouse.click_valid == false) return true;
-		if(type == 'click'){
-			MAIN.save_state();
-			}
-		else if(type == 'drag'){
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		if(type == 'drag'){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.beginPath();
 			
@@ -434,8 +631,8 @@ function TOOLS_CLASS(){
 				if(mouse.y < mouse.click_y)	start_y = start_y - dy;
 				}
 			
-			canvas_front.fillStyle = COLOUR;
-			canvas_front.strokeStyle = COLOUR;
+			canvas_front.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+			canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_front.lineWidth = 1;
 			if(TOOLS.action_data().attributes.fill==true)
 				HELPER.roundRect(canvas_front, start_x + 0.5, start_y + 0.5, 
@@ -460,8 +657,8 @@ function TOOLS_CLASS(){
 				if(mouse.y < mouse.click_y)	start_y = start_y - dy;
 				}
 				
-			canvas_active().fillStyle = COLOUR;
-			canvas_active().strokeStyle = COLOUR;
+			canvas_active().fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+			canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_active().lineWidth = 1;
 			if(TOOLS.action_data().attributes.fill==true)
 				HELPER.roundRect(canvas_active(), start_x + 0.5, start_y + 0.5, 
@@ -475,42 +672,279 @@ function TOOLS_CLASS(){
 		}
 	this.draw_circle = function(type, mouse, event){
 		if(mouse.click_valid == false) return true;
-		if(type == 'click'){
-			MAIN.save_state();
-			}
-		else if(type == 'drag'){
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		if(type == 'drag'){
 			dist_x = mouse.x - mouse.click_x;
 			dist_y = mouse.y - mouse.click_y;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			if(TOOLS.action_data().attributes.circle==true)
 				dist_x = dist_y = Math.min(dist_x, dist_y);
 			if(TOOLS.action_data().attributes.fill==true)
-				HELPER.drawEllipseByCenter(canvas_front, mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, COLOUR, true);
+				HELPER.drawEllipseByCenter(canvas_front, mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")", true);
 			else
-				HELPER.drawEllipseByCenter(canvas_front, mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, COLOUR);
+				HELPER.drawEllipseByCenter(canvas_front, mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
 			}
 		else if(type == 'release'){
+			MAIN.save_state();
 			dist_x = mouse.x - mouse.click_x;
 			dist_y = mouse.y - mouse.click_y;
 			if(TOOLS.action_data().attributes.circle==true)
 				dist_x = dist_y = Math.min(dist_x, dist_y);
 			canvas_active().lineWidth = 1;
 			if(TOOLS.action_data().attributes.fill==true)
-				HELPER.drawEllipseByCenter(canvas_active(), mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, COLOUR, true);
+				HELPER.drawEllipseByCenter(canvas_active(), mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")", true);
 			else
-				HELPER.drawEllipseByCenter(canvas_active(), mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, COLOUR);
+				HELPER.drawEllipseByCenter(canvas_active(), mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
 			}
 		}
 	this.brush = function(type, mouse, event){
 		if(mouse.valid == false) return true;
-		if(type == 'click'){}
-		else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-			canvas_active().beginPath();
-			canvas_active().moveTo(mouse.last_x, mouse.last_y);
-			canvas_active().lineTo(mouse.x, mouse.y);
-			canvas_active().lineWidth = TOOLS.action_data().attributes.size;
-			canvas_active().strokeStyle = COLOUR;
-			canvas_active().stroke();
+		var brush_type = TOOLS.action_data().attributes.type;
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		
+		if(type == 'click')
+			MAIN.save_state();
+		
+		if(brush_type == 'Simple'){
+			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = TOOLS.action_data().attributes.size;
+				
+				canvas_active().beginPath();
+				canvas_active().moveTo(mouse.last_x, mouse.last_y);
+				canvas_active().lineTo(mouse.x, mouse.y);
+				canvas_active().stroke();
+				}
+			}	
+		else if(brush_type == 'BezierCurve'){
+			if(type == 'click')
+				BezierCurveBrush.startCurve(mouse.x, mouse.y);
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 0.5;
+				
+				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y);
+				}
+			}
+		else if(brush_type == 'Fur'){
+			if(type == 'click'){
+				points = new Array();
+			        prevMouseX = mouse.x;
+			        prevMouseY = mouse.y;
+			        count = 0;
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", 0.1)";
+				canvas_active().lineWidth = 1;
+				
+				f = mouse.x;
+				c = mouse.y;
+				var e, b, a, g;
+				points.push([f, c]);
+				canvas_active().beginPath();
+				canvas_active().moveTo(prevMouseX, prevMouseY);
+				canvas_active().lineTo(f, c);
+				canvas_active().stroke();
+				for (e = 0; e < points.length; e++) {
+					b = points[e][0] - points[count][0];
+					a = points[e][1] - points[count][1];
+					g = b * b + a * a;
+					if (g < 2000 && Math.random() > g / 2000) {
+						canvas_active().beginPath();
+						canvas_active().moveTo(f + (b * 0.5), c + (a * 0.5));
+						canvas_active().lineTo(f - (b * 0.5), c - (a * 0.5));
+						canvas_active().stroke();
+						}
+					}
+				prevMouseX = f;
+				prevMouseY = c;
+				count++;
+				}
+			}
+		else if(brush_type == 'Sketchy'){
+			if(type == 'click'){
+				sketchy_brush.init(canvas_active());
+				sketchy_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y);
+				}
+			}
+		else if(brush_type == 'Shaded'){
+			if(type == 'click'){
+				shaded_brush.init(canvas_active());
+				shaded_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				shaded_brush.stroke(color_rgb, mouse.x, mouse.y);
+				}
+			}	
+		else if(brush_type == 'Chrome'){
+			if(type == 'click'){
+				chrome_brush.init(canvas_active());
+				chrome_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				chrome_brush.stroke(color_rgb, mouse.x, mouse.y);
+				}
+			}
+		else if(brush_type == 'Broken'){
+			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 0.5;
+				var power = TOOLS.action_data().attributes.size;
+				
+				//logic is broken here...
+				mouse.x += mouse.x % power - round(power/2);
+				mouse.y += mouse.y % power - round(power/2);
+				mouse.last_x += mouse.x % power - round(power/2);
+				mouse.last_y += mouse.y % power - round(power/2);
+				
+				canvas_active().beginPath();
+				canvas_active().moveTo(mouse.last_x, mouse.last_y);
+				canvas_active().lineTo(mouse.x, mouse.y);
+				canvas_active().stroke();
+				}
+			}
+		else if(brush_type == 'Grouped'){
+			groups_n = TOOLS.action_data().attributes.size;
+			gsize = 10;
+			random_power = 5;
+			
+			if(type == 'click'){
+				chrome_brush.init(canvas_active());
+				chrome_brush.strokeStart(mouse.x, mouse.y);
+				groups = [];
+				
+				for(var g=0; g < groups_n; g++){
+					groups[g] = {};
+					groups[g].x = HELPER.getRandomInt(-gsize, gsize); 
+					groups[g].y = HELPER.getRandomInt(-gsize, gsize);
+					}
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 0.5;
+				
+				for(var g in groups){
+					canvas_active().beginPath();
+					canvas_active().moveTo(mouse.last_x + groups[g].x, mouse.last_y + groups[g].y);
+					
+					//randomize here
+					groups[g].x += HELPER.getRandomInt(-random_power, random_power); 
+					groups[g].y += HELPER.getRandomInt(-random_power, random_power); 
+					if(groups[g].x < -gsize) groups[g].x = -gsize + random_power;
+					if(groups[g].y < -gsize) groups[g].y = -gsize + random_power;
+					if(groups[g].x > gsize) groups[g].x = gsize - random_power;
+					if(groups[g].y > gsize) groups[g].y = gsize - random_power;
+					
+					canvas_active().lineTo(mouse.x + groups[g].x, mouse.y + groups[g].y);
+					canvas_active().stroke();
+					}
+				}
+			}					
+		}
+	this.gradient_tool = function(type, mouse, event){
+		if(mouse.valid == false) return true;
+		var power = TOOLS.action_data().attributes.power;
+		if(power == 100) power = 99;
+		if(type == 'drag'){
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+
+			if(TOOLS.action_data().attributes.radial == false){
+				//linear
+				canvas_front.rect(0, 0, WIDTH, HEIGHT);
+				if(mouse.x > mouse.click_x){
+					var grd = canvas_front.createLinearGradient(
+						mouse.click_x, mouse.click_y, 
+						mouse.x, mouse.y);
+					grd.addColorStop(0, COLOUR_LAST);
+					grd.addColorStop(1, COLOUR);
+					}
+				else{
+					var grd = canvas_front.createLinearGradient(
+						mouse.x, mouse.y, 
+						mouse.click_x, mouse.click_y);
+					grd.addColorStop(0, COLOUR);
+					grd.addColorStop(1, COLOUR_LAST);
+					}
+				canvas_front.fillStyle = grd;
+				canvas_front.fill();
+				}
+			else{
+				//radial
+				var dist_x = mouse.click_x - mouse.x;
+				var dist_y = mouse.click_y - mouse.y;
+				var distance = Math.sqrt((dist_x*dist_x)+(dist_y*dist_y));
+				var radgrad = canvas_front.createRadialGradient(
+					mouse.click_x, mouse.click_y, distance*power/100,
+					mouse.click_x, mouse.click_y, distance);
+				radgrad.addColorStop(0, COLOUR);
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");   
+				
+				canvas_front.fillStyle = radgrad;
+				canvas_front.fillRect(0,0,WIDTH,HEIGHT);
+				}
+			//draw line
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#ff0000";
+			canvas_front.lineWidth = 1;
+			var xx = mouse.x;
+			var yy = mouse.y;
+			canvas_front.moveTo(mouse.click_x + 0.5, mouse.click_y + 0.5);
+			canvas_front.lineTo(xx + 0.5, yy + 0.5);
+			canvas_front.stroke();
+			}	
+		else if(type == 'release'){
+			MAIN.save_state();
+			if(TOOLS.action_data().attributes.radial == false){
+				//linear
+				canvas_active().rect(0, 0, WIDTH, HEIGHT);
+				if(mouse.x > mouse.click_x){
+					var grd = canvas_active().createLinearGradient(
+						mouse.click_x, mouse.click_y, 
+						mouse.x, mouse.y);
+					grd.addColorStop(0, COLOUR_LAST);
+					grd.addColorStop(1, COLOUR);
+					}
+				else{
+					var grd = canvas_active().createLinearGradient(
+						mouse.x, mouse.y, 
+						mouse.click_x, mouse.click_y);
+					grd.addColorStop(0, COLOUR);
+					grd.addColorStop(1, COLOUR_LAST);
+					}
+				canvas_active().fillStyle = grd;
+				canvas_active().fill();
+				}
+			else{
+				//radial
+				var dist_x = mouse.click_x - mouse.x;
+				var dist_y = mouse.click_y - mouse.y;
+				var distance = Math.sqrt((dist_x*dist_x)+(dist_y*dist_y));
+				var radgrad = canvas_active().createRadialGradient(
+					mouse.click_x, mouse.click_y, distance*power/100,
+					mouse.click_x, mouse.click_y, distance);
+				radgrad.addColorStop(0, COLOUR);
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");  
+				
+				canvas_active().fillStyle = radgrad;
+				canvas_active().fillRect(0,0,WIDTH,HEIGHT);
+				}
 			}
 		}
 	this.blur_tool = function(type, mouse, event){
@@ -589,7 +1023,7 @@ function TOOLS_CLASS(){
 				}
 			else{
 				//write clone data
-				canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2);
+				canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2, size, size);
 				}
 			}
 		else if(type == 'right_click'){
@@ -631,10 +1065,11 @@ function TOOLS_CLASS(){
 			if(TOOLS.select_square_action == ''){
 				document.body.style.cursor = "crosshair";
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_front.lineWidth = 1;
 				HELPER.dashedRect(canvas_front, mouse.click_x, mouse.click_y, mouse.x, mouse.y);
 				}
 			else{
-				if(TOOLS.select_square_action == 'move'){
+				if(TOOLS.select_square_action == 'move'){	
 					//move
 					try{
 						canvas_front.clearRect(0, 0, WIDTH, HEIGHT);	
@@ -650,7 +1085,7 @@ function TOOLS_CLASS(){
 						console.log("Error: "+err.message);
 						}
 					}
-				else{
+				else{	
 					//resize
 					var s_x = TOOLS.select_data.x;
 					var s_y = TOOLS.select_data.y;
@@ -704,6 +1139,7 @@ function TOOLS_CLASS(){
 				}
 			}
 		else if(type == 'move' && TOOLS.select_data != false){
+			if(CON.isDrag == true) return true;
 			canvas_front.lineWidth = 1;
 			border_size = 5;
 			TOOLS.select_square_action = '';
@@ -712,47 +1148,47 @@ function TOOLS_CLASS(){
 			var is_top = false;
 			var is_bottom = false;
 			//left
-			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h/2, 4, mouse.x, mouse.y)==true){
+			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h/2, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "w-resize";
 				TOOLS.select_square_action = 'resize-left';
 				is_left = true;
 				}
 			//top
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "n-resize";
 				TOOLS.select_square_action = 'resize-top';
 				is_top = true;
 				}
 			//right
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h/2, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h/2, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "w-resize";
 				TOOLS.select_square_action = 'resize-right';
 				is_right = true;
 				}
 			//bottom
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y + TOOLS.select_data.h, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "n-resize";
 				TOOLS.select_square_action = 'resize-bottom';
 				is_bottom = true;
 				}
 			
 			//corner 1
-			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y, 4, mouse.x, mouse.y)==true){
+			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "nw-resize";
 				TOOLS.select_square_action = 'resize-1';
 				}
 			//corner 2
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "ne-resize";
 				TOOLS.select_square_action = 'resize-2';
 				}
 			//corner 3
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "nw-resize";
 				TOOLS.select_square_action = 'resize-3';
 				}
 			//corner 4
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h, 4, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "ne-resize";
 				TOOLS.select_square_action = 'resize-4';
 				}
@@ -787,13 +1223,10 @@ function TOOLS_CLASS(){
 			else{	
 				MAIN.save_state();
 				if(TOOLS.select_square_action=='move'){
-					try{
+					if(TOOLS.select_data != false){
 						select_data_tmp = canvas_active().getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
 						canvas_active().clearRect(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
 						canvas_active().putImageData(select_data_tmp, mouse.x - mouse.click_x + TOOLS.select_data.x, mouse.y - mouse.click_y + TOOLS.select_data.y);
-						}
-					catch(err){
-						console.log("Error: "+err.message);
 						}
 					TOOLS.select_data.x += mouse.x - mouse.click_x;
 					TOOLS.select_data.y += mouse.y - mouse.click_y;
@@ -883,24 +1316,25 @@ function TOOLS_CLASS(){
 		
 		var x2 = Math.min(x + w, WIDTH-1);
 		var y2 = Math.min(y + h, HEIGHT-1);
+		canvas_front.lineWidth = 1;
 		HELPER.dashedRect(canvas_front, x, y, x2, y2);
 		
 		//draw carners
-		square(x, y, 4);
-		square(x+w, y, 4);
-		square(x, y+h, 4);
-		square(x+w, y+h, 4);
+		square(x, y);
+		square(x+w, y);
+		square(x, y+h);
+		square(x+w, y+h);
 		
 		//draw centers
-		square(x+w/2, y, 4);
-		square(x, y+h/2, 4);
-		square(x+w/2, y+h, 4);
-		square(x+w, y+h/2, 4);
+		square(x+w/2, y);
+		square(x, y+h/2);
+		square(x+w/2, y+h);
+		square(x+w, y+h/2);
 		
-		function square(x, y, size){
+		function square(x, y){
 			canvas_front.beginPath();
-			canvas_front.rect(x-round(size/2), y-round(size/2), size, size);
-			canvas_front.fillStyle = "#000000";
+			canvas_front.rect(x-round(CON.sr_size/2), y-round(CON.sr_size/2), CON.sr_size, CON.sr_size);
+			canvas_front.fillStyle = "#0000c8";
 			canvas_front.fill();
 			}
 		}
@@ -912,5 +1346,204 @@ function TOOLS_CLASS(){
 			n++;
 		if(n == 0)
 			TOOLS.EXIF = false;
+		};
+	this.histogram = function(){
+		POP.add({name: "param1",	title: "Channel:",	values: ["Gray", "Red", "Green", "Blue"], onchange: "TOOLS.histogram_onload()" });
+		POP.add({title: 'Histogram:', function: function(){
+			var html = '<canvas style="position:relative;" id="c_h" width="256" height="100"></canvas>';
+			return html;
+			}});
+		POP.add({title: "Total pixels:",	value: "", });
+		POP.add({title: "Average:",	value: "", });
+		POP.show('Histogram', function(user_response){
+			var param1 = parseInt(user_response.param1);
+			}, undefined, this.histogram_onload);
+		};
+	this.histogram_onload = function(user_response){
+		var img = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+		var imgData = img.data;
+		var channel_grey = document.getElementById("pop_data_param1_poptmp0");
+		var channel_r = document.getElementById("pop_data_param1_poptmp1");
+		var channel_g = document.getElementById("pop_data_param1_poptmp2");
+		var channel_b = document.getElementById("pop_data_param1_poptmp3");
+		
+		if(channel_grey.checked == true)		channel = channel_grey.value;
+		else 	if(channel_r.checked == true)		channel = channel_r.value;
+		else 	if(channel_g.checked == true)		channel = channel_g.value;
+		else 	if(channel_b.checked == true)		channel = channel_b.value;
+		
+		//collect data
+		var hist_data = [];
+		for(var i=0; i<= 255; i++)
+			hist_data[i] = 0;
+		var total = 0;
+		var sum = 0;
+		for(var i = 0; i < imgData.length; i += 4){
+			if(imgData[i+3] == 0) continue;	//transparent
+			var grey = (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
+			if(channel == 'Gray'){
+				hist_data[grey]++;
+				sum = sum + imgData[i] + imgData[i+1] + imgData[i+2];
+				}
+			else if(channel == 'Red'){
+				hist_data[imgData[i]]++;
+				sum = sum + imgData[i] * 3;
+				}
+			else if(channel == 'Green'){
+				hist_data[imgData[i+1]]++;
+				sum = sum + imgData[i+1] * 3;
+				}
+			else if(channel == 'Blue'){
+				hist_data[imgData[i+2]]++;
+				sum = sum + imgData[i+2] * 3;
+				}
+			total++;
+			}
+		
+		//draw histogram
+		var c = document.getElementById("c_h").getContext("2d");
+		c.rect(0, 0, 255, 100);
+		c.fillStyle = "#ffffff";
+		c.fill();
+		for(var i = 0; i <= 255; i++){
+			if(hist_data[i] == 0) continue;
+			c.beginPath();
+			c.strokeStyle = "#000000";
+			c.lineWidth = 1;
+			c.moveTo(i + 0.5, 100 + 0.5);
+			if(channel == 'Gray')
+				c.lineTo(i + 0.5, 100 - round(hist_data[i]*255*100/total/2) + 0.5);
+			else
+				c.lineTo(i + 0.5, 100 - round(hist_data[i]*255*100/total/3/2) + 0.5);
+			c.stroke();
+			}
+		
+		document.getElementById("pop_data_totalpixel").value = HELPER.format("#,##0.####", total);
+		document.getElementById("pop_data_average").value = round(sum * 10 / total / 3) / 10;
+		}
+	this.generate_sprites = function(gap){
+		if(LAYERS.length == 1) return false;
+		MAIN.save_state();
+		LAYER.layer_add();
+		var xx = 0;
+		var yy = 0;
+		var max_height = 0;
+		var tmp = document.createElement("canvas");
+		tmp.setAttribute('id', "tmp_canvas");
+		tmp.width = WIDTH;
+		tmp.height = HEIGHT;
+		var W = WIDTH;
+		var H = HEIGHT;
+		for(i in LAYERS){
+			if(i == LAYER.layer_active) continue;	//end
+			if(LAYERS[i].visible == false) continue;
+			
+			tmp.getContext("2d").clearRect(0, 0, W, H);
+			tmp.getContext("2d").drawImage(document.getElementById(LAYERS[i].name), 0, 0);
+			
+			var trim_details = DRAW.trim_info(tmp, false); //trim
+			if(WIDTH == trim_details.left) continue; //empty layer
+			var width = W - trim_details.left - trim_details.right;
+			var height = H - trim_details.top - trim_details.bottom;
+			
+			if(xx + width > WIDTH){
+				xx = 0;
+				yy += max_height;
+				max_height = 0;	
+				}
+			if(yy % gap > 0 && gap > 0)
+				yy = yy - yy % gap + gap;
+			if(yy + height > HEIGHT){
+				CON.autosize = false;
+				HEIGHT = yy + height;
+				RATIO = WIDTH/HEIGHT;
+				LAYER.set_canvas_size();
+				}
+			
+			canvas_active().drawImage(tmp, trim_details.left, trim_details.top, width, height, xx, yy, width, height);
+			xx += width;
+			if(gap > 0)
+				xx = xx - xx % gap + gap;
+			
+			if(height > max_height)
+				max_height = height;
+			if(xx > WIDTH){
+				xx = 0;
+				yy += max_height;
+				max_height = 0;
+				}
+			}
+		};	
+	this.unique_colors_count = function(canvas){
+		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+		var imgData = img.data;
+		var colors = [];
+		var n = 0;
+		for(var i = 0; i < imgData.length; i += 4){
+			if(imgData[i+3] == 0) continue;	//transparent
+			var key = imgData[i]+"."+imgData[i+1]+"."+imgData[i+2];
+			if(colors[key] == undefined){
+				colors[key] = 1;
+				n++;
+				}
+			}
+		return n;
+		};
+	this.calc_differences = function(sensitivity, canvas_preview, w, h){
+		vlayer_active = parseInt(LAYER.layer_active);
+		//first layer
+		var img1 = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+		var imgData1 = img1.data;
+
+		//second layer
+		var context2 = document.getElementById(LAYERS[vlayer_active + 1].name).getContext("2d");
+		var img2 = context2.getImageData(0, 0, WIDTH, HEIGHT);
+		var imgData2 = img2.data;
+
+		//result layer
+		if(canvas_preview == undefined){
+			//add differences layer
+			LAYER.layer_add();
+			canvas_active().rect(0, 0, WIDTH, HEIGHT);
+			canvas_active().fillStyle = "#ffffff";
+			canvas_active().fill();
+			var img3 = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			}
+		else{
+			//work on preview layer
+			var canvas_tmp = document.createElement("canvas");
+			canvas_tmp.width = WIDTH;
+			canvas_tmp.height = HEIGHT;
+			var img3 = canvas_tmp.getContext("2d").getImageData(0, 0, WIDTH, HEIGHT);
+			}
+		var imgData3 = img3.data;
+		for(var xx = 0; xx < WIDTH; xx++){
+			for(var yy = 0; yy < HEIGHT; yy++){
+				var x = (xx + yy * WIDTH) * 4;
+				if(Math.abs(imgData1[x] - imgData2[x]) > sensitivity
+					|| Math.abs(imgData1[x+1] - imgData2[x+1]) > sensitivity
+					|| Math.abs(imgData1[x+2] - imgData2[x+2]) > sensitivity
+					|| Math.abs(imgData1[x+3] - imgData2[x+3]) > sensitivity){
+					imgData3[x] = 255;
+					imgData3[x+1] = 0;
+					imgData3[x+2] = 0;
+					imgData3[x+3] = 255;
+					}
+				}
+			}
+		if(canvas_preview == undefined)
+			canvas_active().putImageData(img3, 0, 0);
+		else{
+			canvas_tmp.getContext("2d").rect(0, 0, WIDTH, HEIGHT);
+			canvas_tmp.getContext("2d").fillStyle = "#ffffff";
+			canvas_tmp.getContext("2d").fill();
+			canvas_tmp.getContext("2d").putImageData(img3, 0, 0);
+			canvas_preview.clearRect(0, 0, w, h);
+			
+			canvas_preview.save();
+			canvas_preview.scale(w/WIDTH, h/HEIGHT);
+			canvas_preview.drawImage(canvas_tmp, 0, 0);
+			canvas_preview.restore();
+			}
 		};
 	}

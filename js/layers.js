@@ -26,6 +26,27 @@ function LAYER_CLASS(){
 				//image
 				var new_name = name;
 				
+				//check size
+				var size_increased = false;
+				if(img.width > WIDTH || img.height > HEIGHT){
+					if(img.width > WIDTH)
+						WIDTH = img.width;
+					if(img.height > HEIGHT)
+						HEIGHT = img.height;
+					RATIO = WIDTH/HEIGHT;
+					LAYER.set_canvas_size();
+					size_increased = true;
+					}
+				if(LAYERS.length == 1 && CON.autosize == true && size_increased == false){
+					var trim_info = DRAW.trim_info(document.getElementById("Background"));
+					if(trim_info.left == WIDTH){
+						WIDTH = img.width;
+						HEIGHT = img.height;
+						RATIO = WIDTH/HEIGHT;
+						LAYER.set_canvas_size(false);
+						}
+					}
+				
 				for(var i in LAYERS){
 					if(LAYERS[i].name == new_name)
 						new_name = 'Layer #'+(LAYERS.length+1);
@@ -37,23 +58,13 @@ function LAYER_CLASS(){
 					opacity: 1,
 					});
 				LAYER.layer_active = LAYERS.length-1;
-				LAYER.layer_renew();
-				
-				//check size
-				if(img.width > WIDTH || img.height > HEIGHT){
-					if(img.width > WIDTH)
-						WIDTH = img.width;
-					if(img.height > HEIGHT)
-						HEIGHT = img.height;
-					RATIO = WIDTH/HEIGHT;
-					LAYER.set_canvas_size();
-					CON.calc_preview_auto();
-					}
+
 				document.getElementById(new_name).getContext("2d").globalAlpha = 1;
 				document.getElementById(new_name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
-				if(LAYERS.length <= 2 && CON.autosize == true)
-					DRAW.trim();
+				/*if(LAYERS.length <= 2 && CON.autosize == true && size_increased == false){
+					DRAW.trim(undefined, undefined, true);
+					}*/
 				DRAW.zoom();
 				}
 			}
@@ -68,7 +79,6 @@ function LAYER_CLASS(){
 		document.getElementById('canvas_more').appendChild(new_canvas);
 		document.getElementById(canvas_id).width = WIDTH;
 		document.getElementById(canvas_id).height = HEIGHT;
-		document.getElementById(canvas_id).getContext("2d").fillStyle = "rgba(255, 255, 255, 0.5)";
 		document.getElementById(canvas_id).getContext("2d").mozImageSmoothingEnabled = false;
 		document.getElementById(canvas_id).getContext("2d").webkitImageSmoothingEnabled = false;
 		//document.getElementById(canvas_id).getContext("2d").scale(ZOOM/100, ZOOM/100);
@@ -209,15 +219,19 @@ function LAYER_CLASS(){
 		
 		document.getElementById('info').innerHTML = html;
 		}
-	this.set_canvas_size = function(){
+	this.set_canvas_size = function(repaint){
 		var W = round(WIDTH);
 		var H = round(W / RATIO);
 		
 		this.resize_canvas("canvas_back");
-		DRAW.draw_background(canvas_back);
+		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 		this.resize_canvas("canvas_front", false);
-		for(i in LAYERS)
-			this.resize_canvas(LAYERS[i].name, true);
+		for(i in LAYERS){
+			if(repaint === false)
+				this.resize_canvas(LAYERS[i].name, false);
+			else
+				this.resize_canvas(LAYERS[i].name, true);
+			}
 		
 		document.getElementById('resize-w').style.marginLeft = (106+W)+"px";
 		document.getElementById('resize-w').style.marginTop = (1+H/2)+"px";

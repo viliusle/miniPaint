@@ -3,7 +3,7 @@
 <head>
 <title>miniPaint - online image editor</title>
 <meta name="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
-<meta name="keywords" content="photo, image, picture, free, edit, html5, online, photoshop, gimp, effects, sharpen, blur, magic wand tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift" />
+<meta name="keywords" content="photo, image, picture, transparent, layers, free, edit, html5, canvas, javascript, online, photoshop, gimp, effects, sharpen, blur, magic wand tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift, auto colorize" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles/styles.css" />
 <link rel="stylesheet" type="text/css" media="print" href="styles/print.css" />
@@ -18,7 +18,14 @@
 </div>
 <div id="canvas_container">
 	<div id="menu_left">
-		<div id="menu_left_container"></div>
+		<div id="menu_left_container">
+			<noscript>
+				Select object tool, Select area tool, Magic Wand Tool, 
+				Erase, Fill, Pick Color, Pencil, Draw line, Draw letters, 
+				Draw rectangle, Draw circle, Brush, Blur tool, Sharpen tool, 
+				Clone tool, Gradient
+			</noscript>
+		</div>
 		<div style="clear:both;"></div>
 		<div id="main_colour" onclick="TOOLS.toggle_color_select();"></div>
 		<div style="margin-top:10px;padding:3px 0px 3px 3px;" class="block" id="all_colors"></div>
@@ -27,7 +34,8 @@
 			<div id="main_colour_rgb">
 				Red:   <input id="rgb_r" onKeyUp="TOOLS.set_color_rgb(this, 'r')" type="text" value="255" /><br />
 				Green: <input id="rgb_g" onKeyUp="TOOLS.set_color_rgb(this, 'g')" type="text" value="255" /><br />
-				Blue:  <input id="rgb_b" onKeyUp="TOOLS.set_color_rgb(this, 'b')" type="text" value="255" />
+				Blue:  <input id="rgb_b" onKeyUp="TOOLS.set_color_rgb(this, 'b')" type="text" value="255" /><br />
+				Alpha:  <input id="rgb_a" onKeyUp="TOOLS.set_color_rgb(this, 'a')" type="text" value="255" />
 			</div>
 		</div>
 		<div class="block" id="info"></div>
@@ -41,7 +49,7 @@
 				<input onclick="DRAW.zoom(+1);" style="width:30px;" class="layer_add" type="button" value="+" />
 				<b>Zoom: </b><span id="zoom_nr">100</span>%
 				<br />
-				<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="DRAW.zoom(this.value);" /> 
+				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="DRAW.zoom(this.value);" /> 
 			</div>
 		</div>
 		<div id="layers_base">
@@ -78,7 +86,6 @@
 		<a href="#">Edit</a>
 		<ul>
 			<li><a onclick="MENU.do_menu(['edit_undo']);" href="#">Undo</a></li>
-			<li><a onclick="MENU.do_menu(['edit_redo']);" href="#">Redo</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['edit_cut']);" href="#">Cut</a></li>
 			<li><a onclick="MENU.do_menu(['edit_copy']);" href="#">Copy</a></li>
@@ -91,6 +98,7 @@
 	<li>
 		<a href="#">Image</a>
 		<ul>
+			<li><a onclick="MENU.do_menu(['image_information']);" href="#">Information...</a></li>
 			<li><a onclick="MENU.do_menu(['image_size']);" href="#">Size...</a></li>
 			<li><a onclick="MENU.do_menu(['image_trim']);" href="#">Trim</a>
 			<li><a onclick="MENU.do_menu(['image_crop']);" href="#">Crop Selection</a>
@@ -101,10 +109,12 @@
 			<li><a onclick="MENU.do_menu(['image_rotate']);" href="#">Custom Rotation...</a></li>
 			<li><a onclick="MENU.do_menu(['image_vflip']);" href="#">Vertical Flip</a></li>
 			<li><a onclick="MENU.do_menu(['image_hflip']);" href="#">Horizontal Flip</a></li>
+			<li><a onclick="MENU.do_menu(['image_histogram']);" href="#">Histogram...</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['image_colors']);" href="#">Color corrections...</a></li>
+			<li><a onclick="MENU.do_menu(['image_auto_adjust']);" href="#">Auto adjust colors</a></li>
+			<li><a onclick="MENU.do_menu(['image_decrease_colors']);" href="#">Decrease color depth...</a></li>
 			<li><a onclick="MENU.do_menu(['image_negative']);" href="#">Negative</a></li>
-			<li><a onclick="MENU.do_menu(['image_exif']);" href="#">EXIF info...</a></li>
 			<li><a onclick="MENU.do_menu(['image_grid']);" href="#">Grid...</a></li>
 		</ul>
 	</li>
@@ -119,19 +129,13 @@
 			<li><a onclick="MENU.do_menu(['layer_move_up']);" href="#">Move Up</a></li>
 			<li><a onclick="MENU.do_menu(['layer_move_down']);" href="#">Move Down</a></li>
 			<li><a onclick="MENU.do_menu(['layer_opacity']);" href="#">Opacity...</a></li>
-			<li><a onclick="MENU.do_menu(['layer_colors']);" href="#">Color corrections...</a></li>
-			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['layer_rotate_left']);" href="#">Rotate Left</a></li>
-			<li><a onclick="MENU.do_menu(['layer_rotate_right']);" href="#">Rotate Right</a></li>
-			<li><a onclick="MENU.do_menu(['layer_rotate']);" href="#">Custom Rotation...</a></li>
-			<li><a onclick="MENU.do_menu(['layer_vflip']);" href="#">Vertical Flip</a></li>
-			<li><a onclick="MENU.do_menu(['layer_hflip']);" href="#">Horizontal Flip</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['layer_trim']);" href="#">Trim</a></li>
 			<li><a onclick="MENU.do_menu(['layer_resize']);" href="#">Resize...</a></li>
-			<li><a onclick="MENU.do_menu(['layer_negative']);" href="#">Negative</a></li>
 			<li><a onclick="MENU.do_menu(['layer_clear']);" href="#">Clear</a></li>
 			<li><div class="mid-line"></div></li>
+			<li><a onclick="MENU.do_menu(['layer_differences']);" href="#">Differences Down</a></li>
+			<li><a onclick="MENU.do_menu(['layer_sprites']);" href="#">Generate sprites</a></li>
 			<li><a onclick="MENU.do_menu(['layer_merge_down']);" href="#">Merge Down</a></li>
 			<li><a onclick="MENU.do_menu(['layer_flatten']);" href="#">Flatten Image</a></li>
 			
@@ -140,14 +144,19 @@
 	<li>
 		<a href="#">Effects</a>
 		<ul>
-			<li><a onclick="MENU.do_menu(['effects_bw']);" href="#">Black and White</a>
+			<li><a onclick="MENU.do_menu(['effects_bw']);" href="#">Black and White...</a>
+			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['effects_BoxBlur']);" href="#">Blur-Box...</a>
 			<li><a onclick="MENU.do_menu(['effects_GaussianBlur']);" href="#">Blur-Gaussian...</a>
 			<li><a onclick="MENU.do_menu(['effects_StackBlur']);" href="#">Blur-Stack...</a>
+			<li><a onclick="MENU.do_menu(['effects_zoomblur']);" href="#">Blur-Zoom...</a>
+			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['effects_BrightnessContrast']);" href="#">Brightness Contrast...</a>
 			<li><a onclick="MENU.do_menu(['effects_bulge_pinch']);" href="#">Bulge/Pinch...</a>
 			<li><a onclick="MENU.do_menu(['effects_Channels']);" href="#">Channels...</a>
 			<li><a onclick="MENU.do_menu(['effects_ColorTransformFilter']);" href="#">Color Transform...</a>
+			<li><a onclick="MENU.do_menu(['effects_colorize']);" href="#">Colorize...</a></li>
+			<li><a onclick="MENU.do_menu(['effects_denoise']);" href="#">Denoise...</a>
 			<li><a onclick="MENU.do_menu(['effects_Desaturate']);" href="#">Desaturate</a>
 			<li><a onclick="MENU.do_menu(['effects_Dither']);" href="#">Dither...</a>
 			<li><a onclick="MENU.do_menu(['effects_dot_screen']);" href="#">Dot Screen...</a>
@@ -160,17 +169,20 @@
 			<li><a onclick="MENU.do_menu(['effects_Mosaic']);" href="#">Mosaic...</a>
 			<li><a onclick="MENU.do_menu(['layer_negative']);" href="#">Negative</a></li>
 			<li><a onclick="MENU.do_menu(['effects_Oil']);" href="#">Oil...</a>
+			<li><a onclick="MENU.do_menu(['effects_perspective']);" href="#">Perspective...</a>
 			<li><a onclick="MENU.do_menu(['effects_Posterize']);" href="#">Posterize...</a>
 			<li><a onclick="MENU.do_menu(['effects_Sepia']);" href="#">Sepia</a>
 			<li><a onclick="MENU.do_menu(['effects_Sharpen']);" href="#">Sharpen...</a>
 			<li><a onclick="MENU.do_menu(['effects_Solarize']);" href="#">Solarize</a>
 			<li><a onclick="MENU.do_menu(['effects_tilt_shift']);" href="#">Tilt Shift...</a>
+			<li><a onclick="MENU.do_menu(['effects_vignette']);" href="#">Vignette...</a>
 		</ul>
 	</li>
 	<li>
 		<a href="#">Help</a>
 		<ul>
 			<li><a onclick="MENU.do_menu(['help_shortcuts']);" href="#">Keyboard Shortcuts...</a></li>
+			<li><a onclick="MENU.do_menu(['help_credits']);" href="#">Credits...</a></li>
 			<li><a onclick="MENU.do_menu(['help_about']);" href="#">About...</a></li>
 		</ul>
 	</li>
@@ -183,16 +195,16 @@
 <script src="libs/menu.js"></script>
 <script src="libs/imagefilters.js"></script>
 <script src="libs/glfx.js"></script>
-<script src="libs/html5slider.js"></script>
 <script src="libs/exif.js"></script>
 <script src="libs/exif-binaryajax.js"></script>
+<script src="libs/harmony.js"></script>
 
+<script src="js/helpers.js"></script>
 <script src="js/popup.js"></script>
 <script src="js/controlls.js"></script>
 <script src="js/tools.js"></script>
 <script src="js/draw.js"></script>
 <script src="js/layers.js"></script>
-<script src="js/helpers.js"></script>
 <script src="js/menu_actions.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/main.js"></script>
