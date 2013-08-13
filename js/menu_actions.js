@@ -2,7 +2,6 @@ var MENU = new MENU_CLASS();
 
 function MENU_CLASS(){
 	this.last_menu = '';
-	
 	var PASTE_DATA = false;
 	
 	this.do_menu = function(name){
@@ -12,8 +11,29 @@ function MENU_CLASS(){
 		
 		//new
 		if(name == 'file_new'){
-			ZOOM = 100;
-			MAIN.init();
+			//ZOOM = 100;
+			//MAIN.init();
+			
+			POP.add({name: "width",		title: "Width:",	value: WIDTH,	});
+			POP.add({name: "height",	title: "Height:",	value: HEIGHT,	});	
+			POP.add({name: "transparency",	title: "Transparent:", 	values: ['Yes', 'No'],});
+			POP.show('New file...', function(response){
+				var width = parseInt(response.width);
+				var height = parseInt(response.height);
+				var transparency = response.transparency;
+				
+				if(response.transparency == 'Yes')
+					MAIN.TRANSPARENCY = true;
+				else
+					MAIN.TRANSPARENCY = false;
+				//DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
+				
+				ZOOM = 100;
+				WIDTH = width;
+				HEIGHT = height;
+				RATIO = WIDTH/HEIGHT;
+				MAIN.init();
+				});
 			}
 		//open
 		else if(name == 'file_open'){
@@ -37,10 +57,6 @@ function MENU_CLASS(){
 		else if(name == 'edit_undo'){
 			MAIN.undo();
 			}
-		//redo
-		else if(name == 'edit_redo'){
-			MAIN.redo();
-			}	
 		//cut
 		else if(name == 'edit_cut'){
 			MAIN.save_state();
@@ -81,11 +97,23 @@ function MENU_CLASS(){
 		
 		//===== Image ==========================================================
 		
+		//information
+		else if(name == 'image_information'){
+			var colors = TOOLS.unique_colors_count(canvas_active(true));
+			colors = HELPER.format("#,##0.####", colors);
+			
+			POP.add({title: "Width:",	value: WIDTH,	});
+			POP.add({title: "Height:",	value: HEIGHT,	});
+			POP.add({title: "Unique colors:",	value: colors,	});
+			//exif
+			for(var i in TOOLS.EXIF)
+				POP.add({title: i+":",	value: TOOLS.EXIF[i],	});
+			POP.show('Information', '');
+			}
 		//size
 		else if(name == 'image_size'){
-			POP.add({name: "width",		title: "Enter width:",	value: WIDTH,	});
-			POP.add({name: "height",	title: "Enter height:",	value: HEIGHT,	});	
-			POP.add({name: "transparency",	title: "Transparent:",	values: ['Yes', 'No'],});
+			POP.add({name: "width",		title: "Width:",	value: WIDTH,	});
+			POP.add({name: "height",	title: "Height:",	value: HEIGHT,	});	
 			POP.show('Attributes', this.resize_custom);
 			}
 		//trim
@@ -117,29 +145,17 @@ function MENU_CLASS(){
 				}
 			}	
 		//resize
-		else if(name == 'image_resize'){
-			POP.add({name: "width",	title: "Enter new width:",	value: WIDTH,});
-			POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
-			POP.add({name: "mode",	title: "Mode:",	values: ["Resample - Lanczos", "Resize"],});
-			POP.show('Resize', this.resize_layer);
-			}
+		else if(name == 'image_resize')
+			MENU.resize_box();
 		//rotate left
 		else if(name == 'image_rotate_left'){
 			MAIN.save_state();
-			MENU.rotate_resize_doc(270, WIDTH, HEIGHT); 
-			for(var i in LAYERS){
-				var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-				MENU.rotate_layer({angle: 270}, layer, WIDTH, HEIGHT);
-				}
+			MENU.rotate_layer({angle: 270}, canvas_active(), WIDTH, HEIGHT);
 			}
 		//rotate right
 		else if(name == 'image_rotate_right'){
 			MAIN.save_state();
-			MENU.rotate_resize_doc(90, WIDTH, HEIGHT); 
-			for(var i in LAYERS){
-				var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-				MENU.rotate_layer({angle: 90}, layer, WIDTH, HEIGHT);
-				}
+			MENU.rotate_layer({angle: 90}, canvas_active(), WIDTH, HEIGHT);
 			}
 		//rotate
 		else if(name == 'image_rotate'){
@@ -147,10 +163,7 @@ function MENU_CLASS(){
 			POP.show('Rotate', function(response){
 					MAIN.save_state();
 					MENU.rotate_resize_doc(response.angle, WIDTH, HEIGHT); 
-					for(var i in LAYERS){
-						var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-						MENU.rotate_layer(response, layer, WIDTH, HEIGHT); 
-						}
+					MENU.rotate_layer(response, canvas_active(), WIDTH, HEIGHT); 
 					},
 				function(response, canvas_preview, w, h){
 					MENU.rotate_layer(response, canvas_preview, w, h); 
@@ -159,40 +172,36 @@ function MENU_CLASS(){
 		//vertical flip
 		else if(name == 'image_vflip'){
 			MAIN.save_state();
-			for(var i in LAYERS){
-				var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-				
-				var tempCanvas = document.createElement("canvas");
-				var tempCtx = tempCanvas.getContext("2d");
-				tempCanvas.width = WIDTH;
-				tempCanvas.height = HEIGHT;
-				tempCtx.drawImage(document.getElementById(LAYERS[i].name), 0, 0, WIDTH, HEIGHT);
-				//flip
-				layer.clearRect(0, 0, WIDTH, HEIGHT);
-				layer.save();
-				layer.scale(-1, 1);
-				layer.drawImage(tempCanvas, -WIDTH, 0);
-				layer.restore();
-				}
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			tempCtx.drawImage(canvas_active(true), 0, 0, WIDTH, HEIGHT);
+			//flip
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().save();
+			canvas_active().scale(-1, 1);
+			canvas_active().drawImage(tempCanvas, -WIDTH, 0);
+			canvas_active().restore();
 			}
 		//horizontal flip
 		else if(name == 'image_hflip'){
 			MAIN.save_state();
-			for(var i in LAYERS){
-				var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-				
-				var tempCanvas = document.createElement("canvas");
-				var tempCtx = tempCanvas.getContext("2d");
-				tempCanvas.width = WIDTH;
-				tempCanvas.height = HEIGHT;
-				tempCtx.drawImage(document.getElementById(LAYERS[i].name), 0, 0, WIDTH, HEIGHT);
-				//flip
-				layer.clearRect(0, 0, WIDTH, HEIGHT);
-				layer.save();
-				layer.scale(1, -1);
-				layer.drawImage(tempCanvas, 0, -HEIGHT);
-				layer.restore();
-				}
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			tempCtx.drawImage(canvas_active(true), 0, 0, WIDTH, HEIGHT);
+			//flip
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().save();
+			canvas_active().scale(1, -1);
+			canvas_active().drawImage(tempCanvas, 0, -HEIGHT);
+			canvas_active().restore();
+			}
+		//histogram
+		else if(name == 'image_histogram'){
+			TOOLS.histogram();
 			}
 		//color corrections
 		else if(name == 'image_colors'){
@@ -207,27 +216,24 @@ function MENU_CLASS(){
 			
 			POP.show('Brightness Contrast', function(user_response){
 					MAIN.save_state();
-					for(var i in LAYERS){
-						var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-						var param1 = parseInt(user_response.param1);
-						var param2 = parseInt(user_response.param2);
-						var param_red = parseInt(user_response.param_red);
-						var param_green = parseInt(user_response.param_green);
-						var param_blue = parseInt(user_response.param_blue);
-						var param_h = parseInt(user_response.param_h);
-						var param_s = parseInt(user_response.param_s);
-						var param_l = parseInt(user_response.param_l);
-						
-						var imageData = layer.getImageData(0, 0, WIDTH, HEIGHT);
-						//Brightness/Contrast
-						var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);
-						//RGB corrections
-						var filtered = ImageFilters.ColorTransformFilter(filtered, 1, 1, 1, 1, param_red, param_green, param_blue, 1);
-						//hue/saturation/luminance
-						var filtered = ImageFilters.HSLAdjustment(filtered, param_h, param_s, param_l);
-						layer.putImageData(filtered, 0, 0);
-						DRAW.zoom();
-						}
+					var param1 = parseInt(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					var param_red = parseInt(user_response.param_red);
+					var param_green = parseInt(user_response.param_green);
+					var param_blue = parseInt(user_response.param_blue);
+					var param_h = parseInt(user_response.param_h);
+					var param_s = parseInt(user_response.param_s);
+					var param_l = parseInt(user_response.param_l);
+					
+					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+					//Brightness/Contrast
+					var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);
+					//RGB corrections
+					var filtered = ImageFilters.ColorTransformFilter(filtered, 1, 1, 1, 1, param_red, param_green, param_blue, 1);
+					//hue/saturation/luminance
+					var filtered = ImageFilters.HSLAdjustment(filtered, param_h, param_s, param_l);
+					canvas_active().putImageData(filtered, 0, 0);
+					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
 					var param1 = parseInt(user_response.param1);
@@ -249,28 +255,44 @@ function MENU_CLASS(){
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
 			}
+		//auto adjust colors
+		else if(name == 'image_auto_adjust'){
+			MAIN.save_state();
+			DRAW.auto_adjust(canvas_active(), WIDTH, HEIGHT);
+			}
+		//enchance colors
+		else if(name == 'image_decrease_colors'){
+			POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100], });
+			POP.add({name: "param2",	title: "Dithering:",	values: ["Yes", "No"], });
+			POP.add({name: "param3",	title: "Greyscale:",	values: ["Yes", "No"], value: "No", });
+			POP.show('Decrease colors', function(user_response){
+				MAIN.save_state();
+				var param1 = parseInt(user_response.param1);
+				if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
+				if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+
+				DRAW.decrease_colors(canvas_active(), WIDTH, HEIGHT, param1, param2, param3);
+				DRAW.zoom();
+				});
+			}	
 		//negative
 		else if(name == 'image_negative'){
 			MAIN.save_state();
-			for(var i in LAYERS){
-				var layer = document.getElementById(LAYERS[i].name).getContext("2d");
-				
-				if(TOOLS.select_data == false)
-					var imageData = layer.getImageData(0, 0, WIDTH, HEIGHT);
-				else
-					var imageData = layer.getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
-				var pixels = imageData.data;
-				for (var i = 0; i < pixels.length; i += 4){
-					pixels[i]   = 255 - pixels[i];   // red
-					pixels[i+1] = 255 - pixels[i+1]; // green
-					pixels[i+2] = 255 - pixels[i+2]; // blue
-					}
-				//save
-				if(TOOLS.select_data == false)
-					layer.putImageData(imageData, 0, 0);
-				else
-					layer.putImageData(imageData, TOOLS.select_data.x, TOOLS.select_data.y);
+			if(TOOLS.select_data == false)
+				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			else
+				var imageData = canvas_active().getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
+			var pixels = imageData.data;
+			for (var i = 0; i < pixels.length; i += 4){
+				pixels[i]   = 255 - pixels[i];   // red
+				pixels[i+1] = 255 - pixels[i+1]; // green
+				pixels[i+2] = 255 - pixels[i+2]; // blue
 				}
+			//save
+			if(TOOLS.select_data == false)
+				canvas_active().putImageData(imageData, 0, 0);
+			else
+				canvas_active().putImageData(imageData, TOOLS.select_data.x, TOOLS.select_data.y)
 			}
 		//grid
 		else if(name == 'image_grid'){
@@ -288,7 +310,7 @@ function MENU_CLASS(){
 			else{
 				MAIN.grid = false;
 				canvas_back.clearRect(0, 0, WIDTH, HEIGHT);
-				DRAW.draw_background(canvas_back);
+				DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 				}
 			}
 			
@@ -339,151 +361,52 @@ function MENU_CLASS(){
 		else if(name == 'layer_opacity'){
 			LAYER.set_alpha();
 			}
-		//color corrections
-		else if(name == 'layer_colors'){
-			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param_red",	title: "Red offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_green",	title: "Green offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_blue",	title: "Blue offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_h",	title: "Hue:",		value: "0",	range: [-180, 180], });
-			POP.add({name: "param_s",	title: "Saturation:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param_l",	title: "Luminance:",	value: "0",	range: [-100, 100], });
-			
-			POP.show('Brightness Contrast', function(user_response){
-					MAIN.save_state();
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					var param_red = parseInt(user_response.param_red);
-					var param_green = parseInt(user_response.param_green);
-					var param_blue = parseInt(user_response.param_blue);
-					var param_h = parseInt(user_response.param_h);
-					var param_s = parseInt(user_response.param_s);
-					var param_l = parseInt(user_response.param_l);
-					
-					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-					//Brightness/Contrast
-					var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);
-					//RGB corrections
-					var filtered = ImageFilters.ColorTransformFilter(filtered, 1, 1, 1, 1, param_red, param_green, param_blue, 1);
-					//hue/saturation/luminance
-					var filtered = ImageFilters.HSLAdjustment(filtered, param_h, param_s, param_l);
-					canvas_active().putImageData(filtered, 0, 0);
-					DRAW.zoom();
-					},
-				function(user_response, canvas_preview, w, h){
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					var param_red = parseInt(user_response.param_red);
-					var param_green = parseInt(user_response.param_green);
-					var param_blue = parseInt(user_response.param_blue);
-					var param_h = parseInt(user_response.param_h);
-					var param_s = parseInt(user_response.param_s);
-					var param_l = parseInt(user_response.param_l);
-					
-					var imageData = canvas_preview.getImageData(0, 0, w, h);
-					//Brightness/Contrast
-					var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);	//add effect
-					//RGB corrections
-					var filtered = ImageFilters.ColorTransformFilter(filtered, 1, 1, 1, 1, param_red, param_green, param_blue, 1);
-					//hue/saturation/luminance
-					var filtered = ImageFilters.HSLAdjustment(filtered, param_h, param_s, param_l);
-					canvas_preview.putImageData(filtered, 0, 0);
-					});
-			}	
-		//rotate left
-		else if(name == 'layer_rotate_left'){
-			MAIN.save_state();
-			MENU.rotate_layer({angle: 270}, canvas_active(), WIDTH, HEIGHT);
-			}
-		//rotate right
-		else if(name == 'layer_rotate_right'){
-			MAIN.save_state();
-			MENU.rotate_layer({angle: 90}, canvas_active(), WIDTH, HEIGHT);
-			}
-		//rotate
-		else if(name == 'layer_rotate'){
-			POP.add({name: "angle",	title: "Enter angle (0-360):",	value: 90, range: [0, 360],	});
-			POP.show('Rotate', function(response){
-					MAIN.save_state();
-					MENU.rotate_layer(response, canvas_active(), WIDTH, HEIGHT); 
-					},
-				function(response, canvas_preview, w, h){
-					MENU.rotate_layer(response, canvas_preview, w, h); 
-					});
-			}
-		//vertical flip
-		else if(name == 'layer_vflip'){
-			MAIN.save_state();
-			var tempCanvas = document.createElement("canvas");
-			var tempCtx = tempCanvas.getContext("2d");
-			tempCanvas.width = WIDTH;
-			tempCanvas.height = HEIGHT;
-			tempCtx.drawImage(canvas_active(true), 0, 0, WIDTH, HEIGHT);
-			//flip
-			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-			canvas_active().save();
-			canvas_active().scale(-1, 1);
-			canvas_active().drawImage(tempCanvas, -WIDTH, 0);
-			canvas_active().restore();
-			}
-		//horizontal flip
-		else if(name == 'layer_hflip'){
-			MAIN.save_state();
-			var tempCanvas = document.createElement("canvas");
-			var tempCtx = tempCanvas.getContext("2d");
-			tempCanvas.width = WIDTH;
-			tempCanvas.height = HEIGHT;
-			tempCtx.drawImage(canvas_active(true), 0, 0, WIDTH, HEIGHT);
-			//flip
-			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-			canvas_active().save();
-			canvas_active().scale(1, -1);
-			canvas_active().drawImage(tempCanvas, 0, -HEIGHT);
-			canvas_active().restore();
-			}
 		//trim
 		else if(name == 'layer_trim'){
 			MAIN.save_state();
 			DRAW.trim(LAYERS[LAYER.layer_active].name, true);
 			}
 		//resize
-		else if(name == 'layer_resize'){
-			POP.add({name: "width",	title: "Enter new width:",	value: WIDTH,});
-			POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
-			POP.add({name: "mode",	title: "Mode:",	values: ["Resample - Lanczos", "Resize"],});
-			POP.show('Resize', this.resize_layer);
-			}
-		//negative
-		else if(name == 'layer_negative'){
-			MAIN.save_state();
-			if(TOOLS.select_data == false)
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-			else
-				var imageData = canvas_active().getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
-			var pixels = imageData.data;
-			for (var i = 0; i < pixels.length; i += 4){
-				pixels[i]   = 255 - pixels[i];   // red
-				pixels[i+1] = 255 - pixels[i+1]; // green
-				pixels[i+2] = 255 - pixels[i+2]; // blue
-				}
-			//save
-			if(TOOLS.select_data == false)
-				canvas_active().putImageData(imageData, 0, 0);
-			else
-				canvas_active().putImageData(imageData, TOOLS.select_data.x, TOOLS.select_data.y)
-			}
+		else if(name == 'layer_resize')
+			MENU.resize_box();
 		//clear
 		else if(name == 'layer_clear'){
 			MAIN.save_state();
 			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
 			}
+		//sprites
+		else if(name == 'layer_sprites'){
+			POP.add({name: "param1", 	title: "Offset:",	value: "50",	values: ["0", "10", "50", "100"] });
+			POP.show('Sprites', function(response){
+				MAIN.save_state();
+				var param1 = parseInt(response.param1);
+				TOOLS.generate_sprites(param1);
+				});
+			}
+		//show differences
+		else if(name == 'layer_differences'){
+			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
+				POP.add({title: "Error:",	value: 'This can not be last layer',	});
+				POP.show('Error', '');
+				return false;
+				}
+			
+			POP.add({name: "param1", 	title: "Sensitivity:",	value: "0",	range: [0, 255] });
+			POP.show('Differences', function(response){
+					var param1 = parseInt(response.param1);
+					TOOLS.calc_differences(param1);
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseInt(user_response.param1);
+					TOOLS.calc_differences(param1, canvas_preview, w, h);
+					});
+			}	
 		//merge
 		else if(name == 'layer_merge_down'){
 			MAIN.save_state();
-			vlayer_active = parseInt(layer_active);
-			if(LAYER.layer_active + 1 > LAYERS.length){
-				POP.add({title: "Error:",	value: 'This is last layer',	});
+			vlayer_active = parseInt(LAYER.layer_active);
+			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
+				POP.add({title: "Error:",	value: 'This can not be last layer',	});
 				POP.show('Error', '');
 				return false;
 				}
@@ -502,18 +425,6 @@ function MENU_CLASS(){
 			LAYER.layer_remove(LAYER.layer_active+1);
 			LAYER.layer_renew();
 			}
-		//exif
-		else if(name == 'image_exif'){
-			if(TOOLS.EXIF === false){
-				POP.add({title: "Error:",	value: 'EXIF info not found.',	});
-				POP.show('EXIF info', '');
-				}
-			else{
-				for(var i in TOOLS.EXIF)
-					POP.add({title: i+":",	value: TOOLS.EXIF[i],	});
-				POP.show('EXIF info', '');
-				}
-			}
 		//flatten all
 		else if(name == 'layer_flatten'){
 			MAIN.save_state();
@@ -521,7 +432,7 @@ function MENU_CLASS(){
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
 			tmp_data.height = HEIGHT;
-			for(var i=LAYERS.length - 1; i > 0; i--){
+			for(var i=1; i < LAYERS.length; i++){
 				//copy
 				LAYER.layer_active = i;
 				tmp_data.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
@@ -530,7 +441,8 @@ function MENU_CLASS(){
 				//paste
 				LAYER.layer_active = 0;
 				canvas_active().drawImage(tmp_data, 0, 0);
-				
+				}
+			for(var i=LAYERS.length - 1; i > 0; i--){
 				//delete layer
 				LAYER.layer_active = i;
 				LAYER.layer_remove(LAYER.layer_active);
@@ -541,8 +453,19 @@ function MENU_CLASS(){
 		//===== Effects ========================================================
 		
 		else if(name == 'effects_bw'){
-			MAIN.save_state();
-			DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT);
+			POP.add({name: "param1",	title: "Level:",	value: "125",	range: [0, 255], });
+			POP.show('Black and White', function(user_response){
+					MAIN.save_state();
+					var param1 = parseInt(user_response.param1);
+
+					DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT, param1);
+					DRAW.zoom();
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseInt(user_response.param1);
+					
+					DRAW.effect_bw(canvas_preview, w, h, param1);
+					});
 			}
 		else if(name == 'effects_BoxBlur'){
 			POP.add({name: "param1",	title: "H Radius:",	value: "3",	range: [1, 20], });
@@ -604,6 +527,46 @@ function MENU_CLASS(){
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
 			}
+		else if(name == 'effects_zoomblur'){
+			POP.add({name: "param1",	title: "Strength:",	value: "0.3",	range: [0, 1], step: 0.01, });
+			POP.add({name: "param2",	title: "Center x:",	value: round(WIDTH/2),	range: [0, WIDTH], });
+			POP.add({name: "param3",	title: "Center y:",	value: round(HEIGHT/2),	range: [0, HEIGHT], });
+			POP.show('Blur-Zoom', function(user_response){
+					MAIN.save_state();
+					var param1 = parseFloat(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					var param3 = parseInt(user_response.param3);
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_active(true));
+					filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
+					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_active().drawImage(filter, 0, 0);
+					DRAW.zoom();
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseFloat(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					var param3 = parseInt(user_response.param3);
+					
+					//recalc param by size
+					param2 = param2 / WIDTH * w;
+					param3 = param3 / HEIGHT * h;
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
+					canvas_preview.drawImage(filter, 0, 0);
+					
+					//draw circle
+					canvas_preview.beginPath();
+					canvas_preview.strokeStyle = "#ff0000";
+					canvas_preview.lineWidth = 1;
+					canvas_preview.beginPath();
+					canvas_preview.arc(param2, param3, 5, 0,Math.PI*2,true);
+					canvas_preview.stroke();
+					});
+			}	
 		else if(name == 'effects_BrightnessContrast'){
 			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100], });
 			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100], });
@@ -657,17 +620,13 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_Channels'){
-			POP.add({name: "param1",	title: "Red:",	value: "1",	range: [0, 1], });
-			POP.add({name: "param2",	title: "Green:",	value: "0",	range: [0, 1], });
-			POP.add({name: "param3",	title: "Blue:",	value: "0",	range: [0, 1], });
+			POP.add({name: "param1",	title: "Channel:",	values: ["Red", "Green", "Blue"],});
 			POP.show('Channels', function(user_response){
 					MAIN.save_state();
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					var param3 = parseInt(user_response.param3);
-					var channel = 1;
-					if(param2 == 1) channel = 2;
-					if(param3 == 1) channel = 3;	
+					var param1 = user_response.param1;
+					if(param1 == "Red") channel = 1;
+					else if(param1 == "Green") channel = 2;
+					else if(param1 == "Blue") channel = 3;	
 		
 					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
@@ -675,22 +634,16 @@ function MENU_CLASS(){
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					var param3 = parseInt(user_response.param3);
-					var channel = 1;
-					if(param2 == 1) channel = 2;
-					if(param3 == 1) channel = 3;
+					var param1 = user_response.param1;
+					if(param1 == "Red") channel = 1;
+					else if(param1 == "Green") channel = 2;
+					else if(param1 == "Blue") channel = 3;
 					var imageData = canvas_preview.getImageData(0, 0, w, h);
 					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
 			}
 		else if(name == 'effects_ColorTransformFilter'){
-			/*POP.add({name: "param1",	title: "Red multiplier:",	value: "1",	range: [0, 5], });
-			POP.add({name: "param2",	title: "Green multiplier:",	value: "1",	range: [0, 5], });
-			POP.add({name: "param3",	title: "Blue multiplier:",	value: "1",	range: [0, 5], });
-			POP.add({name: "param4",	title: "Alpha multiplier:",	value: "1",	range: [0, 5], });*/
 			POP.add({name: "param5",	title: "Red offset:",	value: "0",	range: [-255, 255], });
 			POP.add({name: "param6",	title: "Green offset:",	value: "0",	range: [-255, 255], });
 			POP.add({name: "param7",	title: "Blue offset:",	value: "0",	range: [-255, 255], });
@@ -715,6 +668,57 @@ function MENU_CLASS(){
 					var imageData = canvas_preview.getImageData(0, 0, w, h);
 					var filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 1, param5, param6, param7, param8);	//add effect
 					canvas_preview.putImageData(filtered, 0, 0);
+					});
+			}
+		else if(name == 'effects_colorize'){
+			var colorize_data;
+			
+			POP.add({name: "param1",	title: "Power:",	value: "3",	range: [1, 10], });
+			POP.add({name: "param2",	title: "Limit:",	value: "30",	range: [10, 200], });
+			POP.add({name: "param3",	title: "Dithering:",	values: ["Yes", "No"], });
+			POP.add({title: "Shortcut:",	value: "C", });
+			POP.preview_in_main = true;
+			POP.show('Auto colorize', function(user_response){
+					MAIN.save_state();
+					var param1 = parseInt(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+					
+					DRAW.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+					DRAW.zoom();
+					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+					},
+				function(user_response){
+					var param1 = parseInt(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+					
+					colorize_data = DRAW.colorize(canvas_preview, WIDTH, HEIGHT, param1, param2, param3, true);
+					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_front.drawImage(canvas_active(true), 0, 0);
+					DRAW.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+					});
+			}
+		else if(name == 'effects_denoise'){
+			POP.add({name: "param1",	title: "Exponent:",	value: "20",	range: [0, 50],  });
+			POP.show('Denoise', function(user_response){
+					MAIN.save_state();
+					var param1 = parseFloat(user_response.param1);
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_active(true));
+					filter.draw(texture).denoise(param1).update();	//effect
+					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_active().drawImage(filter, 0, 0);
+					DRAW.zoom();
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseFloat(user_response.param1);
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					filter.draw(texture).denoise(param1).update();	//effect
+					canvas_preview.drawImage(filter, 0, 0);
 					});
 			}
 		else if(name == 'effects_Desaturate'){
@@ -872,6 +876,68 @@ function MENU_CLASS(){
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
 			}
+		else if(name == 'effects_perspective'){
+			POP.add({name: "param1",	title: "X1:",	value: WIDTH/4,		range: [0, WIDTH],  });
+			POP.add({name: "param2",	title: "Y1:",	value: "0",		range: [0, HEIGHT],  });
+			POP.add({name: "param3",	title: "X2:",	value: WIDTH*3/4,	range: [0, WIDTH],  });
+			POP.add({name: "param4",	title: "Y2:",	value: "0",		range: [0, HEIGHT],  });
+			POP.add({name: "param5",	title: "X3:",	value: WIDTH,	range: [0, WIDTH],  });
+			POP.add({name: "param6",	title: "Y3:",	value: HEIGHT,	range: [0, HEIGHT],  });
+			POP.add({name: "param7",	title: "X4:",	value: "0",		range: [0, WIDTH],  });
+			POP.add({name: "param8",	title: "Y4:",	value: HEIGHT,	range: [0, HEIGHT],  });
+			POP.show('Blur-Zoom', function(user_response){
+					MAIN.save_state();
+					var param1 = parseInt(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					var param3 = parseInt(user_response.param3);
+					var param4 = parseInt(user_response.param4);
+					var param5 = parseInt(user_response.param5);
+					var param6 = parseInt(user_response.param6);
+					var param7 = parseInt(user_response.param7);
+					var param8 = parseInt(user_response.param8);
+									
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_active(true));
+					filter.draw(texture).perspective([0,0,WIDTH,0,WIDTH,HEIGHT,0,HEIGHT], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_active().drawImage(filter, 0, 0);
+					DRAW.zoom();
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseInt(user_response.param1);
+					var param2 = parseInt(user_response.param2);
+					var param3 = parseInt(user_response.param3);
+					var param4 = parseInt(user_response.param4);
+					var param5 = parseInt(user_response.param5);
+					var param6 = parseInt(user_response.param6);
+					var param7 = parseInt(user_response.param7);
+					var param8 = parseInt(user_response.param8);
+					
+					param1 = param1 / WIDTH * w;
+					param2 = param2 / HEIGHT * h;
+					param3 = param3 / WIDTH * w;
+					param4 = param4 / HEIGHT * h;
+					param5 = param5 / WIDTH * w;
+					param6 = param6 / HEIGHT * h;
+					param7 = param7 / WIDTH * w;
+					param8 = param8 / HEIGHT * h;
+					
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					canvas_preview.clearRect(0, 0, w, h);
+					filter.draw(texture).perspective([0,0,w,0,w,h,0,h], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					canvas_preview.drawImage(filter, 0, 0);
+					
+					//draw circle
+					/*canvas_preview.beginPath();
+					canvas_preview.strokeStyle = "#ff0000";
+					canvas_preview.lineWidth = 1;
+					canvas_preview.beginPath();
+					canvas_preview.arc(param2, param3, 5, 0,Math.PI*2,true);
+					canvas_preview.stroke();*/
+					});
+			}
 		else if(name == 'effects_Posterize'){
 			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32], });
 			POP.show('Posterize', function(user_response){
@@ -993,29 +1059,64 @@ function MENU_CLASS(){
 					canvas_preview.stroke();
 					});
 			}
+		else if(name == 'effects_vignette'){
+			POP.add({name: "param1",	title: "Size:",	value: "0.5",	range: [0, 1], step: 0.01, });
+			POP.add({name: "param2",	title: "Amount:",	value: "0.5",	range: [0, 1], step: 0.01, });
+			POP.show('Vignette', function(user_response){
+					MAIN.save_state();
+					var param1 = parseFloat(user_response.param1);
+					var param2 = parseFloat(user_response.param2);
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_active(true));
+					filter.draw(texture).vignette(param1, param2).update();	//effect
+					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_active().drawImage(filter, 0, 0);
+					DRAW.zoom();
+					},
+				function(user_response, canvas_preview, w, h){
+					var param1 = parseFloat(user_response.param1);
+					var param2 = parseFloat(user_response.param2);
+					
+					var filter = fx.canvas();
+					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					filter.draw(texture).vignette(param1, param2).update();	//effect
+					canvas_preview.drawImage(filter, 0, 0);
+					});
+			}
 		
 		//===== Help ===========================================================
 		
 		//shortcuts
 		else if(name == 'help_shortcuts'){
-			POP.add({title: "Del:",		value: 'Delete selection',	});
-			POP.add({title: "G:",		value: 'Grid on/off',	});
-			POP.add({title: "L:",		value: 'Rotate left',	});
-			POP.add({title: "O:",		value: 'Open file(s)',	});
-			POP.add({title: "R:",		value: 'Rotate right',	});
-			POP.add({title: "S:",		value: 'Save',	});
-			POP.add({title: "T:",		value: 'Trim',	});
-			POP.add({title: "CTRL + Z:",	value: 'Undo',	});
-			POP.add({title: "CTRL + A:",	value: 'Select all',	});
-			POP.add({title: "CTRL + X:",	value: 'Cut',	});
-			POP.add({title: "CTRL + C:",	value: 'Copy',	});
-			POP.add({title: "CTRL + V:",	value: 'Paste',	});
-			POP.add({title: "Arrow keys:",	value: 'Move active layer by 10px',	});
-			POP.add({title: "CTRL + Arrow keys:",	value: 'Move active layer by 50px',	});
-			POP.add({title: "SHIFT + Arrow keys:",value: 'Move active layer by 1px',	});
-			POP.add({title: "Drag & Drop:",	value: 'Imports images/xml data',	});
+			POP.add({title: "C",		value: 'Colorize',	});
+			POP.add({title: "Del",		value: 'Delete selection',	});
+			POP.add({title: "F",		value: 'Aut oadjust colors',	});
+			POP.add({title: "G",		value: 'Grid on/off',	});
+			POP.add({title: "L",		value: 'Rotate left',	});
+			POP.add({title: "O",		value: 'Open file(s)',	});
+			POP.add({title: "R",		value: 'Resize',	});
+			POP.add({title: "S",		value: 'Save',	});
+			POP.add({title: "T",		value: 'Trim',	});
+			POP.add({title: "-",	value: 'Zoom out',	});
+			POP.add({title: "+",	value: 'Zoom in',	});
+			POP.add({title: "CTRL + Z",	value: 'Undo',	});
+			POP.add({title: "CTRL + A",	value: 'Select all',	});
+			POP.add({title: "CTRL + X",	value: 'Cut',	});
+			POP.add({title: "CTRL + C",	value: 'Copy',	});
+			POP.add({title: "CTRL + V",	value: 'Paste',	});
+			POP.add({title: "Arrow keys",	value: 'Move active layer by 10px',	});
+			POP.add({title: "CTRL + Arrow keys",	value: 'Move active layer by 50px',	});
+			POP.add({title: "SHIFT + Arrow keys",value: 'Move active layer by 1px',	});
+			POP.add({title: "Drag & Drop",	value: 'Imports images/xml data',	});
 			POP.show('Keyboard Shortcuts', '');
 			}
+		//credits	
+		else if(name == 'help_credits'){
+			for(var i in CREDITS)
+				POP.add({title: CREDITS[i].title,		html: '<a href="'+CREDITS[i].link+'">'+CREDITS[i].name+'</a>',	});
+			POP.show('Credits', '');
+			}	
 		//about	
 		else if(name == 'help_about'){
 			POP.add({title: "Name:",	value: "miniPaint "+VERSION,	});
@@ -1038,13 +1139,6 @@ function MENU_CLASS(){
 			HEIGHT = user_response.height;
 			RATIO = WIDTH/HEIGHT;
 			LAYER.set_canvas_size();
-			}
-		else{
-			if(user_response.transparency == 'Yes')
-				MAIN.TRANSPARENCY = true;
-			else
-				MAIN.TRANSPARENCY = false;
-			DRAW.draw_background(canvas_back);
 			}
 		}
 	//prepare rotation - increase doc dimensions if needed
@@ -1125,42 +1219,69 @@ function MENU_CLASS(){
 		canvas_active().drawImage(PASTE_DATA, 0, 0);
 		LAYER.layer_renew();
 		}
+	this.resize_box = function(){
+		POP.add({name: "width",	title: "Enter new width:",	value: WIDTH,});
+		POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
+		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"],});
+		POP.add({name: "ratio",title: "Preserve ratio:",	values: ["Yes", "No"]});
+		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No", });
+		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No", });
+		POP.show('Resize', MENU.resize_layer);
+		}
 	this.resize_layer = function(user_response){
 		MAIN.save_state();
 		var width = parseInt(user_response.width);
 		var height = parseInt(user_response.height);
+		var ratio_mode = user_response.ratio;
+		var preblur = user_response.preblur;
+		var sharpen = user_response.sharpen;
 		if(isNaN(width) || width<1) return false;
 		if(isNaN(height) || height<1) return false;
 		
-		if(user_response.mode == "Resample - Lanczos"){
-			var trim_details = DRAW.trim(LAYERS[LAYER.layer_active].name);	//trim
+		//if increasing size - use simple way - its good enough
+		if(width > WIDTH || height > HEIGHT)
+			user_response.mode = "Resize";
 		
-			var new_w = WIDTH - trim_details.left - trim_details.right;
-			var new_h = HEIGHT - trim_details.top - trim_details.bottom;
-			var ratio_new = new_w/new_h;
-			if(width / height > RATIO)
-				width = round(height * ratio_new);
+		//anti-artifacting?
+		if(preblur == 'Yes'){
+			var ratio_w = WIDTH / width;
+			var ratio_h = HEIGHT / height;
+			if(ratio_mode == 'Yes')
+				var ratio_avg = Math.max(ratio_w, ratio_h);
 			else
-				height = round(width / ratio_new);
-			if(width >= new_w){
-				LAYER.resize_canvas(LAYERS[LAYER.layer_active].name, true);
-				DRAW.zoom();
-				return false;
+				var ratio_avg = Math.min(ratio_w, ratio_h);
+			var power = ratio_avg * 0.3;
+			if(power > 0.6){
+				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+				var filtered = ImageFilters.GaussianBlur(imageData, power);	//add effect
+				canvas_active().putImageData(filtered, 0, 0);
 				}
-			
-			POP.hide();
-			POP.add({title: "Status:",	value: 'Resizing...',	});
-			POP.show('Status', '');
-			
-			//resample using lanczos-2
-			DRAW.thumbnailer(canvas_active(true), width, 3);
 			}
-		else{
+		//Hermite - good and fast
+		if(user_response.mode == "Resample - Hermite"){
+			if(ratio_mode == 'Yes'){
+				if(width / height > RATIO)
+					width = Math.round(height * RATIO);
+				else
+					height = Math.round(width / RATIO);
+					}
+			if(width == WIDTH && height == HEIGHT) return false;
+			if(width > WIDTH || height > HEIGHT) return false;
+			
+			DRAW.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
+			if(MENU.last_menu != 'layer_resize')
+				DRAW.trim();
+			DRAW.zoom();
+			}
+		//simple resize	
+		else if(user_response.mode == "Resize"){
 			//simple resize - FAST
-			if(width / height > RATIO)
-				width = height * RATIO;
-			else
-				height = width / RATIO;			
+			if(ratio_mode == 'Yes'){
+				if(width / height > RATIO)
+					width = round(height * RATIO);
+				else
+					height = round(width / RATIO);
+					}		
 			
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
@@ -1178,9 +1299,15 @@ function MENU_CLASS(){
 				LAYER.set_canvas_size();
 				canvas_active().drawImage(tmp_data, 0, 0, width, height);
 				}
-			if(MENU.last_menu == 'image_resize')
+			if(MENU.last_menu != 'layer_resize')
 				DRAW.trim();
 			DRAW.zoom();
+			}
+		//sharpen?
+		if(sharpen == 'Yes'){
+			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			var filtered = ImageFilters.Sharpen(imageData, 1);	//add effect
+			canvas_active().putImageData(filtered, 0, 0);
 			}
 		}
 	this.save = function(user_response){

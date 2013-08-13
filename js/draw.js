@@ -6,7 +6,7 @@ function DRAW_CLASS(){
 	this.draw_grid = function(canvas, gap_x, gap_y){
 		if(MAIN.grid == false){
 			canvas.clearRect(0, 0, WIDTH, HEIGHT);
-			DRAW.draw_background(canvas);
+			DRAW.draw_background(canvas, WIDTH, HEIGHT);
 			return false;
 			}
 		gap_x = parseInt(gap_x);
@@ -36,10 +36,10 @@ function DRAW_CLASS(){
 			canvas.stroke();
 			}
 		}
-	this.draw_background = function(canvas, gap, force){
+	this.draw_background = function(canvas, W, H, gap, force){
 		if(MAIN.TRANSPARENCY == false && force == undefined){
 			canvas.beginPath();
-			canvas.rect(0, 0, WIDTH, HEIGHT);
+			canvas.rect(0, 0, W, H);
 			canvas.fillStyle = "#ffffff";
 			canvas.fill();
 			return false;
@@ -47,12 +47,12 @@ function DRAW_CLASS(){
 		if(gap == undefined)
 			gap = 10;
 		var fill = true;
-		for(var i=0; i<WIDTH; i=i+gap){		
+		for(var i=0; i<W; i=i+gap){		
 			if(i%(gap*2) == 0)
 				fill=true;
 			else
 				fill=false;
-			for(var j=0; j<HEIGHT; j=j+gap){
+			for(var j=0; j<H; j=j+gap){
 				if(fill==true){
 					canvas.fillStyle = '#eeeeee';
 					canvas.fillRect(i, j, gap, gap);
@@ -103,7 +103,6 @@ function DRAW_CLASS(){
 					imgData[k+1] = color_to.g; //g
 					imgData[k+2] = color_to.b; //b
 					imgData[k+3] = color_to.a; //a
-					
 					stack.push(nextPointX);
 					stack.push(nextPointY);
 					}
@@ -134,6 +133,7 @@ function DRAW_CLASS(){
 		  color_from.b == color_to.b && 
 		  color_from.a == color_to.a) 
 			return false;
+		if(ALPHA < 255 && color_from.a == ALPHA) return false;
 		var stack = [];
 		stack.push(x);
 		stack.push(y);
@@ -152,10 +152,14 @@ function DRAW_CLASS(){
 				  Math.abs(imgData[k+2] - color_from.b) <= sensitivity &&
 				  Math.abs(imgData[k+3] - color_from.a) <= sensitivity){
 					//fill pixel
-					imgData[k+0] = color_to.r; //r
-					imgData[k+1] = color_to.g; //g
-					imgData[k+2] = color_to.b; //b
-					imgData[k+3] = color_to.a; //a
+					if(ALPHA == 255){
+						imgData[k+0] = color_to.r; //r
+						imgData[k+1] = color_to.g; //g
+						imgData[k+2] = color_to.b; //b
+						imgData[k+3] = color_to.a; //a
+						}
+					else
+						imgData[k+3] = ALPHA; //a
 					
 					stack.push(nextPointX);
 					stack.push(nextPointY);
@@ -164,7 +168,65 @@ function DRAW_CLASS(){
 			}
 		context.putImageData(img, 0, 0);
 		}
-	this.trim = function(layer, no_resize){
+	this.trim_info = function(canvas, trim_white, include_white){
+		var top = 0;
+		var left = 0;
+		var bottom = 0;
+		var right = 0;
+		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+		var imgData = img.data;
+		//check top
+		main1:
+		for(var y = 0; y < img.height; y++){
+			for(var x = 0; x < img.width; x++){
+				var k = ((y * (img.width * 4)) + (x * 4));
+				if(imgData[k+3] == 0) continue; //transparent 
+				if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+				break main1;
+				}
+			top++;
+			}
+		//check left
+		main2:
+	      	for(var x = 0; x < img.width; x++){
+			for(var y = 0; y < img.height; y++){
+				var k = ((y * (img.width * 4)) + (x * 4));
+				if(imgData[k+3] == 0) continue; //transparent 
+				if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+				break main2;
+				}
+			left++;
+			}
+		//check bottom
+		main3:
+		for(var y = img.height-1; y >= 0; y--){
+			for(var x = img.width-1; x >= 0; x--){
+				var k = ((y * (img.width * 4)) + (x * 4));
+				if(imgData[k+3] == 0) continue; //transparent 
+				if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+				break main3;
+				}
+			bottom++;
+			}
+		//check right
+		main4:
+		for(var x = img.width-1; x >= 0; x--){
+			for(var y = img.height-1; y >= 0; y--){
+				var k = ((y * (img.width * 4)) + (x * 4));
+				if(imgData[k+3] == 0) continue; //transparent 
+				if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+				break main4;
+				}
+			right++;
+			}
+		return {
+			top: top,
+			left: left,
+			bottom: bottom,
+			right: right,
+			};
+		};
+	this.trim = function(layer, no_resize, include_white){
 		var all_top = HEIGHT;
 		var all_left = WIDTH;
 		var all_bottom = HEIGHT;
@@ -183,18 +245,20 @@ function DRAW_CLASS(){
 			for(var y = 0; y < img.height; y++){
 				for(var x = 0; x < img.width; x++){
 					var k = ((y * (img.width * 4)) + (x * 4));
-					if(imgData[k+3]>0 && (imgData[k]<255 || imgData[k+1]<255 || imgData[k+2]<255) )
-						break main1;
+					if(imgData[k+3] == 0) continue; //transparent 
+					if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+					break main1;
 					}
 				top++;
 				}
 			//check left
 			main2:
-		      	for(var x = 0; x < img.width; x++){
+		      for(var x = 0; x < img.width; x++){
 				for(var y = 0; y < img.height; y++){
 					var k = ((y * (img.width * 4)) + (x * 4));
-					if(imgData[k+3]>0 && (imgData[k]<255 || imgData[k+1]<255 || imgData[k+2]<255) )
-						break main2;
+					if(imgData[k+3] == 0) continue; //transparent 
+					if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+					break main2;
 					}
 				left++;
 				}
@@ -203,8 +267,9 @@ function DRAW_CLASS(){
 			for(var y = img.height-1; y >= 0; y--){
 				for(var x = img.width-1; x >= 0; x--){
 					var k = ((y * (img.width * 4)) + (x * 4));
-					if(imgData[k+3]>0 && (imgData[k]<255 || imgData[k+1]<255 || imgData[k+2]<255) )
-						break main3;
+					if(imgData[k+3] == 0) continue; //transparent 
+					if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+					break main3;
 					}
 				bottom++;
 				}
@@ -213,8 +278,9 @@ function DRAW_CLASS(){
 			for(var x = img.width-1; x >= 0; x--){
 				for(var y = img.height-1; y >= 0; y--){
 					var k = ((y * (img.width * 4)) + (x * 4));
-					if(imgData[k+3]>0 && (imgData[k]<255 || imgData[k+1]<255 || imgData[k+2]<255) )
-						break main4;
+					if(imgData[k+3] == 0) continue; //transparent 
+					if(include_white !== true && imgData[k] == 255 && imgData[k+1] == 255 && imgData[k+2] == 255) continue; //white
+					break main4;
 					}
 				right++;
 				}
@@ -261,18 +327,358 @@ function DRAW_CLASS(){
 			}
 		LAYER.update_info_block();
 		}
-	this.effect_bw = function(context, W, H){
-		var threshold = 200;
+	this.effect_bw = function(context, W, H, level){
+		var black = level + 25;		//default 150;
+		var white = level - 25;		//defaul 100;
+		if(black < 0 || level == 0) black = 0;
+		if(white > 255 || level == 255) white = 255;
 		var img = context.getImageData(0, 0, W, H);
-		var imgData = img.data;
-	        for(var i = 0; i < imgData.length; i += 4) {
-			var c = imgData[i] > threshold ? 255 : 0;
-			imgData[i] = c;
-			imgData[i+1] = c;
-			imgData[i+2] = c;
+		var imgData = img.data;	
+		for(var j = 0; j < H; j++){
+			for(var i = 0; i < W; i++){		
+				var x = (i + j*W) * 4;
+				if(imgData[x+3] == 0) continue;	//transparent
+				var c = 0;
+				var mid = round(imgData[x] + imgData[x+1] + imgData[x+2])/3;
+				if(mid >= black)
+					c = 255;
+				else 	if(mid <= white)
+					c = 0;
+				else{
+					//we not sure here ... randomize to get better overall quality
+					c = HELPER.getRandomInt(white, black);
+					if(mid < c)
+						c = 0;
+					else
+						c = 255;
+					}
+				imgData[x] = c;
+				imgData[x+1] = c;
+				imgData[x+2] = c;
+				}
 			}	
 		context.putImageData(img, 0, 0);
 		}
+	this.decrease_colors = function(context, W, H, colors, dithering, greyscale){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		
+		//collect top colors
+		var colors_top = [];
+		for(var i = 0; i < imgData.length; i += 40){	//check pixel and skip 10.
+			if(imgData[i+3] == 0) continue;	//transparent
+			var key = imgData[i]+"."+imgData[i+1]+"."+imgData[i+2];
+			
+			if(colors_top[key] == undefined)
+				colors_top[key] = [1, imgData[i], imgData[i+1], imgData[i+2]];
+			else
+				colors_top[key][0]++;
+			}
+		
+		//sort
+		colors_top.sort(function(a,b) { return parseFloat(b[0]) - parseFloat(a[0]); } );
+		var colors_top_sort = [];
+		for (var i in colors_top)
+			colors_top_sort.push(colors_top[i]);
+		colors_top_sort.sort(function(a, b) {return b[0] - a[0]});
+		colors_top = colors_top_sort;		//alert(colors_top.length);
+		
+		if(colors_top.length > 256){	
+			var last = colors_top[0];
+			for(var i=1; i<colors_top.length; i++){
+				var diffR = colors_top[i][1] - last[1];
+				var diffG = colors_top[i][2] - last[2];
+				var diffB = colors_top[i][3] - last[3];
+				diff = Math.sqrt(diffR*diffR + diffG*diffG + diffB*diffB);
+
+				if(diff > 100)
+					last = colors_top[i]; //save last good
+				else{
+					//to close, remove it
+					colors_top.splice(i, 1); i--;
+					}
+				}
+			if(colors_top.length < 100){
+				//oops, we deleted too much ...
+				colors_top = colors_top_sort;
+				colors_top_sort.splice(256);
+				}
+			colors_top_sort.splice(512);
+			}
+		colors_top_sort = [];	
+		
+		var palette = [];
+		var min = 0;
+		var index;
+		var top_color_n;
+		for(var i in colors_top){
+			if(colors_top[i][0] > min){
+				min = colors_top[0];
+				index = i;
+				}
+			}
+		//add main color
+		palette.push([colors_top[index][1], colors_top[index][2], colors_top[index][3]]);
+		top_color_n = colors_top[index][0];
+		
+		//increase pallete - use only different colors
+		for(var c=1; c<colors; c++){
+			var diff_all=0;
+			var max_all = 0;
+			var index_all;
+			//reset
+			for(var i in colors_top)
+				colors_top[i][4] = [];
+			for(var p in palette){
+				var diff;
+				var max = 0;
+				var index;
+				var diff_tmp = [];
+				for(var i in colors_top){
+					var diffR = colors_top[i][1] - palette[p][0];
+					var diffG = colors_top[i][2] - palette[p][1];
+					var diffB = colors_top[i][3] - palette[p][2];
+					diff = Math.sqrt(diffR*diffR + diffG*diffG + diffB*diffB); //max 441
+					//density fix
+					//diff *= colors_top[i][0];// * 441 / top_color_n;
+					colors_top[i][4].push(diff);
+					}
+				}
+			//find biggest minimum
+			var index=0;
+			var max = 0;
+			for(var i in colors_top){
+				var min = 999999;
+				for(var k in colors_top[i][4]){
+					if(colors_top[i][4][k] < min)
+						min = colors_top[i][4][k];
+					}
+				if(min > max){
+					index = i;
+					max = min;
+					}
+				}
+			palette.push([colors_top[index][1], colors_top[index][2], colors_top[index][3]]);
+			}
+
+		//change
+		for(var i = 0; i < imgData.length; i += 4){
+			if(imgData[i+3] == 0) continue;	//transparent
+			var mid = round(imgData[i] + imgData[i+1] + imgData[i+2])/3;
+			if(dithering == true){
+				//find first close color
+				var index1 = 0;
+				var min1 = 256*3;
+				var diff1;
+				for(var j=0; j<palette.length; j++){
+					var diff = 0;
+					diff += Math.abs(palette[j][0] - imgData[i]);
+					diff += Math.abs(palette[j][1] - imgData[i+1]);
+					diff += Math.abs(palette[j][2] - imgData[i+2]);
+					if(diff < min1){
+						min1 = diff;
+						index1 = j;
+						diff1 = diff;
+						}
+					}
+				//find second close color
+				var index2 = 0;
+				var min2 = 256*3;
+				var diff2;
+				for(var j=0; j<palette.length; j++){
+					if(j == index1) continue; //we already have this
+					var diff = 0;
+					diff += Math.abs(palette[j][0] - imgData[i]);
+					diff += Math.abs(palette[j][1] - imgData[i+1]);
+					diff += Math.abs(palette[j][2] - imgData[i+2]);
+					if(diff < min2){
+						min2 = diff;
+						index2 = j;
+						diff2 = diff;
+						}
+					}
+				var c;
+				if(diff1 == 0 || diff1/diff2 < 0.3)
+					c = palette[index1];	//exact color match
+				else{
+					//we not sure here ... randomize to get better overall quality
+					var rand = HELPER.getRandomInt(-diff1, diff2);
+					if(rand < 0)
+						c = palette[index2];
+					else
+						c = palette[index1];
+					}
+				imgData[i] = c[0];
+				imgData[i+1] = c[1];
+				imgData[i+2] = c[2];
+				}
+			else{
+				var index = 0;
+				var min = 256*3;
+				for(var j=0; j<palette.length; j++){
+					var diff = 0;
+					diff += Math.abs(palette[j][0] - imgData[i]);
+					diff += Math.abs(palette[j][1] - imgData[i+1]);
+					diff += Math.abs(palette[j][2] - imgData[i+2]);
+					if(diff < min){
+						min = diff;
+						index = j;
+						}
+					}
+				imgData[i] = palette[index][0];
+				imgData[i+1] = palette[index][1];
+				imgData[i+2] = palette[index][2];
+				}
+			if(greyscale == true){
+				var mid = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+				imgData[i] = mid;
+				imgData[i+1] = mid;
+				imgData[i+2] = mid;
+				}
+			}
+		context.putImageData(img, 0, 0);
+		}
+	//converts greyscale images to coloured
+	this.colorize = function(context, W, H, rand_power, max_gap, dither, manual_colors){
+		var img = context.getImageData(0, 0, W, H);
+		
+		if(manual_colors == undefined || manual_colors === true){
+			var colors = [];
+			for(var x=0; x < 3; x++){
+				colors[x] = [];
+				var pre = HELPER.getRandomInt(-1 * rand_power, rand_power);
+				for(var i = 0; i <= 255; i++){
+					colors[x][i] = HELPER.getRandomInt(pre - rand_power, pre + rand_power);
+					
+					if(colors[x][i] < -1*max_gap)	colors[x][i] += 10;
+					else if(colors[x][i] > max_gap)	colors[x][i] -= 10;
+					
+					pre = colors[x][i];
+					}
+				}
+			if(manual_colors === true)
+				return colors;
+			}
+		else
+			var colors = manual_colors;
+		
+		//colorize
+		var imgData = img.data;
+		for(var i = 0; i < imgData.length; i += 4){
+			if(imgData[i+3] == 0) continue;	//transparent
+			if(dither == true){
+				var diff = Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]);
+				diff = diff / 3;
+				}
+			for(var c = 0; c < 3; c++){
+				var x = i + c;
+				if(dither == false)
+					imgData[x] += colors[c][imgData[x]];
+				else{
+					if(diff < rand_power*6)
+						imgData[x] += colors[c][imgData[x]];
+					else{
+						//big difference here - randomize
+						var rand = HELPER.getRandomInt(Math.min(0, colors[c][imgData[x]]), Math.max(0, colors[c][imgData[x]]));
+						imgData[x] += rand;
+						}
+					}
+				if(imgData[x] > 255) imgData[x] = 255;
+				if(imgData[x] < 0) imgData[x] = 0;
+				}
+			}
+		context.putImageData(img, 0, 0);
+		return false;
+		}
+	//fixing white and black color balance
+	this.auto_adjust = function(context, W, H){
+		//settings
+		var white = 240;	//white color min
+		var black = 30;		//black color max
+		var target_white = 1; 	//how much % white colors should take
+		var target_black = 0.5;	//how much % black colors should take
+		var modify = 1.1;	//color modify strength
+		
+		document.body.style.cursor = "wait";	
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var n = 0;	//pixels count without transparent
+		
+		//make sure we have white
+		var n_valid = 0;
+		for(var i = 0; i < imgData.length; i += 4){
+	      		if(imgData[i+3] == 0) continue;	//transparent
+	      		if((imgData[i] + imgData[i+1] + imgData[i+2]) / 3 > white) n_valid++;
+	        	n++;
+			}
+		target = target_white;
+		var n_fix_white = 0;
+		var done = false;
+		for(var j=0; j < 30; j++){
+			if(n_valid * 100 / n >= target) done = true;
+			if(done == true) break;
+			n_fix_white++;
+			
+			//adjust
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i+3] == 0) continue;	//transparent
+				for(var c = 0; c < 3; c++){
+					var x = i + c;
+					if(imgData[x] < 10) continue;
+					//increase white
+					imgData[x] *= modify;
+					imgData[x] = round(imgData[x]);
+					if(imgData[x] > 255) imgData[x] = 255;
+					}
+				}
+			
+			//recheck
+			n_valid = 0;
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i+3] == 0) continue;	//transparent
+		      		if((imgData[i] + imgData[i+1] + imgData[i+2]) / 3 > white) n_valid++;
+				}
+			}
+			
+		//make sure we have black
+		n_valid = 0;
+		for(var i = 0; i < imgData.length; i += 4){
+			if(imgData[i+3] == 0) continue;	//transparent
+	      		if((imgData[i] + imgData[i+1] + imgData[i+2]) / 3 < black) n_valid++;		
+			}
+		target = target_black;
+		var n_fix_black = 0;
+		var done = false;
+		for(var j=0; j < 30; j++){
+			if(n_valid * 100 / n >= target) done = true;
+			if(done == true) break;
+			n_fix_black++;
+			
+			//adjust
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i+3] == 0) continue;	//transparent
+				for(var c = 0; c < 3; c++){
+					var x = i + c;
+					if(imgData[x] > 240) continue;
+					//increase black
+					imgData[x] -= (255-imgData[x]) * modify - (255-imgData[x]);
+					imgData[x] = round(imgData[x]);
+					}
+				}
+			
+			//recheck
+			n_valid = 0;
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i+3] == 0) continue;	//transparent
+		      		if((imgData[i] + imgData[i+1] + imgData[i+2]) / 3 < black) n_valid++;
+				}
+			}
+			
+		//save	
+		context.putImageData(img, 0, 0);
+		document.body.style.cursor = "auto";
+		log('Iterations: brighten='+n_fix_white+", darken="+n_fix_black);
+		}	
 	this.zoom = function(recalc, scroll){
 		if(recalc != undefined){
 			//zoom-in or zoom-out
@@ -327,7 +733,7 @@ function DRAW_CLASS(){
 		canvas_preview.rect(0, 0, DRAW.PREVIEW_SIZE.w, DRAW.PREVIEW_SIZE.h);
 		canvas_preview.fillStyle = "#ffffff";
 		canvas_preview.fill();
-		DRAW.draw_background(canvas_preview, 5);
+		DRAW.draw_background(canvas_preview, DRAW.PREVIEW_SIZE.w, DRAW.PREVIEW_SIZE.h, 5);
 		
 		//redraw preview area
 		canvas_preview.save();
@@ -369,111 +775,98 @@ function DRAW_CLASS(){
 		context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
 		context.stroke();
 		}
-	//http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas, credits to "syockit"
-	var object_l = {};
-	this.thumbnailer = function(elem, sx, lobes){
-		var img = elem.getContext("2d").getImageData(0, 0, elem.width, elem.height);
-		object_l.canvas = elem;	
-		object_l.ctx = elem.getContext("2d");
-		object_l.ctx.putImageData(img, 0, 0);
-		object_l.img = img;
-		object_l.src = object_l.ctx.getImageData(0, 0, img.width, img.height);
-		object_l.dest = {
-			width: sx,
-			height: Math.round(img.height * sx / img.width),		
-			};
-		object_l.dest.data = new Array(object_l.dest.width * object_l.dest.height * 3);
-		object_l.lanczos = DRAW.lanczosCreate(lobes);
-		object_l.ratio = img.width / sx;
-		object_l.rcp_ratio = 2 / object_l.ratio;
-		object_l.range2 = Math.ceil(object_l.ratio * lobes / 2);
-		object_l.cacheLanc = {};
-		object_l.center = {};
-		object_l.icenter = {};
-		object_l.date = Date.now();		
-		//setTimeout(this.process1, 0, this, 0);	//setTimeout is slow, has big pauses between
-		DRAW.process1(object_l, 0);
-		}
-	//calculates lanczos weight
-	this.lanczosCreate = function(lobes){
-		return function(x){
-			if (x > lobes) 
-			return 0;
-				x *= Math.PI;
-			if (Math.abs(x) < 1e-16) 
-				return 1;
-			var xx = x / lobes;
-			return Math.sin(x) * Math.sin(xx) / x / xx;
-			}
-		}
-	this.process1 = function(self, u){
-		//continue	
-		self.center.x = (u + 0.5) * self.ratio;
-		self.icenter.x = Math.floor(self.center.x);
-		for (var v = 0; v < self.dest.height; v++) {
-			self.center.y = (v + 0.5) * self.ratio;
-			self.icenter.y = Math.floor(self.center.y);
-			var a, r, g, b, x;
-			a = r = g = b = x = 0;
-			for (var i = self.icenter.x - self.range2; i <= self.icenter.x + self.range2; i++) {
-				if (i < 0 || i >= self.src.width) 
-					continue;
-				var f_x = Math.floor(1000 * Math.abs(i - self.center.x));
-				if (!self.cacheLanc[f_x]) 
-					self.cacheLanc[f_x] = {};
-				for (var j = self.icenter.y - self.range2; j <= self.icenter.y + self.range2; j++) {
-					if (j < 0 || j >= self.src.height) 
-						continue;
-					var f_y = Math.floor(1000 * Math.abs(j - self.center.y));
-					if (self.cacheLanc[f_x][f_y] == undefined) 
-						self.cacheLanc[f_x][f_y] = self.lanczos(Math.sqrt(Math.pow(f_x * self.rcp_ratio, 2) + Math.pow(f_y * self.rcp_ratio, 2)) / 1000);
-					weight = self.cacheLanc[f_x][f_y];
-					if (weight > 0) {
-						var idx = (j * self.src.width + i) * 4;
-						a += weight;
-						r += weight * self.src.data[idx];
-						g += weight * self.src.data[idx + 1];
-						b += weight * self.src.data[idx + 2];
-						x += weight * self.src.data[idx + 3]; //transparency
-						}
-					}
-				}
-			var idx = (v * self.dest.width + u) * 4;
-			self.dest.data[idx] = r / a;
-			self.dest.data[idx + 1] = g / a;
-			self.dest.data[idx + 2] = b / a;
-			self.dest.data[idx + 3] = x / a ; //transparency
-			}
-		if (++u < self.dest.width)
-			DRAW.process1(self, u);
-		else 
-			DRAW.process2(self, u);
-		};
-	this.process2 = function(self){
-		self.ctx.putImageData(self.img, 0, 0);
-		self.src = self.ctx.getImageData(0, 0, self.dest.width, self.dest.height);
-		var idx, idx2;
-		for (var i = 0; i < self.dest.width; i++) {
-			for (var j = 0; j < self.dest.height; j++) {
-				idx = (j * self.dest.width + i) * 4;
-				idx2 = (j * self.dest.width + i) * 4;
-				self.src.data[idx2] = self.dest.data[idx];
-				self.src.data[idx2 + 1] = self.dest.data[idx + 1];
-				self.src.data[idx2 + 2] = self.dest.data[idx + 2];
-				self.src.data[idx2 + 3] = self.dest.data[idx + 3];	//transparency
-				}
-			}
-		//var time = Date.now() - self.date;alert(time/1000+"s");
-		self.ctx.clearRect(0, 0, WIDTH, HEIGHT);
-		self.ctx.putImageData(self.src, 0, 0);
-		self = {};	//release memory	
+	//hermite resample - classic "rings.gif" 1000x1000 resize to 200x200 record -  0.040
+	this.resample_hermite = function(canvas, W, H, W2, H2){
+		var time1 = Date.now();
+		var img = canvas.getContext("2d").getImageData(0, 0, W, H);
+		var img2 = canvas.getContext("2d").getImageData(0, 0, W2, H2);
+		var data = img.data;
+		var data2 = img2.data;
+		var ratio_w = W / W2;
+		var ratio_h = H / H2;
+		var ratio_w_half = Math.ceil(ratio_w/2);
+		var ratio_h_half = Math.ceil(ratio_h/2);
 		
-		//do some extra things
-		LAYER.resize_canvas(LAYERS[LAYER.layer_active].name, true);
-		if(MENU.last_menu == 'image_resize')
-			DRAW.trim();
-		DRAW.zoom();
-		if(POP.active == true)
-			POP.hide();
-		}
+		for(var j = 0; j < H2; j++){
+			for(var i = 0; i < W2; i++){
+				var x2 = (i + j*W2) * 4;
+				var weight = 0;
+				var weights = 0;
+				var gx_r = gx_g = gx_b = gx_a = 0;
+				var center_y = (j + 0.5) * ratio_h;
+				for(var yy = Math.floor(j * ratio_h); yy < (j + 1) * ratio_h; yy++){
+					var dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
+					var center_x = (i + 0.5) * ratio_w;
+					var w0 = dy*dy //pre-calc part of w
+					for(var xx = Math.floor(i * ratio_w); xx < (i + 1) * ratio_w; xx++){
+						var dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
+						var w = Math.sqrt(w0 + dx*dx);
+						if(w >= -1 && w <= 1){
+							//hermite filter
+							weight = 2 * w*w*w - 3*w*w + 1;
+							if(weight > 0){
+								dx = 4*(xx + yy*W);
+								gx_r += weight * data[dx];
+								gx_g += weight * data[dx + 1];
+								gx_b += weight * data[dx + 2];
+								gx_a += weight * data[dx + 3];
+								weights += weight;
+								}
+							}
+						}		
+					}
+				data2[x2]     = gx_r / weights;
+				data2[x2 + 1] = gx_g / weights;
+				data2[x2 + 2] = gx_b / weights;
+				data2[x2 + 3] = gx_a / weights;
+				}
+			}
+		console.log("hermite = "+(Math.round(Date.now() - time1)/1000)+" s");
+		canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
+		canvas.getContext("2d").putImageData(img2, 0, 0);
+		};
+	this.resample_hermite_threads = function(canvas, W, H, W2, H2){
+		var time1 = Date.now();
+		var img = canvas.getContext("2d").getImageData(0, 0, W, H);
+		var img2 = canvas.getContext("2d").getImageData(0, 0, W2, H2);
+		var data2 = img2.data;
+		var cores = 8;
+		var cpu_in_use = 0;
+		var progress = document.getElementById('uploadprogress');
+		progress.style.display='block';
+		progress.value = progress.innerHTML = 0;
+		canvas.getContext("2d").clearRect(0, 0, W, H);
+
+		for(var c = 0; c < cores; c++){
+			cpu_in_use++;
+			var my_worker = new Worker("libs/worker-hermite.js");
+			my_worker.onmessage = function(event){		//log(event.data);return false;
+				cpu_in_use--;
+			 	var complete = ((cores - cpu_in_use) / cores * 100 | 0);
+				progress.value = progress.innerHTML = complete;
+				var offset = event.data.offset;	//log( event.data.data.length);
+				
+				for(var i = 0; i < event.data.data.length; i += 4){
+					var x = offset + i;	//log([ x,   event.data.data[i], event.data.data[i+1],event.data.data[i+2],event.data.data[i+3],           ]); return false;
+					data2[x]     = event.data.data[i];
+					data2[x + 1] = event.data.data[i+1];
+					data2[x + 2] = event.data.data[i+2];
+					data2[x + 3] = event.data.data[i+3];
+					}
+				
+				//finish
+				if(cpu_in_use <= 0){
+					console.log("hermite "+cores+" cores = "+(Math.round(Date.now() - time1)/1000)+" s");	
+					canvas.getContext("2d").clearRect(0, 0, W, H);
+					canvas.getContext("2d").putImageData(img2, 0, 0);
+					
+					progress.style.display='none';
+					if(MENU.last_menu != 'layer_resize')
+						DRAW.trim();
+					DRAW.zoom();
+					}
+				};
+			my_worker.postMessage([img, W, H, W2, H2, c, cores]);
+			}
+		};
 	}

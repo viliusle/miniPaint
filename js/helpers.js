@@ -118,8 +118,11 @@ function HELPER_CLASS(){
 		y1 = y1 + 0.5;
 		x2 = x2 + 0.5;
 		y2 = y2 + 0.5;
-		canvas.strokeStyle = color;
-		if (dashLen == undefined) dashLen = 4;
+		if(color != undefined)
+			canvas.strokeStyle = color;
+		else
+			canvas.strokeStyle = "#000000";
+		if(dashLen == undefined) dashLen = 4;
 		canvas.beginPath();
 		canvas.moveTo(x1, y1);
 		var dX = x2 - x1;
@@ -255,11 +258,110 @@ function HELPER_CLASS(){
 		link.href = 'data:,' + fileContents;
 		link.click();
 		}
+	//credits: richard maloney 2006
+	this.darkenColor = function(color, v){
+		if (color.length >6) { color= color.substring(1,color.length)}
+		var rgb = parseInt(color, 16); 
+		var r = Math.abs(((rgb >> 16) & 0xFF)+v); if (r>255) r=r-(r-255);
+		var g = Math.abs(((rgb >> 8) & 0xFF)+v); if (g>255) g=g-(g-255);
+		var b = Math.abs((rgb & 0xFF)+v); if (b>255) b=b-(b-255);
+		r = Number(r < 0 || isNaN(r)) ? 0 : ((r > 255) ? 255 : r).toString(16); 
+		if (r.length == 1) r = '0' + r;
+		g = Number(g < 0 || isNaN(g)) ? 0 : ((g > 255) ? 255 : g).toString(16); 
+		if (g.length == 1) g = '0' + g;
+		b = Number(b < 0 || isNaN(b)) ? 0 : ((b > 255) ? 255 : b).toString(16); 
+		if (b.length == 1) b = '0' + b;
+		return "#" + r + g + b;
+		};
+	//IntegraXor Web SCADA - JavaScript Number Formatter, author: KPL, KHL
+	this.format = function(b,a){
+		if(!b||isNaN(+a))return a;
+		var a=b.charAt(0)=="-"?-a:+a,j=a<0?a=-a:0,e=b.match(/[^\d\-\+#]/g),h=e&&e[e.length-1]||".",e=e&&e[1]&&e[0]||",",b=b.split(h),a=a.toFixed(b[1]&&b[1].length),a=+a+"",d=b[1]&&b[1].lastIndexOf("0"),c=a.split(".");
+		if(!c[1]||c[1]&&c[1].length<=d)
+			a=(+a).toFixed(d+1);
+		d=b[0].split(e);
+		b[0]=d.join("");
+		var f=b[0]&&b[0].indexOf("0");
+		if(f>-1)	for(;c[0].length<b[0].length-f;)c[0]="0"+c[0];
+		else		+c[0]==0&&(c[0]="");
+		a=a.split(".");a[0]=c[0];
+		if(c=d[1]&&d[d.length-1].length)
+			{for(var d=a[0],f="",k=d.length%c,g=0,i=d.length;g<i;g++)f+=d.charAt(g),!((g-k+1)%c)&&g<i-c&&(f+=e);a[0]=f;}
+		a[1]=b[1]&&a[1]?h+a[1]:"";
+		return(j?"-":"")+a[0]+a[1];
+		};
 	}
+//http://www.script-tutorials.com/html5-canvas-custom-brush1/
+var BezierCurveBrush = {
+    // inner variables
+    iPrevX : 0,
+    iPrevY : 0,
+    points : null,
+
+    // initialization function
+    init: function () { },
+
+    startCurve: function (x, y) {
+        this.iPrevX = x;
+        this.iPrevY = y;
+        this.points = new Array();
+    },
+
+    getPoint: function (iLength, a) {
+        var index = a.length - iLength, i;
+        for (i=index; i< a.length; i++) {
+            if (a[i]) {
+                return a[i];
+            }
+        }
+    },
+
+    draw: function (ctx, color_rgb, x, y) {
+        if (Math.abs(this.iPrevX - x) > 5 || Math.abs(this.iPrevY - y) > 5) {
+            this.points.push([x, y]);
+
+            // draw main path stroke
+            ctx.beginPath();
+            ctx.moveTo(this.iPrevX, this.iPrevY);
+            ctx.lineTo(x, y);
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.9)';
+            ctx.stroke();
+            ctx.closePath();
+
+            // draw extra strokes
+            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.2)';
+            ctx.beginPath();
+            var iStartPoint = this.getPoint(25, this.points);
+            var iFirstPoint = this.getPoint(1, this.points);
+            var iSecondPoint = this.getPoint(5, this.points);
+            ctx.moveTo(iStartPoint[0],iStartPoint[1]);
+            ctx.bezierCurveTo(iFirstPoint[0], iFirstPoint[1], iSecondPoint[0], iSecondPoint[1], x, y);
+            ctx.stroke();
+            ctx.closePath();
+
+            this.iPrevX = x;
+            this.iPrevY = y;
+        }
+    }
+};
 
 //quick access short functions
 function log(object){
-	console.log(object);
+	if(typeof object != 'object')
+		console.log(object);
+	else{
+		var str = '[';
+		for(var i in object){
+			if(typeof object[i] == 'number')
+				str += Math.round(object[i]*1000)/1000+",  ";
+			else
+				str += object[i]+",  ";
+			}
+		str += ']';
+		log(str);
+		}
 	}		
 function round(number){
 	return Math.round(number);
