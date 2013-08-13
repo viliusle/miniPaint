@@ -22,15 +22,19 @@ function CONTROLLS_CLASS(){
 	this.ZOOM_X = 0;
 	this.ZOOM_Y = 0;
 	this.mini_rect_data = { w: 0, h:0 };
-	
+	this.isDrag = false;
+	this.sr_size = 8;	//selected area resize rects size
 	var autosize = true;
-	var isDrag = false;
 	var mouse_click_x = false;
 	var mouse_click_y = false;
 	var mouse_x_move_last = false;
 	var mouse_y_move_last = false;
 	var resize_all = false;
 	var mouse_click_valid = false;
+	var last_pop_click = [0, 0];
+	var popup_pos_top = 0;
+	var popup_pos_left = 0;
+	var popup_dragable = false;
 	
 	//keyboard actions
 	this.on_keyboard_action = function(event){
@@ -75,6 +79,13 @@ function CONTROLLS_CLASS(){
 		else if(k == 27){		
 			if(POP != undefined && POP.active == true)
 				POP.hide();
+			delete TOOLS.last_line_x;
+			delete TOOLS.last_line_y;
+			if(TOOLS.select_data != false){
+				TOOLS.select_data = false;
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				TOOLS.select_square_action = '';
+				}
 			}
 		//z - undo
 		else if(k == 90){
@@ -105,12 +116,9 @@ function CONTROLLS_CLASS(){
 			MENU.rotate_resize_doc(270, WIDTH, HEIGHT); 
 			MENU.rotate_layer({angle: 270}, canvas_active(), WIDTH, HEIGHT);
 			}
-		//r - rotate right
-		else if(k == 82){
-			MAIN.save_state();
-			MENU.rotate_resize_doc(90, WIDTH, HEIGHT); 
-			MENU.rotate_layer({angle: 90}, canvas_active(), WIDTH, HEIGHT);
-			}
+		//r - resize
+		else if(k == 82)
+			MENU.resize_box();
 		//grid
 		else if(k==71){
 			if(MAIN.grid == false)
@@ -125,6 +133,7 @@ function CONTROLLS_CLASS(){
 				MAIN.save_state();
 				canvas_active().clearRect(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
 				TOOLS.select_data = false;
+				TOOLS.select_square_action = '';
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				}
 			}
@@ -133,7 +142,8 @@ function CONTROLLS_CLASS(){
 			CON.shift_pressed = true; 
 		//ctrl
 		else if(k==17){
-			CON.ctrl_pressed = true; 
+			if(CON.ctrl_pressed == false)
+				CON.ctrl_pressed = true;
 			if (!window.Clipboard)
 				pasteCatcher.focus();
 			}
@@ -167,6 +177,13 @@ function CONTROLLS_CLASS(){
 		else if(k==67){
 			if(CON.ctrl_pressed == true && TOOLS.select_data != false)
 				MENU.copy_to_clipboard();
+			else if(CON.ctrl_pressed == false){
+				MAIN.save_state();
+				var param1 = parseInt(3);
+				var param2 = parseInt(30);
+				DRAW.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, true);
+				DRAW.zoom();
+				}
 			}
 		//v
 		else if(k==86){
@@ -174,6 +191,21 @@ function CONTROLLS_CLASS(){
 			if(CON.ctrl_pressed == true)
 				MENU.paste();
 			}
+		//f - fix images
+		else if(k==70){
+			MAIN.save_state();
+			DRAW.auto_adjust(canvas_active(), WIDTH, HEIGHT);
+			}
+		//h - histogram	
+		else if(k==72){
+			TOOLS.histogram();
+			}
+		//-
+		else if(k==109)
+			DRAW.zoom(-1);
+		//+
+		else if(k==107)
+			DRAW.zoom(+1);
 			
 		DRAW.zoom();
 		return true;
@@ -191,40 +223,48 @@ function CONTROLLS_CLASS(){
 		else if(k==18)
 			CON.alt_pressed = false;
 		}
+	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function(event){
 		var valid = true;
 		if(event.offsetX) {
-			mouse_x = event.offsetX;
-			mouse_y = event.offsetY;
+			mouse_rel_x = event.offsetX;
+			mouse_rel_y = event.offsetY;
 			}
 		else if(event.layerX) {
-			mouse_x = event.layerX;
-			mouse_y = event.layerY;
+			mouse_rel_x = event.layerX;
+			mouse_rel_y = event.layerY;
 			}
 		else
 			return false;
-		if(event.target.id != "canvas_preview"){
-			if((mouse_x < 200 || mouse_y < 200) && event.target.id != "canvas_front"){
-				mouse_x = mouse_x - 109;
-				mouse_y = mouse_y - 34;
-				valid = false;
-				}
-			else if((mouse_x > WIDTH+1 || mouse_y > HEIGHT+1) && event.target.id != "canvas_front"){
-				mouse_x = mouse_x - 109;
-				mouse_y = mouse_y - 34;	
-				valid = false;
-				}
+		mouse_x = event.pageX;
+		mouse_y = event.pageY;
+		var abs_x = event.pageX;
+		var abs_y = event.pageY;
+		
+		if(event.target.id == "canvas_front"){
+			//in canvas area - relative pos
+			mouse_x = mouse_rel_x;
+			mouse_y = mouse_rel_y;
 			if(ZOOM != 100 ){
 				mouse_x = Math.floor(mouse_x / ZOOM * 100);
-				mouse_y =  Math.floor(mouse_y / ZOOM * 100);
+				mouse_y = Math.floor(mouse_y / ZOOM * 100);
 				}
 			}
-		else
+		else{
+			//outside canvas - absolute pos - canvas offset
+			mouse_x = mouse_x - 109;
+			mouse_y = mouse_y - 34;
 			valid = false;
-		
+			}
+		if(event.target.id == "canvas_preview"){
+			//in preview area - relative pos
+			mouse_x = mouse_rel_x;
+			mouse_y = mouse_rel_y;
+			}
+
 		//save - other place will use it too
 		CON.mouse = {
-			x: mouse_x, 
+			x: mouse_x,
 			y: mouse_y, 
 			click_x: mouse_click_x,
 			click_y: mouse_click_y,
@@ -232,14 +272,16 @@ function CONTROLLS_CLASS(){
 			last_y: mouse_y_move_last,
 			valid: valid,
 			click_valid: mouse_click_valid,
+			abs_x: abs_x,
+			abs_y: abs_y, 
 			};
 		}
 	//mouse right click
 	this.mouse_right_click = function(event){
 		if(POP != undefined && POP.active==true) return true;
-		mouse_click_x = mouse_x;
-		mouse_click_y = mouse_y;
 		CON.get_mouse_position(event);
+		mouse_click_x = CON.mouse.x;
+		mouse_click_y = CON.mouse.y;
 		
 		for (i in TOOLS){
 			if(i == ACTION){
@@ -250,16 +292,29 @@ function CONTROLLS_CLASS(){
 		}
 	//mouse click
 	this.mouse_click = function(event){
-		if(POP != undefined && POP.active==true) return true;
+		CON.isDrag = true;
+		if(POP != undefined && POP.active==true){
+			CON.get_mouse_position(event);
+			last_pop_click[0] = CON.mouse.abs_x;
+			last_pop_click[1] = CON.mouse.abs_y;
+			popup = document.getElementById('popup');
+			popup_pos_top = parseInt(popup.style.top);
+			popup_pos_left = parseInt(popup.style.left);
+			if(event.target.id == "popup_drag")
+				popup_dragable = true;
+			else
+				popup_dragable = false;
+			return true;
+			}
 		if(event.which == 3) return true;
-		mouse_click_x = mouse_x;
-		mouse_click_y = mouse_y;
 		CON.get_mouse_position(event);
+		mouse_click_x = CON.mouse.x;	
+		mouse_click_y = CON.mouse.y;
 		if(CON.mouse.valid == false)
 			mouse_click_valid = false;
 		else
 			mouse_click_valid = true;
-		isDrag = true;
+		
 		
 		//check tools functions
 		for (i in TOOLS){
@@ -282,9 +337,18 @@ function CONTROLLS_CLASS(){
 		}
 	//mouse move
 	this.mouse_move = function(event){
-		if(POP != undefined && POP.active==true) return true;
+		if(POP != undefined && POP.active==true){
+			//drag popup
+			if(CON.isDrag==true && popup_dragable == true){
+				CON.get_mouse_position(event);
+				popup = document.getElementById('popup');
+				popup.style.top = (popup_pos_top + CON.mouse.abs_y - last_pop_click[1])+'px';
+				popup.style.left = (popup_pos_left + CON.mouse.abs_x - last_pop_click[0])+'px';
+				}
+			return true;
+			}
 		CON.get_mouse_position(event);
-		if(event.target.id == "canvas_preview" && isDrag==true)
+		if(event.target.id == "canvas_preview" && CON.isDrag==true)
 			CON.calc_preview_by_mouse(CON.mouse.x, CON.mouse.y);
 		LAYER.update_info_block();
 		
@@ -294,21 +358,23 @@ function CONTROLLS_CLASS(){
 			else if(event.target.id == "resize-h")	document.body.style.cursor = "n-resize";
 			else if(event.target.id == "resize-wh")	document.body.style.cursor = "nw-resize";
 			else					document.body.style.cursor = "auto";
-			if(resize_all != false && isDrag==true){
+			if(resize_all != false && CON.isDrag==true){
 				document.body.style.cursor = "auto";
 				if(resize_all == "w"){
-					new_w = mouse_x;
+					new_w = CON.mouse.x;
 					new_h = HEIGHT;
 					}
 				else if(resize_all == "h"){
 					new_w = WIDTH;
-					new_h = mouse_y;
+					new_h = CON.mouse.y;
 					}
 				else if(resize_all == "wh"){
-					new_w = mouse_x;
-					new_h = mouse_y;
+					new_w = CON.mouse.x;
+					new_h = CON.mouse.y;
 					}
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_front.lineWidth = 1;
+				canvas_front.fillStyle = "#ff0000";
 				HELPER.dashedRect(canvas_front, 0, 0, new_w-1, new_h-1);
 				event.preventDefault();
 				HELPER.remove_selection();
@@ -316,16 +382,15 @@ function CONTROLLS_CLASS(){
 				}
 			}
 		//check tools functions
-		if(isDrag === false){
-			for (i in TOOLS){
-				if(i == ACTION){
-					TOOLS[i]('move', CON.mouse, event);
-					break;
-					}
+		for (i in TOOLS){
+			if(i == ACTION){
+				TOOLS[i]('move', CON.mouse, event);
+				break;
 				}
 			}
-		
-		if(isDrag === false) return false;	//only drag now
+	
+
+		if(CON.isDrag === false) return false;	//only drag now
 		
 		//check tools functions
 		for (i in TOOLS){
@@ -337,15 +402,17 @@ function CONTROLLS_CLASS(){
 			
 		if(ACTION != 'select_square')
 			TOOLS.select_square_action = '';
+			
+
 		
 		mouse_x_move_last = CON.mouse.x;
 		mouse_y_move_last = CON.mouse.y;
 		}
 	//release mouse click
 	this.mouse_release = function(event){
+		CON.isDrag = false;
 		if(POP != undefined && POP.active==true) return true;
 		var mouse = CON.get_mouse_position(event);
-		isDrag = false;
 		mouse_x_move_last = false
 		mouse_y_move_last = false;
 		if(TOOLS.select_square_action == '' && CON.mouse.valid == true)
@@ -362,16 +429,16 @@ function CONTROLLS_CLASS(){
 			}
 			
 		//main window resize
-		if(resize_all != false && ZOOM == 100){
+		if(resize_all != false && ZOOM == 100 && CON.mouse.x > 0 && CON.mouse.y > 0){
 			CON.autosize = false;
 			document.body.style.cursor = "auto";
 			if(resize_all == "w")
-				WIDTH = parseInt(mouse_x);
+				WIDTH = CON.mouse.x;
 			else if(resize_all == "h")
-				HEIGHT = parseInt(mouse_y);
+				HEIGHT = CON.mouse.y;
 			else if(resize_all == "wh"){
-				WIDTH = parseInt(mouse_x);
-				HEIGHT = parseInt(mouse_y);
+				WIDTH = mouse_x;
+				HEIGHT = CON.mouse.y;
 				}
 			RATIO = WIDTH/HEIGHT;
 			LAYER.set_canvas_size();
@@ -387,8 +454,10 @@ function CONTROLLS_CLASS(){
 		progress.style.display='block';
 		progress.value = progress.innerHTML = 0;
 		MAIN.save_state();
+		var n_valid = 0;
 		for (var i = 0, f; f = e.dataTransfer.files[i]; i++){
 			if(!f.type.match('image.*') && f.type != 'text/xml') continue;
+			n_valid++;
 		
 			var FR = new FileReader();	
 			FR.file = e.dataTransfer.files[i];
@@ -425,6 +494,8 @@ function CONTROLLS_CLASS(){
 			else
 				FR.readAsDataURL(f);
 			}
+		if(n_valid == 0)
+			progress.style.display='none';
 		document.getElementById("drop_zone").style.display='none';
 		}
 	this.mouse_wheel_handler = function(e){	//return true;

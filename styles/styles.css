@@ -49,9 +49,19 @@ table{
 	border-spacing: 0;
 	width:100%;
 }
-input{
+input[type="text"], input[type="button"], select{
 	border:1px solid #393939;
 	}
+input[type="range"]{
+	margin-left:0px;
+	width:100%;
+	}
+input[type="text"]:disabled{
+	border: 1px solid #c0c0c0;
+	}
+label{
+	font-size:11px;
+	}	
 
 /* ==== ID ================================================================== */
 
@@ -80,9 +90,10 @@ input{
 #uploadprogress{
 	position:absolute;
 	top:5px;
+	z-index:100;
 	left:300px;
 	height:15px;
-	width:500px;
+	width:600px;
 	display:none;
 	}
 #main_colour{
@@ -177,6 +188,7 @@ input{
 	}
 #popup h2{
 	margin-top:0px;
+	cursor:move;
 	}
 #popup textarea{
 	color:#000000;
@@ -296,4 +308,9 @@ input{
 	background-color:#ffffff;
 	width:400px;
 	font-weight:bold;
+	}
+.group{
+	border:1px solid #93bdfe;
+	margin:5px 0px 5px 0px;
+	padding:5px;
 	}
