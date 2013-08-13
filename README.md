@@ -17,11 +17,3 @@ gradients, fast Hermite resample.
 Key features: layers, transparency, offline graphics editing.
 
 It works in all modern browsers that support HTML5.
-
-Used libraries:
-JQuery http://jquery.com/
-Google Menu http://blog.geotitles.com/2011/09/creating-the-new-top-black-bar-found-in-google-and-all-its-products/
-ImageFilters.js https://github.com/arahaya/ImageFilters.js
-glfx.js http://evanw.github.io/glfx.js/
-exif.js https://github.com/jseidelin/exif-js
-harmony.js http://ricardocabello.com/blog/post/689
