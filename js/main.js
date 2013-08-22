@@ -3,7 +3,7 @@ TODO:
 	Hermite
 		http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
 		http://bvdwolf.home.xs4all.nl/main/foto/down_sample/down_sample.htm
-	Differences
+	http://www.perry.cz/files/ExifRestorer.js
 */
 
 var MAIN = new MAIN_CLASS();
