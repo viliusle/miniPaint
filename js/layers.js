@@ -2,6 +2,7 @@ var LAYER = new LAYER_CLASS();
 
 function LAYER_CLASS(){
 	this.layer_active = 0;
+	var imageData_tmp;
 	
 	//create layer
 	this.layer_add = function(name, data, type){
@@ -21,7 +22,6 @@ function LAYER_CLASS(){
 			}
 		else{
 			var img = new Image();
-			img.src = data;
 			img.onload = function(){
 				//image
 				var new_name = name;
@@ -62,11 +62,9 @@ function LAYER_CLASS(){
 				document.getElementById(new_name).getContext("2d").globalAlpha = 1;
 				document.getElementById(new_name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
-				/*if(LAYERS.length <= 2 && CON.autosize == true && size_increased == false){
-					DRAW.trim(undefined, undefined, true);
-					}*/
 				DRAW.zoom();
 				}
+			img.src = data;
 			}
 		LAYER.layer_active = LAYERS.length-1;
 		document.getElementById(LAYERS[LAYER.layer_active].name).getContext("2d").globalAlpha = 1;
@@ -128,6 +126,7 @@ function LAYER_CLASS(){
 			}
 		this.layer_renew();
 		DRAW.zoom();
+		return true;
 		}
 	this.layer_visibility = function(i){
 		if(LAYERS[i].visible == true){
@@ -164,10 +163,15 @@ function LAYER_CLASS(){
 		dx = x*distance;
 		dy = y*distance;
 		
-		var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+		//save
+		var buffer = document.createElement('canvas');
+		buffer.width = WIDTH;
+		buffer.height = HEIGHT;
+		buffer.getContext('2d').drawImage(canvas_active(true), 0, 0);
+		
+		//move
 		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-		canvas_active().putImageData(imageData, dx, dy);
-		DRAW.zoom();
+		canvas_active().drawImage(buffer, dx, dy);
 		}
 	this.select_layer = function(i){
 		if(LAYER.layer_active != i)
@@ -247,16 +251,25 @@ function LAYER_CLASS(){
 	this.resize_canvas = function(canvas_name, repaint){
 		var W = round(WIDTH );
 		var H = round(W / RATIO);
+		var canvas = document.getElementById(canvas_name);
+		var ctx = canvas.getContext("2d");
 	
 		if(repaint==false){
-			document.getElementById(canvas_name).width = W;
-			document.getElementById(canvas_name).height = H;
+			canvas.width = W;
+			canvas.height = H;
 			}
 		else{
-			var imageData = document.getElementById(canvas_name).getContext("2d").getImageData(0, 0, WIDTH, HEIGHT);
-			document.getElementById(canvas_name).width = W;
-			document.getElementById(canvas_name).height = H;
-			document.getElementById(canvas_name).getContext("2d").putImageData(imageData, 0, 0);
+			//save
+			var buffer = document.createElement('canvas');
+			buffer.width = WIDTH;
+			buffer.height = HEIGHT;
+			buffer.getContext('2d').drawImage(canvas, 0, 0);
+			
+			canvas.width = W;
+			canvas.height = H;
+			
+			//restore
+			ctx.drawImage(buffer, 0, 0);
 			}
 		}
 	this.set_alpha = function(){
@@ -283,6 +296,16 @@ function LAYER_CLASS(){
 			
 			DRAW.zoom();
 			});
+		}
+	this.canvas_active = function(base){	log('canvas_active():  '+LAYER.layer_active);
+		for(i in LAYERS){
+			if(LAYER.layer_active==i){
+				if(base == undefined)
+					return document.getElementById(LAYERS[i].name).getContext("2d");
+				else
+					return document.getElementById(LAYERS[i].name);
+				}
+			}				log('error.........');
 		}
 	}
 
