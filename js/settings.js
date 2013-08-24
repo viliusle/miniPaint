@@ -8,7 +8,7 @@ var canvas_preview = document.getElementById("canvas_preview").getContext("2d");
 //settings
 var AUTHOR = 'ViliusL';
 var EMAIL = 'www.viliusl@gmail.com';
-var VERSION = '1.8';
+var VERSION = '1.8.1';
 var WIDTH = 800;				//canvas midth
 var HEIGHT = 500;				//canvas height
 var RATIO = WIDTH/HEIGHT;			//width & height ratio

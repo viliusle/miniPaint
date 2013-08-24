@@ -403,27 +403,55 @@ function MENU_CLASS(){
 			}	
 		//merge
 		else if(name == 'layer_merge_down'){
-			MAIN.save_state();
-			vlayer_active = parseInt(LAYER.layer_active);
+			var compositions = ["source-over", "source-in", "source-out", "source-atop", 
+						"destination-over", "destination-in", "destination-out", "destination-atop",
+						"lighter", "darker", "copy", "xor"];
+			
 			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
 				POP.add({title: "Error:",	value: 'This can not be last layer',	});
 				POP.show('Error', '');
 				return false;
 				}
-			//copy
-			LAYER.layer_active++;
-			tmp_data = document.createElement("canvas");
-			tmp_data.width = WIDTH;
-			tmp_data.height = HEIGHT;
-			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
-			
-			//paste
-			LAYER.layer_active--;
-			canvas_active().drawImage(tmp_data, 0, 0);
-			
-			//remove next layer
-			LAYER.layer_remove(LAYER.layer_active+1);
-			LAYER.layer_renew();
+			POP.add({name: "param1", 	title: "Composition:",	values: compositions,	 });
+			POP.show('Merge', function(response){
+					var param1 = response.param1;
+					
+					MAIN.save_state();
+					//copy
+					LAYER.layer_active++;
+					var tmp_data = document.createElement("canvas");
+					tmp_data.width = WIDTH;
+					tmp_data.height = HEIGHT;
+					tmp_data.getContext("2d").drawImage(LAYER.canvas_active(true), 0, 0);
+					
+					//paste
+					LAYER.layer_active--;
+					LAYER.canvas_active().save();
+					LAYER.canvas_active().globalCompositeOperation = param1;
+					LAYER.canvas_active().drawImage(tmp_data, 0, 0);
+					LAYER.canvas_active().restore();
+					
+					//remove next layer
+					LAYER.layer_remove(LAYER.layer_active+1);
+					LAYER.layer_renew();
+					},
+				function(response, canvas_preview, w, h){
+					var param1 = response.param1;
+					
+					//copy
+					LAYER.layer_active++;
+					var tmp_data = document.createElement("canvas");
+					tmp_data.width = w;
+					tmp_data.height = h;
+					tmp_data.getContext("2d").drawImage(LAYER.canvas_active(true), 0, 0, WIDTH, HEIGHT, 0, 0, w, h);
+					
+					//paste
+					LAYER.layer_active--;
+					canvas_preview.save();
+					canvas_preview.globalCompositeOperation = param1;
+					canvas_preview.drawImage(tmp_data, 0, 0);
+					canvas_preview.restore();
+					});
 			}
 		//flatten all
 		else if(name == 'layer_flatten'){

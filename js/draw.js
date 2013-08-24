@@ -727,6 +727,7 @@ function DRAW_CLASS(){
 		if(scroll != undefined)
 			CON.scroll_window();
 		DRAW.redraw_preview();
+		return true;
 		}
 	this.redraw_preview = function(){
 		canvas_preview.beginPath();
@@ -758,6 +759,7 @@ function DRAW_CLASS(){
 		canvas_preview.strokeStyle = "#393939";
 		canvas_preview.fill();
 		canvas_preview.stroke();
+		return true;
 		}
 	this.draw_arrow = function(context, fromx, fromy, tox, toy, headlen){
 		if(headlen == undefined)

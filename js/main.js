@@ -1,9 +1,8 @@
 /*
 TODO:
-	Hermite
-		http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
-		http://bvdwolf.home.xs4all.nl/main/foto/down_sample/down_sample.htm
-	http://www.perry.cz/files/ExifRestorer.js
+	restore exif
+		http://www.perry.cz/files/ExifRestorer.js
+		http://stackoverflow.com/questions/18297120/html5-resize-image-and-keep-exif-in-resized-image
 */
 
 var MAIN = new MAIN_CLASS();
@@ -53,8 +52,13 @@ function MAIN_CLASS(){
 		LAYERS_ARCHIVE[j].width = WIDTH;
 		LAYERS_ARCHIVE[j].height = HEIGHT;
 		LAYERS_ARCHIVE[j].data = {};
-		for(var i in LAYERS)
-			LAYERS_ARCHIVE[j].data[LAYERS[i].name] = document.getElementById(LAYERS[i].name).getContext("2d").getImageData(0, 0, WIDTH, HEIGHT);
+		for(var i in LAYERS){
+			LAYERS_ARCHIVE[j].data[LAYERS[i].name] = document.createElement('canvas');
+			LAYERS_ARCHIVE[j].data[LAYERS[i].name].width = WIDTH;
+			LAYERS_ARCHIVE[j].data[LAYERS[i].name].height = HEIGHT;
+			LAYERS_ARCHIVE[j].data[LAYERS[i].name].getContext('2d').drawImage(document.getElementById(LAYERS[i].name), 0, 0);
+			}
+		return true;
 		}
 	//supports 3 levels undo system - more levels requires more memory - max 1 gb?
 	this.undo = function(){	
@@ -72,10 +76,13 @@ function MAIN_CLASS(){
 		
 		//undo
 		for(var i in LAYERS){
-			if(LAYERS_ARCHIVE[j].data[LAYERS[i].name] != undefined)
-				document.getElementById(LAYERS[i].name).getContext("2d").putImageData(LAYERS_ARCHIVE[j].data[LAYERS[i].name], 0, 0);
+			if(LAYERS_ARCHIVE[j].data[LAYERS[i].name] != undefined){
+				document.getElementById(LAYERS[i].name).getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
+				document.getElementById(LAYERS[i].name).getContext("2d").drawImage(LAYERS_ARCHIVE[j].data[LAYERS[i].name], 0, 0);
+				}
 			}
 		DRAW.zoom();
+		return true;
 		}
 	this.load_xml = function(data){
 		var xml = $.parseXML(data);
