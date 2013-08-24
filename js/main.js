@@ -1,8 +1,5 @@
 /*
 TODO:
-	restore exif
-		http://www.perry.cz/files/ExifRestorer.js
-		http://stackoverflow.com/questions/18297120/html5-resize-image-and-keep-exif-in-resized-image
 */
 
 var MAIN = new MAIN_CLASS();
