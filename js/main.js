@@ -1,6 +1,6 @@
 /*
 TODO:
-
+	some filters do not work on chrome
 */
 
 var MAIN = new MAIN_CLASS();

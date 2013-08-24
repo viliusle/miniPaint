@@ -3,6 +3,7 @@ var MENU = new MENU_CLASS();
 function MENU_CLASS(){
 	this.last_menu = '';
 	var PASTE_DATA = false;
+	var fx_filter = fx.canvas();
 	
 	this.do_menu = function(name){
 		MENU.last_menu = name;
@@ -565,11 +566,10 @@ function MENU_CLASS(){
 					var param2 = parseInt(user_response.param2);
 					var param3 = parseInt(user_response.param3);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
@@ -581,10 +581,9 @@ function MENU_CLASS(){
 					param2 = param2 / WIDTH * w;
 					param3 = param3 / HEIGHT * h;
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					
 					//draw circle
 					canvas_preview.beginPath();
@@ -627,11 +626,10 @@ function MENU_CLASS(){
 					var param1 = parseFloat(user_response.param1);
 					var param2 = parseInt(user_response.param2);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).bulgePinch(round(WIDTH/2), round(HEIGHT/2), param2, param1).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).bulgePinch(round(WIDTH/2), round(HEIGHT/2), param2, param1).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
@@ -641,10 +639,9 @@ function MENU_CLASS(){
 					//recalc param by size
 					param2 = param2 / Math.min(WIDTH, HEIGHT) * Math.min(w, h);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).bulgePinch(round(w/2), round(h/2), param2, param1).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).bulgePinch(round(w/2), round(h/2), param2, param1).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
 		else if(name == 'effects_Channels'){
@@ -733,20 +730,18 @@ function MENU_CLASS(){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).denoise(param1).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).denoise(param1).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
 					var param1 = parseFloat(user_response.param1);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).denoise(param1).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).denoise(param1).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
 		else if(name == 'effects_Desaturate'){
@@ -781,21 +776,19 @@ function MENU_CLASS(){
 					var param1 = parseInt(user_response.param1);
 					var param2 = parseInt(user_response.param2);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).dotScreen(round(WIDTH/2), round(HEIGHT/2), param1, param2).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).dotScreen(round(WIDTH/2), round(HEIGHT/2), param1, param2).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
 					var param1 = parseInt(user_response.param1);
 					var param2 = parseInt(user_response.param2);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).dotScreen(round(w/2), round(h/2), param1, param2).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).dotScreen(round(w/2), round(h/2), param1, param2).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
 		else if(name == 'effects_Edge'){
@@ -924,11 +917,10 @@ function MENU_CLASS(){
 					var param7 = parseInt(user_response.param7);
 					var param8 = parseInt(user_response.param8);
 									
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).perspective([0,0,WIDTH,0,WIDTH,HEIGHT,0,HEIGHT], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).perspective([0,0,WIDTH,0,WIDTH,HEIGHT,0,HEIGHT], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
@@ -951,11 +943,10 @@ function MENU_CLASS(){
 					param8 = param8 / HEIGHT * h;
 					
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
 					canvas_preview.clearRect(0, 0, w, h);
-					filter.draw(texture).perspective([0,0,w,0,w,h,0,h], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					fx_filter.draw(texture).perspective([0,0,w,0,w,h,0,h], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					
 					//draw circle
 					/*canvas_preview.beginPath();
@@ -1038,11 +1029,10 @@ function MENU_CLASS(){
 					var param8 = parseInt(user_response.param8);
 					
 					//main effect
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).tiltShift(param3, param4, param5, param6, param1, param2).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).tiltShift(param3, param4, param5, param6, param1, param2).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					
 					//saturation
 					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
@@ -1073,10 +1063,9 @@ function MENU_CLASS(){
 					var param6 = param6 / HEIGHT * h;
 					
 					//main effect
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).tiltShift(param3, param4, param5, param6, param1, param2).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).tiltShift(param3, param4, param5, param6, param1, param2).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					
 					//draw line
 					canvas_preview.beginPath();
@@ -1095,21 +1084,19 @@ function MENU_CLASS(){
 					var param1 = parseFloat(user_response.param1);
 					var param2 = parseFloat(user_response.param2);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_active(true));
-					filter.draw(texture).vignette(param1, param2).update();	//effect
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).vignette(param1, param2).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_active().drawImage(filter, 0, 0);
+					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
 					var param1 = parseFloat(user_response.param1);
 					var param2 = parseFloat(user_response.param2);
 					
-					var filter = fx.canvas();
-					var texture = filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					filter.draw(texture).vignette(param1, param2).update();	//effect
-					canvas_preview.drawImage(filter, 0, 0);
+					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+					fx_filter.draw(texture).vignette(param1, param2).update();	//effect
+					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
 		
