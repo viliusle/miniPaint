@@ -44,7 +44,6 @@ var ACTION_DATA = [
 	{name: 'sharpen_tool', 	title: 'Sharpen tool',		icon: ['all.png', -300+5, -50+2],	attributes: {size: 30, strength: 1}	},
 	{name: 'clone_tool', 	title: 'Clone tool',		icon: ['all.png', -350+4, -50+3],	attributes: {size: 30}	},
 	{name: 'gradient_tool', title: 'Gradient',		icon: ['all.png', -400+3, -50+4],	attributes: {radial: false, power: 50}	},
-	{name: 'perspective_tool', title: 'Perspective',	icon: ['all.png', -400+3, -50+4],	attributes: {}	},
 	];
 
 var CREDITS = [

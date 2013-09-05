@@ -1104,7 +1104,7 @@ function MENU_CLASS(){
 		else if(name == 'help_shortcuts'){
 			POP.add({title: "C",		value: 'Colorize',	});
 			POP.add({title: "Del",		value: 'Delete selection',	});
-			POP.add({title: "F",		value: 'Aut oadjust colors',	});
+			POP.add({title: "F",		value: 'Auto adjust colors',	});
 			POP.add({title: "G",		value: 'Grid on/off',	});
 			POP.add({title: "L",		value: 'Rotate left',	});
 			POP.add({title: "O",		value: 'Open file(s)',	});
