@@ -271,11 +271,7 @@ function HELPER_CLASS(){
 		link.download = fileName;
 		link.href = 'data:,' + fileContents;
 		link.click();
-<<<<<<< HEAD
 		};
-=======
-		}
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	//credits: richard maloney 2006
 	this.darkenColor = function(color, v){
 		if (color.length >6) { color= color.substring(1,color.length)}

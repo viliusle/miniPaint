@@ -1,11 +1,7 @@
 /*
 TODO:
-<<<<<<< HEAD
 	sift
 		top points by 10x10		
-=======
-	some filters do not work on chrome
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 */
 
 var MAIN = new MAIN_CLASS();
@@ -41,11 +37,7 @@ function MAIN_CLASS(){
 		document.getElementById("rgb_b").value = color_rgb.b;
 		document.getElementById("rgb_a").value = ALPHA;
 		DRAW.redraw_preview();
-<<<<<<< HEAD
 		};
-=======
-		}
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.save_state = function(){
 		undo_level = 0;
 		j = 0;
@@ -66,11 +58,7 @@ function MAIN_CLASS(){
 			LAYERS_ARCHIVE[j].data[LAYERS[i].name].getContext('2d').drawImage(document.getElementById(LAYERS[i].name), 0, 0);
 			}
 		return true;
-<<<<<<< HEAD
 		};
-=======
-		}
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	//supports 3 levels undo system - more levels requires more memory - max 1 gb?
 	this.undo = function(){	
 		if(LAYERS_ARCHIVE.length == 0) return false;
@@ -94,11 +82,7 @@ function MAIN_CLASS(){
 			}
 		DRAW.zoom();
 		return true;
-<<<<<<< HEAD
 		};
-=======
-		}
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.load_xml = function(data){
 		var xml = $.parseXML(data);
 		w = $(xml).find("width").text();
