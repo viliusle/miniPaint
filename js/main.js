@@ -88,6 +88,10 @@ function MAIN_CLASS(){
 		w = $(xml).find("width").text();
 		h = $(xml).find("height").text();
 		
+		//delete old layers
+		for(var i in LAYERS)
+			LAYER.layer_remove(i);
+		
 		//init new file
 		ZOOM = 100;
 		MAIN.init();
