@@ -63,7 +63,7 @@ function DRAW_CLASS(){
 				}
 			}
 		};
-	//credits to Victor Haydin
+	//Victor Haydin
 	this.toolFiller = function(context, W, H, x, y, color_to, sensitivity){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
@@ -374,6 +374,22 @@ function DRAW_CLASS(){
 				imgData[x] = c;
 				imgData[x+1] = c;
 				imgData[x+2] = c;
+				}
+			}	
+		context.putImageData(img, 0, 0);
+		};
+	this.effect_greyscale = function(context, W, H){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;	
+		for(var j = 0; j < H; j++){
+			for(var i = 0; i < W; i++){		
+				var x = (i + j*W) * 4;
+				if(imgData[x+3] == 0) continue;	//transparent
+				var c = 0;
+				var mid = 0.299 * imgData[x] + 0.586 * imgData[x + 1] + 0.113 * imgData[x + 2];
+				imgData[x] = mid;
+				imgData[x+1] = mid;
+				imgData[x+2] = mid;
 				}
 			}	
 		context.putImageData(img, 0, 0);
@@ -846,49 +862,5 @@ function DRAW_CLASS(){
 		console.log("hermite = "+(Math.round(Date.now() - time1)/1000)+" s");
 		canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
 		canvas.getContext("2d").putImageData(img2, 0, 0);
-		};
-	this.resample_hermite_threads = function(canvas, W, H, W2, H2){
-		var time1 = Date.now();
-		var img = canvas.getContext("2d").getImageData(0, 0, W, H);
-		var img2 = canvas.getContext("2d").getImageData(0, 0, W2, H2);
-		var data2 = img2.data;
-		var cores = 8;
-		var cpu_in_use = 0;
-		var progress = document.getElementById('uploadprogress');
-		progress.style.display='block';
-		progress.value = progress.innerHTML = 0;
-		canvas.getContext("2d").clearRect(0, 0, W, H);
-
-		for(var c = 0; c < cores; c++){
-			cpu_in_use++;
-			var my_worker = new Worker("libs/worker-hermite.js");
-			my_worker.onmessage = function(event){		//log(event.data);return false;
-				cpu_in_use--;
-			 	var complete = ((cores - cpu_in_use) / cores * 100 | 0);
-				progress.value = progress.innerHTML = complete;
-				var offset = event.data.offset;	//log( event.data.data.length);
-				
-				for(var i = 0; i < event.data.data.length; i += 4){
-					var x = offset + i;	//log([ x,   event.data.data[i], event.data.data[i+1],event.data.data[i+2],event.data.data[i+3],           ]); return false;
-					data2[x]     = event.data.data[i];
-					data2[x + 1] = event.data.data[i+1];
-					data2[x + 2] = event.data.data[i+2];
-					data2[x + 3] = event.data.data[i+3];
-					}
-				
-				//finish
-				if(cpu_in_use <= 0){
-					console.log("hermite "+cores+" cores = "+(Math.round(Date.now() - time1)/1000)+" s");	
-					canvas.getContext("2d").clearRect(0, 0, W, H);
-					canvas.getContext("2d").putImageData(img2, 0, 0);
-					
-					progress.style.display='none';
-					if(MENU.last_menu != 'layer_resize')
-						DRAW.trim();
-					DRAW.zoom();
-					}
-				};
-			my_worker.postMessage([img, W, H, W2, H2, c, cores]);
-			}
 		};
 	}

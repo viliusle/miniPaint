@@ -19,7 +19,6 @@ function MAIN_CLASS(){
 			POP.height_mini = Math.round(POP.width_mini * HEIGHT / WIDTH);
 			}
 		CON.autosize = true;
-		TOOLS.EXIF = false;
 		TOOLS.select_data = false;
 		for(i=1; i<LAYERS.length; i++)
 			LAYER.layer_remove(i);

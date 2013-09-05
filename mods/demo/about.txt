@@ -1,0 +1,18 @@
+mPaint Demo - Online graphics editing tool using HTML5.
+
+Full version: http://viliusle.github.io/miniPaint/
+
+Built using HTML5, JavaScript, Canvas, Drag and Drop, Files API. 
+
+Online graphics editing tool use HTML5 technologies like Canvas, Drag and Drop.
+
+Features: open, edit, save images, various drawing tools like Magic Wand tool, Clone tool, 
+erase, fill, color picker, colour selector, layers, pencil, brushes, shapes, trim, flip, 
+rotate, resize, transparency, zoom, grid, crop, export/import layers data, 
+paste from clipboard, histogram, gradients, Hermite resample, effects.
+
+Key features: layers, transparency, offline graphics editing.
+
+It works in all modern browsers that support HTML5.
+
+Libraries: only jquery.

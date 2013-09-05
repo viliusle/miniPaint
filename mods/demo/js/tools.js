@@ -3,7 +3,6 @@ var TOOLS = new TOOLS_CLASS();
 function TOOLS_CLASS(){
 	this.select_square_action = '';
 	this.select_data = false;
-	this.EXIF = false;
 	this.last_line_x;
 	this.last_line_y;
 	var clone_data = false;
@@ -766,92 +765,6 @@ function TOOLS_CLASS(){
 				canvas_active().stroke();
 				}
 			}	
-		else if(brush_type == 'BezierCurve'){
-			if(type == 'click')
-				BezierCurveBrush.startCurve(mouse.x, mouse.y);
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 0.5;
-				
-				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y);
-				}
-			}
-		else if(brush_type == 'Fur'){
-			if(type == 'click'){
-				points = new Array();
-			        prevMouseX = mouse.x;
-			        prevMouseY = mouse.y;
-			        count = 0;
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", 0.1)";
-				canvas_active().lineWidth = 1;
-				
-				f = mouse.x;
-				c = mouse.y;
-				var e, b, a, g;
-				points.push([f, c]);
-				canvas_active().beginPath();
-				canvas_active().moveTo(prevMouseX, prevMouseY);
-				canvas_active().lineTo(f, c);
-				canvas_active().stroke();
-				for (e = 0; e < points.length; e++) {
-					b = points[e][0] - points[count][0];
-					a = points[e][1] - points[count][1];
-					g = b * b + a * a;
-					if (g < 2000 && Math.random() > g / 2000) {
-						canvas_active().beginPath();
-						canvas_active().moveTo(f + (b * 0.5), c + (a * 0.5));
-						canvas_active().lineTo(f - (b * 0.5), c - (a * 0.5));
-						canvas_active().stroke();
-						}
-					}
-				prevMouseX = f;
-				prevMouseY = c;
-				count++;
-				}
-			}
-		else if(brush_type == 'Sketchy'){
-			if(type == 'click'){
-				sketchy_brush.init(canvas_active());
-				sketchy_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}
-		else if(brush_type == 'Shaded'){
-			if(type == 'click'){
-				shaded_brush.init(canvas_active());
-				shaded_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				shaded_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}	
-		else if(brush_type == 'Chrome'){
-			if(type == 'click'){
-				chrome_brush.init(canvas_active());
-				chrome_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				chrome_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}
 		else if(brush_type == 'Broken'){
 			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
 				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
@@ -876,8 +789,6 @@ function TOOLS_CLASS(){
 			random_power = 5;
 			
 			if(type == 'click'){
-				chrome_brush.init(canvas_active());
-				chrome_brush.strokeStart(mouse.x, mouse.y);
 				groups = [];
 				
 				for(var g=0; g < groups_n; g++){
@@ -995,70 +906,6 @@ function TOOLS_CLASS(){
 				canvas_active().fillStyle = radgrad;
 				canvas_active().fillRect(0,0,WIDTH,HEIGHT);
 				}
-			}
-		};
-	this.blur_tool = function(type, mouse, event){
-		if(mouse.valid == false) return true;
-		if(type == 'click'){
-			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
-			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
-			}
-		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
-			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
-			}
-		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
-			//show size
-			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
-			}
-		};
-	this.sharpen_tool = function(type, mouse, event){
-		if(mouse.valid == false) return true;
-		if(type == 'click'){
-			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
-			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
-			}
-		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
-			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
-			}
-		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
-			//show size
-			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
 			}
 		};
 	this.clone_tool = function(type, mouse, event){
@@ -1387,15 +1234,6 @@ function TOOLS_CLASS(){
 			canvas_front.fillStyle = "#0000c8";
 			canvas_front.fill();
 			}
-		};
-	this.save_EXIF = function(){
-		TOOLS.EXIF = this.exifdata;
-		//check length
-		var n = 0;
-		for(var i in TOOLS.EXIF)
-			n++;
-		if(n == 0)
-			TOOLS.EXIF = false;
 		};
 	this.histogram = function(){
 		POP.add({name: "param1",	title: "Channel:",	values: ["Gray", "Red", "Green", "Blue"], onchange: "TOOLS.histogram_onload()" });
