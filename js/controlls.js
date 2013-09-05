@@ -81,10 +81,7 @@ function CONTROLLS_CLASS(){
 				POP.hide();
 			delete TOOLS.last_line_x;
 			delete TOOLS.last_line_y;
-<<<<<<< HEAD
 			TOOLS.curve_points = [];
-=======
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			if(TOOLS.select_data != false){
 				TOOLS.select_data = false;
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -226,11 +223,7 @@ function CONTROLLS_CLASS(){
 		//alt
 		else if(k==18)
 			CON.alt_pressed = false;
-<<<<<<< HEAD
 		};
-=======
-		}
->>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function(event){
 		var valid = true;
