@@ -143,6 +143,7 @@ function LAYER_CLASS(){
 		DRAW.redraw_preview();
 		};
 	this.layer_remove = function(i){
+		if(LAYERS[i].primary == 1) return false;
 		element = document.getElementById(LAYERS[i].name);
 		element.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
 		element.parentNode.removeChild(element);
