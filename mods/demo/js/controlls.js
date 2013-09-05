@@ -467,7 +467,6 @@ function CONTROLLS_CLASS(){
 				if(this.file.type != 'text/xml'){
 					//image
 					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
-					EXIF.getData(this.file, TOOLS.save_EXIF);
 					}
 				else{
 					//xml

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
 <head>
-<title>miniPaint - online image editor</title>
+<title>mPaint Demo - online image editor</title>
 <meta name="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
 <meta name="keywords" content="photo, image, picture, transparent, layers, free, edit, html5, canvas, javascript, online, photoshop, gimp, effects, sharpen, blur, magic wand tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift, auto colorize" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -110,7 +110,6 @@
 			<li><a onclick="MENU.do_menu(['image_vflip']);" href="#">Vertical Flip</a></li>
 			<li><a onclick="MENU.do_menu(['image_hflip']);" href="#">Horizontal Flip</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['image_colors']);" href="#">Color corrections...</a></li>
 			<li><a onclick="MENU.do_menu(['image_auto_adjust']);" href="#">Auto adjust colors</a></li>
 			<li><a onclick="MENU.do_menu(['image_decrease_colors']);" href="#">Decrease color depth...</a></li>
 			<li><a onclick="MENU.do_menu(['image_negative']);" href="#">Negative</a></li>
@@ -146,37 +145,9 @@
 		<a href="#">Effects</a>
 		<ul>
 			<li><a onclick="MENU.do_menu(['effects_bw']);" href="#">Black and White...</a>
-			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['effects_BoxBlur']);" href="#">Blur-Box...</a>
-			<li><a onclick="MENU.do_menu(['effects_GaussianBlur']);" href="#">Blur-Gaussian...</a>
-			<li><a onclick="MENU.do_menu(['effects_StackBlur']);" href="#">Blur-Stack...</a>
-			<li><a onclick="MENU.do_menu(['effects_zoomblur']);" href="#">Blur-Zoom...</a>
-			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['effects_BrightnessContrast']);" href="#">Brightness Contrast...</a>
-			<li><a onclick="MENU.do_menu(['effects_bulge_pinch']);" href="#">Bulge/Pinch...</a>
-			<li><a onclick="MENU.do_menu(['effects_Channels']);" href="#">Channels...</a>
-			<li><a onclick="MENU.do_menu(['effects_ColorTransformFilter']);" href="#">Color Transform...</a>
 			<li><a onclick="MENU.do_menu(['effects_colorize']);" href="#">Colorize...</a></li>
-			<li><a onclick="MENU.do_menu(['effects_denoise']);" href="#">Denoise...</a>
-			<li><a onclick="MENU.do_menu(['effects_Desaturate']);" href="#">Desaturate</a>
-			<li><a onclick="MENU.do_menu(['effects_Dither']);" href="#">Dither...</a>
-			<li><a onclick="MENU.do_menu(['effects_dot_screen']);" href="#">Dot Screen...</a>
-			<li><a onclick="MENU.do_menu(['effects_Edge']);" href="#">Edge</a>
-			<li><a onclick="MENU.do_menu(['effects_Emboss']);" href="#">Emboss</a>
-			<li><a onclick="MENU.do_menu(['effects_Enrich']);" href="#">Enrich</a>
-			<li><a onclick="MENU.do_menu(['effects_Gamma']);" href="#">Gamma...</a>
 			<li><a onclick="MENU.do_menu(['effects_GrayScale']);" href="#">GrayScale</a>
-			<li><a onclick="MENU.do_menu(['effects_HSLAdjustment']);" href="#">HSL Adjustment...</a>
-			<li><a onclick="MENU.do_menu(['effects_Mosaic']);" href="#">Mosaic...</a>
 			<li><a onclick="MENU.do_menu(['image_negative']);" href="#">Negative</a></li>
-			<li><a onclick="MENU.do_menu(['effects_Oil']);" href="#">Oil...</a>
-			<li><a onclick="MENU.do_menu(['effects_perspective']);" href="#">Perspective...</a>
-			<li><a onclick="MENU.do_menu(['effects_Posterize']);" href="#">Posterize...</a>
-			<li><a onclick="MENU.do_menu(['effects_Sepia']);" href="#">Sepia</a>
-			<li><a onclick="MENU.do_menu(['effects_Sharpen']);" href="#">Sharpen...</a>
-			<li><a onclick="MENU.do_menu(['effects_Solarize']);" href="#">Solarize</a>
-			<li><a onclick="MENU.do_menu(['effects_tilt_shift']);" href="#">Tilt Shift...</a>
-			<li><a onclick="MENU.do_menu(['effects_vignette']);" href="#">Vignette...</a>
 		</ul>
 	</li>
 	<li>
@@ -184,7 +155,6 @@
 		<ul>
 			<li><a onclick="MENU.do_menu(['help_shortcuts']);" href="#">Keyboard Shortcuts...</a></li>
 			<li><a onclick="window.location='http://viliusle.github.io/miniPaint/';" href="http://viliusle.github.io/miniPaint/">Website</a></li>
-			<li><a onclick="MENU.do_menu(['help_credits']);" href="#">Credits...</a></li>
 			<li><a onclick="MENU.do_menu(['help_about']);" href="#">About...</a></li>
 		</ul>
 	</li>
@@ -195,11 +165,6 @@
 
 <script src="libs/jquery-1.8.3.js"></script>
 <script src="libs/menu.js"></script>
-<script src="libs/imagefilters.js"></script>
-<script src="libs/glfx.js"></script>
-<script src="libs/exif.js"></script>
-<script src="libs/exif-binaryajax.js"></script>
-<script src="libs/harmony.js"></script>
 
 <script src="js/helpers.js"></script>
 <script src="js/popup.js"></script>

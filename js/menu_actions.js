@@ -200,10 +200,6 @@ function MENU_CLASS(){
 			canvas_active().drawImage(tempCanvas, 0, -HEIGHT);
 			canvas_active().restore();
 			}
-		//histogram
-		else if(name == 'image_histogram'){
-			TOOLS.histogram();
-			}
 		//color corrections
 		else if(name == 'image_colors'){
 			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100], });
@@ -314,6 +310,10 @@ function MENU_CLASS(){
 				DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 				}
 			}
+		//histogram
+		else if(name == 'image_histogram'){
+			TOOLS.histogram();
+			}
 			
 		//===== Layer ==========================================================
 		
@@ -374,15 +374,6 @@ function MENU_CLASS(){
 		else if(name == 'layer_clear'){
 			MAIN.save_state();
 			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-			}
-		//sprites
-		else if(name == 'layer_sprites'){
-			POP.add({name: "param1", 	title: "Offset:",	value: "50",	values: ["0", "10", "50", "100"] });
-			POP.show('Sprites', function(response){
-				MAIN.save_state();
-				var param1 = parseInt(response.param1);
-				TOOLS.generate_sprites(param1);
-				});
 			}
 		//show differences
 		else if(name == 'layer_differences'){
@@ -477,6 +468,15 @@ function MENU_CLASS(){
 				LAYER.layer_remove(LAYER.layer_active);
 				}
 			LAYER.layer_renew();
+			}
+		//sprites
+		else if(name == 'layer_sprites'){
+			POP.add({name: "param1", 	title: "Offset:",	value: "50",	values: ["0", "10", "50", "100"] });
+			POP.show('Sprites', function(response){
+				MAIN.save_state();
+				var param1 = parseInt(response.param1);
+				TOOLS.generate_sprites(param1);
+				});
 			}
 			
 		//===== Effects ========================================================
@@ -899,14 +899,15 @@ function MENU_CLASS(){
 			}
 		else if(name == 'effects_perspective'){
 			POP.add({name: "param1",	title: "X1:",	value: WIDTH/4,		range: [0, WIDTH],  });
-			POP.add({name: "param2",	title: "Y1:",	value: "0",		range: [0, HEIGHT],  });
+			POP.add({name: "param2",	title: "Y1:",	value: HEIGHT/4,	range: [0, HEIGHT],  });
 			POP.add({name: "param3",	title: "X2:",	value: WIDTH*3/4,	range: [0, WIDTH],  });
-			POP.add({name: "param4",	title: "Y2:",	value: "0",		range: [0, HEIGHT],  });
-			POP.add({name: "param5",	title: "X3:",	value: WIDTH,	range: [0, WIDTH],  });
-			POP.add({name: "param6",	title: "Y3:",	value: HEIGHT,	range: [0, HEIGHT],  });
-			POP.add({name: "param7",	title: "X4:",	value: "0",		range: [0, WIDTH],  });
-			POP.add({name: "param8",	title: "Y4:",	value: HEIGHT,	range: [0, HEIGHT],  });
-			POP.show('Blur-Zoom', function(user_response){
+			POP.add({name: "param4",	title: "Y2:",	value: HEIGHT/4,	range: [0, HEIGHT],  });
+			POP.add({name: "param5",	title: "X3:",	value: WIDTH*3/4,	range: [0, WIDTH],  });
+			POP.add({name: "param6",	title: "Y3:",	value: HEIGHT*3/4,	range: [0, HEIGHT],  });
+			POP.add({name: "param7",	title: "X4:",	value: WIDTH/4,		range: [0, WIDTH],  });
+			POP.add({name: "param8",	title: "Y4:",	value: HEIGHT*3/4,	range: [0, HEIGHT],  });
+			POP.preview_in_main = true;
+			POP.show('Perspective', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
 					var param2 = parseInt(user_response.param2);
@@ -916,14 +917,14 @@ function MENU_CLASS(){
 					var param6 = parseInt(user_response.param6);
 					var param7 = parseInt(user_response.param7);
 					var param8 = parseInt(user_response.param8);
-									
+						
 					var texture = fx_filter.texture(canvas_active(true));
-					fx_filter.draw(texture).perspective([0,0,WIDTH,0,WIDTH,HEIGHT,0,HEIGHT], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					fx_filter.draw(texture).perspective([WIDTH/4, HEIGHT/4, WIDTH*3/4, HEIGHT/4, WIDTH*3/4, HEIGHT*3/4, WIDTH/4, HEIGHT*3/4], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
 					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
 					canvas_active().drawImage(fx_filter, 0, 0);
 					DRAW.zoom();
 					},
-				function(user_response, canvas_preview, w, h){
+				function(user_response){
 					var param1 = parseInt(user_response.param1);
 					var param2 = parseInt(user_response.param2);
 					var param3 = parseInt(user_response.param3);
@@ -933,29 +934,26 @@ function MENU_CLASS(){
 					var param7 = parseInt(user_response.param7);
 					var param8 = parseInt(user_response.param8);
 					
-					param1 = param1 / WIDTH * w;
-					param2 = param2 / HEIGHT * h;
-					param3 = param3 / WIDTH * w;
-					param4 = param4 / HEIGHT * h;
-					param5 = param5 / WIDTH * w;
-					param6 = param6 / HEIGHT * h;
-					param7 = param7 / WIDTH * w;
-					param8 = param8 / HEIGHT * h;
+					canvas_front.rect(0, 0, WIDTH, HEIGHT);
+					canvas_front.fillStyle = "#ffffff";
+					canvas_front.fill();
 					
+					var texture = fx_filter.texture(canvas_active(true));
+					fx_filter.draw(texture).perspective([WIDTH/4, HEIGHT/4, WIDTH*3/4, HEIGHT/4, WIDTH*3/4, HEIGHT*3/4, WIDTH/4, HEIGHT*3/4], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
+					canvas_front.drawImage(fx_filter, 0, 0);
 					
-					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
-					canvas_preview.clearRect(0, 0, w, h);
-					fx_filter.draw(texture).perspective([0,0,w,0,w,h,0,h], [param1,param2,param3,param4,param5,param6,param7,param8]).update();	//effect
-					canvas_preview.drawImage(fx_filter, 0, 0);
-					
-					//draw circle
-					/*canvas_preview.beginPath();
-					canvas_preview.strokeStyle = "#ff0000";
-					canvas_preview.lineWidth = 1;
-					canvas_preview.beginPath();
-					canvas_preview.arc(param2, param3, 5, 0,Math.PI*2,true);
-					canvas_preview.stroke();*/
+					pers_square(param1, param2);
+					pers_square(param3, param4);
+					pers_square(param5, param6);
+					pers_square(param7, param8);
 					});
+			
+			function pers_square(x, y){
+				canvas_front.beginPath();
+				canvas_front.rect(x-round(CON.sr_size/2), y-round(CON.sr_size/2), CON.sr_size, CON.sr_size);
+				canvas_front.fillStyle = "#0000c8";
+				canvas_front.fill();
+				}
 			}
 		else if(name == 'effects_Posterize'){
 			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32], });
@@ -1145,7 +1143,7 @@ function MENU_CLASS(){
 		//close menu
 		$('.menu').find('.active').removeClass('active');
 		DRAW.zoom();
-		}
+		};
 	this.resize_custom = function(user_response){
 		MAIN.save_state();
 		CON.autosize = false;
@@ -1155,7 +1153,7 @@ function MENU_CLASS(){
 			RATIO = WIDTH/HEIGHT;
 			LAYER.set_canvas_size();
 			}
-		}
+		};
 	//prepare rotation - increase doc dimensions if needed
 	this.rotate_resize_doc = function(angle, w, h){
 		var o = angle*Math.PI/180;
@@ -1208,14 +1206,14 @@ function MENU_CLASS(){
 		canvas.restore();
 		if(w == WIDTH)	//if main canvas
 			DRAW.zoom();
-		}
+		};
 	this.copy_to_clipboard = function(){
 		PASTE_DATA = false;
 		PASTE_DATA = document.createElement("canvas");
 		PASTE_DATA.width = TOOLS.select_data.w;
 		PASTE_DATA.height = TOOLS.select_data.h;
 		PASTE_DATA.getContext("2d").drawImage(canvas_active(true), TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h, 0, 0, TOOLS.select_data.w, TOOLS.select_data.h);
-		}
+		};
 	this.paste = function(type){
 		if(PASTE_DATA == false){
 			if(type == 'menu'){
@@ -1233,7 +1231,7 @@ function MENU_CLASS(){
 		LAYER.layer_active = LAYERS.length-1;
 		canvas_active().drawImage(PASTE_DATA, 0, 0);
 		LAYER.layer_renew();
-		}
+		};
 	this.resize_box = function(){
 		POP.add({name: "width",	title: "Enter new width:",	value: WIDTH,});
 		POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
@@ -1242,7 +1240,7 @@ function MENU_CLASS(){
 		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No", });
 		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No", });
 		POP.show('Resize', MENU.resize_layer);
-		}
+		};
 	this.resize_layer = function(user_response){
 		MAIN.save_state();
 		var width = parseInt(user_response.width);
@@ -1324,7 +1322,7 @@ function MENU_CLASS(){
 			var filtered = ImageFilters.Sharpen(imageData, 1);	//add effect
 			canvas_active().putImageData(filtered, 0, 0);
 			}
-		}
+		};
 	this.save = function(user_response){
 		fname = user_response.name;
 		var tempCanvas = document.createElement("canvas");
@@ -1484,7 +1482,7 @@ function MENU_CLASS(){
 		
 		//force click
 		document.querySelector('#file_open').click();
-		}
+		};
 	this.open_handler = function(e){
 		var files = e.target.files; 
 		for (var i = 0, f; f = files[i]; i++){
