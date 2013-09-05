@@ -235,7 +235,11 @@ function TOOLS_CLASS(){
 		COLOUR_LAST = COLOUR;
 		COLOUR = "#" + ("000000" + HELPER.rgbToHex(c3.r, c3.g, c3.b)).slice(-6);
 		this.sync_colors();
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.change_alpha = function(value){
 		ALPHA = parseInt(value);
 		document.getElementById("rgb_a").value = ALPHA;
@@ -262,7 +266,11 @@ function TOOLS_CLASS(){
 				};
 			}
 		img.src = 'img/colorwheel.png';
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	//type = click, right_click, drag, move, release
 	this.select_tool = function(type, mouse, event){
 		if(mouse == undefined) return false;
@@ -288,7 +296,11 @@ function TOOLS_CLASS(){
 			MAIN.save_state();
 			DRAW.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, TOOLS.action_data().attributes.sensitivity);
 			}
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.erase = function(type, mouse, event){				
 		if(mouse.valid == false) return true;
 		var strict = TOOLS.action_data().attributes.strict;
@@ -301,14 +313,22 @@ function TOOLS_CLASS(){
 				canvas_active().save();
 				canvas_active().globalCompositeOperation = 'destination-out';
 				canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255+")";
+<<<<<<< HEAD
 				canvas_active().fillRect(mouse.x - Math.ceil(size/2)+1, mouse.y - Math.ceil(size/2)+1, size, size);
+=======
+				canvas_active().fillRect(mouse.x-size/2, mouse.y-size/2, size, size);
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				canvas_active().restore();
 				}
 			else{
 				
 				if(strict == false){
 					var radgrad = canvas_active().createRadialGradient(
+<<<<<<< HEAD
 						mouse.x, mouse.y, size/8,
+=======
+						mouse.x, mouse.y, size/4,
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 						mouse.x, mouse.y, size/2);
 					radgrad.addColorStop(0, "rgba(255, 255, 255, "+ALPHA/255+")");
 					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
@@ -335,13 +355,21 @@ function TOOLS_CLASS(){
 					canvas_active().fillStyle = "rgba(255, 255, 255, "+ALPHA/255/10+")";
 				else
 					canvas_active().fillStyle = COLOUR;
+<<<<<<< HEAD
 				canvas_active().fillRect(mouse.x - Math.ceil(size/2)+1, mouse.y - Math.ceil(size/2)+1, size, size);
+=======
+				canvas_active().fillRect(mouse.x-size/2, mouse.y-size/2, size, size);
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				canvas_active().restore();
 				}
 			else{
 				if(strict == false){
 					var radgrad = canvas_active().createRadialGradient(
+<<<<<<< HEAD
 						mouse.x, mouse.y, size/10,
+=======
+						mouse.x, mouse.y, size/4,
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 						mouse.x, mouse.y, size/2);
 					if(ALPHA < 255)
 						radgrad.addColorStop(0, "rgba(255, 255, 255, "+ALPHA/255/10+")");
@@ -368,12 +396,16 @@ function TOOLS_CLASS(){
 			DRAW.zoom(undefined, false);
 			}
 		else if(type == 'move'){
+<<<<<<< HEAD
 			var size1 = Math.floor((size)/2);
 			var size2 = Math.floor((size)/2);
 			if(size%2 == 0) size2--;
 			else{
 				size1--;
 				}
+=======
+			var size_half = round(size/2);
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -442,6 +474,7 @@ function TOOLS_CLASS(){
 	this.line = function(type, mouse, event){
 		if(mouse.click_valid == false) return false;
 		var color_rgb = HELPER.hex2rgb(COLOUR);
+<<<<<<< HEAD
 		
 		//horizontal/vertical only
 		var xx = mouse.x;
@@ -465,15 +498,30 @@ function TOOLS_CLASS(){
 				}
 			}
 		else if(type == 'drag'){
+=======
+		if(type == 'drag'){
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			document.body.style.cursor = "crosshair";
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.beginPath();
 			canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_front.lineWidth = TOOLS.action_data().attributes.size;
+<<<<<<< HEAD
 			if(TOOLS.action_data().attributes.type == 'Multi-line' && TOOLS.last_line_x != undefined){
 				from_x = TOOLS.last_line_x;
 				from_y = TOOLS.last_line_y;
 				}
+=======
+			var xx = mouse.x;
+			var yy = mouse.y;
+			var from_x = mouse.click_x;
+			var from_y = mouse.click_y;
+			if(TOOLS.action_data().attributes.multiline == true && TOOLS.last_line_x != undefined){
+				from_x = TOOLS.last_line_x;
+				from_y = TOOLS.last_line_y;
+				}
+			//horizontal/vertical only
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			if(CON.ctrl_pressed == true){
 				if(Math.abs(from_x - mouse.x) < Math.abs(from_y - mouse.y) )
 					xx = from_x;
@@ -481,14 +529,23 @@ function TOOLS_CLASS(){
 					yy = from_y;
 				}
 			
+<<<<<<< HEAD
 			//arrow
 			if(TOOLS.action_data().attributes.type == 'Arrow'){
+=======
+			if(TOOLS.action_data().attributes.arrow == true){
+				//arrow
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				var headlen = TOOLS.action_data().attributes.size * 5;
 				if(headlen < 15) headlen = 15;
 				DRAW.draw_arrow(canvas_front, from_x + 0.5, from_y + 0.5, xx + 0.5, yy + 0.5, headlen);
 				}
 			//line
 			else{
+<<<<<<< HEAD
+=======
+				//line
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				canvas_front.moveTo(from_x + 0.5, from_y + 0.5);
 				canvas_front.lineTo(xx + 0.5, yy + 0.5);
 				canvas_front.stroke();
@@ -521,18 +578,36 @@ function TOOLS_CLASS(){
 			canvas_active().beginPath();
 			canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 			canvas_active().lineWidth = TOOLS.action_data().attributes.size;
+<<<<<<< HEAD
 			if(TOOLS.action_data().attributes.type == 'Multi-line' && TOOLS.last_line_x != undefined){
 				from_x = TOOLS.last_line_x;
 				from_y = TOOLS.last_line_y;
 				}
+=======
+			var xx = mouse.x;
+			var yy = mouse.y;
+			var from_x = mouse.click_x;
+			var from_y = mouse.click_y;
+			if(TOOLS.action_data().attributes.multiline == true && TOOLS.last_line_x != undefined){
+				from_x = TOOLS.last_line_x;
+				from_y = TOOLS.last_line_y;
+				}
+			//horizontal/vertical only
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			if(CON.ctrl_pressed == true){
 				if(Math.abs(from_x - mouse.x) < Math.abs(from_y - mouse.y) )
 					xx = from_x;
 				else
 					yy = from_y;
 				}
+<<<<<<< HEAD
 			//arrow
 			if(TOOLS.action_data().attributes.type == 'Arrow'){
+=======
+				
+			if(TOOLS.action_data().attributes.arrow == true){
+				//arrow
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				var headlen = TOOLS.action_data().attributes.size * 5;
 				if(headlen < 15) headlen = 15;
 				DRAW.draw_arrow(canvas_active(), from_x + 0.5, from_y + 0.5, xx + 0.5, yy + 0.5, headlen);
@@ -550,6 +625,10 @@ function TOOLS_CLASS(){
 				}
 			//line
 			else{
+<<<<<<< HEAD
+=======
+				//line
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 				canvas_active().moveTo(from_x + 0.5, from_y + 0.5);
 				canvas_active().lineTo(xx + 0.5, yy + 0.5);
 				canvas_active().stroke();
@@ -591,6 +670,7 @@ function TOOLS_CLASS(){
 						TOOLS.letters_render(canvas_front, xx, yyy, user_response);
 						}
 					});
+<<<<<<< HEAD
 			}
 		};
 	this.letters_render = function(canvas, xx, yy, user_response){
@@ -656,13 +736,84 @@ function TOOLS_CLASS(){
 				canvas.fillText(text, xx + dx * cnt, yy + letters_height + dy * cnt);
 			color_rgb = HELPER.hex2rgb(COLOUR);
 			}
+=======
+			}
+		}
+	this.letters_render = function(canvas, xx, yy, user_response){
+		var text = user_response.text;
+		var size = parseInt(user_response.size);
+		var dpth = parseInt(user_response.size_3d);
+		var pos_3d = user_response.pos_3d;
+		var shadow = user_response.shadow;
+		var shadow_blur = parseInt(user_response.shadow_blur);
+		var font = user_response.family;
+		var font_style = user_response.style;
+		var dx;
+		var dy;
+		if(pos_3d == "Top-left"){
+			dx = -1;
+			dy = -1;
+			}
+		else if(pos_3d == "Top-right"){
+			dx = 1;
+			dy = -1;
+			}
+		else if(pos_3d == "Bottom-left"){
+			dx = -1;
+			dy = 1;
+			}
+		else if(pos_3d == "Bottom-right"){
+			dx = 1;
+			dy = 1;
+			}
+		
+		var color_rgb = HELPER.hex2rgb(COLOUR);
+		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+		canvas.font = font_style+" "+size+"px "+font;
+		var letters_height = HELPER.font_pixel_to_height(size);
+	
+		//shadow
+		if(shadow == 'Yes'){
+			canvas.save();
+			canvas.shadowColor = "#000000";
+			canvas.shadowBlur = shadow_blur;
+			canvas.shadowOffsetX = dx;
+			canvas.shadowOffsetY = dy;
+			canvas.fillText(text, xx + dx * (dpth-1), yy + letters_height + dy * (dpth-1));
+			canvas.restore();
+			}
+		
+		//3d
+		if(dpth > 0){
+			canvas.fillStyle = HELPER.darkenColor(COLOUR, -30);
+			alpha_tmp = ALPHA;
+			if(alpha_tmp < 255)
+				alpha_tmp /= 10; 
+				
+			color_rgb.r -= 50;
+			color_rgb.g -= 50;
+			color_rgb.b -= 50;
+			if(color_rgb.r < 0) color_rgb.r *= -1;
+			if(color_rgb.g < 0) color_rgb.g *= -1;
+			if(color_rgb.b < 0) color_rgb.b *= -1;
+				
+			canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+alpha_tmp/255+")";
+			for (cnt = 0; cnt < dpth; cnt++)
+				canvas.fillText(text, xx + dx * cnt, yy + letters_height + dy * cnt);
+			color_rgb = HELPER.hex2rgb(COLOUR);
+			}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	
 		//main text
 		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 		canvas.fillText(text, xx, yy + letters_height);
 		
 		DRAW.zoom();
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.draw_square = function(type, mouse, event){
 		if(mouse.click_valid == false) return true;
 		var color_rgb = HELPER.hex2rgb(COLOUR);
@@ -825,6 +976,179 @@ function TOOLS_CLASS(){
 				
 				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y);
 				}
+<<<<<<< HEAD
+=======
+			}
+		else if(brush_type == 'Shaded'){
+			if(type == 'click'){
+				shaded_brush.init(canvas_active());
+				shaded_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				shaded_brush.stroke(color_rgb, mouse.x, mouse.y);
+				}
+			}	
+		else if(brush_type == 'Chrome'){
+			if(type == 'click'){
+				chrome_brush.init(canvas_active());
+				chrome_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				chrome_brush.stroke(color_rgb, mouse.x, mouse.y);
+				}
+			}
+		else if(brush_type == 'Broken'){
+			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 0.5;
+				var power = TOOLS.action_data().attributes.size;
+				
+				//logic is broken here...
+				mouse.x += mouse.x % power - round(power/2);
+				mouse.y += mouse.y % power - round(power/2);
+				mouse.last_x += mouse.x % power - round(power/2);
+				mouse.last_y += mouse.y % power - round(power/2);
+				
+				canvas_active().beginPath();
+				canvas_active().moveTo(mouse.last_x, mouse.last_y);
+				canvas_active().lineTo(mouse.x, mouse.y);
+				canvas_active().stroke();
+				}
+			}
+		else if(brush_type == 'Grouped'){
+			groups_n = TOOLS.action_data().attributes.size;
+			gsize = 10;
+			random_power = 5;
+			
+			if(type == 'click'){
+				chrome_brush.init(canvas_active());
+				chrome_brush.strokeStart(mouse.x, mouse.y);
+				groups = [];
+				
+				for(var g=0; g < groups_n; g++){
+					groups[g] = {};
+					groups[g].x = HELPER.getRandomInt(-gsize, gsize); 
+					groups[g].y = HELPER.getRandomInt(-gsize, gsize);
+					}
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 0.5;
+				
+				for(var g in groups){
+					canvas_active().beginPath();
+					canvas_active().moveTo(mouse.last_x + groups[g].x, mouse.last_y + groups[g].y);
+					
+					//randomize here
+					groups[g].x += HELPER.getRandomInt(-random_power, random_power); 
+					groups[g].y += HELPER.getRandomInt(-random_power, random_power); 
+					if(groups[g].x < -gsize) groups[g].x = -gsize + random_power;
+					if(groups[g].y < -gsize) groups[g].y = -gsize + random_power;
+					if(groups[g].x > gsize) groups[g].x = gsize - random_power;
+					if(groups[g].y > gsize) groups[g].y = gsize - random_power;
+					
+					canvas_active().lineTo(mouse.x + groups[g].x, mouse.y + groups[g].y);
+					canvas_active().stroke();
+					}
+				}
+			}					
+		}
+	this.gradient_tool = function(type, mouse, event){
+		if(mouse.valid == false) return true;
+		var power = TOOLS.action_data().attributes.power;
+		if(power == 100) power = 99;
+		if(type == 'drag'){
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+
+			if(TOOLS.action_data().attributes.radial == false){
+				//linear
+				canvas_front.rect(0, 0, WIDTH, HEIGHT);
+				if(mouse.x > mouse.click_x){
+					var grd = canvas_front.createLinearGradient(
+						mouse.click_x, mouse.click_y, 
+						mouse.x, mouse.y);
+					grd.addColorStop(0, COLOUR_LAST);
+					grd.addColorStop(1, COLOUR);
+					}
+				else{
+					var grd = canvas_front.createLinearGradient(
+						mouse.x, mouse.y, 
+						mouse.click_x, mouse.click_y);
+					grd.addColorStop(0, COLOUR);
+					grd.addColorStop(1, COLOUR_LAST);
+					}
+				canvas_front.fillStyle = grd;
+				canvas_front.fill();
+				}
+			else{
+				//radial
+				var dist_x = mouse.click_x - mouse.x;
+				var dist_y = mouse.click_y - mouse.y;
+				var distance = Math.sqrt((dist_x*dist_x)+(dist_y*dist_y));
+				var radgrad = canvas_front.createRadialGradient(
+					mouse.click_x, mouse.click_y, distance*power/100,
+					mouse.click_x, mouse.click_y, distance);
+				radgrad.addColorStop(0, COLOUR);
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");   
+				
+				canvas_front.fillStyle = radgrad;
+				canvas_front.fillRect(0,0,WIDTH,HEIGHT);
+				}
+			//draw line
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#ff0000";
+			canvas_front.lineWidth = 1;
+			var xx = mouse.x;
+			var yy = mouse.y;
+			canvas_front.moveTo(mouse.click_x + 0.5, mouse.click_y + 0.5);
+			canvas_front.lineTo(xx + 0.5, yy + 0.5);
+			canvas_front.stroke();
+			}	
+		else if(type == 'release'){
+			MAIN.save_state();
+			if(TOOLS.action_data().attributes.radial == false){
+				//linear
+				canvas_active().rect(0, 0, WIDTH, HEIGHT);
+				if(mouse.x > mouse.click_x){
+					var grd = canvas_active().createLinearGradient(
+						mouse.click_x, mouse.click_y, 
+						mouse.x, mouse.y);
+					grd.addColorStop(0, COLOUR_LAST);
+					grd.addColorStop(1, COLOUR);
+					}
+				else{
+					var grd = canvas_active().createLinearGradient(
+						mouse.x, mouse.y, 
+						mouse.click_x, mouse.click_y);
+					grd.addColorStop(0, COLOUR);
+					grd.addColorStop(1, COLOUR_LAST);
+					}
+				canvas_active().fillStyle = grd;
+				canvas_active().fill();
+				}
+			else{
+				//radial
+				var dist_x = mouse.click_x - mouse.x;
+				var dist_y = mouse.click_y - mouse.y;
+				var distance = Math.sqrt((dist_x*dist_x)+(dist_y*dist_y));
+				var radgrad = canvas_active().createRadialGradient(
+					mouse.click_x, mouse.click_y, distance*power/100,
+					mouse.click_x, mouse.click_y, distance);
+				radgrad.addColorStop(0, COLOUR);
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");  
+				
+				canvas_active().fillStyle = radgrad;
+				canvas_active().fillRect(0,0,WIDTH,HEIGHT);
+				}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 			}
 		else if(brush_type == 'Shaded'){
 			if(type == 'click'){
@@ -1470,7 +1794,11 @@ function TOOLS_CLASS(){
 		
 		document.getElementById("pop_data_totalpixel").value = HELPER.format("#,##0.####", total);
 		document.getElementById("pop_data_average").value = round(sum * 10 / total / 3) / 10;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.generate_sprites = function(gap){
 		if(LAYERS.length == 1) return false;
 		MAIN.save_state();

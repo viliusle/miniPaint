@@ -127,7 +127,11 @@ function LAYER_CLASS(){
 		this.layer_renew();
 		DRAW.zoom();
 		return true;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.layer_visibility = function(i){
 		if(LAYERS[i].visible == true){
 			LAYERS[i].visible = false;
@@ -163,10 +167,24 @@ function LAYER_CLASS(){
 		//move
 		dx = x*distance;
 		dy = y*distance;
+<<<<<<< HEAD
 		var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
 		canvas_active().putImageData(tmp, dx, dy);
 		};
+=======
+		
+		//save
+		var buffer = document.createElement('canvas');
+		buffer.width = WIDTH;
+		buffer.height = HEIGHT;
+		buffer.getContext('2d').drawImage(canvas_active(true), 0, 0);
+		
+		//move
+		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+		canvas_active().drawImage(buffer, dx, dy);
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.select_layer = function(i){
 		if(LAYER.layer_active != i)
 			LAYER.layer_active = i;	//select
@@ -216,7 +234,11 @@ function LAYER_CLASS(){
 			}
 		
 		document.getElementById('info').innerHTML = html;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	this.set_canvas_size = function(repaint){
 		var W = round(WIDTH);
 		var H = round(W / RATIO);
@@ -292,8 +314,13 @@ function LAYER_CLASS(){
 			
 			DRAW.zoom();
 			});
+<<<<<<< HEAD
 		};
 	this.canvas_active = function(base){
+=======
+		}
+	this.canvas_active = function(base){	log('canvas_active():  '+LAYER.layer_active);
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 		for(i in LAYERS){
 			if(LAYER.layer_active==i){
 				if(base == undefined)
@@ -301,8 +328,13 @@ function LAYER_CLASS(){
 				else
 					return document.getElementById(LAYERS[i].name);
 				}
+<<<<<<< HEAD
 			}
 		};
+=======
+			}				log('error.........');
+		}
+>>>>>>> 541f4462e72216f4005705000bf0af7052b035ef
 	}
 
 function canvas_active(base){
