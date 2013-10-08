@@ -69,7 +69,7 @@ function LAYER_CLASS(){
 		LAYER.layer_active = LAYERS.length-1;
 		document.getElementById(LAYERS[LAYER.layer_active].name).getContext("2d").globalAlpha = 1;
 		this.layer_renew();
-		}
+		};
 	this.create_canvas = function(canvas_id){
 		var new_canvas = document.createElement('canvas');
 		new_canvas.setAttribute('id', canvas_id);
@@ -79,8 +79,9 @@ function LAYER_CLASS(){
 		document.getElementById(canvas_id).height = HEIGHT;
 		document.getElementById(canvas_id).getContext("2d").mozImageSmoothingEnabled = false;
 		document.getElementById(canvas_id).getContext("2d").webkitImageSmoothingEnabled = false;
+		document.getElementById(canvas_id).getContext("2d").ImageSmoothingEnabled = false;
 		//document.getElementById(canvas_id).getContext("2d").scale(ZOOM/100, ZOOM/100);
-		}
+		};
 	this.move_layer = function(direction){
 		if(LAYERS.length < 2) return false;
 		if(LAYERS[LAYER.layer_active].primary == 1) return false;
@@ -127,7 +128,7 @@ function LAYER_CLASS(){
 		this.layer_renew();
 		DRAW.zoom();
 		return true;
-		}
+		};
 	this.layer_visibility = function(i){
 		if(LAYERS[i].visible == true){
 			LAYERS[i].visible = false;
@@ -141,8 +142,9 @@ function LAYER_CLASS(){
 			}
 		this.layer_renew();
 		DRAW.redraw_preview();
-		}
+		};
 	this.layer_remove = function(i){
+		if(LAYERS[i].primary == 1) return false;
 		element = document.getElementById(LAYERS[i].name);
 		element.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
 		element.parentNode.removeChild(element);
@@ -152,34 +154,28 @@ function LAYER_CLASS(){
 			LAYER.layer_active = LAYERS.length-1;
 		this.layer_renew();
 		DRAW.redraw_preview();
-		}
+		};
 	this.layer_move_active = function(x, y){
 		var distance = 10;
 		if(CON.ctrl_pressed == true)
 			distance = 50;
 		if(CON.shift_pressed == true)
 			distance = 1;
+
 		//move
 		dx = x*distance;
 		dy = y*distance;
-		
-		//save
-		var buffer = document.createElement('canvas');
-		buffer.width = WIDTH;
-		buffer.height = HEIGHT;
-		buffer.getContext('2d').drawImage(canvas_active(true), 0, 0);
-		
-		//move
+		var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-		canvas_active().drawImage(buffer, dx, dy);
-		}
+		canvas_active().putImageData(tmp, dx, dy);
+		};
 	this.select_layer = function(i){
 		if(LAYER.layer_active != i)
 			LAYER.layer_active = i;	//select
 		else
 			LAYER.layer_active = 0;	//remove select
 		this.layer_renew();
-		}
+		};
 	this.layer_renew = function(){	
 		var html = '';
 		for(i in LAYERS){
@@ -205,7 +201,7 @@ function LAYER_CLASS(){
 			//show
 			document.getElementById('layers').innerHTML = html;
 			}
-		}
+		};
 	this.update_info_block = function(){
 		var html = '';
 		html += '<span style="font-weight:bold;min-width:45px;display:block;float:left;">Size:</span> '+WIDTH+"x"+HEIGHT+"<br />";
@@ -222,7 +218,7 @@ function LAYER_CLASS(){
 			}
 		
 		document.getElementById('info').innerHTML = html;
-		}
+		};
 	this.set_canvas_size = function(repaint){
 		var W = round(WIDTH);
 		var H = round(W / RATIO);
@@ -247,7 +243,7 @@ function LAYER_CLASS(){
 		this.update_info_block();
 		CON.calc_preview_auto();
 		DRAW.zoom();
-		}
+		};
 	this.resize_canvas = function(canvas_name, repaint){
 		var W = round(WIDTH );
 		var H = round(W / RATIO);
@@ -271,8 +267,10 @@ function LAYER_CLASS(){
 			//restore
 			ctx.drawImage(buffer, 0, 0);
 			}
-		}
+		};
 	this.set_alpha = function(){
+		if(LAYERS[LAYER.layer_active].opacity == undefined)
+			LAYERS[LAYER.layer_active].opacity = 1;
 		POP.add({name: "param1",	title: "Alpha:",	value: LAYERS[LAYER.layer_active].opacity,	range: [0, 1], step: 0.01 });
 		POP.show('Opacity', function(user_response){
 			var param1 = parseFloat(user_response.param1);
@@ -296,8 +294,8 @@ function LAYER_CLASS(){
 			
 			DRAW.zoom();
 			});
-		}
-	this.canvas_active = function(base){	log('canvas_active():  '+LAYER.layer_active);
+		};
+	this.canvas_active = function(base){
 		for(i in LAYERS){
 			if(LAYER.layer_active==i){
 				if(base == undefined)
@@ -305,8 +303,8 @@ function LAYER_CLASS(){
 				else
 					return document.getElementById(LAYERS[i].name);
 				}
-			}				log('error.........');
-		}
+			}
+		};
 	}
 
 function canvas_active(base){

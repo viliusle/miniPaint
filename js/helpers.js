@@ -1,6 +1,14 @@
 var HELPER = new HELPER_CLASS();
 
 function HELPER_CLASS(){
+	var time;
+	
+	this.timer_init = function(){
+		time = Date.now();
+		};
+	this.timer = function(s){
+		console.log("time("+s+") = "+(Math.round(Date.now() - time)/1000)+" s");
+		};
 	//get url param
 	this.get_url_param = function(name){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");  
@@ -11,7 +19,7 @@ function HELPER_CLASS(){
 			return "";  
 		else    
 			return results[1];
-		}
+		};
 	this.strpos = function(haystack, needle, offset) {
 		var i = (haystack+'').indexOf(needle, (offset || 0));
 		return i === -1 ? false : i;
@@ -21,7 +29,7 @@ function HELPER_CLASS(){
 		var curDate = null;
 		do { curDate = new Date(); }
 		while(curDate-date < millis);
-		}
+		};
 	this.js_dump = function(arr,level) {
 		var dumped_text = "";
 		if(!level) level = 0;
@@ -45,11 +53,17 @@ function HELPER_CLASS(){
 			dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
 		}
 		alert(dumped_text);
-	}
+		};
+	this.unique = function(list){
+	        var o = {}, i, l = list.length, r = [];
+	        for(i=0; i<l;i+=1) o[list[i]] = list[i];
+	        for(i in o) r.push(o[i]);
+	        return r;
+		};
 	this.preload = function(image) {
 		var imageObj = new Image();
 		imageObj.src=image;
-		}
+		};
 	this.getCookie = function(NameOfCookie){
 		if (document.cookie.length > 0)
 		{ begin = document.cookie.indexOf(NameOfCookie+"=");
@@ -60,19 +74,19 @@ function HELPER_CLASS(){
 		return unescape(document.cookie.substring(begin, end)); }
 		}
 		return '';
-	}
+		};
 	this.setCookie = function(NameOfCookie, value, expiredays){ 
 		var ExpireDate = new Date ();
 		ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
 		document.cookie = NameOfCookie + "=" + escape(value) +
 		((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
-		}
+		};
 	this.delCookie = function(NameOfCookie){
 		if (HELPER.getCookie(NameOfCookie)) {
 			document.cookie = NameOfCookie + "=" +
 			"; expires=Thu, 01-Jan-70 00:00:01 GMT";
 			}
-		}
+		};
 	/*
 	ctx.strokeStyle = "#2d6";
 	ctx.fillStyle = "#abc";
@@ -102,10 +116,10 @@ function HELPER_CLASS(){
 		if (fill){
 			ctx.fill();
 			}        
-		}
+		};
 	this.getRandomInt = function(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
-		}
+		};
 	//dashed objects
 	this.dashedRect = function(canvas, x1, y1, x2, y2, dashLen, color) {
 		HELPER.dashedLine(canvas, x1, y1, x2, y1, dashLen, color);
@@ -142,19 +156,19 @@ function HELPER_CLASS(){
 		};	
 	this.font_pixel_to_height = function(px){
 		return Math.round(px*0.75);
-		}
+		};
 	this.rgbToHex = function(r, g, b) {
 		if (r > 255 || g > 255 || b > 255)
 			throw "Invalid color component";
 		return ((r << 16) | (g << 8) | b).toString(16);
-		}
+		};
 	this.rgb2hex_all = function(rgb){
 		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 		return "#" + HELPER.hex(rgb[1]) + HELPER.hex(rgb[2]) + HELPER.hex(rgb[3]);
-		}
+		};
         this.hex = function(x){
 	        return ("0" + parseInt(x).toString(16)).slice(-2);
-	        }
+	        };
 	this.hex2rgb = function(hex) {
 		if (hex[0]=="#") hex=hex.substr(1);
 		if (hex.length==3) {
@@ -169,7 +183,7 @@ function HELPER_CLASS(){
 			b: parseInt(triplets[2],16),
 			a: 255,
 			}
-		}
+		};
 	this.ColorLuminance = function(hex, lum){
 		// validate hex string
 		hex = String(hex).replace(/[^0-9a-f]/gi, '');
@@ -182,7 +196,7 @@ function HELPER_CLASS(){
 			rgb += ("00"+c).substr(c.length);
 			}
 		return rgb;
-		}
+		};
 	this.drawImage_rotated = function(canvas, file, x, y, width, height, angle){
 		var TO_RADIANS = Math.PI/180;
 		var img = new Image();	
@@ -193,10 +207,10 @@ function HELPER_CLASS(){
 		canvas.rotate(angle * TO_RADIANS);
 		canvas.drawImage(img, -(width/2), -(height/2));
 		canvas.restore();
-		}
+		};
 	this.drawEllipseByCenter = function(ctx, cx, cy, w, h, color, fill) {
 		HELPER.drawEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h, color, fill);
-		}
+		};
 	this.drawEllipse = function(ctx, x, y, w, h, color, fill) {
 		var kappa = .5522848,
 			ox = (w / 2) * kappa, // control point offset horizontal
@@ -219,7 +233,7 @@ function HELPER_CLASS(){
 			ctx.stroke();
 		else
 			ctx.fill();
-		}
+		};
 	this.remove_selection = function(){
 		if (window.getSelection) {
 			if (window.getSelection().empty)   // Chrome
@@ -229,7 +243,7 @@ function HELPER_CLASS(){
 			} 
 		else if (document.selection)  // IE?
 			document.selection.empty();
-		}
+		};
 	this.get_dimensions = function(){
 		var theWidth, theHeight;
 		if (window.innerWidth) {
@@ -251,13 +265,13 @@ function HELPER_CLASS(){
 			theHeight=document.body.clientHeight;
 			}
 		return [theWidth, theHeight];
-		}
+		};
 	this.save_as_chrome = function(fileContents, fileName){
 		var link = document.createElement('a');
 		link.download = fileName;
 		link.href = 'data:,' + fileContents;
 		link.click();
-		}
+		};
 	//credits: richard maloney 2006
 	this.darkenColor = function(color, v){
 		if (color.length >6) { color= color.substring(1,color.length)}

@@ -1,6 +1,6 @@
 /*
 TODO:
-	some filters do not work on chrome
+	Vintage		
 */
 
 var MAIN = new MAIN_CLASS();
@@ -36,7 +36,7 @@ function MAIN_CLASS(){
 		document.getElementById("rgb_b").value = color_rgb.b;
 		document.getElementById("rgb_a").value = ALPHA;
 		DRAW.redraw_preview();
-		}
+		};
 	this.save_state = function(){
 		undo_level = 0;
 		j = 0;
@@ -57,7 +57,7 @@ function MAIN_CLASS(){
 			LAYERS_ARCHIVE[j].data[LAYERS[i].name].getContext('2d').drawImage(document.getElementById(LAYERS[i].name), 0, 0);
 			}
 		return true;
-		}
+		};
 	//supports 3 levels undo system - more levels requires more memory - max 1 gb?
 	this.undo = function(){	
 		if(LAYERS_ARCHIVE.length == 0) return false;
@@ -81,11 +81,15 @@ function MAIN_CLASS(){
 			}
 		DRAW.zoom();
 		return true;
-		}
+		};
 	this.load_xml = function(data){
 		var xml = $.parseXML(data);
 		w = $(xml).find("width").text();
 		h = $(xml).find("height").text();
+		
+		//delete old layers
+		for(var i in LAYERS)
+			LAYER.layer_remove(i);
 		
 		//init new file
 		ZOOM = 100;
@@ -128,5 +132,5 @@ function MAIN_CLASS(){
 				DRAW.zoom();
 				}
 			});
-		}
+		};
 	}

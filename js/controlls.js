@@ -81,6 +81,7 @@ function CONTROLLS_CLASS(){
 				POP.hide();
 			delete TOOLS.last_line_x;
 			delete TOOLS.last_line_y;
+			TOOLS.curve_points = [];
 			if(TOOLS.select_data != false){
 				TOOLS.select_data = false;
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -209,7 +210,7 @@ function CONTROLLS_CLASS(){
 			
 		DRAW.zoom();
 		return true;
-		}
+		};
 	//keyboard release
 	this.on_keyboardup_action = function(event){
 		k = event.keyCode;
@@ -222,7 +223,7 @@ function CONTROLLS_CLASS(){
 		//alt
 		else if(k==18)
 			CON.alt_pressed = false;
-		}
+		};
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function(event){
 		var valid = true;
@@ -275,7 +276,7 @@ function CONTROLLS_CLASS(){
 			abs_x: abs_x,
 			abs_y: abs_y, 
 			};
-		}
+		};
 	//mouse right click
 	this.mouse_right_click = function(event){
 		if(POP != undefined && POP.active==true) return true;
@@ -289,7 +290,7 @@ function CONTROLLS_CLASS(){
 				break;
 				}
 			}
-		}
+		};
 	//mouse click
 	this.mouse_click = function(event){
 		CON.isDrag = true;
@@ -334,7 +335,7 @@ function CONTROLLS_CLASS(){
 			else if(event.target.id == "resize-h")	resize_all = "h";
 			else if(event.target.id == "resize-wh")	resize_all = "wh";
 			}
-		}
+		};
 	//mouse move
 	this.mouse_move = function(event){
 		if(POP != undefined && POP.active==true){
@@ -407,7 +408,7 @@ function CONTROLLS_CLASS(){
 		
 		mouse_x_move_last = CON.mouse.x;
 		mouse_y_move_last = CON.mouse.y;
-		}
+		};
 	//release mouse click
 	this.mouse_release = function(event){
 		CON.isDrag = false;
@@ -446,7 +447,7 @@ function CONTROLLS_CLASS(){
 			}
 		resize_all = false;
 		DRAW.zoom();
-		}
+		};
 	//upload drop zone
 	this.upload_drop = function(e){
 		e.preventDefault();
@@ -497,7 +498,7 @@ function CONTROLLS_CLASS(){
 		if(n_valid == 0)
 			progress.style.display='none';
 		document.getElementById("drop_zone").style.display='none';
-		}
+		};
 	this.mouse_wheel_handler = function(e){	//return true;
 		var step = 100;
 		//zoom
@@ -522,7 +523,7 @@ function CONTROLLS_CLASS(){
 			e.preventDefault()
 			return false;
 			}
-		}
+		};
 	this.scroll_window = function(){
 		var pad_left = 109;
 		var pad_top = 34;
@@ -545,7 +546,7 @@ function CONTROLLS_CLASS(){
 		yy = yy - scrollbar_h/2;
 		
 		scrollTo(xx, yy);
-		}
+		};
 	this.calc_preview_by_mouse = function(mouse_x, mouse_y){
 		CON.ZOOM_X = mouse_x - CON.mini_rect_data.w/2;
 		CON.ZOOM_Y = mouse_y - CON.mini_rect_data.h/2;
@@ -570,7 +571,7 @@ function CONTROLLS_CLASS(){
 		CON.mini_rect_data.h = round(visible_h * DRAW.PREVIEW_SIZE.h / total_h);
 		
 		DRAW.redraw_preview();
-		}
+		};
 	}
 
 //=== Clipboard ================================================================

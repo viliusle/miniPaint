@@ -35,7 +35,7 @@ function DRAW_CLASS(){
 			canvas.lineTo(WIDTH, 0.5 + i);
 			canvas.stroke();
 			}
-		}
+		};
 	this.draw_background = function(canvas, W, H, gap, force){
 		if(MAIN.TRANSPARENCY == false && force == undefined){
 			canvas.beginPath();
@@ -62,7 +62,7 @@ function DRAW_CLASS(){
 					fill = true;				
 				}
 			}
-		}
+		};
 	//credits to Victor Haydin
 	this.toolFiller = function(context, W, H, x, y, color_to, sensitivity){
 		var img = context.getImageData(0, 0, W, H);
@@ -109,7 +109,7 @@ function DRAW_CLASS(){
 				}
 			}
 		context.putImageData(img, 0, 0);
-		}
+		};
 	this.tool_magic_wand = function(context, W, H, x, y, sensitivity){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
@@ -167,7 +167,26 @@ function DRAW_CLASS(){
 				}
 			}
 		context.putImageData(img, 0, 0);
-		}
+		};
+	this.if_blank = function(canvas){
+		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+		var imgData = img.data;
+		
+		if(MAIN.TRANSPARENCY == false){
+			//transparency disabled
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i] < 255 || imgData[i+1] < 255 || imgData[i+2] < 255) return false;
+				}
+			}
+		else{
+			//transparenc enabled
+			for(var i = 0; i < imgData.length; i += 4){
+				if(imgData[i+3] == 0) continue; //transparent
+				if(imgData[i] < 255 || imgData[i+1] < 255 || imgData[i+2] < 255) return false;
+				}
+			}
+		return true;
+		};
 	this.trim_info = function(canvas, trim_white, include_white){
 		var top = 0;
 		var left = 0;
@@ -326,7 +345,7 @@ function DRAW_CLASS(){
 			LAYER.set_canvas_size();
 			}
 		LAYER.update_info_block();
-		}
+		};
 	this.effect_bw = function(context, W, H, level){
 		var black = level + 25;		//default 150;
 		var white = level - 25;		//defaul 100;
@@ -358,7 +377,7 @@ function DRAW_CLASS(){
 				}
 			}	
 		context.putImageData(img, 0, 0);
-		}
+		};
 	this.decrease_colors = function(context, W, H, colors, dithering, greyscale){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
@@ -381,7 +400,7 @@ function DRAW_CLASS(){
 		for (var i in colors_top)
 			colors_top_sort.push(colors_top[i]);
 		colors_top_sort.sort(function(a, b) {return b[0] - a[0]});
-		colors_top = colors_top_sort;		//alert(colors_top.length);
+		colors_top = colors_top_sort;
 		
 		if(colors_top.length > 256){	
 			var last = colors_top[0];
@@ -537,7 +556,7 @@ function DRAW_CLASS(){
 				}
 			}
 		context.putImageData(img, 0, 0);
-		}
+		};
 	//converts greyscale images to coloured
 	this.colorize = function(context, W, H, rand_power, max_gap, dither, manual_colors){
 		var img = context.getImageData(0, 0, W, H);
@@ -589,7 +608,7 @@ function DRAW_CLASS(){
 			}
 		context.putImageData(img, 0, 0);
 		return false;
-		}
+		};
 	//fixing white and black color balance
 	this.auto_adjust = function(context, W, H){
 		//settings
@@ -677,8 +696,8 @@ function DRAW_CLASS(){
 		//save	
 		context.putImageData(img, 0, 0);
 		document.body.style.cursor = "auto";
-		log('Iterations: brighten='+n_fix_white+", darken="+n_fix_black);
-		}	
+		//log('Iterations: brighten='+n_fix_white+", darken="+n_fix_black);
+		};	
 	this.zoom = function(recalc, scroll){
 		if(recalc != undefined){
 			//zoom-in or zoom-out
@@ -728,7 +747,7 @@ function DRAW_CLASS(){
 			CON.scroll_window();
 		DRAW.redraw_preview();
 		return true;
-		}
+		};
 	this.redraw_preview = function(){
 		canvas_preview.beginPath();
 		canvas_preview.rect(0, 0, DRAW.PREVIEW_SIZE.w, DRAW.PREVIEW_SIZE.h);
@@ -753,6 +772,7 @@ function DRAW_CLASS(){
 		if(z_y > DRAW.PREVIEW_SIZE.h - CON.mini_rect_data.h) 
 			z_y = DRAW.PREVIEW_SIZE.h - CON.mini_rect_data.h;
 		
+		canvas_preview.lineWidth = 1;
 		canvas_preview.beginPath();
 		canvas_preview.rect(round(z_x) + 0.5, round(z_y) + 0.5, CON.mini_rect_data.w, CON.mini_rect_data.h);
 		canvas_preview.fillStyle = "rgba(0, 0, 0, 0.2)";
@@ -760,7 +780,7 @@ function DRAW_CLASS(){
 		canvas_preview.fill();
 		canvas_preview.stroke();
 		return true;
-		}
+		};
 	this.draw_arrow = function(context, fromx, fromy, tox, toy, headlen){
 		if(headlen == undefined)
 			headlen = 10;	// length of head in pixels
@@ -776,7 +796,7 @@ function DRAW_CLASS(){
 		context.lineTo(tox, toy);
 		context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
 		context.stroke();
-		}
+		};
 	//hermite resample - classic "rings.gif" 1000x1000 resize to 200x200 record -  0.040
 	this.resample_hermite = function(canvas, W, H, W2, H2){
 		var time1 = Date.now();
