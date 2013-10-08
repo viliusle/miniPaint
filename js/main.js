@@ -1,6 +1,5 @@
 /*
 TODO:
-	Vintage		
 */
 
 var MAIN = new MAIN_CLASS();
