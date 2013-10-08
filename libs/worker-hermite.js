@@ -1,3 +1,5 @@
+//https://github.com/viliusle/Hermite-resize
+
 onmessage = function (event){
 	var img = event.data[0];
 	var data = img.data;

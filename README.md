@@ -10,9 +10,9 @@ Drag and Drop.
 Features: open, edit, save images, various drawing tools like Magic Wand tool, Clone tool, 
 erase, fill, color picker, colour selector, layers, pencil, brush, shapes, trim, flip, 
 rotate, resize, transparency, zoom, grid, EXIF data, crop, export/import layers data, 
-paste from clipboard, 30 various filters including blur, Tilt Shift, perspective, 
-denoise, vignette, auto colorize, auto adjust colors, decrease color deapth, histogram, 
-gradients, Hermite resample.
+paste from clipboard, 31 various filters including blur, Tilt Shift, perspective, 
+denoise, vignette, vintage, auto colorize, auto adjust colors, decrease color deapth, 
+histogram, gradients, Hermite resample.
 
 Key features: layers, transparency, offline graphics editing.
 

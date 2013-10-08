@@ -79,6 +79,7 @@ function LAYER_CLASS(){
 		document.getElementById(canvas_id).height = HEIGHT;
 		document.getElementById(canvas_id).getContext("2d").mozImageSmoothingEnabled = false;
 		document.getElementById(canvas_id).getContext("2d").webkitImageSmoothingEnabled = false;
+		document.getElementById(canvas_id).getContext("2d").ImageSmoothingEnabled = false;
 		//document.getElementById(canvas_id).getContext("2d").scale(ZOOM/100, ZOOM/100);
 		};
 	this.move_layer = function(direction){
