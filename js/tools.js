@@ -571,6 +571,8 @@ function TOOLS_CLASS(){
 			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select', 	});
 			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"], 	});
 			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10], 	});
+			POP.add({name: "fill_style",	title: "Fill style:",	values: ["Fill", "Stroke", "Both"], type: 'select', 	});
+			POP.add({name: "stroke_size",	title: "Stroke size:",	value: 1, range: [1, 100], 	});
 			POP.preview_in_main = true;
 			POP.show('Text', function(user_response){
 					MAIN.save_state();
@@ -602,6 +604,8 @@ function TOOLS_CLASS(){
 		var shadow_blur = parseInt(user_response.shadow_blur);
 		var font = user_response.family;
 		var font_style = user_response.style;
+		var fill_style = user_response.fill_style;
+		var stroke_size = user_response.stroke_size;
 		var dx;
 		var dy;
 		if(pos_3d == "Top-left"){
@@ -659,7 +663,12 @@ function TOOLS_CLASS(){
 	
 		//main text
 		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-		canvas.fillText(text, xx, yy + letters_height);
+		canvas.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+		canvas.lineWidth = stroke_size;
+		if(fill_style == 'Fill' || fill_style == 'Both')
+			canvas.fillText(text, xx, yy + letters_height);
+		if(fill_style == 'Stroke' || fill_style == 'Both')
+			canvas.strokeText(text, xx, yy + letters_height);
 		
 		DRAW.zoom();
 		};
@@ -912,6 +921,7 @@ function TOOLS_CLASS(){
 		if(mouse.valid == false) return true;
 		var power = TOOLS.action_data().attributes.power;
 		if(power == 100) power = 99;
+		var color_rgb = HELPER.hex2rgb(COLOUR);
 		if(type == 'drag'){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -943,8 +953,8 @@ function TOOLS_CLASS(){
 				var radgrad = canvas_front.createRadialGradient(
 					mouse.click_x, mouse.click_y, distance*power/100,
 					mouse.click_x, mouse.click_y, distance);
-				radgrad.addColorStop(0, COLOUR);
-				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");   
+				radgrad.addColorStop(0, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
 				
 				canvas_front.fillStyle = radgrad;
 				canvas_front.fillRect(0,0,WIDTH,HEIGHT);
@@ -989,8 +999,8 @@ function TOOLS_CLASS(){
 				var radgrad = canvas_active().createRadialGradient(
 					mouse.click_x, mouse.click_y, distance*power/100,
 					mouse.click_x, mouse.click_y, distance);
-				radgrad.addColorStop(0, COLOUR);
-				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");  
+				radgrad.addColorStop(0, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
 				
 				canvas_active().fillStyle = radgrad;
 				canvas_active().fillRect(0,0,WIDTH,HEIGHT);
@@ -1115,8 +1125,8 @@ function TOOLS_CLASS(){
 			if(TOOLS.select_square_action == ''){
 				document.body.style.cursor = "crosshair";
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-				canvas_front.lineWidth = 1;
-				HELPER.dashedRect(canvas_front, mouse.click_x, mouse.click_y, mouse.x, mouse.y);
+				canvas_front.fillStyle = "rgba(0, 255, 0, 0.3)";
+				canvas_front.fillRect(mouse.click_x, mouse.click_y, mouse.x - mouse.click_x, mouse.y - mouse.click_y);
 				}
 			else{
 				if(TOOLS.select_square_action == 'move'){	
@@ -1197,48 +1207,50 @@ function TOOLS_CLASS(){
 			var is_right = false;
 			var is_top = false;
 			var is_bottom = false;
+			var sr_size = Math.ceil(CON.sr_size/ZOOM*100);
+			
 			//left
-			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h/2, CON.sr_size, mouse.x, mouse.y)==true){
+			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h/2, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "w-resize";
 				TOOLS.select_square_action = 'resize-left';
 				is_left = true;
 				}
 			//top
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "n-resize";
 				TOOLS.select_square_action = 'resize-top';
 				is_top = true;
 				}
 			//right
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h/2, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w - sr_size, TOOLS.select_data.y + TOOLS.select_data.h/2, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "w-resize";
 				TOOLS.select_square_action = 'resize-right';
 				is_right = true;
 				}
 			//bottom
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w/2, TOOLS.select_data.y + TOOLS.select_data.h - sr_size, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "n-resize";
 				TOOLS.select_square_action = 'resize-bottom';
 				is_bottom = true;
 				}
 			
 			//corner 1
-			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
+			if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "nw-resize";
 				TOOLS.select_square_action = 'resize-1';
 				}
 			//corner 2
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w - sr_size, TOOLS.select_data.y, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "ne-resize";
 				TOOLS.select_square_action = 'resize-2';
 				}
 			//corner 3
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x + TOOLS.select_data.w - sr_size, TOOLS.select_data.y + TOOLS.select_data.h - sr_size, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "nw-resize";
 				TOOLS.select_square_action = 'resize-3';
 				}
 			//corner 4
-			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h, CON.sr_size, mouse.x, mouse.y)==true){
+			else if(TOOLS.check_mouse_pos(TOOLS.select_data.x, TOOLS.select_data.y + TOOLS.select_data.h - sr_size, sr_size, mouse.x, mouse.y)==true){
 				document.body.style.cursor = "ne-resize";
 				TOOLS.select_square_action = 'resize-4';
 				}
@@ -1349,7 +1361,7 @@ function TOOLS_CLASS(){
 			return true;
 		return false;
 		};
-	this.draw_selected_area = function(){
+	this.draw_selected_area = function(){		
 		if(TOOLS.select_data == false) return false;
 		//draw area
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1364,27 +1376,35 @@ function TOOLS_CLASS(){
 			h = round(h);
 			}
 		
-		var x2 = Math.min(x + w, WIDTH-1);
-		var y2 = Math.min(y + h, HEIGHT-1);
-		canvas_front.lineWidth = 1;
-		HELPER.dashedRect(canvas_front, x, y, x2, y2);
-		
+		//fill
+		canvas_front.fillStyle = "rgba(0, 255, 0, 0.3)";
+		canvas_front.fillRect(x, y, w, h);
+		if(ZOOM <= 100){
+			//borders
+			canvas_front.strokeStyle = "rgba(0, 255, 0, 1)";
+			canvas_front.lineWidth = 1;
+			canvas_front.strokeRect(x+0.5, y+0.5, w, h);
+			}
+	
 		//draw carners
-		square(x, y);
-		square(x+w, y);
-		square(x, y+h);
-		square(x+w, y+h);
+		square(x, y, 0, 0);
+		square(x+w, y, -1, 0);
+		square(x, y+h, 0, -1);
+		square(x+w, y+h, -1, -1);
 		
 		//draw centers
-		square(x+w/2, y);
-		square(x, y+h/2);
-		square(x+w/2, y+h);
-		square(x+w, y+h/2);
+		square(x+w/2, y, 0, 0);
+		square(x, y+h/2, 0, 0);
+		square(x+w/2, y+h, 0, -1);
+		square(x+w, y+h/2, -1, 0);
 		
-		function square(x, y){
+		function square(x, y, mx, my){
+			var sr_size = Math.ceil(CON.sr_size/ZOOM*100);
+			x = round(x);
+			y = round(y);
 			canvas_front.beginPath();
-			canvas_front.rect(x-round(CON.sr_size/2), y-round(CON.sr_size/2), CON.sr_size, CON.sr_size);
-			canvas_front.fillStyle = "#0000c8";
+			canvas_front.rect(x + mx * round(sr_size), y + my * round(sr_size), sr_size, sr_size);
+			canvas_front.fillStyle = "#0000ff";
 			canvas_front.fill();
 			}
 		};

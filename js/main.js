@@ -1,7 +1,5 @@
 /*
 TODO:
-	sift
-		top points by 10x10		
 */
 
 var MAIN = new MAIN_CLASS();
