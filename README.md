@@ -2,6 +2,8 @@ miniPaint - Online graphics editing tool using HTML5.
 
 Demo: http://viliusle.github.io/miniPaint/
 
+License: GPL
+
 Built using HTML5, JavaScript, Canvas, Drag and Drop, Files API, Offline Support. 
 
 Online graphics editing tool use HTML5 technologies like Canvas, Offline support,
