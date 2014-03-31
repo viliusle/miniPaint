@@ -347,36 +347,21 @@ function DRAW_CLASS(){
 		LAYER.update_info_block();
 		};
 	this.effect_bw = function(context, W, H, level){
-		var black = level + 25;		//default 150;
-		var white = level - 25;		//defaul 100;
-		if(black < 0 || level == 0) black = 0;
-		if(white > 255 || level == 255) white = 255;
 		var img = context.getImageData(0, 0, W, H);
-		var imgData = img.data;	
-		for(var j = 0; j < H; j++){
-			for(var i = 0; i < W; i++){		
-				var x = (i + j*W) * 4;
-				if(imgData[x+3] == 0) continue;	//transparent
-				var c = 0;
-				var mid = round(imgData[x] + imgData[x+1] + imgData[x+2])/3;
-				if(mid >= black)
-					c = 255;
-				else 	if(mid <= white)
-					c = 0;
-				else{
-					//we not sure here ... randomize to get better overall quality
-					c = HELPER.getRandomInt(white, black);
-					if(mid < c)
-						c = 0;
-					else
-						c = 255;
-					}
-				imgData[x] = c;
-				imgData[x+1] = c;
-				imgData[x+2] = c;
-				}
-			}	
-		context.putImageData(img, 0, 0);
+		var imgData = img.data;
+		var grey, c;
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			if(grey <= level)
+				c = 0;
+			else
+				c = 255;
+			imgData[i] = c;
+			imgData[i+1] = c;
+			imgData[i+2] = c;
+			}
+		context.putImageData(img, 0, 0);	
 		};
 	this.decrease_colors = function(context, W, H, colors, dithering, greyscale){
 		var img = context.getImageData(0, 0, W, H);

@@ -1,5 +1,6 @@
 /*
 author:		ViliusL
+version:	1.1
 about:		adds vintage effect, functions:
 			adjust_color
 			lower_contrast
@@ -8,9 +9,9 @@ about:		adds vintage effect, functions:
 			chemicals
 			exposure
 			grains
+			grains_big
 			optics
 			dusts
-			lines
 theory:		Ken, http://stackoverflow.com/questions/13355119/vintage-ing-image-with-javascript/18862003#18862003
 libs:		imagefilters.js, url: https://github.com/arahaya/ImageFilters.js
 		glfx.js url: http://evanw.github.com/glfx.js/
@@ -22,9 +23,11 @@ function VINTAGE_CLASS(){
 	var fx_filter = fx.canvas();
 	
 	//increasing red color
-	this.adjust_color = function(context, W, H, level){	//level = [0, 200], default 70
+	this.adjust_color = function(context, W, H, level_red){	//level = [0, 200], default 70
+		var param_green = 0;
+		var param_blue = 0;
 		var imageData = context.getImageData(0, 0, W, H);
-		var filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 1, level, 0, 0, 1);
+		var filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 1, level_red, param_green, param_blue, 1);
 		context.putImageData(filtered, 0, 0);
 		};
 	//decreasing contrast
@@ -100,9 +103,23 @@ function VINTAGE_CLASS(){
 				}
 			}	
 		context.putImageData(img, 0, 0);
+		};
+	//add big grains, noise
+	this.grains_big = function(context, W, H, level){	//level = [0, 50], default 20
+		if(level == 0) return context;
+		var n = W*H/100*level;	//density
+		var color = 200;
+		for(var i = 0; i < n; i++){
+			var power = this.getRandomInt(5, 10+level);
+			var size = 2;
+			var x = this.getRandomInt(0, W);
+			var y = this.getRandomInt(0, H);
+			context.fillStyle = "rgba("+color+", "+color+", "+color+", "+power/255+")";
+			context.fillRect(x, y, size, size);
+			}
 		};	
 	//adding vignette effect - blured dark borders
-	this.optics = function(context, W, H, param1, param2){	//param1, param2 = [0, 1], default 0.3, 0.5
+	this.optics = function(context, W, H, param1, param2){	//param1 [0, 0.5], param2 [0, 0.7], default 0.3, 0.5
 		var texture = fx_filter.texture(context.getImageData(0, 0, W, H));
 		fx_filter.draw(texture).vignette(param1, param2).update();
 		context.drawImage(fx_filter, 0, 0);
@@ -111,7 +128,7 @@ function VINTAGE_CLASS(){
 	this.dusts = function(context, W, H, level){	//level = [0, 100], default 70
 		var n = level / 100 * (W * H) / 1000;
 		//add dust
-		context.fillStyle = "rgba(255, 255, 255, 0.3)";
+		context.fillStyle = "rgba(200, 200, 200, 0.3)";
 		for(var i=0; i<n; i++){
 			var x = this.getRandomInt(0, W);
 			var y = this.getRandomInt(0, H);
@@ -130,8 +147,8 @@ function VINTAGE_CLASS(){
 			}
 		
 		//add hairs
-		context.strokeStyle = "rgba(255, 255, 255, 0.2)";
-		for(var i=0; i<n/5; i++){
+		context.strokeStyle = "rgba(200, 200, 200, 0.2)";
+		for(var i=0; i<n/3; i++){
 			var x = this.getRandomInt(0, W);
 			var y = this.getRandomInt(0, H);
 			var radius = this.getRandomInt(5, 15);
@@ -143,40 +160,6 @@ function VINTAGE_CLASS(){
 			context.stroke();
 			}
 		
-		return context;
-		};
-	//add lines
-	this.lines = function(context, W, H, level){	//level = [0, 100], default 50
-		var n = level / 100 * W / 10;
-		context.lineWidth = 1;
-		for(var a=0; a<1; a++){ //angle
-			var angle = 0;
-			if(a > 0)
-				angle = this.getRandomInt(-90, 90);
-			for(var j=0; j<n; j++){ //lines
-				var x = this.getRandomInt(0, W) + 0.5;
-				var y = 0;
-				var x2 = x;
-				var y2 = H;
-				var power = this.getRandomInt(0, 15) / 100;
-				
-				//sides
-				context.strokeStyle = "rgba(255, 255, 255, "+(power/2)+")";
-				context.beginPath();
-				context.lineWidth = 3;
-				context.moveTo(x, y);
-				context.lineTo(x2, y2);
-				context.stroke();
-				
-				//center
-				context.strokeStyle = "rgba(255, 255, 255, "+power+")";
-				context.beginPath();
-				context.lineWidth = 1;
-				context.moveTo(x, y);
-				context.lineTo(x2, y2);
-				context.stroke();
-				}
-			}
 		return context;
 		};
 	//random number generator

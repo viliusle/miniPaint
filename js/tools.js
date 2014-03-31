@@ -766,13 +766,15 @@ function TOOLS_CLASS(){
 		
 		if(brush_type == 'Simple'){
 			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().strokeStyle = COLOUR;
 				canvas_active().lineWidth = TOOLS.action_data().attributes.size;
+				canvas_active().lineCap = 'round';
 				
 				canvas_active().beginPath();
 				canvas_active().moveTo(mouse.last_x, mouse.last_y);
 				canvas_active().lineTo(mouse.x, mouse.y);
 				canvas_active().stroke();
+				canvas_active().closePath(); 	
 				}
 			}	
 		else if(brush_type == 'BezierCurve'){
@@ -1437,37 +1439,43 @@ function TOOLS_CLASS(){
 		var channel_g = document.getElementById("pop_data_param1_poptmp2");
 		var channel_b = document.getElementById("pop_data_param1_poptmp3");
 		
-		if(channel_grey.checked == true)		channel = channel_grey.value;
-		else 	if(channel_r.checked == true)		channel = channel_r.value;
-		else 	if(channel_g.checked == true)		channel = channel_g.value;
-		else 	if(channel_b.checked == true)		channel = channel_b.value;
+		if(channel_grey.checked == true)	channel = channel_grey.value;
+		else if(channel_r.checked == true)	channel = channel_r.value;
+		else if(channel_g.checked == true)	channel = channel_g.value;
+		else if(channel_b.checked == true)	channel = channel_b.value;
 		
 		//collect data
 		var hist_data = [];
 		for(var i=0; i<= 255; i++)
 			hist_data[i] = 0;
-		var total = 0;
+		var total = imgData.length/4;
 		var sum = 0;
-		for(var i = 0; i < imgData.length; i += 4){
-			if(imgData[i+3] == 0) continue;	//transparent
-			var grey = (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
-			if(channel == 'Gray'){
+		var grey;
+		
+		if(channel == 'Gray'){
+			for(var i = 0; i < imgData.length; i += 4){
+				grey = round((imgData[i] + imgData[i+1] + imgData[i+2]) / 3);
 				hist_data[grey]++;
 				sum = sum + imgData[i] + imgData[i+1] + imgData[i+2];
 				}
-			else if(channel == 'Red'){
+			}
+		else if(channel == 'Red'){
+			for(var i = 0; i < imgData.length; i += 4){
 				hist_data[imgData[i]]++;
 				sum = sum + imgData[i] * 3;
 				}
-			else if(channel == 'Green'){
+			}
+		else if(channel == 'Green'){
+			for(var i = 0; i < imgData.length; i += 4){
 				hist_data[imgData[i+1]]++;
 				sum = sum + imgData[i+1] * 3;
 				}
-			else if(channel == 'Blue'){
+			}
+		else if(channel == 'Blue'){
+			for(var i = 0; i < imgData.length; i += 4){
 				hist_data[imgData[i+2]]++;
 				sum = sum + imgData[i+2] * 3;
 				}
-			total++;
 			}
 		
 		//draw histogram
@@ -1481,15 +1489,16 @@ function TOOLS_CLASS(){
 			c.strokeStyle = "#000000";
 			c.lineWidth = 1;
 			c.moveTo(i + 0.5, 100 + 0.5);
-			if(channel == 'Gray')
-				c.lineTo(i + 0.5, 100 - round(hist_data[i]*255*100/total/2) + 0.5);
-			else
-				c.lineTo(i + 0.5, 100 - round(hist_data[i]*255*100/total/3/2) + 0.5);
+			c.lineTo(i + 0.5, 100 - round(hist_data[i]*255*100/total/6) + 0.5);
 			c.stroke();
 			}
 		
 		document.getElementById("pop_data_totalpixel").value = HELPER.format("#,##0.####", total);
-		document.getElementById("pop_data_average").value = round(sum * 10 / total / 3) / 10;
+		if(total > 0)
+			average = round(sum * 10 / total / 3) / 10;
+		else
+			average = '-';
+		document.getElementById("pop_data_average").value = average;	
 		};
 	this.generate_sprites = function(gap){
 		if(LAYERS.length == 1) return false;
@@ -1616,4 +1625,63 @@ function TOOLS_CLASS(){
 			canvas_preview.restore();
 			}
 		};
+	//method = otsu
+	this.thresholding = function(method, ctx, W, H){
+		var img = ctx.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var hist_data = [];
+		var grey;
+		for(var i=0; i<= 255; i++)
+			hist_data[i] = 0;
+		for(var i = 0; i < imgData.length; i += 4){
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			hist_data[grey]++;
+			}
+		var level;
+		if(method == 'otsu')
+			level = this.otsu(hist_data, W*H);
+		else
+			alert('ERROR: unknown method in TOOLS.thresholding().');
+		var c;
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			if(grey < level)
+				c = 0;
+			else
+				c = 255;
+			imgData[i] = c;
+			imgData[i+1] = c;
+			imgData[i+2] = c;
+			}	
+		ctx.putImageData(img, 0, 0);
+		}
+	//http://en.wikipedia.org/wiki/Otsu%27s_Method
+	this.otsu = function(histogram, total){
+		var sum = 0;
+		for (var i = 1; i < 256; ++i)
+			sum += i * histogram[i];
+		var mB, mF, between;
+		var sumB = 0;
+		var wB = 0;
+		var wF = 0;
+		var max = 0;
+		var threshold = 0;
+		for (var i = 0; i < 256; ++i){
+			wB += histogram[i];
+			if(wB == 0) continue;
+			wF = total - wB;
+			if(wF == 0) break;
+			sumB += i * histogram[i];
+			mB = sumB / wB;
+			mF = (sum - sumB) / wF;
+			between = wB * wF * Math.pow(mB - mF, 2);
+			if(between > max){
+				max = between;
+				threshold = i;
+				}
+			}
+		return threshold;
+		};
+	var x_cache = [];
 	}

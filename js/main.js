@@ -1,5 +1,6 @@
 /*
-TODO:
+TODO:	
+	letters
 */
 
 var MAIN = new MAIN_CLASS();

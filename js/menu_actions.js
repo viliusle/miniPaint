@@ -6,15 +6,13 @@ function MENU_CLASS(){
 	var fx_filter = fx.canvas();
 	
 	this.do_menu = function(name){
+		$('#main_menu').find('.selected').click(); //close menu
 		MENU.last_menu = name;
 
 		//===== File ===========================================================
 		
 		//new
 		if(name == 'file_new'){
-			//ZOOM = 100;
-			//MAIN.init();
-			
 			POP.add({name: "width",		title: "Width:",	value: WIDTH,	});
 			POP.add({name: "height",	title: "Height:",	value: HEIGHT,	});	
 			POP.add({name: "transparency",	title: "Transparent:", 	values: ['Yes', 'No'],});
@@ -27,7 +25,6 @@ function MENU_CLASS(){
 					MAIN.TRANSPARENCY = true;
 				else
 					MAIN.TRANSPARENCY = false;
-				//DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 				
 				ZOOM = 100;
 				WIDTH = width;
@@ -469,8 +466,11 @@ function MENU_CLASS(){
 				}
 			LAYER.layer_renew();
 			}
+		
+		//===== Tools ==========================================================
+		
 		//sprites
-		else if(name == 'layer_sprites'){
+		else if(name == 'tools_sprites'){
 			POP.add({name: "param1", 	title: "Offset:",	value: "50",	values: ["0", "10", "50", "100"] });
 			POP.show('Sprites', function(response){
 				MAIN.save_state();
@@ -478,9 +478,21 @@ function MENU_CLASS(){
 				TOOLS.generate_sprites(param1);
 				});
 			}
-			
+		//show keypoints
+		else if(name == 'tools_keypoints'){
+			SIFT.generate_keypoints(canvas_active(true), true);
+			}
+		//create panorama
+		else if(name == 'tools_panorama'){
+			SIFT.panorama();
+			}
+		
 		//===== Effects ========================================================
 		
+		else if(name == 'effects_bw_otsu'){
+			MAIN.save_state();
+			TOOLS.thresholding('otsu', canvas_active(), WIDTH, HEIGHT);
+			}
 		else if(name == 'effects_bw'){
 			POP.add({name: "param1",	title: "Level:",	value: "125",	range: [0, 255], });
 			POP.show('Black and White', function(user_response){
@@ -1106,10 +1118,10 @@ function MENU_CLASS(){
 			POP.add({name: "de_saturation",	title: "Desaturation:",		value: "40",	range: [0, 100], });
 			POP.add({name: "exposure",	title: "Exposure level:",	value: "80",	range: [0, 150], });
 			POP.add({name: "grains",	title: "Grains level:",		value: "10",	range: [0, 50], });
-			POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 1], step: 0.01, });
-			POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 1], step: 0.01, });
+			POP.add({name: "big_grains",	title: "Big grains level:",	value: "20",	range: [0, 50], });
+			POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 0.5], step: 0.01, });
+			POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 0.7], step: 0.01, });
 			POP.add({name: "dust_level",	title: "Dusts level:",		value: "70",	range: [0, 100],  });
-			POP.add({name: "lines_level",	title: "Lines level:",		value: "50",	range: [0, 100],  });
 			
 			POP.show('Vintage', function(user_response){
 					MAIN.save_state();
@@ -1120,10 +1132,10 @@ function MENU_CLASS(){
 					var de_saturation = parseInt(user_response.de_saturation);
 					var exposure = parseInt(user_response.exposure);
 					var grains = parseInt(user_response.grains);
+					var big_grains = parseInt(user_response.big_grains);
 					var vignette1 = parseFloat(user_response.vignette1);
 					var vignette2 = parseFloat(user_response.vignette2);
 					var dust_level = parseInt(user_response.dust_level);
-					var lines_level = parseInt(user_response.lines_level);
 					
 					VINTAGE.adjust_color(canvas_active(), WIDTH, HEIGHT, red_offset);
 					VINTAGE.lower_contrast(canvas_active(), WIDTH, HEIGHT, contrast);
@@ -1132,9 +1144,9 @@ function MENU_CLASS(){
 					VINTAGE.chemicals(canvas_active(), WIDTH, HEIGHT, de_saturation);
 					VINTAGE.exposure(canvas_active(), WIDTH, HEIGHT, exposure);
 					VINTAGE.grains(canvas_active(), WIDTH, HEIGHT, grains);
+					VINTAGE.grains_big(canvas_active(), WIDTH, HEIGHT, big_grains);
 					VINTAGE.optics(canvas_active(), WIDTH, HEIGHT, vignette1, vignette2);
 					VINTAGE.dusts(canvas_active(), WIDTH, HEIGHT, dust_level);
-					VINTAGE.lines(canvas_active(), WIDTH, HEIGHT, lines_level);
 					DRAW.zoom();
 					},
 				function(user_response, canvas_preview, w, h){
@@ -1145,10 +1157,10 @@ function MENU_CLASS(){
 					var de_saturation = parseInt(user_response.de_saturation);
 					var exposure = parseInt(user_response.exposure);
 					var grains = parseInt(user_response.grains);
+					var big_grains = parseInt(user_response.big_grains);
 					var vignette1 = parseFloat(user_response.vignette1);
 					var vignette2 = parseFloat(user_response.vignette2);
 					var dust_level = parseInt(user_response.dust_level);
-					var lines_level = parseInt(user_response.lines_level);
 					
 					VINTAGE.adjust_color(canvas_preview, w, h, red_offset);
 					VINTAGE.lower_contrast(canvas_preview, w, h, contrast);
@@ -1157,9 +1169,9 @@ function MENU_CLASS(){
 					VINTAGE.chemicals(canvas_preview, w, h, de_saturation);
 					VINTAGE.exposure(canvas_preview, w, h, exposure);
 					VINTAGE.grains(canvas_preview, w, h, grains);
+					VINTAGE.grains_big(canvas_preview, w, h, big_grains);
 					VINTAGE.optics(canvas_preview, w, h, vignette1, vignette2);
 					VINTAGE.dusts(canvas_preview, w, h, dust_level);
-					VINTAGE.lines(canvas_preview, w, h, lines_level);
 					});
 			}	
 		
@@ -1191,8 +1203,12 @@ function MENU_CLASS(){
 			}
 		//credits	
 		else if(name == 'help_credits'){
-			for(var i in CREDITS)
-				POP.add({title: CREDITS[i].title,		html: '<a href="'+CREDITS[i].link+'">'+CREDITS[i].name+'</a>',	});
+			for(var i in CREDITS){
+				if(CREDITS[i].link != undefined)
+					POP.add({title: CREDITS[i].title,	html: '<a href="'+CREDITS[i].link+'">'+CREDITS[i].name+'</a>',	});
+				else
+					POP.add({title: CREDITS[i].title,	html: CREDITS[i].name,	});
+				}
 			POP.show('Credits', '');
 			}	
 		//about	
@@ -1202,11 +1218,9 @@ function MENU_CLASS(){
 			POP.add({title: "Author:",	value: AUTHOR+" - "+EMAIL,	});
 			POP.show('About', '');
 			}
-		
+	
 		//======================================================================
 		
-		//close menu
-		$('.menu').find('.active').removeClass('active');
 		DRAW.zoom();
 		};
 	this.resize_custom = function(user_response){

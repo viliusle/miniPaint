@@ -3,14 +3,17 @@ var LAYER = new LAYER_CLASS();
 function LAYER_CLASS(){
 	this.layer_active = 0;
 	var imageData_tmp;
+	var layer_max_index = 0;
 	
 	//create layer
 	this.layer_add = function(name, data, type){
 		tmp = new Array();
 		if(data == undefined){
 			//empty layer
-			if(name==undefined)
-				name = 'Layer #'+(LAYERS.length+1);
+			if(name==undefined){
+				layer_max_index++;
+				name = 'Layer #'+(layer_max_index+1);
+				}
 			tmp.name = name;
 			tmp.visible = true;
 			tmp.opacity = 1;
@@ -22,10 +25,9 @@ function LAYER_CLASS(){
 			}
 		else{
 			var img = new Image();
+			if(data.substring(0,4) == 'http')
+				img.crossOrigin = "Anonymous";	//data from other domain - turn on CORS
 			img.onload = function(){
-				//image
-				var new_name = name;
-				
 				//check size
 				var size_increased = false;
 				if(img.width > WIDTH || img.height > HEIGHT){
@@ -48,21 +50,29 @@ function LAYER_CLASS(){
 					}
 				
 				for(var i in LAYERS){
-					if(LAYERS[i].name == new_name)
-						new_name = 'Layer #'+(LAYERS.length+1);
+					if(LAYERS[i].name == name){
+						layer_max_index++;
+						name = 'Layer #'+(layer_max_index+1);
+						}
 					}
-				LAYER.create_canvas(new_name);
+				LAYER.create_canvas(name);
 				LAYERS.push({
-					name: new_name, 
+					name: name, 
 					visible: true,
 					opacity: 1,
 					});
 				LAYER.layer_active = LAYERS.length-1;
 
-				document.getElementById(new_name).getContext("2d").globalAlpha = 1;
-				document.getElementById(new_name).getContext('2d').drawImage(img, 0, 0);
+				document.getElementById(name).getContext("2d").globalAlpha = 1;
+				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
 				DRAW.zoom();
+				}
+			img.onerror = function(ex){
+				POP.add({title: "Message:", value: 'The image could not be loaded.',	});
+				if(data.substring(0,4) == 'http')
+					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.',	});
+				POP.show('Error', '.');
 				}
 			img.src = data;
 			}
@@ -75,12 +85,14 @@ function LAYER_CLASS(){
 		new_canvas.setAttribute('id', canvas_id);
 	
 		document.getElementById('canvas_more').appendChild(new_canvas);
-		document.getElementById(canvas_id).width = WIDTH;
-		document.getElementById(canvas_id).height = HEIGHT;
-		document.getElementById(canvas_id).getContext("2d").mozImageSmoothingEnabled = false;
-		document.getElementById(canvas_id).getContext("2d").webkitImageSmoothingEnabled = false;
-		document.getElementById(canvas_id).getContext("2d").ImageSmoothingEnabled = false;
-		//document.getElementById(canvas_id).getContext("2d").scale(ZOOM/100, ZOOM/100);
+		new_canvas.width = WIDTH;
+		new_canvas.height = HEIGHT;
+		new_canvas.getContext("2d").mozImageSmoothingEnabled = false;
+		new_canvas.getContext("2d").webkitImageSmoothingEnabled = false;
+		new_canvas.getContext("2d").ImageSmoothingEnabled = false;
+		//sync zoom
+		new_canvas.style.width = round(WIDTH * ZOOM / 100)+"px";
+		new_canvas.style.height = round(HEIGHT * ZOOM / 100)+"px";
 		};
 	this.move_layer = function(direction){
 		if(LAYERS.length < 2) return false;
@@ -170,11 +182,11 @@ function LAYER_CLASS(){
 		canvas_active().putImageData(tmp, dx, dy);
 		};
 	this.select_layer = function(i){
-		if(LAYER.layer_active != i)
+		if(LAYER.layer_active != i){
 			LAYER.layer_active = i;	//select
-		else
-			LAYER.layer_active = 0;	//remove select
-		this.layer_renew();
+			this.layer_renew();
+			}
+		LAYER.shake(i);
 		};
 	this.layer_renew = function(){	
 		var html = '';
@@ -201,6 +213,24 @@ function LAYER_CLASS(){
 			//show
 			document.getElementById('layers').innerHTML = html;
 			}
+		};
+	this.shake = function(i, nr){
+		var step = 3;
+		var n = 10;
+		
+		if(nr == undefined)
+			nr = 0;
+		var dx = step * (nr%2);
+		if(dx == 0)
+			dx = -step;
+		
+		var element = document.getElementById(LAYERS[i].name);
+		element.style.marginLeft = dx+"px";
+		dx = dx;
+		if(nr < n)
+			setTimeout(function(){LAYER.shake(i, nr + 1)}, 10);
+		else
+			element.style.marginLeft = "0px"; //finish
 		};
 	this.update_info_block = function(){
 		var html = '';

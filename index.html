@@ -7,7 +7,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles/styles.css" />
 <link rel="stylesheet" type="text/css" media="print" href="styles/print.css" />
-<link rel="stylesheet" type="text/css" href="styles/menu.css" />
 </head>
 <body>
 <div id="drop_zone">
@@ -71,7 +70,7 @@
 	<div id="resize-wh"></div>
 	<div id="popup"></div>
 </div>
-<div class="menu">
+<div id="main_menu" class="ddsmoothmenu">
 	<ul>
 	<li>
 		<a href="#">File</a>
@@ -104,11 +103,21 @@
 			<li><a onclick="MENU.do_menu(['image_crop']);" href="#">Crop Selection</a>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['image_resize']);" href="#">Resize...</a></li>
-			<li><a onclick="MENU.do_menu(['image_rotate_left']);" href="#">Rotate Left</a></li>
-			<li><a onclick="MENU.do_menu(['image_rotate_right']);" href="#">Rotate Right</a></li>
-			<li><a onclick="MENU.do_menu(['image_rotate']);" href="#">Custom Rotation...</a></li>
-			<li><a onclick="MENU.do_menu(['image_vflip']);" href="#">Vertical Flip</a></li>
-			<li><a onclick="MENU.do_menu(['image_hflip']);" href="#">Horizontal Flip</a></li>
+			<li>
+				<a href="#">Rotate</a>
+				<ul>
+				<li><a onclick="MENU.do_menu(['image_rotate_left']);" href="#">Left</a></li>
+				<li><a onclick="MENU.do_menu(['image_rotate_right']);" href="#">Right</a></li>
+				<li><a onclick="MENU.do_menu(['image_rotate']);" href="#">Rotation...</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="#">Flip</a>
+				<ul>
+				<li><a onclick="MENU.do_menu(['image_vflip']);" href="#">Vertical</a></li>
+				<li><a onclick="MENU.do_menu(['image_hflip']);" href="#">Horizontal</a></li>
+				</ul>
+			</li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['image_colors']);" href="#">Color corrections...</a></li>
 			<li><a onclick="MENU.do_menu(['image_auto_adjust']);" href="#">Auto adjust colors</a></li>
@@ -117,7 +126,6 @@
 			<li><a onclick="MENU.do_menu(['image_grid']);" href="#">Grid...</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['image_histogram']);" href="#">Histogram...</a></li>
-			<li><a onclick="MENU.do_menu(['layer_sprites']);" href="#">Sprites</a></li>
 		</ul>
 	</li>
 	<li>
@@ -128,8 +136,13 @@
 			<li><a onclick="MENU.do_menu(['layer_show_hide']);" href="#">Show / Hide</a></li>
 			<li><a onclick="MENU.do_menu(['layer_delete']);" href="#">Delete</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['layer_move_up']);" href="#">Move Up</a></li>
-			<li><a onclick="MENU.do_menu(['layer_move_down']);" href="#">Move Down</a></li>
+			<li>
+				<a href="#">Move</a>
+				<ul>
+				<li><a onclick="MENU.do_menu(['layer_move_up']);" href="#">Up</a></li>
+				<li><a onclick="MENU.do_menu(['layer_move_down']);" href="#">Down</a></li>
+				</ul>
+			</li>
 			<li><a onclick="MENU.do_menu(['layer_opacity']);" href="#">Opacity...</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['layer_trim']);" href="#">Trim</a></li>
@@ -139,22 +152,29 @@
 			<li><a onclick="MENU.do_menu(['layer_differences']);" href="#">Differences Down</a></li>
 			<li><a onclick="MENU.do_menu(['layer_merge_down']);" href="#">Merge Down...</a></li>
 			<li><a onclick="MENU.do_menu(['layer_flatten']);" href="#">Flatten Image</a></li>
-			<li><div class="mid-line"></div></li>
 		</ul>
 	</li>
 	<li>
 		<a href="#">Effects</a>
 		<ul>
-			<li><a onclick="MENU.do_menu(['effects_bw']);" href="#">Black and White...</a>
-			<li><div class="mid-line"></div></li>
-			<li><a onclick="MENU.do_menu(['effects_BoxBlur']);" href="#">Blur-Box...</a>
-			<li><a onclick="MENU.do_menu(['effects_GaussianBlur']);" href="#">Blur-Gaussian...</a>
-			<li><a onclick="MENU.do_menu(['effects_StackBlur']);" href="#">Blur-Stack...</a>
-			<li><a onclick="MENU.do_menu(['effects_zoomblur']);" href="#">Blur-Zoom...</a>
-			<li><div class="mid-line"></div></li>
+			<li>
+				<a href="#">Black and White</a>
+				<ul>
+				<li><a onclick="MENU.do_menu(['effects_bw_otsu']);" href="#">Auto</a>
+				<li><a onclick="MENU.do_menu(['effects_bw']);" href="#">Manual...</a>
+				</ul>
+			</li>
+			<li>
+				<a href="#">Blur</a>
+				<ul>
+				<li><a onclick="MENU.do_menu(['effects_BoxBlur']);" href="#">Blur-Box...</a>
+				<li><a onclick="MENU.do_menu(['effects_GaussianBlur']);" href="#">Blur-Gaussian...</a>
+				<li><a onclick="MENU.do_menu(['effects_StackBlur']);" href="#">Blur-Stack...</a>
+				<li><a onclick="MENU.do_menu(['effects_zoomblur']);" href="#">Blur-Zoom...</a>
+				</ul>
+			</li>
 			<li><a onclick="MENU.do_menu(['effects_BrightnessContrast']);" href="#">Brightness Contrast...</a>
 			<li><a onclick="MENU.do_menu(['effects_bulge_pinch']);" href="#">Bulge/Pinch...</a>
-			<li><a onclick="MENU.do_menu(['effects_Channels']);" href="#">Channels...</a>
 			<li><a onclick="MENU.do_menu(['effects_ColorTransformFilter']);" href="#">Color Transform...</a>
 			<li><a onclick="MENU.do_menu(['effects_colorize']);" href="#">Colorize...</a></li>
 			<li><a onclick="MENU.do_menu(['effects_denoise']);" href="#">Denoise...</a>
@@ -181,6 +201,13 @@
 		</ul>
 	</li>
 	<li>
+		<a href="#">Tools</a>
+		<ul>
+			<li><a onclick="MENU.do_menu(['tools_sprites']);" href="#">Sprites</a></li>
+			<li><a onclick="MENU.do_menu(['tools_keypoints']);" href="#">Keypoints</a></li>
+		</ul>
+	</li>
+	<li>
 		<a href="#">Help</a>
 		<ul>
 			<li><a onclick="MENU.do_menu(['help_shortcuts']);" href="#">Keyboard Shortcuts...</a></li>
@@ -202,6 +229,8 @@
 <script src="libs/exif-binaryajax.js"></script>
 <script src="libs/harmony.js"></script>
 <script src="libs/vintage.js"></script>
+<script src="libs/kdtree.js"></script>
+<script src="libs/sift.js"></script>
 
 <script src="js/helpers.js"></script>
 <script src="js/popup.js"></script>

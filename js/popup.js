@@ -17,6 +17,7 @@ function popup(){
 	this.width_mini = 195;
 	this.height_mini = 195;
 	this.preview_in_main = false;
+	this.id = 0;
 	var parameters = [];
 	var layer_active_small = document.createElement("canvas");
 	var layer_active_small_ctx = layer_active_small.getContext("2d");
@@ -33,6 +34,7 @@ function popup(){
 		}
 	//show popup window
 	this.show = function(title, handler, preview_handler, onload_handler){
+		POP.id = HELPER.getRandomInt(0, 999999999); 
 		if(this.active == true){
 			this.hide();
 			return false;
@@ -142,7 +144,7 @@ function popup(){
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g,'').replace(/ +/g,'-');
 				id_tmp = id_tmp.substring(0, 10);
 				if(str.length < 40)
-					html += '<td colspan="2"><input style="width:97%;color:#393939;padding-left:5px;" disabled="disabled" type="text" id="pop_data_'+id_tmp+'" value="'+parameter.value+'" /></td>';
+					html += '<td colspan="2"><input style="width:100%;color:#393939;padding-left:5px;" disabled="disabled" type="text" id="pop_data_'+id_tmp+'" value="'+parameter.value+'" /></td>';
 				else
 					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">'+parameter.value+'</textarea></td>';
 				}

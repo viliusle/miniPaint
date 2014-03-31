@@ -6,8 +6,12 @@ function HELPER_CLASS(){
 	this.timer_init = function(){
 		time = Date.now();
 		};
-	this.timer = function(s){
-		console.log("time("+s+") = "+(Math.round(Date.now() - time)/1000)+" s");
+	this.timer = function(s, echo){
+		var str = "time("+s+") = "+(Math.round(Date.now() - time)/1000)+" s";
+		if(echo === true)
+			return str;
+		else
+			console.log(str);
 		};
 	//get url param
 	this.get_url_param = function(name){
@@ -303,6 +307,13 @@ function HELPER_CLASS(){
 			{for(var d=a[0],f="",k=d.length%c,g=0,i=d.length;g<i;g++)f+=d.charAt(g),!((g-k+1)%c)&&g<i-c&&(f+=e);a[0]=f;}
 		a[1]=b[1]&&a[1]?h+a[1]:"";
 		return(j?"-":"")+a[0]+a[1];
+		};
+	this.length = function(object){
+		var n = 0;
+		for(var i in object){
+			n++;
+			}
+		return n;
 		};
 	}
 //http://www.script-tutorials.com/html5-canvas-custom-brush1/

@@ -8,7 +8,7 @@ var canvas_preview = document.getElementById("canvas_preview").getContext("2d");
 //settings
 var AUTHOR = 'ViliusL';
 var EMAIL = 'www.viliusl@gmail.com';
-var VERSION = '1.8.6';
+var VERSION = '1.9.3';
 var WIDTH = 800;				//canvas midth
 var HEIGHT = 500;				//canvas height
 var RATIO = WIDTH/HEIGHT;			//width & height ratio
@@ -51,4 +51,5 @@ var CREDITS = [
 	{title: 'Effects library',	name: 'glfx.js',	link: 'http://evanw.github.io/glfx.js/', },
 	{title: 'EXIF',			name: 'exif.js',	link: 'https://github.com/jseidelin/exif-js', },
 	{title: 'Image filters',	name: 'ImageFilters.js',link: 'https://github.com/arahaya/ImageFilters.js', },
+	{title: 'KD-tree',		name: 'kdtree.js',	link: 'http://jsdo.it/peko/wKvk', },
 	];

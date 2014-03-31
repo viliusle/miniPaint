@@ -612,10 +612,6 @@ function pasteHandler(e){
 					}
 				}
 			}
-		// If we can't handle clipboard data directly (Firefox),
-		// we need to read what was pasted from the contenteditable element
-		else{
-			}
 		}
 	else{
 		setTimeout(paste_check_Input, 1);
