@@ -27,11 +27,11 @@ function popup(){
 		popup = document.getElementById('popup');
 		popup.style.top = 150+'px';
 		popup.style.left = Math.round(dim[0]/2)+'px';
-		}
+		};
 	//add parameter
 	this.add = function(object){
 		parameters.push(object);
-		}
+		};
 	//show popup window
 	this.show = function(title, handler, preview_handler, onload_handler){
 		POP.id = HELPER.getRandomInt(0, 999999999); 
@@ -204,7 +204,7 @@ function popup(){
 			layer_active_small_ctx.drawImage(document.getElementById(LAYERS[LAYER.layer_active].name), 0, 0, POP.width_mini, POP.height_mini);	
 			POP.view();
 			}
-		}
+		};
 	//hide popup
 	this.hide = function(){
 		document.getElementById('popup').style.display='none';
@@ -215,7 +215,7 @@ function popup(){
 		this.onload = false;
 		this.preview_in_main = false;
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-		}
+		};
 	//renders preview. If input=range supported, is called on every param update - must be fast...
 	this.view = function(){
 		if(this.preview !== false){
@@ -265,7 +265,7 @@ function popup(){
 			else
 				this.preview(response);
 			}
-		}
+		};
 	//OK pressed - prepare data and call handlers
 	this.save = function(){
 		this.active = false;
@@ -313,7 +313,7 @@ function popup(){
 				this.handler(response);
 			}
 		this.handler = '';
-		}
+		};
 	//validate input field, unless browser supports input=range
 	this.validate = function(field){
 		for(var i in parameters){
@@ -330,5 +330,5 @@ function popup(){
 					field.value = parameter.range[1];	//more then max
 				}
 			}
-		}
+		};
 	}

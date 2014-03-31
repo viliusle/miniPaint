@@ -186,7 +186,7 @@ function HELPER_CLASS(){
 			g: parseInt(triplets[1],16),
 			b: parseInt(triplets[2],16),
 			a: 255,
-			}
+			};
 		};
 	this.ColorLuminance = function(hex, lum){
 		// validate hex string
@@ -303,8 +303,9 @@ function HELPER_CLASS(){
 		if(f>-1)	for(;c[0].length<b[0].length-f;)c[0]="0"+c[0];
 		else		+c[0]==0&&(c[0]="");
 		a=a.split(".");a[0]=c[0];
-		if(c=d[1]&&d[d.length-1].length)
-			{for(var d=a[0],f="",k=d.length%c,g=0,i=d.length;g<i;g++)f+=d.charAt(g),!((g-k+1)%c)&&g<i-c&&(f+=e);a[0]=f;}
+		if(c==d[1]&&d[d.length-1].length){
+			for(var d=a[0],f="",k=d.length%c,g=0,i=d.length;g<i;g++)f+=d.charAt(g),!((g-k+1)%c)&&g<i-c&&(f+=e);a[0]=f;
+			}
 		a[1]=b[1]&&a[1]?h+a[1]:"";
 		return(j?"-":"")+a[0]+a[1];
 		};

@@ -140,7 +140,7 @@ function SIFT_CLASS(){
 			return {
 				points: points,
 				trim_details: trim_details,
-				}
+				};
 			}
 		};
 	//returns average value of requested area from greyscale image

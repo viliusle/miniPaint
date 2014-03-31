@@ -67,13 +67,13 @@ function LAYER_CLASS(){
 				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
 				DRAW.zoom();
-				}
+				};
 			img.onerror = function(ex){
 				POP.add({title: "Message:", value: 'The image could not be loaded.',	});
 				if(data.substring(0,4) == 'http')
 					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.',	});
 				POP.show('Error', '.');
-				}
+				};
 			img.src = data;
 			}
 		LAYER.layer_active = LAYERS.length-1;
@@ -226,9 +226,8 @@ function LAYER_CLASS(){
 		
 		var element = document.getElementById(LAYERS[i].name);
 		element.style.marginLeft = dx+"px";
-		dx = dx;
 		if(nr < n)
-			setTimeout(function(){LAYER.shake(i, nr + 1)}, 10);
+			setTimeout(function(){LAYER.shake(i, nr + 1);}, 10);
 		else
 			element.style.marginLeft = "0px"; //finish
 		};

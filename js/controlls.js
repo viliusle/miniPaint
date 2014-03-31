@@ -1,11 +1,11 @@
 var CON = new CONTROLLS_CLASS();
 
 //keyboard handlers
-document.onkeydown = function(e) {return CON.on_keyboard_action(e); }
-document.onkeyup = function(e) {return CON.on_keyboardup_action(e); }
+document.onkeydown = function(e) {return CON.on_keyboard_action(e); };
+document.onkeyup = function(e) {return CON.on_keyboardup_action(e); };
 //mouse
-window.ondrop = function(e){ CON.upload_drop(e); }		//drop
-window.ondragover = function(e){e.preventDefault();  }
+window.ondrop = function(e){ CON.upload_drop(e); };		//drop
+window.ondragover = function(e){e.preventDefault();  };
 document.onmousedown = CON.mouse_click;	//mouse click
 document.onmousemove = CON.mouse_move;	//mouse move
 document.onmouseup = CON.mouse_release;	//mouse resease
@@ -55,7 +55,7 @@ function CONTROLLS_CLASS(){
 		else if(k == 40){
 			if(ACTION=='select_tool'){
 				MAIN.save_state();
-				LAYER.layer_move_active(0, 1)
+				LAYER.layer_move_active(0, 1);
 				return false;
 				}
 			}
@@ -414,7 +414,7 @@ function CONTROLLS_CLASS(){
 		CON.isDrag = false;
 		if(POP != undefined && POP.active==true) return true;
 		var mouse = CON.get_mouse_position(event);
-		mouse_x_move_last = false
+		mouse_x_move_last = false;
 		mouse_y_move_last = false;
 		if(TOOLS.select_square_action == '' && CON.mouse.valid == true)
 			TOOLS.select_data = false;
@@ -520,7 +520,7 @@ function CONTROLLS_CLASS(){
 				}
 				
 			//disable page scroll if ctrl pressed
-			e.preventDefault()
+			e.preventDefault();
 			return false;
 			}
 		};
@@ -555,7 +555,7 @@ function CONTROLLS_CLASS(){
 	
 		DRAW.zoom(undefined, true);
 		return true;
-		}
+		};
 	this.calc_preview_auto = function(){
 		var pad_left = 109;
 		var pad_top = 34;
@@ -628,9 +628,9 @@ function paste_check_Input(){
 	}
 function paste_createImage(source){
 	var pastedImage = new Image();
-	pastedImage.onload = function() {
+	pastedImage.onload = function(){
 		LAYER.layer_add('Paste', source);
-		}
+		};
 	pastedImage.src = source;
 	}
 
