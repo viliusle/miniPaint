@@ -330,6 +330,7 @@ label{
 
 .ddsmoothmenu{
 	position:fixed;
+	z-index:99999;
 	top:0;
 	left:0;
 	width:100%;
@@ -374,14 +375,6 @@ label{
 	background: #E4EBF8;
 	color: #2D2D2D;
 	}
-.ddsmoothmenu ul li ul{
-	position: absolute;
-	left: -3000px;
-	display: none;
-	visibility: hidden;
-	border:1px solid #5680C1;
-	border-top:0px;
-	}
 .ddsmoothmenu .hide_ul{
 	position: absolute;
 	left: -3000px;
@@ -390,8 +383,16 @@ label{
 	border:1px solid #5680C1;
 	border-top:0px;
 	}
+.ddsmoothmenu ul li ul{
+	position: absolute;
+	left: -3000px;
+	display: none;
+	visibility: hidden;
+	border:1px solid #5680C1;
+	border-top:0px;
+	}
 .ddsmoothmenu ul li ul li{
-	display: list-item;	
+	display: list-item;
 	background: #ffffff;
 	float: none;
 	}
@@ -403,7 +404,7 @@ label{
 	padding: 4px 5px 4px 5px;
 	margin: 0;
 	color: #2D2D2D;
-	}
+	}	
 * html .ddsmoothmenu{height: 1%;} /*Hack for IE7 and below*/
 .downarrowclass{
 	position: absolute;

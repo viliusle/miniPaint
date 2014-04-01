@@ -322,7 +322,13 @@ var EXIF = (function() {
                 handleBinaryFile(new BinaryFile(e.target.result));
             };
 
-            fileReader.readAsBinaryString(img);
+            try{
+		fileReader.readAsBinaryString(img);
+	    }
+	    catch(err){
+		console.log("exif.js error: "+err.message);
+		}
+	    
         }
     }
 
