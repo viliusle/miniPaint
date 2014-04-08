@@ -14,7 +14,7 @@ erase, fill, color picker, colour selector, layers, pencil, brush, shapes, trim,
 rotate, resize, transparency, zoom, grid, EXIF data, crop, export/import layers data, 
 paste from clipboard, 31 various filters including blur, Tilt Shift, perspective, 
 denoise, vignette, vintage, auto colorize, auto adjust colors, decrease color deapth, 
-histogram, gradients, Hermite resample.
+histogram, gradients, Hermite resample, keypoints.
 
 Key features: layers, transparency, offline graphics editing.
 
