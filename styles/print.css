@@ -13,7 +13,8 @@ progress,
 #menu_left,
 #layers_container,
 #canvas_back,
-#drop_zone{
+#drop_zone,
+.ddsmoothmenu{
 	display: none;
 	height: 0;
 	width: 0;
