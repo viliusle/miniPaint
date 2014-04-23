@@ -799,6 +799,7 @@ function DRAW_CLASS(){
 				var x2 = (i + j*W2) * 4;
 				var weight = 0;
 				var weights = 0;
+				var weights_alpha = 0;
 				var gx_r = gx_g = gx_b = gx_a = 0;
 				var center_y = (j + 0.5) * ratio_h;
 				for(var yy = Math.floor(j * ratio_h); yy < (j + 1) * ratio_h; yy++){
@@ -813,10 +814,15 @@ function DRAW_CLASS(){
 							weight = 2 * w*w*w - 3*w*w + 1;
 							if(weight > 0){
 								dx = 4*(xx + yy*W);
+								//alpha
+								gx_a += weight * data[dx + 3];
+								weights_alpha += weight;
+								//colors
+								if(data[dx + 3] < 255)
+									weight = weight * data[dx + 3] / 250;
 								gx_r += weight * data[dx];
 								gx_g += weight * data[dx + 1];
 								gx_b += weight * data[dx + 2];
-								gx_a += weight * data[dx + 3];
 								weights += weight;
 								}
 							}
@@ -825,7 +831,7 @@ function DRAW_CLASS(){
 				data2[x2]     = gx_r / weights;
 				data2[x2 + 1] = gx_g / weights;
 				data2[x2 + 2] = gx_b / weights;
-				data2[x2 + 3] = gx_a / weights;
+				data2[x2 + 3] = gx_a / weights_alpha;
 				}
 			}
 		console.log("hermite = "+(Math.round(Date.now() - time1)/1000)+" s");

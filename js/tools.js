@@ -405,6 +405,11 @@ function TOOLS_CLASS(){
 			var c = canvas_active().getImageData(mouse.x, mouse.y, 1, 1).data;
 			COLOUR_LAST = COLOUR;
 			COLOUR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
+			
+			//set alpha
+			ALPHA = c[3];
+			document.getElementById("rgb_a").value = ALPHA;
+			
 			TOOLS.sync_colors();
 			}
 		};
