@@ -38,7 +38,7 @@ function CONTROLLS_CLASS(){
 	
 	//keyboard actions
 	this.on_keyboard_action = function(event){
-		k = event.keyCode;	//log(k);
+		k = event.keyCode;	//console.log(k);
 		
 		if(POP != undefined && POP.active==true && k != 27) return true;
 		if(document.activeElement.type == 'text') return true;
@@ -208,6 +208,14 @@ function CONTROLLS_CLASS(){
 		else if(k==107)
 			DRAW.zoom(+1);
 			
+		//mac support - ctrl
+		if(event.metaKey || event.ctrlKey){
+			if(CON.ctrl_pressed == false)
+				CON.ctrl_pressed = true;
+			if (!window.Clipboard)
+				pasteCatcher.focus();
+			}
+		
 		DRAW.zoom();
 		return true;
 		};
@@ -500,7 +508,7 @@ function CONTROLLS_CLASS(){
 		document.getElementById("drop_zone").style.display='none';
 		};
 	this.mouse_wheel_handler = function(e){	//return true;
-		var step = 100;
+		var step = 100;		e.preventDefault();
 		//zoom
 		if(CON.ctrl_pressed==true){
 			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
