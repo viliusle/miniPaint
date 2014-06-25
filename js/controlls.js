@@ -104,12 +104,8 @@ function CONTROLLS_CLASS(){
 			MENU.open();
 		//s - save
 		else if(k == 83){
-			if(POP != undefined){
-				POP.add({name: "name",		title: "File name:",	value: ["example"],	});
-				POP.add({name: "type",		title: "Save as type:",	values: SAVE_TYPES,	});	
-				POP.add({name: "quality",	title: "Quality (1-100) (optional):",	value: 92, range: [1, 100],	});
-				POP.show('Save as ...', MENU.save);
-				}
+			if(POP != undefined)
+				MENU.save_dialog();
 			}
 		//l - rotate left
 		else if(k == 76){
@@ -207,7 +203,10 @@ function CONTROLLS_CLASS(){
 		//+
 		else if(k==107)
 			DRAW.zoom(+1);
-			
+		//n - new layer
+		else if(k==78)
+			MENU.add_layer();
+		
 		//mac support - ctrl
 		if(event.metaKey || event.ctrlKey){
 			if(CON.ctrl_pressed == false)

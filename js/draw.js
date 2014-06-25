@@ -245,7 +245,7 @@ function DRAW_CLASS(){
 			right: right,
 			};
 		};
-	this.trim = function(layer, no_resize, include_white){
+	this.trim = function(layer, no_resize, include_white){	alert('dfghdghfgd');
 		var all_top = HEIGHT;
 		var all_left = WIDTH;
 		var all_bottom = HEIGHT;

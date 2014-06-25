@@ -218,18 +218,24 @@ function LAYER_CLASS(){
 		var step = 3;
 		var n = 10;
 		
-		if(nr == undefined)
+		if(nr == undefined){
+			//begin
 			nr = 0;
+			canvas_front.drawImage(canvas_active(true), 0, 0);
+			}
 		var dx = step * (nr%2);
 		if(dx == 0)
 			dx = -step;
 		
-		var element = document.getElementById(LAYERS[i].name);
+		var element = document.getElementById('canvas_front');
 		element.style.marginLeft = dx+"px";
 		if(nr < n)
-			setTimeout(function(){LAYER.shake(i, nr + 1);}, 10);
-		else
-			element.style.marginLeft = "0px"; //finish
+			setTimeout(function(){LAYER.shake(i, nr + 1);}, 15);
+		else{
+			//finish shaking
+			element.style.marginLeft = "0px"; 
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			}
 		};
 	this.update_info_block = function(){
 		var html = '';

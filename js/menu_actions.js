@@ -39,10 +39,7 @@ function MENU_CLASS(){
 			}
 		//save
 		else if(name == 'file_save'){
-			POP.add({name: "name",		title: "File name:",	value: ["example"],	});
-			POP.add({name: "type",		title: "Save as type:",	values: SAVE_TYPES,	});	
-			POP.add({name: "quality",	title: "Quality (1-100) (optional):",	value: 92, range: [1, 100],	});
-			POP.show('Save as ...', MENU.save);
+			MENU.save_dialog();
 			}
 		//print
 		else if(name == 'file_print'){
@@ -316,8 +313,7 @@ function MENU_CLASS(){
 		
 		//new layer
 		else if(name == 'layer_new'){
-			MAIN.save_state();
-			LAYER.layer_add();
+			MENU.add_layer();
 			}
 		//dublicate
 		else if(name == 'layer_dublicate'){
@@ -655,30 +651,6 @@ function MENU_CLASS(){
 					var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
 					fx_filter.draw(texture).bulgePinch(round(w/2), round(h/2), param2, param1).update();	//effect
 					canvas_preview.drawImage(fx_filter, 0, 0);
-					});
-			}
-		else if(name == 'effects_Channels'){
-			POP.add({name: "param1",	title: "Channel:",	values: ["Red", "Green", "Blue"],});
-			POP.show('Channels', function(user_response){
-					MAIN.save_state();
-					var param1 = user_response.param1;
-					if(param1 == "Red") channel = 1;
-					else if(param1 == "Green") channel = 2;
-					else if(param1 == "Blue") channel = 3;	
-		
-					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
-					canvas_active().putImageData(filtered, 0, 0);
-					DRAW.zoom();
-					},
-				function(user_response, canvas_preview, w, h){
-					var param1 = user_response.param1;
-					if(param1 == "Red") channel = 1;
-					else if(param1 == "Green") channel = 2;
-					else if(param1 == "Blue") channel = 3;
-					var imageData = canvas_preview.getImageData(0, 0, w, h);
-					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
-					canvas_preview.putImageData(filtered, 0, 0);
 					});
 			}
 		else if(name == 'effects_ColorTransformFilter'){
@@ -1184,6 +1156,7 @@ function MENU_CLASS(){
 			POP.add({title: "F",		value: 'Auto adjust colors',	});
 			POP.add({title: "G",		value: 'Grid on/off',	});
 			POP.add({title: "L",		value: 'Rotate left',	});
+			POP.add({title: "N",		value: 'New layer',	});
 			POP.add({title: "O",		value: 'Open file(s)',	});
 			POP.add({title: "R",		value: 'Resize',	});
 			POP.add({title: "S",		value: 'Save',	});
@@ -1222,6 +1195,44 @@ function MENU_CLASS(){
 		//======================================================================
 		
 		DRAW.zoom();
+		};
+	this.save_dialog = function(){
+		POP.add({name: "name",		title: "File name:",		value: ["example"],	});
+		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES,	});	
+		POP.add({name: "quality",	title: "Quality (1-100):",	value: 92,		range: [1, 100],	});
+		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected'],		});
+		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes'],		});
+		POP.show('Save as ...', MENU.save);
+		};
+	this.add_layer = function(){
+		MAIN.save_state();
+		
+		var tmp = false;
+		var last_layer = LAYER.layer_active;
+		if(TOOLS.select_data != false){
+			tmp = document.createElement("canvas");
+			tmp.width = TOOLS.select_data.w;
+			tmp.height = TOOLS.select_data.h;
+			tmp.getContext("2d").drawImage(canvas_active(true), TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h, 0, 0, TOOLS.select_data.w, TOOLS.select_data.h);
+			}
+		
+		//crete layer
+		LAYER.layer_add();
+		
+		if(TOOLS.select_data != false){
+			//copy user selected data to new layer
+			canvas_active().drawImage(tmp, 0, 0);
+			LAYER.layer_renew();	
+			
+			//clear selection
+			TOOLS.select_data = false;
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			
+			//switch back to old layer
+			LAYER.layer_active = last_layer;
+			LAYER.layer_renew();
+			}
+		
 		};
 	this.resize_custom = function(user_response){
 		MAIN.save_state();
@@ -1414,9 +1425,23 @@ function MENU_CLASS(){
 			tempCtx.fillStyle = "#ffffff";
 			tempCtx.fill();
 			}
+		
+		//take data
 		for(var i in LAYERS){
 			if(LAYERS[i].visible == false) continue;
+			if(user_response.layers == 'Selected' && user_response.type != 'XML' && i != LAYER.layer_active) continue;
 			tempCtx.drawImage(document.getElementById(LAYERS[i].name), 0, 0, WIDTH, HEIGHT);
+			}
+		
+		if(user_response.trim == 'Yes' && user_response.type != 'XML'){
+			//trim
+			var trim_info = DRAW.trim_info(tempCanvas);
+			tmp_data = tempCtx.getImageData(0, 0, WIDTH, HEIGHT);
+			tempCtx.clearRect(0, 0, WIDTH, HEIGHT);
+			tempCanvas.width = WIDTH - trim_info.right - trim_info.left;
+			tempCanvas.height = HEIGHT - trim_info.bottom - trim_info.top;
+			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
+			
 			}
 		
 		//detect type
@@ -1450,7 +1475,7 @@ function MENU_CLASS(){
 				fname = fname+".jpg";
 			}
 		else if(user_response.type == 'BMP'){
-			//bmp - lets hope user really needs this - disabled - chrome dod not supprot it
+			//bmp - lets hope user really needs this - chrome do not support it
 			var data = tempCanvas.toDataURL("image/bmp");
 			var data_header = "image/bmp";
 			if(HELPER.strpos(fname, '.bmp')==false)
