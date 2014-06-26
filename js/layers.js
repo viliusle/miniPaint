@@ -59,7 +59,7 @@ function LAYER_CLASS(){
 				LAYERS.push({
 					name: name, 
 					visible: true,
-					opacity: 1,
+					opacity: 1
 					});
 				LAYER.layer_active = LAYERS.length-1;
 
@@ -69,9 +69,9 @@ function LAYER_CLASS(){
 				DRAW.zoom();
 				};
 			img.onerror = function(ex){
-				POP.add({title: "Message:", value: 'The image could not be loaded.',	});
+				POP.add({title: "Message:", value: 'The image could not be loaded.'});
 				if(data.substring(0,4) == 'http')
-					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.',	});
+					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.'});
 				POP.show('Error', '.');
 				};
 			img.src = data;

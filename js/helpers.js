@@ -185,7 +185,7 @@ function HELPER_CLASS(){
 			r: parseInt(triplets[0],16),
 			g: parseInt(triplets[1],16),
 			b: parseInt(triplets[2],16),
-			a: 255,
+			a: 255
 			};
 		};
 	this.ColorLuminance = function(hex, lum){
@@ -278,7 +278,9 @@ function HELPER_CLASS(){
 		};
 	//credits: richard maloney 2006
 	this.darkenColor = function(color, v){
-		if (color.length >6) { color= color.substring(1,color.length)}
+		if (color.length >6){
+			color = color.substring(1,color.length); 
+			}
 		var rgb = parseInt(color, 16); 
 		var r = Math.abs(((rgb >> 16) & 0xFF)+v); if (r>255) r=r-(r-255);
 		var g = Math.abs(((rgb >> 8) & 0xFF)+v); if (g>255) g=g-(g-255);

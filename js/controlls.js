@@ -281,7 +281,7 @@ function CONTROLLS_CLASS(){
 			valid: valid,
 			click_valid: mouse_click_valid,
 			abs_x: abs_x,
-			abs_y: abs_y, 
+			abs_y: abs_y
 			};
 		};
 	//mouse right click
@@ -463,7 +463,8 @@ function CONTROLLS_CLASS(){
 		progress.value = progress.innerHTML = 0;
 		MAIN.save_state();
 		var n_valid = 0;
-		for (var i = 0, f; f = e.dataTransfer.files[i]; i++){
+		for (var i = 0, f; i < e.dataTransfer.files.length ; i++){
+			f = e.dataTransfer.files[i];
 			if(!f.type.match('image.*') && f.type != 'text/xml') continue;
 			n_valid++;
 		

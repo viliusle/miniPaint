@@ -74,8 +74,8 @@ function DRAW_CLASS(){
 			r: imgData[k+0],
 			g: imgData[k+1],
 			b: imgData[k+2],
-			a: imgData[k+3],
-			}
+			a: imgData[k+3]
+			};
 		if(color_from.r == color_to.r && 
 		  color_from.g == color_to.g && 
 		  color_from.b == color_to.b && 
@@ -120,14 +120,14 @@ function DRAW_CLASS(){
 			r: 255,
 			g: 255,
 			b: 255,
-			a: 0,
-			}
+			a: 0
+			};
 		var color_from = {
 			r: imgData[k+0],
 			g: imgData[k+1],
 			b: imgData[k+2],
-			a: imgData[k+3],
-			}
+			a: imgData[k+3]
+			};
 		if(color_from.r == color_to.r && 
 		  color_from.g == color_to.g && 
 		  color_from.b == color_to.b && 
@@ -242,7 +242,7 @@ function DRAW_CLASS(){
 			top: top,
 			left: left,
 			bottom: bottom,
-			right: right,
+			right: right
 			};
 		};
 	this.trim = function(layer, no_resize, include_white){	alert('dfghdghfgd');
@@ -333,7 +333,7 @@ function DRAW_CLASS(){
 				top: all_top,
 				left: all_left,
 				bottom: all_bottom,
-				right: all_right,
+				right: all_right
 				};
 			}
 		else{
@@ -384,7 +384,7 @@ function DRAW_CLASS(){
 		var colors_top_sort = [];
 		for (var i in colors_top)
 			colors_top_sort.push(colors_top[i]);
-		colors_top_sort.sort(function(a, b) {return b[0] - a[0]});
+		colors_top_sort.sort(function(a, b) {return b[0] - a[0];});
 		colors_top = colors_top_sort;
 		
 		if(colors_top.length > 256){	

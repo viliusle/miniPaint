@@ -130,7 +130,7 @@ function MAIN_CLASS(){
 				
 				LAYER.layer_renew();
 				DRAW.zoom();
-				}
+				};
 			});
 		};
 	}
