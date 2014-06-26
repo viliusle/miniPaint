@@ -318,6 +318,11 @@ function HELPER_CLASS(){
 			}
 		return n;
 		};
+	this.chech_input_color_support = function(id){
+		if(document.getElementById(id).value != undefined && document.getElementById(id).value[0] == '#')
+			return true;
+		return false;
+		};
 	}
 //http://www.script-tutorials.com/html5-canvas-custom-brush1/
 var BezierCurveBrush = {

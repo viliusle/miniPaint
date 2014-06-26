@@ -80,7 +80,12 @@ function TOOLS_CLASS(){
 						
 				//save
 				this.action_data().attributes[k] = object.value;
-				document.getElementById("main_colour").value = object.value;
+				
+				if(HELPER.chech_input_color_support('main_colour') == true)
+					document.getElementById("main_colour").value = object.value; //supported
+				else
+					document.getElementById("main_colour_alt").style.backgroundColor = object.value; //not supported
+				
 				document.getElementById(k).value = object.value;
 				}
 			if(this.action_data().on_update != undefined)
@@ -146,9 +151,17 @@ function TOOLS_CLASS(){
 		};
 	this.set_color = function(object){
 		COLOUR_LAST = COLOUR;
-		COLOUR = HELPER.rgb2hex_all(object.style.backgroundColor);
+		if(HELPER.chech_input_color_support('main_colour') == true && object.id == 'main_colour')
+			COLOUR = object.value;
+		else
+			COLOUR = HELPER.rgb2hex_all(object.style.backgroundColor);
 		COLOUR_copy = COLOUR;
-		document.getElementById("main_colour").style.backgroundColor = COLOUR;
+		
+		if(HELPER.chech_input_color_support('main_colour') == true)
+			document.getElementById("main_colour").value = COLOUR; //supported
+		else
+			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR; //not supported
+		
 		document.getElementById("color_hex").value = COLOUR;
 		var colours = HELPER.hex2rgb(COLOUR);
 		document.getElementById("rgb_r").value = colours.r;
@@ -185,7 +198,12 @@ function TOOLS_CLASS(){
 		};
 	this.sync_colors = function(){
 		document.getElementById("color_hex").value = COLOUR;
-		document.getElementById("main_colour").style.backgroundColor = COLOUR;
+		
+		if(HELPER.chech_input_color_support('main_colour') == true)
+			document.getElementById("main_colour").value = COLOUR; //supported
+		else
+			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR; //not supported
+		
 		var colours = HELPER.hex2rgb(COLOUR);
 		document.getElementById("rgb_r").value = colours.r;
 		document.getElementById("rgb_g").value = colours.g;
