@@ -805,7 +805,7 @@ function DRAW_CLASS(){
 				for(var yy = Math.floor(j * ratio_h); yy < (j + 1) * ratio_h; yy++){
 					var dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
 					var center_x = (i + 0.5) * ratio_w;
-					var w0 = dy*dy //pre-calc part of w
+					var w0 = dy*dy; //pre-calc part of w
 					for(var xx = Math.floor(i * ratio_w); xx < (i + 1) * ratio_w; xx++){
 						var dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
 						var w = Math.sqrt(w0 + dx*dx);
