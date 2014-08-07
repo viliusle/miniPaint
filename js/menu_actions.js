@@ -1199,7 +1199,7 @@ function MENU_CLASS(){
 	this.save_dialog = function(){
 		POP.add({name: "name",		title: "File name:",		value: ["example"]	});
 		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES	});	
-		POP.add({name: "quality",	title: "Quality (1-100):",	value: 85,		range: [1, 100]	});
+		POP.add({name: "quality",	title: "Quality (1-100):",	value: 90,		range: [1, 100]	});
 		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected']		});
 		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes']		});
 		POP.show('Save as ...', MENU.save);
@@ -1473,7 +1473,7 @@ function MENU_CLASS(){
 			//jpg
 			var quality = parseInt(user_response.quality);
 			if(quality>100 || quality < 1 || isNaN(quality)==true)
-				quality = 85;
+				quality = 90;
 			quality = quality/100;
 			var data = tempCanvas.toDataURL('image/jpeg', quality);
 			var data_header = "image/jpeg";
