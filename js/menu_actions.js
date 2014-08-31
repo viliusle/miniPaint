@@ -1372,8 +1372,14 @@ function MENU_CLASS(){
 			if(width > WIDTH || height > HEIGHT) return false;
 			
 			DRAW.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
-			if(MENU.last_menu != 'layer_resize')
-				DRAW.trim();
+			if(MENU.last_menu != 'layer_resize'){
+				WIDTH = width;
+				HEIGHT = height;
+				if(WIDTH<1) WIDTH = 1;
+				if(HEIGHT<1) HEIGHT = 1;
+				RATIO = WIDTH/HEIGHT;
+				LAYER.set_canvas_size();
+				}
 			DRAW.zoom();
 			}
 		//simple resize	

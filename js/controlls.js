@@ -230,6 +230,9 @@ function CONTROLLS_CLASS(){
 		//alt
 		else if(k==18)
 			CON.alt_pressed = false;
+		//mac support - ctrl
+		if(event.metaKey || event.ctrlKey || event.key == 'Meta')
+			CON.ctrl_pressed = false;
 		};
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function(event){
