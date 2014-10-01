@@ -13,9 +13,9 @@ function MENU_CLASS(){
 		
 		//new
 		if(name == 'file_new'){
-			POP.add({name: "width",		title: "Width:",	value: WIDTH,	});
-			POP.add({name: "height",	title: "Height:",	value: HEIGHT,	});	
-			POP.add({name: "transparency",	title: "Transparent:", 	values: ['Yes', 'No'],});
+			POP.add({name: "width",		title: "Width:",	value: WIDTH	});
+			POP.add({name: "height",	title: "Height:",	value: HEIGHT	});	
+			POP.add({name: "transparency",	title: "Transparent:", 	values: ['Yes', 'No']});
 			POP.show('New file...', function(response){
 				var width = parseInt(response.width);
 				var height = parseInt(response.height);
@@ -39,10 +39,7 @@ function MENU_CLASS(){
 			}
 		//save
 		else if(name == 'file_save'){
-			POP.add({name: "name",		title: "File name:",	value: ["example"],	});
-			POP.add({name: "type",		title: "Save as type:",	values: SAVE_TYPES,	});	
-			POP.add({name: "quality",	title: "Quality (1-100) (optional):",	value: 92, range: [1, 100],	});
-			POP.show('Save as ...', MENU.save);
+			MENU.save_dialog();
 			}
 		//print
 		else if(name == 'file_print'){
@@ -82,7 +79,7 @@ function MENU_CLASS(){
 				x: 	0,
 				y: 	0,
 				w: 	WIDTH,
-				h: 	HEIGHT,
+				h: 	HEIGHT
 				};
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			TOOLS.draw_selected_area();
@@ -100,18 +97,18 @@ function MENU_CLASS(){
 			var colors = TOOLS.unique_colors_count(canvas_active(true));
 			colors = HELPER.format("#,##0.####", colors);
 			
-			POP.add({title: "Width:",	value: WIDTH,	});
-			POP.add({title: "Height:",	value: HEIGHT,	});
-			POP.add({title: "Unique colors:",	value: colors,	});
+			POP.add({title: "Width:",	value: WIDTH	});
+			POP.add({title: "Height:",	value: HEIGHT	});
+			POP.add({title: "Unique colors:",	value: colors	});
 			//exif
 			for(var i in TOOLS.EXIF)
-				POP.add({title: i+":",	value: TOOLS.EXIF[i],	});
+				POP.add({title: i+":",	value: TOOLS.EXIF[i]	});
 			POP.show('Information', '');
 			}
 		//size
 		else if(name == 'image_size'){
-			POP.add({name: "width",		title: "Width:",	value: WIDTH,	});
-			POP.add({name: "height",	title: "Height:",	value: HEIGHT,	});	
+			POP.add({name: "width",		title: "Width:",	value: WIDTH	});
+			POP.add({name: "height",	title: "Height:",	value: HEIGHT	});	
 			POP.show('Attributes', this.resize_custom);
 			}
 		//trim
@@ -123,7 +120,7 @@ function MENU_CLASS(){
 		else if(name == 'image_crop'){
 			MAIN.save_state();
 			if(TOOLS.select_data == false){
-				POP.add({title: "Error:",	value: 'Select are first',	});
+				POP.add({title: "Error:",	value: 'Select are first'	});
 				POP.show('Error', '');
 				}
 			else{
@@ -157,7 +154,7 @@ function MENU_CLASS(){
 			}
 		//rotate
 		else if(name == 'image_rotate'){
-			POP.add({name: "angle", 	title: "Enter angle (0-360):",	value: 0, range: [0, 360],	});
+			POP.add({name: "angle", 	title: "Enter angle (0-360):",	value: 0, range: [0, 360]	});
 			POP.show('Rotate', function(response){
 					MAIN.save_state();
 					MENU.rotate_resize_doc(response.angle, WIDTH, HEIGHT); 
@@ -199,14 +196,14 @@ function MENU_CLASS(){
 			}
 		//color corrections
 		else if(name == 'image_colors'){
-			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param_red",	title: "Red offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_green",	title: "Green offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_blue",	title: "Blue offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param_h",	title: "Hue:",		value: "0",	range: [-180, 180], });
-			POP.add({name: "param_s",	title: "Saturation:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param_l",	title: "Luminance:",	value: "0",	range: [-100, 100], });
+			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100] });
+			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100] });
+			POP.add({name: "param_red",	title: "Red offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param_green",	title: "Green offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param_blue",	title: "Blue offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param_h",	title: "Hue:",		value: "0",	range: [-180, 180] });
+			POP.add({name: "param_s",	title: "Saturation:",	value: "0",	range: [-100, 100] });
+			POP.add({name: "param_l",	title: "Luminance:",	value: "0",	range: [-100, 100] });
 			
 			POP.show('Brightness Contrast', function(user_response){
 					MAIN.save_state();
@@ -256,9 +253,9 @@ function MENU_CLASS(){
 			}
 		//enchance colors
 		else if(name == 'image_decrease_colors'){
-			POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100], });
-			POP.add({name: "param2",	title: "Dithering:",	values: ["Yes", "No"], });
-			POP.add({name: "param3",	title: "Greyscale:",	values: ["Yes", "No"], value: "No", });
+			POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100] });
+			POP.add({name: "param2",	title: "Dithering:",	values: ["Yes", "No"] });
+			POP.add({name: "param3",	title: "Greyscale:",	values: ["Yes", "No"], value: "No" });
 			POP.show('Decrease colors', function(user_response){
 				MAIN.save_state();
 				var param1 = parseInt(user_response.param1);
@@ -286,13 +283,13 @@ function MENU_CLASS(){
 			if(TOOLS.select_data == false)
 				canvas_active().putImageData(imageData, 0, 0);
 			else
-				canvas_active().putImageData(imageData, TOOLS.select_data.x, TOOLS.select_data.y)
+				canvas_active().putImageData(imageData, TOOLS.select_data.x, TOOLS.select_data.y);
 			}
 		//grid
 		else if(name == 'image_grid'){
 			if(MAIN.grid == false){
-				POP.add({name: "gap_x",		title: "Horizontal gap:",	value: "50",	});
-				POP.add({name: "gap_y",		title: "Vertical gap:",	value: "50",	});	
+				POP.add({name: "gap_x",		title: "Horizontal gap:",	value: "50"	});
+				POP.add({name: "gap_y",		title: "Vertical gap:",	value: "50"	});	
 				POP.show('Grid', function(response){
 					gap_x = response.gap_x;
 					gap_y = response.gap_y;
@@ -316,8 +313,7 @@ function MENU_CLASS(){
 		
 		//new layer
 		else if(name == 'layer_new'){
-			MAIN.save_state();
-			LAYER.layer_add();
+			MENU.add_layer();
 			}
 		//dublicate
 		else if(name == 'layer_dublicate'){
@@ -375,7 +371,7 @@ function MENU_CLASS(){
 		//show differences
 		else if(name == 'layer_differences'){
 			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
-				POP.add({title: "Error:",	value: 'This can not be last layer',	});
+				POP.add({title: "Error:",	value: 'This can not be last layer'	});
 				POP.show('Error', '');
 				return false;
 				}
@@ -397,11 +393,11 @@ function MENU_CLASS(){
 						"lighter", "darker", "copy", "xor"];
 			
 			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
-				POP.add({title: "Error:",	value: 'This can not be last layer',	});
+				POP.add({title: "Error:",	value: 'This can not be last layer'	});
 				POP.show('Error', '');
 				return false;
 				}
-			POP.add({name: "param1", 	title: "Composition:",	values: compositions,	 });
+			POP.add({name: "param1", 	title: "Composition:",	values: compositions	 });
 			POP.show('Merge', function(response){
 					var param1 = response.param1;
 					
@@ -494,7 +490,7 @@ function MENU_CLASS(){
 			TOOLS.thresholding('otsu', canvas_active(), WIDTH, HEIGHT);
 			}
 		else if(name == 'effects_bw'){
-			POP.add({name: "param1",	title: "Level:",	value: "125",	range: [0, 255], });
+			POP.add({name: "param1",	title: "Level:",	value: "125",	range: [0, 255] });
 			POP.show('Black and White', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -509,9 +505,9 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_BoxBlur'){
-			POP.add({name: "param1",	title: "H Radius:",	value: "3",	range: [1, 20], });
-			POP.add({name: "param2",	title: "V Radius:",	value: "3",	range: [1, 20], });
-			POP.add({name: "param3",	title: "Quality:",	value: "2",	range: [1, 10], });
+			POP.add({name: "param1",	title: "H Radius:",	value: "3",	range: [1, 20] });
+			POP.add({name: "param2",	title: "V Radius:",	value: "3",	range: [1, 20] });
+			POP.add({name: "param3",	title: "Quality:",	value: "2",	range: [1, 10] });
 			POP.show('Blur-Box', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -552,7 +548,7 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_StackBlur'){
-			POP.add({name: "param1",	title: "Radius:",	value: "6",	range: [1, 40], });
+			POP.add({name: "param1",	title: "Radius:",	value: "6",	range: [1, 40] });
 			POP.show('Blur-Stack', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -570,9 +566,9 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_zoomblur'){
-			POP.add({name: "param1",	title: "Strength:",	value: "0.3",	range: [0, 1], step: 0.01, });
-			POP.add({name: "param2",	title: "Center x:",	value: round(WIDTH/2),	range: [0, WIDTH], });
-			POP.add({name: "param3",	title: "Center y:",	value: round(HEIGHT/2),	range: [0, HEIGHT], });
+			POP.add({name: "param1",	title: "Strength:",	value: "0.3",	range: [0, 1], step: 0.01 });
+			POP.add({name: "param2",	title: "Center x:",	value: round(WIDTH/2),	range: [0, WIDTH] });
+			POP.add({name: "param3",	title: "Center y:",	value: round(HEIGHT/2),	range: [0, HEIGHT] });
 			POP.show('Blur-Zoom', function(user_response){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
@@ -608,8 +604,8 @@ function MENU_CLASS(){
 					});
 			}	
 		else if(name == 'effects_BrightnessContrast'){
-			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100], });
+			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100] });
+			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100] });
 			POP.show('Brightness Contrast', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -630,10 +626,10 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_bulge_pinch'){
-			POP.add({name: "param1",	title: "Strength:",	value: 1,	range: [-1, 1],  step: 0.1, });
+			POP.add({name: "param1",	title: "Strength:",	value: 1,	range: [-1, 1],  step: 0.1 });
 			var default_value = Math.min(WIDTH, HEIGHT);
 			default_value = round(default_value/2);
-			POP.add({name: "param2",	title: "Radius:",	value: default_value,	range: [0, 600], });
+			POP.add({name: "param2",	title: "Radius:",	value: default_value,	range: [0, 600] });
 			POP.show('Bulge/Pinch', function(user_response){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
@@ -657,35 +653,11 @@ function MENU_CLASS(){
 					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
-		else if(name == 'effects_Channels'){
-			POP.add({name: "param1",	title: "Channel:",	values: ["Red", "Green", "Blue"],});
-			POP.show('Channels', function(user_response){
-					MAIN.save_state();
-					var param1 = user_response.param1;
-					if(param1 == "Red") channel = 1;
-					else if(param1 == "Green") channel = 2;
-					else if(param1 == "Blue") channel = 3;	
-		
-					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
-					canvas_active().putImageData(filtered, 0, 0);
-					DRAW.zoom();
-					},
-				function(user_response, canvas_preview, w, h){
-					var param1 = user_response.param1;
-					if(param1 == "Red") channel = 1;
-					else if(param1 == "Green") channel = 2;
-					else if(param1 == "Blue") channel = 3;
-					var imageData = canvas_preview.getImageData(0, 0, w, h);
-					var filtered = ImageFilters.Channels(imageData, channel);	//add effect
-					canvas_preview.putImageData(filtered, 0, 0);
-					});
-			}
 		else if(name == 'effects_ColorTransformFilter'){
-			POP.add({name: "param5",	title: "Red offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param6",	title: "Green offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param7",	title: "Blue offset:",	value: "0",	range: [-255, 255], });
-			POP.add({name: "param8",	title: "Alpha offset:",	value: "0",	range: [-255, 255], });
+			POP.add({name: "param5",	title: "Red offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param6",	title: "Green offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param7",	title: "Blue offset:",	value: "0",	range: [-255, 255] });
+			POP.add({name: "param8",	title: "Alpha offset:",	value: "0",	range: [-255, 255] });
 			POP.show('Color Transform', function(user_response){
 					MAIN.save_state();
 					var param5 = parseInt(user_response.param5);
@@ -711,10 +683,10 @@ function MENU_CLASS(){
 		else if(name == 'effects_colorize'){
 			var colorize_data;
 			
-			POP.add({name: "param1",	title: "Power:",	value: "3",	range: [1, 10], });
-			POP.add({name: "param2",	title: "Limit:",	value: "30",	range: [10, 200], });
-			POP.add({name: "param3",	title: "Dithering:",	values: ["Yes", "No"], });
-			POP.add({title: "Shortcut:",	value: "C", });
+			POP.add({name: "param1",	title: "Power:",	value: "3",	range: [1, 10] });
+			POP.add({name: "param2",	title: "Limit:",	value: "30",	range: [10, 200] });
+			POP.add({name: "param3",	title: "Dithering:",	values: ["Yes", "No"] });
+			POP.add({title: "Shortcut:",	value: "C" });
 			POP.preview_in_main = true;
 			POP.show('Auto colorize', function(user_response){
 					MAIN.save_state();
@@ -738,7 +710,7 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_denoise'){
-			POP.add({name: "param1",	title: "Exponent:",	value: "20",	range: [0, 50],  });
+			POP.add({name: "param1",	title: "Exponent:",	value: "20",	range: [0, 50]  });
 			POP.show('Denoise', function(user_response){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
@@ -764,7 +736,7 @@ function MENU_CLASS(){
 			canvas_active().putImageData(filtered, 0, 0);
 			}
 		else if(name == 'effects_Dither'){
-			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32], });
+			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32] });
 			POP.show('Dither', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -782,8 +754,8 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_dot_screen'){
-			POP.add({name: "param1",	title: "Angle:",	value: "1.1",	range: [0, 1.5], });
-			POP.add({name: "param2",	title: "Size:",	value: "3",	range: [1, 20], });
+			POP.add({name: "param1",	title: "Angle:",	value: "1.1",	range: [0, 1.5] });
+			POP.add({name: "param2",	title: "Size:",	value: "3",	range: [1, 20] });
 			POP.show('Dot Screen', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -823,7 +795,7 @@ function MENU_CLASS(){
 			canvas_active().putImageData(filtered, 0, 0);
 			}
 		else if(name == 'effects_Gamma'){
-			POP.add({name: "param1",	title: "Gamma:",	value: "1",	range: [0, 3], step: 0.1, });
+			POP.add({name: "param1",	title: "Gamma:",	value: "1",	range: [0, 3], step: 0.1 });
 			POP.show('Gamma', function(user_response){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
@@ -848,9 +820,9 @@ function MENU_CLASS(){
 			canvas_active().putImageData(filtered, 0, 0);
 			}
 		else if(name == 'effects_HSLAdjustment'){
-			POP.add({name: "param1",	title: "Hue:",	value: "0",	range: [-180, 180], });
-			POP.add({name: "param2",	title: "Saturation:",	value: "0",	range: [-100, 100], });
-			POP.add({name: "param3",	title: "Luminance:",	value: "0",	range: [-100, 100], });
+			POP.add({name: "param1",	title: "Hue:",	value: "0",	range: [-180, 180] });
+			POP.add({name: "param2",	title: "Saturation:",	value: "0",	range: [-100, 100] });
+			POP.add({name: "param3",	title: "Luminance:",	value: "0",	range: [-100, 100] });
 			POP.show('HSL Adjustment', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -872,7 +844,7 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_Mosaic'){
-			POP.add({name: "param1",	title: "Size:",	value: "10",	range: [1, 100], });
+			POP.add({name: "param1",	title: "Size:",	value: "10",	range: [1, 100] });
 			POP.show('Mosaic', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -890,8 +862,8 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_Oil'){
-			POP.add({name: "param1",	title: "Range:",	value: "2",	range: [1, 5], });
-			POP.add({name: "param2",	title: "Levels:",	value: "32",	range: [1, 256], });
+			POP.add({name: "param1",	title: "Range:",	value: "2",	range: [1, 5] });
+			POP.add({name: "param2",	title: "Levels:",	value: "32",	range: [1, 256] });
 			POP.show('Oil', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -911,14 +883,14 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_perspective'){
-			POP.add({name: "param1",	title: "X1:",	value: WIDTH/4,		range: [0, WIDTH],  });
-			POP.add({name: "param2",	title: "Y1:",	value: HEIGHT/4,	range: [0, HEIGHT],  });
-			POP.add({name: "param3",	title: "X2:",	value: WIDTH*3/4,	range: [0, WIDTH],  });
-			POP.add({name: "param4",	title: "Y2:",	value: HEIGHT/4,	range: [0, HEIGHT],  });
-			POP.add({name: "param5",	title: "X3:",	value: WIDTH*3/4,	range: [0, WIDTH],  });
-			POP.add({name: "param6",	title: "Y3:",	value: HEIGHT*3/4,	range: [0, HEIGHT],  });
-			POP.add({name: "param7",	title: "X4:",	value: WIDTH/4,		range: [0, WIDTH],  });
-			POP.add({name: "param8",	title: "Y4:",	value: HEIGHT*3/4,	range: [0, HEIGHT],  });
+			POP.add({name: "param1",	title: "X1:",	value: WIDTH/4,		range: [0, WIDTH]  });
+			POP.add({name: "param2",	title: "Y1:",	value: HEIGHT/4,	range: [0, HEIGHT]  });
+			POP.add({name: "param3",	title: "X2:",	value: WIDTH*3/4,	range: [0, WIDTH]  });
+			POP.add({name: "param4",	title: "Y2:",	value: HEIGHT/4,	range: [0, HEIGHT]  });
+			POP.add({name: "param5",	title: "X3:",	value: WIDTH*3/4,	range: [0, WIDTH]  });
+			POP.add({name: "param6",	title: "Y3:",	value: HEIGHT*3/4,	range: [0, HEIGHT]  });
+			POP.add({name: "param7",	title: "X4:",	value: WIDTH/4,		range: [0, WIDTH]  });
+			POP.add({name: "param8",	title: "Y4:",	value: HEIGHT*3/4,	range: [0, HEIGHT]  });
 			POP.preview_in_main = true;
 			POP.show('Perspective', function(user_response){
 					MAIN.save_state();
@@ -969,7 +941,7 @@ function MENU_CLASS(){
 				}
 			}
 		else if(name == 'effects_Posterize'){
-			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32], });
+			POP.add({name: "param1",	title: "Levels:",	value: "8",	range: [2, 32] });
 			POP.show('Posterize', function(user_response){
 					MAIN.save_state();
 					var param1 = parseInt(user_response.param1);
@@ -1017,16 +989,16 @@ function MENU_CLASS(){
 			}
 		else if(name == 'effects_tilt_shift'){
 			//extra
-			POP.add({name: "param7",	title: "Saturation:",	value: "30",	range: [0, 100], });
-			POP.add({name: "param8",	title: "Sharpen:",	value: "3",	range: [1, 10], });		
+			POP.add({name: "param7",	title: "Saturation:",	value: "30",	range: [0, 100] });
+			POP.add({name: "param8",	title: "Sharpen:",	value: "3",	range: [1, 10] });		
 			//main
-			POP.add({name: "param1",	title: "Blur Radius:",	value: "15",	range: [0, 50], });
-			POP.add({name: "param2",	title: "Gradient Radius:",	value: "200",	range: [0, 400], });
+			POP.add({name: "param1",	title: "Blur Radius:",	value: "15",	range: [0, 50] });
+			POP.add({name: "param2",	title: "Gradient Radius:",	value: "200",	range: [0, 400] });
 			//startX, startY, endX, endY
-			POP.add({name: "param3",	title: "X start:",	value: "0",	range: [0, WIDTH], });
-			POP.add({name: "param4",	title: "Y start:",	value: round(HEIGHT/2),	range: [0, HEIGHT], });
-			POP.add({name: "param5",	title: "X end:",	value: WIDTH,	range: [0, WIDTH], });
-			POP.add({name: "param6",	title: "Y end:",	value: round(HEIGHT/2),	range: [0, HEIGHT], });
+			POP.add({name: "param3",	title: "X start:",	value: "0",	range: [0, WIDTH] });
+			POP.add({name: "param4",	title: "Y start:",	value: round(HEIGHT/2),	range: [0, HEIGHT] });
+			POP.add({name: "param5",	title: "X end:",	value: WIDTH,	range: [0, WIDTH] });
+			POP.add({name: "param6",	title: "Y end:",	value: round(HEIGHT/2),	range: [0, HEIGHT] });
 			
 			POP.show('Tilt Shift', function(user_response){
 					MAIN.save_state();
@@ -1088,8 +1060,8 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_vignette'){
-			POP.add({name: "param1",	title: "Size:",	value: "0.5",	range: [0, 1], step: 0.01, });
-			POP.add({name: "param2",	title: "Amount:",	value: "0.5",	range: [0, 1], step: 0.01, });
+			POP.add({name: "param1",	title: "Size:",	value: "0.5",	range: [0, 1], step: 0.01 });
+			POP.add({name: "param2",	title: "Amount:",	value: "0.5",	range: [0, 1], step: 0.01 });
 			POP.show('Vignette', function(user_response){
 					MAIN.save_state();
 					var param1 = parseFloat(user_response.param1);
@@ -1111,17 +1083,17 @@ function MENU_CLASS(){
 					});
 			}
 		else if(name == 'effects_vintage'){
-			POP.add({name: "red_offset",	title: "Color adjust:",		value: "70",	range: [0, 200], });
-			POP.add({name: "contrast",	title: "Contrast:",		value: "15",	range: [0, 50], });
+			POP.add({name: "red_offset",	title: "Color adjust:",		value: "70",	range: [0, 200] });
+			POP.add({name: "contrast",	title: "Contrast:",		value: "15",	range: [0, 50] });
 			POP.add({name: "blur",		title: "Blur:",			value: "0",	range: [0, 2], step: 0.1 });
-			POP.add({name: "light_leak",	title: "Light leak:",		value: "90",	range: [0, 150], });
-			POP.add({name: "de_saturation",	title: "Desaturation:",		value: "40",	range: [0, 100], });
-			POP.add({name: "exposure",	title: "Exposure level:",	value: "80",	range: [0, 150], });
-			POP.add({name: "grains",	title: "Grains level:",		value: "10",	range: [0, 50], });
-			POP.add({name: "big_grains",	title: "Big grains level:",	value: "20",	range: [0, 50], });
-			POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 0.5], step: 0.01, });
-			POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 0.7], step: 0.01, });
-			POP.add({name: "dust_level",	title: "Dusts level:",		value: "70",	range: [0, 100],  });
+			POP.add({name: "light_leak",	title: "Light leak:",		value: "90",	range: [0, 150] });
+			POP.add({name: "de_saturation",	title: "Desaturation:",		value: "40",	range: [0, 100] });
+			POP.add({name: "exposure",	title: "Exposure level:",	value: "80",	range: [0, 150] });
+			POP.add({name: "grains",	title: "Grains level:",		value: "10",	range: [0, 50] });
+			POP.add({name: "big_grains",	title: "Big grains level:",	value: "20",	range: [0, 50] });
+			POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 0.5], step: 0.01 });
+			POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 0.7], step: 0.01 });
+			POP.add({name: "dust_level",	title: "Dusts level:",		value: "70",	range: [0, 100]  });
 			
 			POP.show('Vintage', function(user_response){
 					MAIN.save_state();
@@ -1179,49 +1151,91 @@ function MENU_CLASS(){
 		
 		//shortcuts
 		else if(name == 'help_shortcuts'){
-			POP.add({title: "C",		value: 'Colorize',	});
-			POP.add({title: "Del",		value: 'Delete selection',	});
-			POP.add({title: "F",		value: 'Auto adjust colors',	});
-			POP.add({title: "G",		value: 'Grid on/off',	});
-			POP.add({title: "L",		value: 'Rotate left',	});
-			POP.add({title: "O",		value: 'Open file(s)',	});
-			POP.add({title: "R",		value: 'Resize',	});
-			POP.add({title: "S",		value: 'Save',	});
-			POP.add({title: "T",		value: 'Trim',	});
-			POP.add({title: "-",	value: 'Zoom out',	});
-			POP.add({title: "+",	value: 'Zoom in',	});
-			POP.add({title: "CTRL + Z",	value: 'Undo',	});
-			POP.add({title: "CTRL + A",	value: 'Select all',	});
-			POP.add({title: "CTRL + X",	value: 'Cut',	});
-			POP.add({title: "CTRL + C",	value: 'Copy',	});
-			POP.add({title: "CTRL + V",	value: 'Paste',	});
-			POP.add({title: "Arrow keys",	value: 'Move active layer by 10px',	});
-			POP.add({title: "CTRL + Arrow keys",	value: 'Move active layer by 50px',	});
-			POP.add({title: "SHIFT + Arrow keys",value: 'Move active layer by 1px',	});
-			POP.add({title: "Drag & Drop",	value: 'Imports images/xml data',	});
+			POP.add({title: "C",		value: 'Colorize'	});
+			POP.add({title: "Del",		value: 'Delete selection'	});
+			POP.add({title: "F",		value: 'Auto adjust colors'	});
+			POP.add({title: "G",		value: 'Grid on/off'	});
+			POP.add({title: "L",		value: 'Rotate left'	});
+			POP.add({title: "N",		value: 'New layer'	});
+			POP.add({title: "O",		value: 'Open file(s)'	});
+			POP.add({title: "R",		value: 'Resize'	});
+			POP.add({title: "S",		value: 'Save'	});
+			POP.add({title: "T",		value: 'Trim'	});
+			POP.add({title: "-",	value: 'Zoom out'	});
+			POP.add({title: "+",	value: 'Zoom in'	});
+			POP.add({title: "CTRL + Z",	value: 'Undo'	});
+			POP.add({title: "CTRL + A",	value: 'Select all'	});
+			POP.add({title: "CTRL + X",	value: 'Cut'	});
+			POP.add({title: "CTRL + C",	value: 'Copy'	});
+			POP.add({title: "CTRL + V",	value: 'Paste'	});
+			POP.add({title: "Arrow keys",	value: 'Move active layer by 10px'	});
+			POP.add({title: "CTRL + Arrow keys",	value: 'Move active layer by 50px'	});
+			POP.add({title: "SHIFT + Arrow keys",value: 'Move active layer by 1px'	});
+			POP.add({title: "Drag & Drop",	value: 'Imports images/xml data'	});
 			POP.show('Keyboard Shortcuts', '');
 			}
 		//credits	
 		else if(name == 'help_credits'){
 			for(var i in CREDITS){
 				if(CREDITS[i].link != undefined)
-					POP.add({title: CREDITS[i].title,	html: '<a href="'+CREDITS[i].link+'">'+CREDITS[i].name+'</a>',	});
+					POP.add({title: CREDITS[i].title,	html: '<a href="'+CREDITS[i].link+'">'+CREDITS[i].name+'</a>'	});
 				else
-					POP.add({title: CREDITS[i].title,	html: CREDITS[i].name,	});
+					POP.add({title: CREDITS[i].title,	html: CREDITS[i].name	});
 				}
 			POP.show('Credits', '');
 			}	
 		//about	
 		else if(name == 'help_about'){
-			POP.add({title: "Name:",	value: "miniPaint "+VERSION,	});
-			POP.add({title: "Description:",	value: 'online image editor',	});
-			POP.add({title: "Author:",	value: AUTHOR+" - "+EMAIL,	});
+			POP.add({title: "Name:",	value: "miniPaint "+VERSION	});
+			POP.add({title: "Description:",	value: 'online image editor'	});
+			POP.add({title: "Author:",	value: AUTHOR+" - "+EMAIL	});
 			POP.show('About', '');
 			}
 	
 		//======================================================================
 		
 		DRAW.zoom();
+		};
+	this.save_dialog = function(e){
+		POP.add({name: "name",		title: "File name:",		value: ["example"]	});
+		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES	});	
+		POP.add({name: "quality",	title: "Quality (1-100):",	value: 90,		range: [1, 100]	});
+		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected']		});
+		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes']		});
+		POP.show('Save as ...', MENU.save);
+		document.getElementById("pop_data_name").select();
+		if(e != undefined)
+			e.preventDefault();
+		};
+	this.add_layer = function(){
+		MAIN.save_state();
+		
+		var tmp = false;
+		var last_layer = LAYER.layer_active;
+		if(TOOLS.select_data != false){
+			tmp = document.createElement("canvas");
+			tmp.width = TOOLS.select_data.w;
+			tmp.height = TOOLS.select_data.h;
+			tmp.getContext("2d").drawImage(canvas_active(true), TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h, 0, 0, TOOLS.select_data.w, TOOLS.select_data.h);
+			}
+		
+		//crete layer
+		LAYER.layer_add();
+		
+		if(TOOLS.select_data != false){
+			//copy user selected data to new layer
+			canvas_active().drawImage(tmp, 0, 0);
+			LAYER.layer_renew();	
+			
+			//clear selection
+			TOOLS.select_data = false;
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			
+			//switch back to old layer
+			LAYER.layer_active = last_layer;
+			LAYER.layer_renew();
+			}
+		
 		};
 	this.resize_custom = function(user_response){
 		MAIN.save_state();
@@ -1296,8 +1310,8 @@ function MENU_CLASS(){
 	this.paste = function(type){
 		if(PASTE_DATA == false){
 			if(type == 'menu'){
-				POP.add({title: "Error:",	value: 'Empty data',	});
-				POP.add({title: "Notice:",	value: 'To paste from clipboard, use Ctrl-V.',	});
+				POP.add({title: "Error:",	value: 'Empty data'	});
+				POP.add({title: "Notice:",	value: 'To paste from clipboard, use Ctrl-V.'	});
 				POP.show('Notice', '');
 				}
 			return false;
@@ -1312,12 +1326,12 @@ function MENU_CLASS(){
 		LAYER.layer_renew();
 		};
 	this.resize_box = function(){
-		POP.add({name: "width",	title: "Enter new width:",	value: WIDTH,});
+		POP.add({name: "width",	title: "Enter new width:",	value: WIDTH});
 		POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
-		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"],});
+		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"]});
 		POP.add({name: "ratio",title: "Preserve ratio:",	values: ["Yes", "No"]});
-		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No", });
-		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No", });
+		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No" });
+		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No" });
 		POP.show('Resize', MENU.resize_layer);
 		};
 	this.resize_layer = function(user_response){
@@ -1361,8 +1375,14 @@ function MENU_CLASS(){
 			if(width > WIDTH || height > HEIGHT) return false;
 			
 			DRAW.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
-			if(MENU.last_menu != 'layer_resize')
-				DRAW.trim();
+			if(MENU.last_menu != 'layer_resize'){
+				WIDTH = width;
+				HEIGHT = height;
+				if(WIDTH<1) WIDTH = 1;
+				if(HEIGHT<1) HEIGHT = 1;
+				RATIO = WIDTH/HEIGHT;
+				LAYER.set_canvas_size();
+				}
 			DRAW.zoom();
 			}
 		//simple resize	
@@ -1414,9 +1434,23 @@ function MENU_CLASS(){
 			tempCtx.fillStyle = "#ffffff";
 			tempCtx.fill();
 			}
+		
+		//take data
 		for(var i in LAYERS){
 			if(LAYERS[i].visible == false) continue;
+			if(user_response.layers == 'Selected' && user_response.type != 'XML' && i != LAYER.layer_active) continue;
 			tempCtx.drawImage(document.getElementById(LAYERS[i].name), 0, 0, WIDTH, HEIGHT);
+			}
+		
+		if(user_response.trim == 'Yes' && user_response.type != 'XML'){
+			//trim
+			var trim_info = DRAW.trim_info(tempCanvas);
+			tmp_data = tempCtx.getImageData(0, 0, WIDTH, HEIGHT);
+			tempCtx.clearRect(0, 0, WIDTH, HEIGHT);
+			tempCanvas.width = WIDTH - trim_info.right - trim_info.left;
+			tempCanvas.height = HEIGHT - trim_info.bottom - trim_info.top;
+			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
+			
 			}
 		
 		//detect type
@@ -1442,7 +1476,7 @@ function MENU_CLASS(){
 			//jpg
 			var quality = parseInt(user_response.quality);
 			if(quality>100 || quality < 1 || isNaN(quality)==true)
-				quality = 92;
+				quality = 90;
 			quality = quality/100;
 			var data = tempCanvas.toDataURL('image/jpeg', quality);
 			var data_header = "image/jpeg";
@@ -1450,7 +1484,7 @@ function MENU_CLASS(){
 				fname = fname+".jpg";
 			}
 		else if(user_response.type == 'BMP'){
-			//bmp - lets hope user really needs this - disabled - chrome dod not supprot it
+			//bmp - lets hope user really needs this - chrome do not support it
 			var data = tempCanvas.toDataURL("image/bmp");
 			var data_header = "image/bmp";
 			if(HELPER.strpos(fname, '.bmp')==false)
@@ -1511,7 +1545,7 @@ function MENU_CLASS(){
 		var actualType = data.replace(/^data:([^;]*).*/, '$1');
 		if(data_header != actualType && data_header != "text/plain"){
 			//error - no support
-			POP.add({title: "Error:",	value: "Your browser do not support "+user_response.type,	});
+			POP.add({title: "Error:",	value: "Your browser do not support "+user_response.type	});
 			POP.show('Sorry', '');
 			return false;
 			}
@@ -1564,7 +1598,8 @@ function MENU_CLASS(){
 		};
 	this.open_handler = function(e){
 		var files = e.target.files; 
-		for (var i = 0, f; f = files[i]; i++){
+		for (var i = 0, f; i < files.length; i++){
+			f = files[i];
 			if(!f.type.match('image.*') && f.type != 'text/xml') continue;
 			
 			var FR = new FileReader();

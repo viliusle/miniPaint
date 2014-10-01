@@ -17,7 +17,6 @@ document.oncontextmenu = function(e) {return CON.mouse_right_click(e); };	//mous
 function CONTROLLS_CLASS(){
 	this.mouse;
 	this.ctrl_pressed = false; //17
-	this.alt_pressed = false; //18
 	this.shift_pressed = false; //16
 	this.ZOOM_X = 0;
 	this.ZOOM_Y = 0;
@@ -104,12 +103,8 @@ function CONTROLLS_CLASS(){
 			MENU.open();
 		//s - save
 		else if(k == 83){
-			if(POP != undefined){
-				POP.add({name: "name",		title: "File name:",	value: ["example"],	});
-				POP.add({name: "type",		title: "Save as type:",	values: SAVE_TYPES,	});	
-				POP.add({name: "quality",	title: "Quality (1-100) (optional):",	value: 92, range: [1, 100],	});
-				POP.show('Save as ...', MENU.save);
-				}
+			if(POP != undefined)
+				MENU.save_dialog(event);
 			}
 		//l - rotate left
 		else if(k == 76){
@@ -145,12 +140,7 @@ function CONTROLLS_CLASS(){
 		else if(k==17){
 			if(CON.ctrl_pressed == false)
 				CON.ctrl_pressed = true;
-			if (!window.Clipboard)
-				pasteCatcher.focus();
 			}
-		//alt
-		else if(k==18)
-			CON.alt_pressed = true;
 		//a
 		else if(k==65){
 			if(CON.ctrl_pressed == true){
@@ -207,13 +197,14 @@ function CONTROLLS_CLASS(){
 		//+
 		else if(k==107)
 			DRAW.zoom(+1);
-			
+		//n - new layer
+		else if(k==78)
+			MENU.add_layer();
+		
 		//mac support - ctrl
-		if(event.metaKey || event.ctrlKey){
+		if(k==17 || event.metaKey || event.ctrlKey){
 			if(CON.ctrl_pressed == false)
 				CON.ctrl_pressed = true;
-			if (!window.Clipboard)
-				pasteCatcher.focus();
 			}
 		
 		DRAW.zoom();
@@ -228,9 +219,9 @@ function CONTROLLS_CLASS(){
 		//ctrl
 		else if(k==17)
 			CON.ctrl_pressed = false;
-		//alt
-		else if(k==18)
-			CON.alt_pressed = false;
+		//mac support - ctrl
+		if(event.metaKey || event.ctrlKey || event.key == 'Meta')
+			CON.ctrl_pressed = false;
 		};
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function(event){
@@ -282,7 +273,7 @@ function CONTROLLS_CLASS(){
 			valid: valid,
 			click_valid: mouse_click_valid,
 			abs_x: abs_x,
-			abs_y: abs_y, 
+			abs_y: abs_y
 			};
 		};
 	//mouse right click
@@ -464,7 +455,8 @@ function CONTROLLS_CLASS(){
 		progress.value = progress.innerHTML = 0;
 		MAIN.save_state();
 		var n_valid = 0;
-		for (var i = 0, f; f = e.dataTransfer.files[i]; i++){
+		for (var i = 0, f; i < e.dataTransfer.files.length ; i++){
+			f = e.dataTransfer.files[i];
 			if(!f.type.match('image.*') && f.type != 'text/xml') continue;
 			n_valid++;
 		
@@ -584,62 +576,143 @@ function CONTROLLS_CLASS(){
 
 //=== Clipboard ================================================================
 
-//firefox
-var pasteCatcher;
-if (!window.Clipboard){
-	pasteCatcher = document.createElement("div");
-	pasteCatcher.setAttribute("id", "paste_ff");
-	pasteCatcher.setAttribute("contenteditable", "");
-	pasteCatcher.style.cssText = 'opacity:0;position:fixed;top:0px;left:0px;';
-	pasteCatcher.style.marginLeft = "-20px";
-	document.body.appendChild(pasteCatcher);
-	pasteCatcher.focus();
-	document.addEventListener("click", function(){
-		//pasteCatcher.focus();
-		});
-	document.getElementById('paste_ff').addEventListener('DOMSubtreeModified',function(){
-		if(pasteCatcher.children.length == 1){
-			img = pasteCatcher.firstElementChild.src;
-			LAYER.layer_add('Paste', img);
-			pasteCatcher.innerHTML = '';
-			}
-		},false);
-	}
-//chrome
-window.addEventListener("paste", pasteHandler);
-function pasteHandler(e){
-	if(e.clipboardData) {
-		var items = e.clipboardData.items;
-		if (items){
-			for (var i = 0; i < items.length; i++) {
-				if (items[i].type.indexOf("image") !== -1) {
-					var blob = items[i].getAsFile();
-					var URLObj = window.URL || window.webkitURL;
-					var source = URLObj.createObjectURL(blob);
-					paste_createImage(source);
+var CLIPBOARD = new CLIPBOARD_CLASS('cc');
+
+function CLIPBOARD_CLASS(canvas_id){
+	var _self = this;
+	var ctrl_pressed = false;
+	var reading_dom = false;
+	var text_top = 15;
+	var pasteCatcher;
+	var paste_mode;
+	
+	//handlers
+	document.addEventListener('keydown', function(e){ _self.on_keyboard_action(e); }, false);
+	document.addEventListener('keyup', function(e){ _self.on_keyboardup_action(e); }, false);
+	document.addEventListener('paste', function(e){ _self.paste_auto(e); }, false);
+
+	//constructor - prepare
+	this.init = function(){
+		//if using auto
+		if(window.Clipboard) return true;
+		
+		pasteCatcher = document.createElement("div");
+		pasteCatcher.setAttribute("id", "paste_ff");
+		pasteCatcher.setAttribute("contenteditable", "");
+		pasteCatcher.style.cssText = 'opacity:0;position:fixed;top:0px;left:0px;';
+		pasteCatcher.style.marginLeft = "-20px";
+		pasteCatcher.style.width = "10px";
+		document.body.appendChild(pasteCatcher);
+		document.getElementById('paste_ff').addEventListener('DOMSubtreeModified', function(){
+			reading_dom = false;
+			if(paste_mode == 'auto') return true;
+			//if paste handle failed - capture pasted object manually
+			if(pasteCatcher.children.length == 1){
+				if(pasteCatcher.firstElementChild.src != undefined){
+					//image
+					img = pasteCatcher.firstElementChild.src;
+					_self.paste_createImage(pasteCatcher.firstElementChild.src);
+					}
+				else{
+					//html
+					setTimeout(function(){
+						if(reading_dom == true) return false;
+						_self.paste_createText(pasteCatcher.innerHTML, false);
+						reading_dom = true;
+						}, 10);
 					}
 				}
+			else if(pasteCatcher.children.length == 0){
+				//text
+				setTimeout(function(){
+					if(reading_dom == true) return false;
+					_self.paste_createText(pasteCatcher.innerHTML, false);
+					reading_dom = true;
+					}, 10);
+				}
+			//register cleanup after some time.
+			setTimeout(function(){
+				pasteCatcher.innerHTML = '';
+				}, 20);
+			},false);
+		}();
+	//default paste action
+	this.paste_auto = function(e){
+		paste_mode = '';
+		pasteCatcher.innerHTML = '';
+		var plain_text_used = false;
+		if(e.clipboardData){
+			var items = e.clipboardData.items;
+			if (items){
+				paste_mode = 'auto';			
+				//access data directly
+				for (var i = 0; i < items.length; i++){
+					if(items[i].type.indexOf("image") !== -1){
+						//image
+						var blob = items[i].getAsFile();
+						var URLObj = window.URL || window.webkitURL;
+						var source = URLObj.createObjectURL(blob);
+						this.paste_createImage(source);
+						}
+					else if(items[i].type.indexOf("text") !== -1){
+						//text or html
+						if(plain_text_used == false)
+							this.paste_createText(e.clipboardData.getData('text/plain'));
+						plain_text_used = true;
+						}
+					}
+				e.preventDefault();
+				}
+			else{
+				//wait for DOMSubtreeModified event
+				//https://bugzilla.mozilla.org/show_bug.cgi?id=891247
+				}
 			}
-		}
-	else{
-		setTimeout(paste_check_Input, 1);
-		}
-	}
-function paste_check_Input(){
-	var child = pasteCatcher.childNodes[0];
-	pasteCatcher.innerHTML = "";
-	if (child){
-		if (cild.tagName === "IMG"){
-			paste_createImage(child.src);
-			}
-		}
-	}
-function paste_createImage(source){
-	var pastedImage = new Image();
-	pastedImage.onload = function(){
-		LAYER.layer_add('Paste', source);
 		};
-	pastedImage.src = source;
-	}
-
-//=== /Clipboard ===============================================================
+	//on keyboard press
+	this.on_keyboard_action = function(event){
+		k = event.keyCode;
+		//ctrl
+		if(k==17 || event.metaKey || event.ctrlKey){	
+			if(ctrl_pressed == false)
+				ctrl_pressed = true;
+			}
+		//c
+		if(k==86){
+			if(ctrl_pressed == true && !window.Clipboard)
+				pasteCatcher.focus();
+			}
+		};
+	//on kaybord release
+	this.on_keyboardup_action = function(event){
+		k = event.keyCode;  
+		//ctrl
+		if(k==17 || event.metaKey || event.ctrlKey || event.key == 'Meta')
+			ctrl_pressed = false;
+		};
+	//draw image
+	this.paste_createImage = function(source){
+		var pastedImage = new Image();
+		pastedImage.onload = function(){
+			LAYER.layer_add('Paste', source);
+			};
+		pastedImage.src = source;
+		};
+	//draw text
+	this.paste_createText = function(text, parsed){
+		var ctx = canvas_active();
+		if(text == '') return false;
+		if(parsed == false){
+			text = text.replace(/<br\s*[\/]?>/gi, "\n");
+			text = text.replace(/(<([^>]+)>)/g, "");
+			text = text.replace(/&nbsp;/gi, " ");
+			}
+		ctx.font = '13px Tahoma';
+		var lines = text.split("\n");
+		for(var i in lines){
+			ctx.fillText(lines[i], 10, text_top);
+			text_top += 15;
+			}
+		text_top += 15;
+		};
+	};

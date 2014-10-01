@@ -27,7 +27,6 @@ function MAIN_CLASS(){
 		LAYER.layer_add("Background");
 		LAYER.set_canvas_size();
 		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
-		document.getElementById("main_colour").style.backgroundColor = COLOUR;
 		document.getElementById("canvas_preview").width = DRAW.PREVIEW_SIZE.w;
 		document.getElementById("canvas_preview").height = DRAW.PREVIEW_SIZE.h;
 		var color_rgb = HELPER.hex2rgb(COLOUR);
@@ -36,6 +35,15 @@ function MAIN_CLASS(){
 		document.getElementById("rgb_b").value = color_rgb.b;
 		document.getElementById("rgb_a").value = ALPHA;
 		DRAW.redraw_preview();
+		//detect color support
+		if(HELPER.chech_input_color_support('main_colour') == true)
+			document.getElementById("main_colour").value = COLOUR; //supported
+		else{
+			//not supported
+			document.getElementById("main_colour").style.display = 'none';
+			document.getElementById("main_colour_alt").style.display = '';
+			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR;
+			}
 		};
 	this.save_state = function(){
 		undo_level = 0;
@@ -130,7 +138,7 @@ function MAIN_CLASS(){
 				
 				LAYER.layer_renew();
 				DRAW.zoom();
-				}
+				};
 			});
 		};
 	}

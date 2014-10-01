@@ -83,7 +83,7 @@ function SIFT_CLASS(){
 										points.push({
 											x: i + trim_details.left,
 											y: j + trim_details.top,
-											w: round(area_average - imageData[x] - avg_offset),
+											w: round(area_average - imageData[x] - avg_offset)
 											});
 									}
 								}
@@ -100,7 +100,7 @@ function SIFT_CLASS(){
 										points.push({
 											x: i + trim_details.left,
 											y: j + trim_details.top,
-											w: round(imageData[x] - area_average - avg_offset),
+											w: round(imageData[x] - area_average - avg_offset)
 											});
 									}
 								}
@@ -139,7 +139,7 @@ function SIFT_CLASS(){
 			points.sort(function(a,b) { return parseFloat(b.w) - parseFloat(a.w); } );
 			return {
 				points: points,
-				trim_details: trim_details,
+				trim_details: trim_details
 				};
 			}
 		};

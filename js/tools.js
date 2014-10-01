@@ -31,7 +31,7 @@ function TOOLS_CLASS(){
 			['#00ff00', '#008000', '#7fff00', '#00ff7f', '#8ac273'],	//green
 			['#0000ff', '#007fff', '#37629c', '#000080', '#8000ff'],	//blue
 			['#ffff00', '#ffff80', '#ddd06a', '#808000', '#bcb88a'],	//yellow
-			['#ffffff', '#c0c0c0', '#808080', '#404040', '#000000'],	//grey
+			['#ffffff', '#c0c0c0', '#808080', '#404040', '#000000']	//grey
 			];
 		for(var i in colors_data){
 			for(var j in colors_data[i]){
@@ -59,7 +59,7 @@ function TOOLS_CLASS(){
 			else if(typeof this.action_data().attributes[k] == 'object'){
 				//select
 				var key = k.replace("_values","");
-				this.action_data().attributes[key] = object.value
+				this.action_data().attributes[key] = object.value;
 				}
 			else{
 				//numbers
@@ -80,7 +80,12 @@ function TOOLS_CLASS(){
 						
 				//save
 				this.action_data().attributes[k] = object.value;
-				document.getElementById("main_colour").value = object.value;
+				
+				if(HELPER.chech_input_color_support('main_colour') == true)
+					document.getElementById("main_colour").value = object.value; //supported
+				else
+					document.getElementById("main_colour_alt").style.backgroundColor = object.value; //not supported
+				
 				document.getElementById(k).value = object.value;
 				}
 			if(this.action_data().on_update != undefined)
@@ -146,9 +151,17 @@ function TOOLS_CLASS(){
 		};
 	this.set_color = function(object){
 		COLOUR_LAST = COLOUR;
-		COLOUR = HELPER.rgb2hex_all(object.style.backgroundColor);
+		if(HELPER.chech_input_color_support('main_colour') == true && object.id == 'main_colour')
+			COLOUR = object.value;
+		else
+			COLOUR = HELPER.rgb2hex_all(object.style.backgroundColor);
 		COLOUR_copy = COLOUR;
-		document.getElementById("main_colour").style.backgroundColor = COLOUR;
+		
+		if(HELPER.chech_input_color_support('main_colour') == true)
+			document.getElementById("main_colour").value = COLOUR; //supported
+		else
+			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR; //not supported
+		
 		document.getElementById("color_hex").value = COLOUR;
 		var colours = HELPER.hex2rgb(COLOUR);
 		document.getElementById("rgb_r").value = colours.r;
@@ -185,7 +198,12 @@ function TOOLS_CLASS(){
 		};
 	this.sync_colors = function(){
 		document.getElementById("color_hex").value = COLOUR;
-		document.getElementById("main_colour").style.backgroundColor = COLOUR;
+		
+		if(HELPER.chech_input_color_support('main_colour') == true)
+			document.getElementById("main_colour").value = COLOUR; //supported
+		else
+			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR; //not supported
+		
 		var colours = HELPER.hex2rgb(COLOUR);
 		document.getElementById("rgb_r").value = colours.r;
 		document.getElementById("rgb_g").value = colours.g;
@@ -260,7 +278,7 @@ function TOOLS_CLASS(){
 				COLOUR_copy = COLOUR;
 				document.getElementById("lum_ranger").value = 0;
 				};
-			}
+			};
 		img.src = 'img/colorwheel.png';
 		};
 	//type = click, right_click, drag, move, release
@@ -568,16 +586,16 @@ function TOOLS_CLASS(){
 		var xx = mouse.x;
 		var yy = mouse.y;
 		if(type == 'click'){
-			POP.add({name: "text",		title: "Text:",	value: "", type: 'textarea',	});
-			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2,	});	
-			POP.add({name: "style",		title: "Font style:",	values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select',	});
-			POP.add({name: "family",	title: "Font family:",	values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],  type: 'select',	});
-			POP.add({name: "size_3d",	title: "3D size:",	value: 0, range: [0, 200], 	});	
-			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select', 	});
-			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"], 	});
-			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10], 	});
-			POP.add({name: "fill_style",	title: "Fill style:",	values: ["Fill", "Stroke", "Both"], type: 'select', 	});
-			POP.add({name: "stroke_size",	title: "Stroke size:",	value: 1, range: [1, 100], 	});
+			POP.add({name: "text",		title: "Text:",	value: "", type: 'textarea'	});
+			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2	});	
+			POP.add({name: "style",		title: "Font style:",	values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select'	});
+			POP.add({name: "family",	title: "Font family:",	values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],  type: 'select'	});
+			POP.add({name: "size_3d",	title: "3D size:",	value: 0, range: [0, 200] 	});	
+			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select' 	});
+			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"] 	});
+			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10] 	});
+			POP.add({name: "fill_style",	title: "Fill style:",	values: ["Fill", "Stroke", "Both"], type: 'select' 	});
+			POP.add({name: "stroke_size",	title: "Stroke size:",	value: 1, range: [1, 100] 	});
 			POP.preview_in_main = true;
 			POP.show('Text', function(user_response){
 					MAIN.save_state();
@@ -1085,7 +1103,7 @@ function TOOLS_CLASS(){
 			var size = TOOLS.action_data().attributes.size;
 	
 			if(clone_data === false){
-				POP.add({title: "Message:",	value: 'Source is empty, right click on image first.',	});
+				POP.add({title: "Message:",	value: 'Source is empty, right click on image first.'	});
 				POP.show('Error', '');
 				}
 			else{
@@ -1430,8 +1448,8 @@ function TOOLS_CLASS(){
 			var html = '<canvas style="position:relative;" id="c_h" width="256" height="100"></canvas>';
 			return html;
 			}});
-		POP.add({title: "Total pixels:",	value: "", });
-		POP.add({title: "Average:",	value: "", });
+		POP.add({title: "Total pixels:",	value: "" });
+		POP.add({title: "Average:",	value: "" });
 		POP.show('Histogram', function(user_response){
 			var param1 = parseInt(user_response.param1);
 			}, undefined, this.histogram_onload);
@@ -1660,7 +1678,7 @@ function TOOLS_CLASS(){
 			imgData[i+2] = c;
 			}	
 		ctx.putImageData(img, 0, 0);
-		}
+		};
 	//http://en.wikipedia.org/wiki/Otsu%27s_Method
 	this.otsu = function(histogram, total){
 		var sum = 0;
