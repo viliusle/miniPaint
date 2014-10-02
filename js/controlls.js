@@ -605,7 +605,7 @@ function CLIPBOARD_CLASS(canvas_id){
 		document.body.appendChild(pasteCatcher);
 		document.getElementById('paste_ff').addEventListener('DOMSubtreeModified', function(){
 			reading_dom = false;
-			if(paste_mode == 'auto') return true;
+			if(paste_mode == 'auto' || ctrl_pressed == false) return true;
 			//if paste handle failed - capture pasted object manually
 			if(pasteCatcher.children.length == 1){
 				if(pasteCatcher.firstElementChild.src != undefined){
