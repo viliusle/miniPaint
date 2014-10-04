@@ -1196,13 +1196,16 @@ function MENU_CLASS(){
 		
 		DRAW.zoom();
 		};
-	this.save_dialog = function(){
+	this.save_dialog = function(e){
 		POP.add({name: "name",		title: "File name:",		value: ["example"]	});
 		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES	});	
-		POP.add({name: "quality",	title: "Quality (1-100):",	value: 92,		range: [1, 100]	});
+		POP.add({name: "quality",	title: "Quality (1-100):",	value: 90,		range: [1, 100]	});
 		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected']		});
 		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes']		});
 		POP.show('Save as ...', MENU.save);
+		document.getElementById("pop_data_name").select();
+		if(e != undefined)
+			e.preventDefault();
 		};
 	this.add_layer = function(){
 		MAIN.save_state();
@@ -1473,7 +1476,7 @@ function MENU_CLASS(){
 			//jpg
 			var quality = parseInt(user_response.quality);
 			if(quality>100 || quality < 1 || isNaN(quality)==true)
-				quality = 92;
+				quality = 90;
 			quality = quality/100;
 			var data = tempCanvas.toDataURL('image/jpeg', quality);
 			var data_header = "image/jpeg";
