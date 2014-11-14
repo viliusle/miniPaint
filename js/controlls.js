@@ -615,20 +615,20 @@ function CLIPBOARD_CLASS(canvas_id){
 					}
 				else{
 					//html
-					setTimeout(function(){
+					/*setTimeout(function(){
 						if(reading_dom == true) return false;
 						_self.paste_createText(pasteCatcher.innerHTML, false);
 						reading_dom = true;
-						}, 10);
+						}, 10);*/
 					}
 				}
-			else if(pasteCatcher.children.length == 0){
+			/*else if(pasteCatcher.children.length == 0){
 				//text
 				setTimeout(function(){
 					if(reading_dom == true) return false;
 					_self.paste_createText(pasteCatcher.innerHTML, false);
 					reading_dom = true;
-					}, 10);
+					}, 10);*/
 				}
 			//register cleanup after some time.
 			setTimeout(function(){
@@ -656,9 +656,9 @@ function CLIPBOARD_CLASS(canvas_id){
 						}
 					else if(items[i].type.indexOf("text") !== -1){
 						//text or html
-						if(plain_text_used == false)
+						/*if(plain_text_used == false)
 							this.paste_createText(e.clipboardData.getData('text/plain'));
-						plain_text_used = true;
+						plain_text_used = true;*/
 						}
 					}
 				e.preventDefault();
