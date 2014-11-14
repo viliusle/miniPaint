@@ -613,23 +613,23 @@ function CLIPBOARD_CLASS(canvas_id){
 					img = pasteCatcher.firstElementChild.src;
 					_self.paste_createImage(pasteCatcher.firstElementChild.src);
 					}
-				else{
+				/*else{
 					//html
 					setTimeout(function(){
 						if(reading_dom == true) return false;
 						_self.paste_createText(pasteCatcher.innerHTML, false);
 						reading_dom = true;
 						}, 10);
-					}
+					}*/
 				}
-			else if(pasteCatcher.children.length == 0){
+			/*else if(pasteCatcher.children.length == 0){
 				//text
 				setTimeout(function(){
 					if(reading_dom == true) return false;
 					_self.paste_createText(pasteCatcher.innerHTML, false);
 					reading_dom = true;
 					}, 10);
-				}
+				}*/
 			//register cleanup after some time.
 			setTimeout(function(){
 				pasteCatcher.innerHTML = '';
@@ -654,12 +654,12 @@ function CLIPBOARD_CLASS(canvas_id){
 						var source = URLObj.createObjectURL(blob);
 						this.paste_createImage(source);
 						}
-					else if(items[i].type.indexOf("text") !== -1){
+					/*else if(items[i].type.indexOf("text") !== -1){
 						//text or html
 						if(plain_text_used == false)
 							this.paste_createText(e.clipboardData.getData('text/plain'));
 						plain_text_used = true;
-						}
+						}*/
 					}
 				e.preventDefault();
 				}
