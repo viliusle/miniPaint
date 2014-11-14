@@ -628,8 +628,8 @@ function CLIPBOARD_CLASS(canvas_id){
 					if(reading_dom == true) return false;
 					_self.paste_createText(pasteCatcher.innerHTML, false);
 					reading_dom = true;
-					}, 10);*/
-				}
+					}, 10);
+				}*/
 			//register cleanup after some time.
 			setTimeout(function(){
 				pasteCatcher.innerHTML = '';
