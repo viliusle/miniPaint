@@ -1188,7 +1188,9 @@ function MENU_CLASS(){
 		else if(name == 'help_about'){
 			POP.add({title: "Name:",	value: "miniPaint "+VERSION	});
 			POP.add({title: "Description:",	value: 'online image editor'	});
-			POP.add({title: "Author:",	value: AUTHOR+" - "+EMAIL	});
+			POP.add({title: "Author:",	value: AUTHOR	});
+			POP.add({title: "Email:",	html: '<a href="mailto:'+EMAIL+'">'+EMAIL+'</a>'	});
+			POP.add({title: "Source:",	html: '<a href="https://github.com/viliusle/miniPaint">github.com/viliusle/miniPaint</a>'	});
 			POP.show('About', '');
 			}
 	
