@@ -191,7 +191,7 @@ label{
 	width:100%;
 	}
 #popup{
-	position:fixed;
+	position:absolute;
 	border:1px solid #000000;
 	background-color:#dbeaf9;
 	width:400px;
@@ -438,4 +438,40 @@ label{
 	border-top:1px solid #e5e5e5;
 	font-size:0;
 	padding:0 8px 0 8px;
+	}
+
+/* ==== print =============================================================== */
+
+@media print{
+	body{
+		background:none !important;
+		background: #fff;
+		background-color: #fff;
+		font-family: Arial,Helvetica,Verdana;
+		width:auto !important;
+		padding:5px !important;
+		font-size: 12px;
+	}
+	progress,
+	.menu,
+	#resize-w,#resize-h, #resize-wh,
+	#menu_left,
+	#layers_container,
+	#canvas_back,
+	#drop_zone,
+	.ddsmoothmenu{
+		display: none;
+		height: 0;
+		width: 0;
+	}
+	#canvas_layers{
+		margin:0px;
+		padding:0px;
+		}
+	canvas{
+		border:0px;
+		position: absolute;
+		top:0px;
+		left:0px;
+		}
 	}

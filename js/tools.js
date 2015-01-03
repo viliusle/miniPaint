@@ -1103,7 +1103,7 @@ function TOOLS_CLASS(){
 			var size = TOOLS.action_data().attributes.size;
 	
 			if(clone_data === false){
-				POP.add({title: "Message:",	value: 'Source is empty, right click on image first.'	});
+				POP.add({html: 'Source is empty, right click on image first.'	});
 				POP.show('Error', '');
 				}
 			else{

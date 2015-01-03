@@ -164,18 +164,6 @@ function CONTROLLS_CLASS(){
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				}
 			}
-		//c
-		else if(k==67){
-			if(CON.ctrl_pressed == true && TOOLS.select_data != false)
-				MENU.copy_to_clipboard();
-			else if(CON.ctrl_pressed == false){
-				MAIN.save_state();
-				var param1 = parseInt(3);
-				var param2 = parseInt(30);
-				DRAW.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, true);
-				DRAW.zoom();
-				}
-			}
 		//v
 		else if(k==86){
 			MAIN.save_state();

@@ -120,7 +120,7 @@ function MENU_CLASS(){
 		else if(name == 'image_crop'){
 			MAIN.save_state();
 			if(TOOLS.select_data == false){
-				POP.add({title: "Error:",	value: 'Select are first'	});
+				POP.add({html: 'Select area first'	});
 				POP.show('Error', '');
 				}
 			else{
@@ -131,12 +131,16 @@ function MENU_CLASS(){
 					layer.clearRect(0, 0, WIDTH, HEIGHT);
 					layer.putImageData(tmp, 0, 0);
 					}
+					
 				//resize
 				MAIN.save_state();
 				WIDTH = TOOLS.select_data.w;
 				HEIGHT = TOOLS.select_data.h;
 				RATIO = WIDTH/HEIGHT;
 				LAYER.set_canvas_size();
+				
+				TOOLS.select_data = false;
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				}
 			}	
 		//resize
@@ -145,11 +149,13 @@ function MENU_CLASS(){
 		//rotate left
 		else if(name == 'image_rotate_left'){
 			MAIN.save_state();
+			MENU.rotate_resize_doc(270, WIDTH, HEIGHT); 
 			MENU.rotate_layer({angle: 270}, canvas_active(), WIDTH, HEIGHT);
 			}
 		//rotate right
 		else if(name == 'image_rotate_right'){
 			MAIN.save_state();
+			MENU.rotate_resize_doc(90, WIDTH, HEIGHT); 
 			MENU.rotate_layer({angle: 90}, canvas_active(), WIDTH, HEIGHT);
 			}
 		//rotate
@@ -251,6 +257,13 @@ function MENU_CLASS(){
 			MAIN.save_state();
 			DRAW.auto_adjust(canvas_active(), WIDTH, HEIGHT);
 			}
+		//convert to grayscale
+		else if(name == 'image_GrayScale'){
+			MAIN.save_state();
+			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			var filtered = ImageFilters.GrayScale(imageData);	//add effect
+			canvas_active().putImageData(filtered, 0, 0);
+			}
 		//enchance colors
 		else if(name == 'image_decrease_colors'){
 			POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100] });
@@ -336,6 +349,24 @@ function MENU_CLASS(){
 		else if(name == 'layer_show_hide'){
 			LAYER.layer_visibility(LAYER.layer_active);
 			}
+		//crop
+		else if(name == 'layer_crop'){
+			MAIN.save_state();
+			if(TOOLS.select_data == false){
+				POP.add({html: 'Select area first'});
+				POP.show('Error', '');
+				}
+			else{
+				var layer = LAYER.canvas_active();
+
+				var tmp = layer.getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
+				layer.clearRect(0, 0, WIDTH, HEIGHT);
+				layer.putImageData(tmp, 0, 0);
+				
+				TOOLS.select_data = false;
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				}
+			}
 		//delete
 		else if(name == 'layer_delete'){
 			MAIN.save_state();
@@ -371,7 +402,7 @@ function MENU_CLASS(){
 		//show differences
 		else if(name == 'layer_differences'){
 			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
-				POP.add({title: "Error:",	value: 'This can not be last layer'	});
+				POP.add({html: 'This can not be last layer'	});
 				POP.show('Error', '');
 				return false;
 				}
@@ -393,7 +424,7 @@ function MENU_CLASS(){
 						"lighter", "darker", "copy", "xor"];
 			
 			if(parseInt(LAYER.layer_active) + 1 >= LAYERS.length){
-				POP.add({title: "Error:",	value: 'This can not be last layer'	});
+				POP.add({html: 'This can not be last layer'	});
 				POP.show('Error', '');
 				return false;
 				}
@@ -603,28 +634,6 @@ function MENU_CLASS(){
 					canvas_preview.stroke();
 					});
 			}	
-		else if(name == 'effects_BrightnessContrast'){
-			POP.add({name: "param1",	title: "Brightness:",	value: "0",	range: [-100, 100] });
-			POP.add({name: "param2",	title: "Contrast:",	value: "0",	range: [-100, 100] });
-			POP.show('Brightness Contrast', function(user_response){
-					MAIN.save_state();
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					
-					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-					var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);	//add effect
-					canvas_active().putImageData(filtered, 0, 0);
-					DRAW.zoom();
-					},
-				function(user_response, canvas_preview, w, h){
-					var param1 = parseInt(user_response.param1);
-					var param2 = parseInt(user_response.param2);
-					var imageData = canvas_preview.getImageData(0, 0, w, h);
-					var filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, param1, param2);	//add effect
-
-					canvas_preview.putImageData(filtered, 0, 0);
-					});
-			}
 		else if(name == 'effects_bulge_pinch'){
 			POP.add({name: "param1",	title: "Strength:",	value: 1,	range: [-1, 1],  step: 0.1 });
 			var default_value = Math.min(WIDTH, HEIGHT);
@@ -653,40 +662,12 @@ function MENU_CLASS(){
 					canvas_preview.drawImage(fx_filter, 0, 0);
 					});
 			}
-		else if(name == 'effects_ColorTransformFilter'){
-			POP.add({name: "param5",	title: "Red offset:",	value: "0",	range: [-255, 255] });
-			POP.add({name: "param6",	title: "Green offset:",	value: "0",	range: [-255, 255] });
-			POP.add({name: "param7",	title: "Blue offset:",	value: "0",	range: [-255, 255] });
-			POP.add({name: "param8",	title: "Alpha offset:",	value: "0",	range: [-255, 255] });
-			POP.show('Color Transform', function(user_response){
-					MAIN.save_state();
-					var param5 = parseInt(user_response.param5);
-					var param6 = parseInt(user_response.param6);
-					var param7 = parseInt(user_response.param7);
-					var param8 = parseInt(user_response.param8);
-		
-					var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-					var filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 1, param5, param6, param7, param8);	//add effect
-					canvas_active().putImageData(filtered, 0, 0);
-					DRAW.zoom();
-					},
-				function(user_response, canvas_preview, w, h){
-					var param5 = parseInt(user_response.param5);
-					var param6 = parseInt(user_response.param6);
-					var param7 = parseInt(user_response.param7);
-					var param8 = parseInt(user_response.param8);
-					var imageData = canvas_preview.getImageData(0, 0, w, h);
-					var filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 1, param5, param6, param7, param8);	//add effect
-					canvas_preview.putImageData(filtered, 0, 0);
-					});
-			}
 		else if(name == 'effects_colorize'){
 			var colorize_data;
 			
 			POP.add({name: "param1",	title: "Power:",	value: "3",	range: [1, 10] });
 			POP.add({name: "param2",	title: "Limit:",	value: "30",	range: [10, 200] });
 			POP.add({name: "param3",	title: "Dithering:",	values: ["Yes", "No"] });
-			POP.add({title: "Shortcut:",	value: "C" });
 			POP.preview_in_main = true;
 			POP.show('Auto colorize', function(user_response){
 					MAIN.save_state();
@@ -812,12 +793,6 @@ function MENU_CLASS(){
 					var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
-			}
-		else if(name == 'effects_GrayScale'){
-			MAIN.save_state();
-			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-			var filtered = ImageFilters.GrayScale(imageData);	//add effect
-			canvas_active().putImageData(filtered, 0, 0);
 			}
 		else if(name == 'effects_HSLAdjustment'){
 			POP.add({name: "param1",	title: "Hue:",	value: "0",	range: [-180, 180] });
@@ -1151,7 +1126,6 @@ function MENU_CLASS(){
 		
 		//shortcuts
 		else if(name == 'help_shortcuts'){
-			POP.add({title: "C",		value: 'Colorize'	});
 			POP.add({title: "Del",		value: 'Delete selection'	});
 			POP.add({title: "F",		value: 'Auto adjust colors'	});
 			POP.add({title: "G",		value: 'Grid on/off'	});
@@ -1328,8 +1302,8 @@ function MENU_CLASS(){
 		LAYER.layer_renew();
 		};
 	this.resize_box = function(){
-		POP.add({name: "width",	title: "Enter new width:",	value: WIDTH});
-		POP.add({name: "height",title: "Enter new height:",	value: HEIGHT});
+		POP.add({name: "width",	title: "Enter new width:",	value: '', placeholder:WIDTH });
+		POP.add({name: "height",title: "Enter new height:",	value: '', placeholder:HEIGHT });
 		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"]});
 		POP.add({name: "ratio",title: "Preserve ratio:",	values: ["Yes", "No"]});
 		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No" });
@@ -1343,8 +1317,21 @@ function MENU_CLASS(){
 		var ratio_mode = user_response.ratio;
 		var preblur = user_response.preblur;
 		var sharpen = user_response.sharpen;
-		if(isNaN(width) || width<1) return false;
-		if(isNaN(height) || height<1) return false;
+		if( (isNaN(width) || width<1) && (isNaN(height) || height<1) ) return false;
+		
+		//if only 1 dimension was provided
+		if(ratio_mode == 'Yes'){
+			if(isNaN(width) || width<1)
+				width = Math.round(height * RATIO);
+			if(isNaN(height) || height<1)
+				height = Math.round(width * RATIO);
+			}
+		else{
+			if(isNaN(width) || width<1)
+				width = WIDTH;
+			if(isNaN(height) || height<1)
+				height = HEIGHT;
+			}
 		
 		//if increasing size - use simple way - its good enough
 		if(width > WIDTH || height > HEIGHT)
@@ -1417,7 +1404,7 @@ function MENU_CLASS(){
 				DRAW.trim();
 			DRAW.zoom();
 			}
-		//sharpen?
+		//sharpen after?
 		if(sharpen == 'Yes'){
 			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 			var filtered = ImageFilters.Sharpen(imageData, 1);	//add effect

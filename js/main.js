@@ -1,6 +1,6 @@
 /*
 TODO:	
-	letters
+	layers reorder issue
 */
 
 var MAIN = new MAIN_CLASS();
