@@ -6,7 +6,6 @@
 <meta name="keywords" content="photo, image, picture, transparent, layers, free, edit, html5, canvas, javascript, online, photoshop, gimp, effects, sharpen, blur, magic wand tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift, auto colorize" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles/styles.css" />
-<link rel="stylesheet" type="text/css" media="print" href="styles/print.css" />
 <link rel="shortcut icon" href="img/favicon.png" />
 </head>
 <body>
@@ -72,7 +71,6 @@
 	<div id="resize-w"></div>
 	<div id="resize-h"></div>
 	<div id="resize-wh"></div>
-	<div id="popup"></div>
 </div>
 <div id="main_menu" class="ddsmoothmenu">
 	<ul>
@@ -125,6 +123,7 @@
 			<li><div class="mid-line"></div></li>
 			<li><a onclick="MENU.do_menu(['image_colors']);" href="#">Color corrections...</a></li>
 			<li><a onclick="MENU.do_menu(['image_auto_adjust']);" href="#">Auto adjust colors</a></li>
+			<li><a onclick="MENU.do_menu(['image_GrayScale']);" href="#">GrayScale</a>
 			<li><a onclick="MENU.do_menu(['image_decrease_colors']);" href="#">Decrease color depth...</a></li>
 			<li><a onclick="MENU.do_menu(['image_negative']);" href="#">Negative</a></li>
 			<li><a onclick="MENU.do_menu(['image_grid']);" href="#">Grid...</a></li>
@@ -138,6 +137,7 @@
 			<li><a onclick="MENU.do_menu(['layer_new']);" href="#">New</a></li>
 			<li><a onclick="MENU.do_menu(['layer_dublicate']);" href="#">Dublicate</a></li>
 			<li><a onclick="MENU.do_menu(['layer_show_hide']);" href="#">Show / Hide</a></li>
+			<li><a onclick="MENU.do_menu(['layer_crop']);" href="#">Crop Selection</a>
 			<li><a onclick="MENU.do_menu(['layer_delete']);" href="#">Delete</a></li>
 			<li><div class="mid-line"></div></li>
 			<li>
@@ -177,9 +177,7 @@
 				<li><a onclick="MENU.do_menu(['effects_zoomblur']);" href="#">Blur-Zoom...</a>
 				</ul>
 			</li>
-			<li><a onclick="MENU.do_menu(['effects_BrightnessContrast']);" href="#">Brightness Contrast...</a>
 			<li><a onclick="MENU.do_menu(['effects_bulge_pinch']);" href="#">Bulge/Pinch...</a>
-			<li><a onclick="MENU.do_menu(['effects_ColorTransformFilter']);" href="#">Color Transform...</a>
 			<li><a onclick="MENU.do_menu(['effects_colorize']);" href="#">Colorize...</a></li>
 			<li><a onclick="MENU.do_menu(['effects_denoise']);" href="#">Denoise...</a>
 			<li><a onclick="MENU.do_menu(['effects_Desaturate']);" href="#">Desaturate</a>
@@ -189,10 +187,8 @@
 			<li><a onclick="MENU.do_menu(['effects_Emboss']);" href="#">Emboss</a>
 			<li><a onclick="MENU.do_menu(['effects_Enrich']);" href="#">Enrich</a>
 			<li><a onclick="MENU.do_menu(['effects_Gamma']);" href="#">Gamma...</a>
-			<li><a onclick="MENU.do_menu(['effects_GrayScale']);" href="#">GrayScale</a>
 			<li><a onclick="MENU.do_menu(['effects_HSLAdjustment']);" href="#">HSL Adjustment...</a>
 			<li><a onclick="MENU.do_menu(['effects_Mosaic']);" href="#">Mosaic...</a>
-			<li><a onclick="MENU.do_menu(['image_negative']);" href="#">Negative</a></li>
 			<li><a onclick="MENU.do_menu(['effects_Oil']);" href="#">Oil...</a>
 			<li><a onclick="MENU.do_menu(['effects_perspective']);" href="#">Perspective...</a>
 			<li><a onclick="MENU.do_menu(['effects_Posterize']);" href="#">Posterize...</a>
@@ -224,6 +220,7 @@
 </div>
 <progress id="uploadprogress" min="0" max="100" value="0">0</progress>
 <div style="display:none;" id="tmp"></div>
+<div id="popup"></div>
 
 <script src="libs/jquery-1.8.3.js"></script>
 <script src="libs/menu.js"></script>

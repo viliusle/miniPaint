@@ -69,7 +69,7 @@ function LAYER_CLASS(){
 				DRAW.zoom();
 				};
 			img.onerror = function(ex){
-				POP.add({title: "Message:", value: 'The image could not be loaded.'});
+				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});
 				if(data.substring(0,4) == 'http')
 					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.'});
 				POP.show('Error', '.');

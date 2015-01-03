@@ -58,7 +58,8 @@ function popup(){
 		for(var i in parameters){
 			var parameter = parameters[i];
 			html += '<tr>';
-			html += '<td style="font-weight:bold;padding-right:3px;width:130px;">'+parameter.title+'</td>';
+			if(title != 'Error')
+				html += '<td style="font-weight:bold;padding-right:3px;width:130px;">'+parameter.title+'</td>';
 			if(parameter.name != undefined){
 				can_be_canceled = true;
 				if(parameter.values != undefined){
@@ -108,6 +109,7 @@ function popup(){
 						}
 					}
 				else if(parameter.value != undefined){
+					//input, range or textarea
 					var step = 1;
 					if(parameter.step != undefined)
 						step = parameter.step;
@@ -119,10 +121,12 @@ function popup(){
 						html += '<td style="padding-left:10px;width:50px;" id="pv'+i+'">'+parameter.value+'</td>';
 						}
 					else{
+						if(parameter.placeholder == undefined)
+							parameter.placeholder = '';						
 						if(parameter.type == 'textarea')
-							html += '<td><textarea style="width:100%;height:80px;" id="pop_data_'+parameter.name+'">'+parameter.value+'</textarea></td>';
+							html += '<td><textarea style="width:100%;height:80px;" id="pop_data_'+parameter.name+'" placeholder="'+parameter.placeholder+'">'+parameter.value+'</textarea></td>';
 						else
-							html += '<td colspan="2"><input style="width:100%;" type="text" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" onkeyup="POP.validate(this);" /></td>';
+							html += '<td colspan="2"><input style="width:100%;" type="text" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" placeholder="'+parameter.placeholder+'" onkeyup="POP.validate(this);" /></td>';
 						}
 					}
 				}
@@ -136,7 +140,7 @@ function popup(){
 				}
 			else if(parameter.html != undefined){
 				//html
-				html += '<td colspan="2">'+parameter.html+'</td>';
+				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">'+parameter.html+'</td>';
 				}
 			else{
 				//locked fields
