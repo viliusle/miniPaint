@@ -680,11 +680,15 @@ function MENU_CLASS(){
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					},
 				function(user_response){
+					POP.preview_in_main = true;
 					var param1 = parseInt(user_response.param1);
 					var param2 = parseInt(user_response.param2);
-					if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+					if(user_response.param3 == 'Yes') 
+						param3 = true; 
+					else 
+						param3 = false;
 					
-					colorize_data = DRAW.colorize(canvas_preview, WIDTH, HEIGHT, param1, param2, param3, true);
+					colorize_data = DRAW.colorize(false, WIDTH, HEIGHT, param1, param2, param3, true);
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					canvas_front.drawImage(canvas_active(true), 0, 0);
 					DRAW.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, param3, colorize_data);

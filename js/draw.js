@@ -544,8 +544,6 @@ function DRAW_CLASS(){
 		};
 	//converts greyscale images to coloured
 	this.colorize = function(context, W, H, rand_power, max_gap, dither, manual_colors){
-		var img = context.getImageData(0, 0, W, H);
-		
 		if(manual_colors == undefined || manual_colors === true){
 			var colors = [];
 			for(var x=0; x < 3; x++){
@@ -565,6 +563,8 @@ function DRAW_CLASS(){
 			}
 		else
 			var colors = manual_colors;
+		
+		var img = context.getImageData(0, 0, W, H);
 		
 		//colorize
 		var imgData = img.data;
