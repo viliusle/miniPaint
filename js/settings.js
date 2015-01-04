@@ -8,14 +8,14 @@ var canvas_preview = document.getElementById("canvas_preview").getContext("2d");
 //settings
 var AUTHOR = 'ViliusL';
 var EMAIL = 'www.viliusl@gmail.com';
-var VERSION = '1.9.6';
+var VERSION = '1.9.7';
 var WIDTH = 800;				//canvas midth
 var HEIGHT = 500;				//canvas height
 var RATIO = WIDTH/HEIGHT;			//width & height ratio
 var LAYERS = [];				//layers data
 var ACTION = 'select_tool';			///default action
 var COLOUR = '#0000ff';				//current color
-var COLOUR_LAST = '#ffffff';			//last used color
+var COLOUR_LAST = '#0000ff';			//last used color
 var ZOOM = 100;					//zoom level 10 - infinity
 var ALPHA = 255;
 

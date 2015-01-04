@@ -81,11 +81,6 @@ function TOOLS_CLASS(){
 				//save
 				this.action_data().attributes[k] = object.value;
 				
-				if(HELPER.chech_input_color_support('main_colour') == true)
-					document.getElementById("main_colour").value = object.value; //supported
-				else
-					document.getElementById("main_colour_alt").style.backgroundColor = object.value; //not supported
-				
 				document.getElementById(k).value = object.value;
 				}
 			if(this.action_data().on_update != undefined)
@@ -397,7 +392,6 @@ function TOOLS_CLASS(){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.lineWidth = 1;
 			if(is_circle == false){
-				//HELPER.dashedRect(canvas_front, mouse.x - size1, mouse.y - size1, mouse.x+size2, mouse.y+size2, 1, '#000000');
 				HELPER.dashedRect(canvas_front, mouse.x - Math.ceil(size/2) + 1, mouse.y - Math.ceil(size/2) + 1, mouse.x + Math.floor(size/2), mouse.y + Math.floor(size/2), 1, '#000000');
 				}
 			else{
@@ -798,6 +792,23 @@ function TOOLS_CLASS(){
 				canvas_active().lineTo(mouse.x, mouse.y);
 				canvas_active().stroke();
 				canvas_active().closePath(); 	
+				}
+			else if(type == 'release'){
+				canvas_active().beginPath();
+				canvas_active().arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, 2 * Math.PI, false);
+				canvas_active().fillStyle = COLOUR;
+				canvas_active().fill();
+				}
+			else if(type == 'move'){
+				//show size
+				var size = TOOLS.action_data().attributes.size;
+				if(size >= 15){
+					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_front.beginPath();
+					canvas_front.strokeStyle = "#000000";
+					canvas_front.arc(mouse.x, mouse.y, size/2, 0, Math.PI*2, true);
+					canvas_front.stroke();
+					}
 				}
 			}	
 		else if(brush_type == 'BezierCurve'){

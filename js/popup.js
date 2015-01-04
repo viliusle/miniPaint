@@ -310,6 +310,7 @@ function popup(){
 		parameters = [];
 		this.preview = false;
 		this.onload = false;
+		this.preview_in_main = false;
 		if(this.handler != ''){
 			if(typeof this.handler == "string")
 				window[this.handler](response);
