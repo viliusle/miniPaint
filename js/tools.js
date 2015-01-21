@@ -1717,5 +1717,30 @@ function TOOLS_CLASS(){
 			}
 		return threshold;
 		};
-	var x_cache = [];
+	this.convert_to_alpha = function(context, W, H){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var grey;
+		var back_color = HELPER.hex2rgb(COLOUR);
+		var back_grey = round(0.2126 * back_color.r + 0.7152 * back_color.g + 0.0722 * back_color.b);
+		
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			//exact match
+			if(imgData[i] == back_color.r && imgData[i+1] == back_color.g && imgData[i+2] == back_color.b){
+				imgData[i] = 0;
+				imgData[i+1] = 0;
+				imgData[i+2] = 0;
+				imgData[i+3] = 0;
+				continue;
+				}
+			//semi-transparent
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			imgData[i] = grey;
+			imgData[i+1] = grey;
+			imgData[i+2] = grey;
+			imgData[i+3] = Math.round(Math.abs(grey - back_grey) / Math.abs(255 - back_grey) * 255);
+			}
+		context.putImageData(img, 0, 0);
+		};
 	}

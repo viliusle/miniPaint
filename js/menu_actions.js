@@ -513,6 +513,12 @@ function MENU_CLASS(){
 		else if(name == 'tools_panorama'){
 			SIFT.panorama();
 			}
+		//extract alpha channel
+		else if(name == 'tools_extract_alpha'){
+			MAIN.save_state();
+			TOOLS.convert_to_alpha(canvas_active(), WIDTH, HEIGHT);
+			DRAW.zoom();
+			}
 		
 		//===== Effects ========================================================
 		
