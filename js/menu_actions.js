@@ -517,7 +517,6 @@ function MENU_CLASS(){
 		else if(name == 'tools_extract_alpha'){
 			MAIN.save_state();
 			TOOLS.convert_to_alpha(canvas_active(), WIDTH, HEIGHT);
-			DRAW.zoom();
 			}
 		
 		//===== Effects ========================================================
@@ -803,6 +802,10 @@ function MENU_CLASS(){
 					var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
 					canvas_preview.putImageData(filtered, 0, 0);
 					});
+			}
+		else if(name == 'effects_heatmap'){
+			MAIN.save_state();
+			TOOLS.heatmap_effect(canvas_active(), WIDTH, HEIGHT);
 			}
 		else if(name == 'effects_HSLAdjustment'){
 			POP.add({name: "param1",	title: "Hue:",	value: "0",	range: [-180, 180] });
