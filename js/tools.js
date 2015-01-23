@@ -1717,7 +1717,8 @@ function TOOLS_CLASS(){
 			}
 		return threshold;
 		};
-	this.convert_to_alpha = function(context, W, H){
+	this.convert_color_to_alpha = function(context, W, H){
+		var sensitivity = 0.5; //alpha sensitivity, 1 - affect all colors, 0.5 - closest only and so on
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
 		var grey, new_grey;
@@ -1726,34 +1727,20 @@ function TOOLS_CLASS(){
 
 		for(var i = 0; i < imgData.length; i += 4){		
 			if(imgData[i+3] == 0) continue;	//transparent
-			//exact match
-			if(imgData[i] == back_color.r && imgData[i+1] == back_color.g && imgData[i+2] == back_color.b){
-				imgData[i] = 0;
-				imgData[i+1] = 0;
-				imgData[i+2] = 0;
-				imgData[i+3] = 0;
-				continue;
-				}
-			//semi-transparent
+
 			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
 			if(grey < back_grey)
 				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(0 - back_grey)*2.55); //darker color
 			else
 				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(255 - back_grey)*2.55); //lighter color
+			imgData[i+3] = 255 - Math.round((255 - imgData[i+3]) * sensitivity);
+			
 			//combining 2 layers in future will change colors, so make changes to get same colors in final image
 			//color_result = color_1 * (alpha_1 / 255) * (1 - A2 / 255) + color_2 * (alpha_2 / 255)
 			//color_2 = (color_result - color_1 * (alpha_1 / 255) * (1 - A2 / 255)) / (alpha_2 / 255)
-			
-			//color mode
-			/*imgData[i]   = Math.ceil((imgData[i]   - back_color.r * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i]   = Math.ceil((imgData[i]   - back_color.r * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
 			imgData[i+1] = Math.ceil((imgData[i+1] - back_color.g * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
-			imgData[i+2] = Math.ceil((imgData[i+2] - back_color.b * (1-imgData[i+3]/255)) / (imgData[i+3]/255));*/
-			
-			//grey mode
-			new_grey = Math.ceil((grey - back_grey * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
-			imgData[i]   = new_grey;
-			imgData[i+1] = new_grey;
-			imgData[i+2] = new_grey;
+			imgData[i+2] = Math.ceil((imgData[i+2] - back_color.b * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
 			}
 		context.putImageData(img, 0, 0);
 		};

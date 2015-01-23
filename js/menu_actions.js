@@ -514,9 +514,9 @@ function MENU_CLASS(){
 			SIFT.panorama();
 			}
 		//extract alpha channel
-		else if(name == 'tools_extract_alpha'){
+		else if(name == 'tools_color2alpha'){
 			MAIN.save_state();
-			TOOLS.convert_to_alpha(canvas_active(), WIDTH, HEIGHT);
+			TOOLS.convert_color_to_alpha(canvas_active(), WIDTH, HEIGHT);
 			}
 		
 		//===== Effects ========================================================
