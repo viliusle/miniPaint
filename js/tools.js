@@ -1720,7 +1720,7 @@ function TOOLS_CLASS(){
 	this.convert_to_alpha = function(context, W, H){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
-		var grey;
+		var grey, new_grey;
 		var back_color = HELPER.hex2rgb(COLOUR);
 		var back_grey = round(0.2126 * back_color.r + 0.7152 * back_color.g + 0.0722 * back_color.b);
 
@@ -1736,10 +1736,24 @@ function TOOLS_CLASS(){
 				}
 			//semi-transparent
 			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
-			imgData[i] = grey;
-			imgData[i+1] = grey;
-			imgData[i+2] = grey;
-			imgData[i+3] = Math.round(Math.abs(grey - back_grey) / Math.abs(255 - back_grey) * 255);
+			if(grey < back_grey)
+				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(0 - back_grey)*2.55); //darker color
+			else
+				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(255 - back_grey)*2.55); //lighter color
+			//combining 2 layers in future will change colors, so make changes to get same colors in final image
+			//color_result = color_1 * (alpha_1 / 255) * (1 - A2 / 255) + color_2 * (alpha_2 / 255)
+			//color_2 = (color_result - color_1 * (alpha_1 / 255) * (1 - A2 / 255)) / (alpha_2 / 255)
+			
+			//color mode
+			/*imgData[i]   = Math.ceil((imgData[i]   - back_color.r * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i+1] = Math.ceil((imgData[i+1] - back_color.g * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i+2] = Math.ceil((imgData[i+2] - back_color.b * (1-imgData[i+3]/255)) / (imgData[i+3]/255));*/
+			
+			//grey mode
+			new_grey = Math.ceil((grey - back_grey * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i]   = new_grey;
+			imgData[i+1] = new_grey;
+			imgData[i+2] = new_grey;
 			}
 		context.putImageData(img, 0, 0);
 		};
