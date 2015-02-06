@@ -121,7 +121,7 @@ function CONTROLLS_CLASS(){
 				MAIN.grid = true;
 			else
 				MAIN.grid = false;
-			DRAW.draw_grid(canvas_back, 50, 50);	
+			DRAW.draw_grid();	
 			}
 		//del
 		else if(k==46){
@@ -141,6 +141,10 @@ function CONTROLLS_CLASS(){
 			if(CON.ctrl_pressed == false)
 				CON.ctrl_pressed = true;
 			}
+		//d
+		else if(k==68){
+			MENU.do_menu(['layer_dublicate']);
+			}
 		//a
 		else if(k==65){
 			if(CON.ctrl_pressed == true){
@@ -152,16 +156,6 @@ function CONTROLLS_CLASS(){
 					};
 				TOOLS.draw_selected_area();
 				return false;
-				}
-			}
-		//x
-		else if(k==88){
-			if(CON.ctrl_pressed == true && TOOLS.select_data != false){
-				MAIN.save_state();
-				MENU.copy_to_clipboard();
-				canvas_active().clearRect(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
-				TOOLS.select_data = false;
-				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				}
 			}
 		//v
@@ -390,8 +384,6 @@ function CONTROLLS_CLASS(){
 			
 		if(ACTION != 'select_square')
 			TOOLS.select_square_action = '';
-			
-
 		
 		mouse_x_move_last = CON.mouse.x;
 		mouse_y_move_last = CON.mouse.y;
@@ -407,7 +399,6 @@ function CONTROLLS_CLASS(){
 			TOOLS.select_data = false;
 		
 		//check tools functions
-		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 		TOOLS.draw_selected_area();
 		for (i in TOOLS){
 			if(i == ACTION){
@@ -415,6 +406,7 @@ function CONTROLLS_CLASS(){
 				break;
 				}
 			}
+		//canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			
 		//main window resize
 		if(resize_all != false && ZOOM == 100 && CON.mouse.x > 0 && CON.mouse.y > 0){
@@ -450,6 +442,9 @@ function CONTROLLS_CLASS(){
 		
 			var FR = new FileReader();	
 			FR.file = e.dataTransfer.files[i];
+			
+			if(e.dataTransfer.files.length == 1)
+				SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
 						
 			FR.onload = function(event){
 				if(this.file.type != 'text/xml'){

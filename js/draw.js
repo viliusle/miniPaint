@@ -2,12 +2,24 @@ var DRAW = new DRAW_CLASS();
 
 function DRAW_CLASS(){
 	this.PREVIEW_SIZE = {w: 148, h: 100 };
+	this.grid_size = [50, 50];
 	
-	this.draw_grid = function(canvas, gap_x, gap_y){
+	this.draw_grid = function(gap_x, gap_y){
 		if(MAIN.grid == false){
-			canvas.clearRect(0, 0, WIDTH, HEIGHT);
-			DRAW.draw_background(canvas, WIDTH, HEIGHT);
+			document.getElementById("canvas_grid").style.display = 'none';
 			return false;
+			}
+		else{
+			document.getElementById("canvas_grid").style.display = '';
+			canvas_grid.clearRect(0, 0, WIDTH, HEIGHT);
+			}
+		
+		//size
+		if(gap_x != undefined && gap_y != undefined)
+			this.grid_size = [gap_x, gap_y];
+		else{
+			gap_x = this.grid_size[0];
+			gap_y = this.grid_size[1];
 			}
 		gap_x = parseInt(gap_x);
 		gap_y = parseInt(gap_y);
@@ -16,24 +28,24 @@ function DRAW_CLASS(){
 		for(var i=gap_x; i<WIDTH; i=i+gap_x){
 			if(gap_x==0) break;
 			if(i%(gap_x*5) == 0)	//main lines
-				canvas.strokeStyle = '#808080';
+				canvas_grid.strokeStyle = '#222222';
 			else
-				canvas.strokeStyle = '#dddddd';	
-			canvas.beginPath();
-			canvas.moveTo(0.5 + i, 0);
-			canvas.lineTo(0.5 + i, HEIGHT);
-			canvas.stroke();
+				canvas_grid.strokeStyle = '#bbbbbb';	
+			canvas_grid.beginPath();
+			canvas_grid.moveTo(0.5 + i, 0);
+			canvas_grid.lineTo(0.5 + i, HEIGHT);
+			canvas_grid.stroke();
 			}
 		for(var i=gap_y; i<HEIGHT; i=i+gap_y){
 			if(gap_y==0) break;
 			if(i%(gap_y*5) == 0)	//main lines
-				canvas.strokeStyle = '#808080';
+				canvas_grid.strokeStyle = '#222222';
 			else
-				canvas.strokeStyle = '#dddddd';
-			canvas.beginPath();
-			canvas.moveTo(0, 0.5 + i);
-			canvas.lineTo(WIDTH, 0.5 + i);
-			canvas.stroke();
+				canvas_grid.strokeStyle = '#bbbbbb';
+			canvas_grid.beginPath();
+			canvas_grid.moveTo(0, 0.5 + i);
+			canvas_grid.lineTo(WIDTH, 0.5 + i);
+			canvas_grid.stroke();
 			}
 		};
 	this.draw_background = function(canvas, W, H, gap, force){
@@ -64,7 +76,11 @@ function DRAW_CLASS(){
 			}
 		};
 	//credits to Victor Haydin
-	this.toolFiller = function(context, W, H, x, y, color_to, sensitivity){
+	this.toolFiller = function(context, W, H, x, y, color_to, sensitivity, anti_aliasing){
+		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+		var img_tmp = canvas_front.getImageData(0, 0, W, H);
+		var imgData_tmp = img_tmp.data;
+		
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
 		var k = ((y * (img.width * 4)) + (x * 4));
@@ -82,35 +98,46 @@ function DRAW_CLASS(){
 		  color_from.a == color_to.a) 
 			return false;
 		var stack = [];
-		stack.push(x);
-		stack.push(y);
+		stack.push([x, y]);
 		while (stack.length > 0){
-			var curPointY = stack.pop();
-			var curPointX = stack.pop();
+			var curPoint = stack.pop();
 			for (var i = 0; i < 4; i++){
-				var nextPointX = curPointX + dx[i];
-				var nextPointY = curPointY + dy[i];
+				var nextPointX = curPoint[0] + dx[i];
+				var nextPointY = curPoint[1] + dy[i];
 				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H) 
 					continue;
 				var k = (nextPointY * W + nextPointX) * 4;
+				if(imgData_tmp[k+3] != 0) continue; //already parsed
+				
 				//check
 				if(Math.abs(imgData[k+0] - color_from.r) <= sensitivity &&
 				  Math.abs(imgData[k+1] - color_from.g) <= sensitivity &&
 				  Math.abs(imgData[k+2] - color_from.b) <= sensitivity &&
 				  Math.abs(imgData[k+3] - color_from.a) <= sensitivity){
 					//fill pixel
-					imgData[k+0] = color_to.r; //r
-					imgData[k+1] = color_to.g; //g
-					imgData[k+2] = color_to.b; //b
-					imgData[k+3] = color_to.a; //a
-					stack.push(nextPointX);
-					stack.push(nextPointY);
+					imgData_tmp[k]   = color_to.r; //r
+					imgData_tmp[k+1] = color_to.g; //g
+					imgData_tmp[k+2] = color_to.b; //b
+					imgData_tmp[k+3] = color_to.a; //a
+					
+					stack.push([nextPointX, nextPointY]);
 					}
 				}
 			}
-		context.putImageData(img, 0, 0);
+		canvas_front.putImageData(img_tmp, 0, 0);
+		if(anti_aliasing == true){
+			context.shadowColor = "rgba("+color_to.r+", "+color_to.g+", "+color_to.b+", "+color_to.a/255+")";
+			context.shadowBlur = 5;
+			}
+		context.drawImage(document.getElementById("canvas_front"), 0, 0);
+		//reset
+		context.shadowBlur = 0;
 		};
-	this.tool_magic_wand = function(context, W, H, x, y, sensitivity){
+	this.tool_magic_wand = function(context, W, H, x, y, sensitivity, anti_aliasing){
+		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+		var img_tmp = canvas_front.getImageData(0, 0, W, H);
+		var imgData_tmp = img_tmp.data;
+		
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
 		var k = ((y * (img.width * 4)) + (x * 4));
@@ -120,7 +147,7 @@ function DRAW_CLASS(){
 			r: 255,
 			g: 255,
 			b: 255,
-			a: 0
+			a: 255
 			};
 		var color_from = {
 			r: imgData[k+0],
@@ -131,42 +158,45 @@ function DRAW_CLASS(){
 		if(color_from.r == color_to.r && 
 		  color_from.g == color_to.g && 
 		  color_from.b == color_to.b && 
-		  color_from.a == color_to.a) 
+		  color_from.a == 0){
 			return false;
-		if(ALPHA < 255 && color_from.a == ALPHA) return false;
+			}
 		var stack = [];
-		stack.push(x);
-		stack.push(y);
+		stack.push([x, y]);
 		while (stack.length > 0){
-			var curPointY = stack.pop();
-			var curPointX = stack.pop();
+			var curPoint = stack.pop();
 			for (var i = 0; i < 4; i++){
-				var nextPointX = curPointX + dx[i];
-				var nextPointY = curPointY + dy[i];
-				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H) 
+				var nextPointX = curPoint[0] + dx[i];
+				var nextPointY = curPoint[1] + dy[i];
+				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H)
 					continue;
 				var k = (nextPointY * W + nextPointX) * 4;
-				//check
-				if(Math.abs(imgData[k+0] - color_from.r) <= sensitivity &&
-				  Math.abs(imgData[k+1] - color_from.g) <= sensitivity &&
-				  Math.abs(imgData[k+2] - color_from.b) <= sensitivity &&
-				  Math.abs(imgData[k+3] - color_from.a) <= sensitivity){
-					//fill pixel
-					if(ALPHA == 255){
-						imgData[k+0] = color_to.r; //r
-						imgData[k+1] = color_to.g; //g
-						imgData[k+2] = color_to.b; //b
-						imgData[k+3] = color_to.a; //a
-						}
-					else
-						imgData[k+3] = ALPHA; //a
+				if(imgData_tmp[k+3] != 0) continue; //already parsed
+				
+				if(Math.abs(imgData[k] - color_from.r) <= sensitivity 
+				  && Math.abs(imgData[k+1] - color_from.g) <= sensitivity 
+				  && Math.abs(imgData[k+2] - color_from.b) <= sensitivity 
+				  && Math.abs(imgData[k+3] - color_from.a) <= sensitivity){
+					imgData_tmp[k]   = color_to.r; //r
+					imgData_tmp[k+1] = color_to.g; //g
+					imgData_tmp[k+2] = color_to.b; //b
+					imgData_tmp[k+3] = color_to.a; //a
 					
-					stack.push(nextPointX);
-					stack.push(nextPointY);
+					stack.push([nextPointX, nextPointY]);
 					}
 				}
 			}
-		context.putImageData(img, 0, 0);
+		canvas_front.putImageData(img_tmp, 0, 0);
+		//destination-out + blur = anti-aliasing
+		context.globalCompositeOperation = "destination-out";
+		if(anti_aliasing == true){
+			context.shadowColor = "rgba("+color_to.r+", "+color_to.g+", "+color_to.b+", "+color_to.a/255+")";
+			context.shadowBlur = 5;
+			}
+		context.drawImage(document.getElementById("canvas_front"), 0, 0);
+		//reset
+		context.shadowBlur = 0;
+		context.globalCompositeOperation = 'source-over';
 		};
 	this.if_blank = function(canvas){
 		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
@@ -715,6 +745,9 @@ function DRAW_CLASS(){
 			}
 		document.getElementById('canvas_front').style.width = round(WIDTH * ZOOM / 100)+"px";
 		document.getElementById('canvas_front').style.height = round(HEIGHT * ZOOM / 100)+"px";
+		
+		document.getElementById('canvas_grid').style.width = round(WIDTH * ZOOM / 100)+"px";
+		document.getElementById('canvas_grid').style.height = round(HEIGHT * ZOOM / 100)+"px";
 	
 		//check main resize corners
 		if(ZOOM != 100){

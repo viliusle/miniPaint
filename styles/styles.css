@@ -49,19 +49,19 @@ table{
 	border-spacing: 0;
 	width:100%;
 }
-input[type="text"], input[type="button"], select{
+input[type="text"], input[type="button"], select, input[type="number"]{
 	border:1px solid #393939;
 	}
 input[type="range"]{
 	margin-left:0px;
 	width:100%;
 	}
-input[type="text"]:disabled{
-	border: 1px solid #c0c0c0;
+input[type="button"]:disabled {
+	visibility:hidden;
 	}
-label{
-	font-size:11px;
-	}
+input[type="button"]{
+	background: #dddddd;
+}
 
 /* ==== ID ================================================================== */
 
@@ -208,6 +208,9 @@ label{
 #popup h2{
 	margin-top:0px;
 	cursor:move;
+	}
+#popup td{
+	height:20px;
 	}
 #popup textarea{
 	color:#000000;

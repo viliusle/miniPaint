@@ -326,58 +326,58 @@ function HELPER_CLASS(){
 	}
 //http://www.script-tutorials.com/html5-canvas-custom-brush1/
 var BezierCurveBrush = {
-    // inner variables
-    iPrevX : 0,
-    iPrevY : 0,
-    points : null,
+	// inner variables
+	iPrevX: 0,
+	iPrevY: 0,
+	points: null,
+	// initialization function
+	init: function () {
+	},
+	startCurve: function (x, y) {
+		this.iPrevX = x;
+		this.iPrevY = y;
+		this.points = new Array();
+	},
+	getPoint: function (iLength, a) {
+		var index = a.length - iLength, i;
+		for (i = index; i < a.length; i++) {
+			if (a[i]) {
+				return a[i];
+			}
+		}
+	},
+	draw: function (ctx, color_rgb, x, y, size) {
+		if (Math.abs(this.iPrevX - x) > 5 || Math.abs(this.iPrevY - y) > 5) {
+			this.points.push([x, y]);
 
-    // initialization function
-    init: function () { },
+			// draw main path stroke
+			ctx.beginPath();
+			ctx.moveTo(this.iPrevX, this.iPrevY);
+			ctx.lineTo(x, y);
 
-    startCurve: function (x, y) {
-        this.iPrevX = x;
-        this.iPrevY = y;
-        this.points = new Array();
-    },
+			ctx.lineWidth = size;
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+			ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.9)';
+			ctx.stroke();
+			ctx.closePath();
 
-    getPoint: function (iLength, a) {
-        var index = a.length - iLength, i;
-        for (i=index; i< a.length; i++) {
-            if (a[i]) {
-                return a[i];
-            }
-        }
-    },
+			// draw extra strokes
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.2)';
+			ctx.beginPath();
+			var iStartPoint = this.getPoint(25, this.points);
+			var iFirstPoint = this.getPoint(1, this.points);
+			var iSecondPoint = this.getPoint(5, this.points);
+			ctx.moveTo(iStartPoint[0],iStartPoint[1]);
+			ctx.bezierCurveTo(iFirstPoint[0], iFirstPoint[1], iSecondPoint[0], iSecondPoint[1], x, y);
+			ctx.stroke();
+			ctx.closePath();
 
-    draw: function (ctx, color_rgb, x, y) {
-        if (Math.abs(this.iPrevX - x) > 5 || Math.abs(this.iPrevY - y) > 5) {
-            this.points.push([x, y]);
-
-            // draw main path stroke
-            ctx.beginPath();
-            ctx.moveTo(this.iPrevX, this.iPrevY);
-            ctx.lineTo(x, y);
-
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.9)';
-            ctx.stroke();
-            ctx.closePath();
-
-            // draw extra strokes
-            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.2)';
-            ctx.beginPath();
-            var iStartPoint = this.getPoint(25, this.points);
-            var iFirstPoint = this.getPoint(1, this.points);
-            var iSecondPoint = this.getPoint(5, this.points);
-            ctx.moveTo(iStartPoint[0],iStartPoint[1]);
-            ctx.bezierCurveTo(iFirstPoint[0], iFirstPoint[1], iSecondPoint[0], iSecondPoint[1], x, y);
-            ctx.stroke();
-            ctx.closePath();
-
-            this.iPrevX = x;
-            this.iPrevY = y;
-        }
-    }
+			this.iPrevX = x;
+			this.iPrevY = y;
+		}
+	}
 };
 
 //quick access short functions
