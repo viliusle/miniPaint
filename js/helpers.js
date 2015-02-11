@@ -3,6 +3,52 @@ var HELPER = new HELPER_CLASS();
 function HELPER_CLASS(){
 	var time;
 	
+	this.drawImage_round = function(canvas, mouse_x, mouse_y, size, img_data, canvas_tmp, anti_alias){
+		var size_half = Math.round(size/2);
+		var ctx_tmp = canvas_tmp.getContext("2d");
+		var xx = mouse_x - size_half;
+		var yy = mouse_y - size_half;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
+		ctx_tmp.clearRect(0, 0, WIDTH, HEIGHT);
+		ctx_tmp.save();
+		//draw main data
+		try{
+			ctx_tmp.drawImage(img_data, mouse_x - size_half, mouse_y - size_half, size, size);
+			}
+		catch(err){
+			try{
+				ctx_tmp.putImageData(img_data, xx, yy);	
+				}
+			catch(err){
+				console.log("Error: "+err.message);
+				}
+			}
+		ctx_tmp.globalCompositeOperation = 'destination-in';
+			
+		//create form
+		ctx_tmp.fillStyle = '#ffffff';
+		if(anti_alias == true){
+			var gradient = ctx_tmp.createRadialGradient(mouse_x, mouse_y, 0, mouse_x, mouse_y, size_half);
+			gradient.addColorStop(0,   '#ffffff');
+			gradient.addColorStop(0.8, '#ffffff');
+			gradient.addColorStop(1,   'rgba(25115,255,255,0');
+			ctx_tmp.fillStyle = gradient;
+			}
+		ctx_tmp.beginPath();
+		ctx_tmp.arc(mouse_x, mouse_y, size_half, 0, 2*Math.PI, true);
+		ctx_tmp.fill();
+		//draw final data
+		if(xx + size > WIDTH)
+			size = WIDTH - xx;
+		if(yy + size > HEIGHT)
+			size = HEIGHT - yy;
+		canvas.drawImage(canvas_tmp, xx, yy, size, size, xx, yy, size, size);
+		//reset
+		ctx_tmp.restore();
+		ctx_tmp.clearRect(0, 0, WIDTH, HEIGHT);
+		};
 	this.timer_init = function(){
 		time = Date.now();
 		};

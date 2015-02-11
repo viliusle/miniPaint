@@ -839,7 +839,7 @@ function TOOLS_CLASS(){
 				
 				//blur
 				canvas_active().shadowBlur = 0;
-				if(TOOLS.action_data().attributes.blur == true){	
+				if(TOOLS.action_data().attributes.anti_alias == true){	
 					canvas_active().shadowColor = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 					canvas_active().shadowBlur = Math.round(TOOLS.action_data().attributes.size);
 					}
@@ -886,14 +886,12 @@ function TOOLS_CLASS(){
 				}
 			else if(type == 'move'){
 				//show size
-				var size = TOOLS.action_data().attributes.size;
-				if(size >= 10 && ALPHA == 255){
-					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-					canvas_front.beginPath();
-					canvas_front.strokeStyle = "#000000";
-					canvas_front.arc(mouse.x, mouse.y, size/2, 0, Math.PI*2, true);
-					canvas_front.stroke();
-					}
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_front.beginPath();
+				canvas_front.strokeStyle = "#000000";
+				canvas_front.lineWidth = 1;
+				canvas_front.arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, Math.PI*2, true);
+				canvas_front.stroke();
 				}
 			}	
 		else if(brush_type == 'BezierCurve'){
@@ -1125,75 +1123,77 @@ function TOOLS_CLASS(){
 		};
 	this.blur_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
 			}
 		};
 	this.sharpen_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
+			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
 			}
 		};
 	this.burn_dodge_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
-		var color_rgb = HELPER.hex2rgb(COLOUR);
+		var size = TOOLS.action_data().attributes.size;
 		var power = TOOLS.action_data().attributes.power*2.5;
 		
 		if(type == 'click'){
 			MAIN.save_state();
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.save();
+			CON.clear_front_on_release = false;
 			
 			//init settings
 			canvas_active().beginPath();
@@ -1211,9 +1211,6 @@ function TOOLS_CLASS(){
 			canvas_front.lineJoin = 'round';
 			}
 		else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-			//canvas_active().moveTo(mouse.last_x, mouse.last_y);
-			//canvas_active().lineTo(mouse.x, mouse.y);
-
 			//now draw preview
 			canvas_front.beginPath();
 			//clean from last line
@@ -1229,6 +1226,7 @@ function TOOLS_CLASS(){
 			canvas_front.stroke();
 			}
 		else if(type == 'release'){
+			//todo: use screen+multiply or burn+dodge
 			canvas_active().globalCompositeOperation = "soft-light";
 			if(TOOLS.action_data().attributes.burn == true)
 				canvas_active().shadowColor = "#000000";
@@ -1238,6 +1236,7 @@ function TOOLS_CLASS(){
 			canvas_active().drawImage(document.getElementById("canvas_front"), 0, 0);
 			canvas_active().globalCompositeOperation = "source-over";
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			CON.clear_front_on_release = true;
 
 			//if mouse was not moved
 			if(mouse.click_x == mouse.x && mouse.click_y == mouse.y){
@@ -1257,14 +1256,15 @@ function TOOLS_CLASS(){
 				canvas_active().globalCompositeOperation = "source-over";
 				}
 			canvas_active().shadowBlur = 0;
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.restore();
 			}
-		else if(type == 'move'){
-			/*var size = TOOLS.action_data().attributes.size;
+		else if(type == 'move' && CON.isDrag == false){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.beginPath();
 			canvas_front.strokeStyle = "#000000";
 			canvas_front.arc(mouse.x, mouse.y, size/2, 0, Math.PI*2, true);
-			canvas_front.stroke();*/
+			canvas_front.stroke();
 			}
 		};
 	this.crop_tool = function(type, mouse, event){
@@ -1347,44 +1347,48 @@ function TOOLS_CLASS(){
 		};
 	this.clone_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
 	
 			if(clone_data === false){
 				POP.add({html: 'Source is empty, right click on image first.'	});
 				POP.show('Error', '');
 				}
 			else{
-				//write clone data
-				canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2, size, size);
+				//draw rounded image
+				HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, clone_data, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 				}
 			}
 		else if(type == 'right_click'){
-			var size = TOOLS.action_data().attributes.size;
-			
 			//save clone source
 			clone_data = document.createElement("canvas");
 			clone_data.width = size;
 			clone_data.height = size;
-			clone_data.getContext("2d").drawImage(canvas_active(true), mouse.x - size/2, mouse.y - size/2, size, size, 0, 0, size, size);
+			var xx = mouse.x - size_half;
+			var yy = mouse_y - size_half;
+			if(xx < 0) xx = 0;
+			if(yy < 0) yy = 0;
+			clone_data.getContext("2d").drawImage(canvas_active(true), xx, yy, size, size, 0, 0, size, size);
 			return false;
 			}
 		else if(type == 'drag'){
 			if(event.which == 3) return true;
 			if(clone_data === false) return false;	//no source
-			var size = TOOLS.action_data().attributes.size;
-	
-			//write clone data
-			canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2);
+			
+			//draw rounded image
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, clone_data, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
-			
+			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x - size_half, mouse.y - size_half, mouse.x + size_half, mouse.y + size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
 			}
 		};
 	this.select_square = function(type, mouse, event){
@@ -1982,6 +1986,29 @@ function TOOLS_CLASS(){
 			imgData[i]   = Math.ceil((imgData[i]   - back_color.r * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
 			imgData[i+1] = Math.ceil((imgData[i+1] - back_color.g * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
 			imgData[i+2] = Math.ceil((imgData[i+2] - back_color.b * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			}
+		context.putImageData(img, 0, 0);
+		};
+	this.color_zoom = function(context, W, H, zoom, center){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var grey;
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			
+			for(var j=0; j<3; j++){
+				var k = i+j;
+				if(grey > center)
+					imgData[k] += (imgData[k] - center) * zoom;
+				else if(grey < center)
+					imgData[k] -= (center - imgData[k]) * zoom;
+				if(imgData[k] < 0)
+					imgData[k] = 0;
+				if(imgData[k] > 255)
+					imgData[k] = 255;
+				}
 			}
 		context.putImageData(img, 0, 0);
 		};

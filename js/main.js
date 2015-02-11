@@ -1,9 +1,5 @@
 /*
 TODO:	
-	wrap letters
-	lots of layers issue
-	layers content size progress?
-	expand colors
 	grains
 */
 

@@ -23,6 +23,7 @@ function CONTROLLS_CLASS(){
 	this.mini_rect_data = { w: 0, h:0 };
 	this.isDrag = false;
 	this.sr_size = 8;	//selected area resize rects size
+	this.clear_front_on_release = true;
 	var autosize = true;
 	var mouse_click_x = false;
 	var mouse_click_y = false;
@@ -399,6 +400,8 @@ function CONTROLLS_CLASS(){
 			TOOLS.select_data = false;
 		
 		//check tools functions
+		if(CON.clear_front_on_release == true)
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 		TOOLS.draw_selected_area();
 		for (i in TOOLS){
 			if(i == ACTION){
@@ -406,7 +409,6 @@ function CONTROLLS_CLASS(){
 				break;
 				}
 			}
-		//canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			
 		//main window resize
 		if(resize_all != false && ZOOM == 100 && CON.mouse.x > 0 && CON.mouse.y > 0){

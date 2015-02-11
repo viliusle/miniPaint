@@ -566,6 +566,25 @@ function MENU_CLASS(){
 				TOOLS.convert_color_to_alpha(canvas_preview, w, h, param1, param2);
 				});
 		};
+	//expands colors
+	this.tools_color_zoom = function(){
+		POP.add({name: "param1",	title: "Zoom:",		value: "2", range: [2, 20], });
+		POP.add({name: "param2",	title: "Center:",	value: "128",	range: [0, 255] });
+		POP.show('Color Zoom', function(user_response){
+				MAIN.save_state();
+				var param1 = parseInt(user_response.param1);
+				var param2 = parseInt(user_response.param2);
+
+				TOOLS.color_zoom(canvas_active(), WIDTH, HEIGHT, param1, param2);
+				DRAW.zoom();
+				},
+			function(user_response, canvas_preview, w, h){
+				var param1 = parseInt(user_response.param1);
+				var param2 = parseInt(user_response.param2);
+
+				TOOLS.color_zoom(canvas_preview, w, h, param1, param2);
+				});
+		};
 	//recover alpha channel values
 	this.tools_restore_alpha = function(){
 		POP.add({name: "param",	title: "Level:",	value: "128",	range: [0, 255] });

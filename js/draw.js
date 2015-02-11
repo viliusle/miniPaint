@@ -29,8 +29,10 @@ function DRAW_CLASS(){
 			if(gap_x==0) break;
 			if(i%(gap_x*5) == 0)	//main lines
 				canvas_grid.strokeStyle = '#222222';
-			else
-				canvas_grid.strokeStyle = '#bbbbbb';	
+			else{
+				HELPER.dashedLine(canvas_grid, i, 0, i, HEIGHT, 3, '#888888');
+				continue;
+				}
 			canvas_grid.beginPath();
 			canvas_grid.moveTo(0.5 + i, 0);
 			canvas_grid.lineTo(0.5 + i, HEIGHT);
@@ -40,8 +42,10 @@ function DRAW_CLASS(){
 			if(gap_y==0) break;
 			if(i%(gap_y*5) == 0)	//main lines
 				canvas_grid.strokeStyle = '#222222';
-			else
-				canvas_grid.strokeStyle = '#bbbbbb';
+			else{
+				HELPER.dashedLine(canvas_grid, 0, i, WIDTH, i, 3, '#888888');
+				continue;
+				}
 			canvas_grid.beginPath();
 			canvas_grid.moveTo(0, 0.5 + i);
 			canvas_grid.lineTo(WIDTH, 0.5 + i);
