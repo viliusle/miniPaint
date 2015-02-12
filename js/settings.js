@@ -47,6 +47,7 @@ var ACTION_DATA = [
 	{name: 'gradient_tool', title: 'Gradient',		icon: ['all.png', -400+3, -50+4],	attributes: {radial: false, power: 50}	},
 	{name: 'crop_tool',	title: 'Crop',			icon: ['all.png', -450+2, -50+2],	attributes: {	} },
 	{name: 'burn_dodge_tool', title: 'Burn/Dodge',		icon: ['all.png', -500+3, -50+4],	attributes: {burn: true, size: 30, power: 50}	},
+	{name: 'desaturate_tool', title: 'Desaturate',		icon: ['all.png', -550+3, -00+4],	attributes: {size: 50, anti_alias: true}	},
 	];
 
 var CREDITS = [

@@ -812,6 +812,38 @@ function TOOLS_CLASS(){
 		if(TOOLS.action_data().attributes.type != 'Brush')
 			document.getElementById('blur').style.display='none';
 		};
+	this.desaturate_tool = function(type, mouse, event){
+		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
+		if(type == 'click'){
+			MAIN.save_state();
+			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
+			var imageData = canvas_active().getImageData(xx, yy, size, size);
+			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
+			}
+		else if(type == 'drag'){
+			var param1 = TOOLS.action_data().attributes.strength;
+			var imageData = canvas_active().getImageData(xx, yy, size, size);
+			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
+			}
+		else if(type == 'move'){
+			//show size
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
+			canvas_front.lineWidth = 1;
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
+			}
+		};
 	this.brush = function(type, mouse, event){
 		if(mouse.valid == false) return true;
 		var brush_type = TOOLS.action_data().attributes.type;
@@ -893,7 +925,7 @@ function TOOLS_CLASS(){
 				canvas_front.arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, Math.PI*2, true);
 				canvas_front.stroke();
 				}
-			}	
+			}
 		else if(brush_type == 'BezierCurve'){
 			if(type == 'click')
 				BezierCurveBrush.startCurve(mouse.x, mouse.y);
