@@ -1260,10 +1260,6 @@ function TOOLS_CLASS(){
 		else if(type == 'release'){
 			//todo: use screen+multiply or burn+dodge
 			canvas_active().globalCompositeOperation = "soft-light";
-			if(TOOLS.action_data().attributes.burn == true)
-				canvas_active().shadowColor = "#000000";
-			else
-				canvas_active().shadowColor = "#ffffff";
 			canvas_active().shadowBlur = 5;
 			canvas_active().drawImage(document.getElementById("canvas_front"), 0, 0);
 			canvas_active().globalCompositeOperation = "source-over";
@@ -1277,11 +1273,9 @@ function TOOLS_CLASS(){
 				canvas_active().arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, 2 * Math.PI, false);
 				if(TOOLS.action_data().attributes.burn == true){
 					canvas_active().fillStyle = "rgba(0, 0, 0, "+power/255+")";
-					canvas_active().shadowColor = "#000000";
 					}
 				else{
 					canvas_active().fillStyle = "rgba(255, 255, 255, "+power/255+")";
-					canvas_active().shadowColor = "#ffffff";
 					}
 				canvas_active().shadowBlur = 5;
 				canvas_active().fill();
