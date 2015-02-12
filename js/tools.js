@@ -834,7 +834,7 @@ function TOOLS_CLASS(){
 			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
-		else if(type == 'move'){
+		if(type == 'move' || type == 'drag'){
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.beginPath();
