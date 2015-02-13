@@ -982,6 +982,40 @@ function MENU_CLASS(){
 				canvas_preview.putImageData(filtered, 0, 0);
 				});
 		};
+	//ages photo saving it to jpg many times
+	this.effects_jpg_vintage = function(){
+		POP.add({name: "param1",	title: "Quality:",	value: 80, range: [1, 100] });
+		POP.effects = true;
+		POP.show('JPG Compression', function(user_response){
+				MAIN.save_state();
+				var quality = parseInt(user_response.param1);
+				if(quality>100 || quality < 1 || isNaN(quality)==true)
+					quality = 80;
+				quality = quality/100;
+				var data = canvas_active(true).toDataURL('image/jpeg', quality);
+				var img = new Image;
+				img.onload = function(){
+					canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+					canvas_active().drawImage(img, 0, 0);
+					};
+				img.src = data;
+				DRAW.zoom();
+				},
+			function(user_response, canvas_preview, w, h){
+				var quality = parseInt(user_response.param1);
+				if(quality>100 || quality < 1 || isNaN(quality)==true)
+					quality = 80;
+				quality = quality/100;
+				var canvas_container = document.getElementById("pop_post");
+				var data = canvas_container.toDataURL('image/jpeg', quality);
+				var img = new Image;				
+				img.onload = function(){
+					canvas_preview.clearRect(0, 0, w, h);	
+					canvas_preview.drawImage(img, 0, 0);
+					};
+				img.src = data;
+				});
+		};
 	this.effects_Mosaic = function(){
 		POP.add({name: "param1",	title: "Size:",	value: "10",	range: [1, 100] });
 		POP.effects = true;
