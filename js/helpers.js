@@ -3,6 +3,52 @@ var HELPER = new HELPER_CLASS();
 function HELPER_CLASS(){
 	var time;
 	
+	this.drawImage_round = function(canvas, mouse_x, mouse_y, size, img_data, canvas_tmp, anti_alias){
+		var size_half = Math.round(size/2);
+		var ctx_tmp = canvas_tmp.getContext("2d");
+		var xx = mouse_x - size_half;
+		var yy = mouse_y - size_half;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
+		ctx_tmp.clearRect(0, 0, WIDTH, HEIGHT);
+		ctx_tmp.save();
+		//draw main data
+		try{
+			ctx_tmp.drawImage(img_data, mouse_x - size_half, mouse_y - size_half, size, size);
+			}
+		catch(err){
+			try{
+				ctx_tmp.putImageData(img_data, xx, yy);	
+				}
+			catch(err){
+				console.log("Error: "+err.message);
+				}
+			}
+		ctx_tmp.globalCompositeOperation = 'destination-in';
+			
+		//create form
+		ctx_tmp.fillStyle = '#ffffff';
+		if(anti_alias == true){
+			var gradient = ctx_tmp.createRadialGradient(mouse_x, mouse_y, 0, mouse_x, mouse_y, size_half);
+			gradient.addColorStop(0,   '#ffffff');
+			gradient.addColorStop(0.8, '#ffffff');
+			gradient.addColorStop(1,   'rgba(25115,255,255,0');
+			ctx_tmp.fillStyle = gradient;
+			}
+		ctx_tmp.beginPath();
+		ctx_tmp.arc(mouse_x, mouse_y, size_half, 0, 2*Math.PI, true);
+		ctx_tmp.fill();
+		//draw final data
+		if(xx + size > WIDTH)
+			size = WIDTH - xx;
+		if(yy + size > HEIGHT)
+			size = HEIGHT - yy;
+		canvas.drawImage(canvas_tmp, xx, yy, size, size, xx, yy, size, size);
+		//reset
+		ctx_tmp.restore();
+		ctx_tmp.clearRect(0, 0, WIDTH, HEIGHT);
+		};
 	this.timer_init = function(){
 		time = Date.now();
 		};
@@ -294,22 +340,14 @@ function HELPER_CLASS(){
 		return "#" + r + g + b;
 		};
 	//IntegraXor Web SCADA - JavaScript Number Formatter, author: KPL, KHL
-	this.format = function(b,a){
-		if(!b||isNaN(+a))return a;
-		var a=b.charAt(0)=="-"?-a:+a,j=a<0?a=-a:0,e=b.match(/[^\d\-\+#]/g),h=e&&e[e.length-1]||".",e=e&&e[1]&&e[0]||",",b=b.split(h),a=a.toFixed(b[1]&&b[1].length),a=+a+"",d=b[1]&&b[1].lastIndexOf("0"),c=a.split(".");
-		if(!c[1]||c[1]&&c[1].length<=d)
-			a=(+a).toFixed(d+1);
-		d=b[0].split(e);
-		b[0]=d.join("");
-		var f=b[0]&&b[0].indexOf("0");
-		if(f>-1)	for(;c[0].length<b[0].length-f;)c[0]="0"+c[0];
-		else		+c[0]==0&&(c[0]="");
-		a=a.split(".");a[0]=c[0];
-		if(c==d[1]&&d[d.length-1].length){
-			for(var d=a[0],f="",k=d.length%c,g=0,i=d.length;g<i;g++)f+=d.charAt(g),!((g-k+1)%c)&&g<i-c&&(f+=e);a[0]=f;
-			}
-		a[1]=b[1]&&a[1]?h+a[1]:"";
-		return(j?"-":"")+a[0]+a[1];
+	this.number_format = function(n, decPlaces, thouSeparator, decSeparator){
+		var decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces;
+		var decSeparator = decSeparator == undefined ? "." : decSeparator;
+		var thouSeparator = thouSeparator == undefined ? "," : thouSeparator;
+		var sign = n < 0 ? "-" : "";
+		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
+		var j = (j = i.length) > 3 ? j % 3 : 0;
+		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
 		};
 	this.length = function(object){
 		var n = 0;
@@ -326,58 +364,58 @@ function HELPER_CLASS(){
 	}
 //http://www.script-tutorials.com/html5-canvas-custom-brush1/
 var BezierCurveBrush = {
-    // inner variables
-    iPrevX : 0,
-    iPrevY : 0,
-    points : null,
+	// inner variables
+	iPrevX: 0,
+	iPrevY: 0,
+	points: null,
+	// initialization function
+	init: function () {
+	},
+	startCurve: function (x, y) {
+		this.iPrevX = x;
+		this.iPrevY = y;
+		this.points = new Array();
+	},
+	getPoint: function (iLength, a) {
+		var index = a.length - iLength, i;
+		for (i = index; i < a.length; i++) {
+			if (a[i]) {
+				return a[i];
+			}
+		}
+	},
+	draw: function (ctx, color_rgb, x, y, size) {
+		if (Math.abs(this.iPrevX - x) > 5 || Math.abs(this.iPrevY - y) > 5) {
+			this.points.push([x, y]);
 
-    // initialization function
-    init: function () { },
+			// draw main path stroke
+			ctx.beginPath();
+			ctx.moveTo(this.iPrevX, this.iPrevY);
+			ctx.lineTo(x, y);
 
-    startCurve: function (x, y) {
-        this.iPrevX = x;
-        this.iPrevY = y;
-        this.points = new Array();
-    },
+			ctx.lineWidth = size;
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+			ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.9)';
+			ctx.stroke();
+			ctx.closePath();
 
-    getPoint: function (iLength, a) {
-        var index = a.length - iLength, i;
-        for (i=index; i< a.length; i++) {
-            if (a[i]) {
-                return a[i];
-            }
-        }
-    },
+			// draw extra strokes
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.2)';
+			ctx.beginPath();
+			var iStartPoint = this.getPoint(25, this.points);
+			var iFirstPoint = this.getPoint(1, this.points);
+			var iSecondPoint = this.getPoint(5, this.points);
+			ctx.moveTo(iStartPoint[0],iStartPoint[1]);
+			ctx.bezierCurveTo(iFirstPoint[0], iFirstPoint[1], iSecondPoint[0], iSecondPoint[1], x, y);
+			ctx.stroke();
+			ctx.closePath();
 
-    draw: function (ctx, color_rgb, x, y) {
-        if (Math.abs(this.iPrevX - x) > 5 || Math.abs(this.iPrevY - y) > 5) {
-            this.points.push([x, y]);
-
-            // draw main path stroke
-            ctx.beginPath();
-            ctx.moveTo(this.iPrevX, this.iPrevY);
-            ctx.lineTo(x, y);
-
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.9)';
-            ctx.stroke();
-            ctx.closePath();
-
-            // draw extra strokes
-            ctx.strokeStyle = 'rgba(' + color_rgb.r + ', ' + color_rgb.g + ', ' + color_rgb.b + ', 0.2)';
-            ctx.beginPath();
-            var iStartPoint = this.getPoint(25, this.points);
-            var iFirstPoint = this.getPoint(1, this.points);
-            var iSecondPoint = this.getPoint(5, this.points);
-            ctx.moveTo(iStartPoint[0],iStartPoint[1]);
-            ctx.bezierCurveTo(iFirstPoint[0], iFirstPoint[1], iSecondPoint[0], iSecondPoint[1], x, y);
-            ctx.stroke();
-            ctx.closePath();
-
-            this.iPrevX = x;
-            this.iPrevY = y;
-        }
-    }
+			this.iPrevX = x;
+			this.iPrevY = y;
+		}
+	}
 };
 
 //quick access short functions

@@ -1,11 +1,24 @@
 /*
 Usage:
 var POP = new popup();
-POP.add({name: "param1",	title: "Value1:",	values: ["PNG", "JPG"],	});	
-POP.add({name: "param2",	title: "Value2:",	value: 92, range: [0, 100], step: 1	});
-POP.add({title: 'title:', function: 'custom_function'});
-
+POP.add({name: "param1", title: "Value1:" });	
+POP.add(...);
 POP.show('title', main_handler, 'preview_handler', 'onload_handler');
+
+POP.add() parameters:
+	name		type			example
+	---------------------------------------------------------------
+	name		string			'parameter1'
+	title		string			'Enter value:'
+	type		string			'select', 'textarea', 'color'
+	value		string			'314'
+	values		array fo strings	['One', 'Two', 'Three']
+	range		numbers interval	[0, 255]
+	step		int/float		1	
+	placeholder	text			'Enter number here'
+	html		html text		'<b>bold</b>'
+	function	function		'cutom_function'
+	onchange	function		'CLASS.onchange_function'
 */
 var POP = new popup();
 
@@ -17,6 +30,7 @@ function popup(){
 	this.width_mini = 195;
 	this.height_mini = 195;
 	this.preview_in_main = false;
+	this.effects = false;
 	this.id = 0;
 	var parameters = [];
 	var layer_active_small = document.createElement("canvas");
@@ -46,13 +60,42 @@ function popup(){
 		if(onload_handler != undefined)
 			this.onload = onload_handler;
 		var html = '';
-		var can_be_canceled = false;
 		
 		var dim = HELPER.get_dimensions();
 		popup = document.getElementById('popup');
 		popup.style.top = 150+'px';
 		popup.style.left = Math.round(dim[0]/2)+'px';
 		
+		if(this.effects == true){
+			var index;
+			for(var i=0; i<FILTERS_LIST.length; i++){
+				if(FILTERS_LIST[i].name == MENU.last_menu){
+					index = i;
+					break;
+					}
+				}
+			var prev_index = index-1;
+			if(prev_index < 0){
+				prev_index = 0;
+				}
+			var next_index = index+1;	
+			if(next_index > FILTERS_LIST.length-1){
+				next_index = FILTERS_LIST.length-1;
+				}
+			html += '<span style="float:right;">';
+			html += '<input id="previous_filter" type="button" value="&lt;"> ';
+			html += '<select id="effect_browser">';
+			html += '<option value="">--- Select effect ---</option>';
+			for(var i=0; i<FILTERS_LIST.length; i++){
+				var selected = '';
+				if(FILTERS_LIST[i].name == MENU.last_menu)
+					var selected = 'selected';
+				html += ' <option ' + selected +' value="' + i + '">' + FILTERS_LIST[i].title + '</option>';
+				}
+			html += '</select>';
+			html += ' <input id="next_filter" onclick="" type="button" value="&gt;"> ';
+			html += '</span>';
+			}
 		html += '<h2 id="popup_drag">'+title+'</h2>';
 		html += '<table style="width:99%;">';
 		for(var i in parameters){
@@ -61,7 +104,6 @@ function popup(){
 			if(title != 'Error')
 				html += '<td style="font-weight:bold;padding-right:3px;width:130px;">'+parameter.title+'</td>';
 			if(parameter.name != undefined){
-				can_be_canceled = true;
 				if(parameter.values != undefined){
 					var onchange = '';
 					if(parameter.onchange != undefined)
@@ -109,18 +151,24 @@ function popup(){
 						}
 					}
 				else if(parameter.value != undefined){
-					//input, range or textarea
+					//input, range, textarea, color
 					var step = 1;
 					if(parameter.step != undefined)
 						step = parameter.step;
 					if(parameter.range != undefined){
+						//range
 						var preview_code = '';
 						if(this.preview !== false)
 							preview_code = 'POP.view();';
 						html += '<td><input type="range" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" min="'+parameter.range[0]+'" max="'+parameter.range[1]+'" step="'+step+'" " oninput="document.getElementById(\'pv'+i+'\').innerHTML=Math.round(this.value*100)/100;'+preview_code+'" /></td>';
 						html += '<td style="padding-left:10px;width:50px;" id="pv'+i+'">'+parameter.value+'</td>';
 						}
+					else if(parameter.type == 'color'){
+						//color
+						html += '<td><input type="color" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" /></td>';
+						}
 					else{
+						//input or textarea
 						if(parameter.placeholder == undefined)
 							parameter.placeholder = '';						
 						if(parameter.type == 'textarea')
@@ -163,9 +211,8 @@ function popup(){
 			}
 		html += '<div style="text-align:center;margin-top:20px;margin-bottom:15px;">';
 		html += '<input type="button" onclick="POP.save();" class="button" value="OK" />';
-		if(can_be_canceled==true)
-			html += '<input type="button" onclick="POP.hide();" class="button" value="Cancel" />';
-		if(this.preview !== false)
+		html += '<input type="button" onclick="POP.hide();" class="button" value="Cancel" />';
+		if(this.preview_in_main !== false)
 			html += '<input type="button" onclick="POP.view();" class="button" value="Preview" />';	
 		html += '</div>';
 			
@@ -184,6 +231,38 @@ function popup(){
 				this.onload();
 			}
 		
+		//some events for effects browser
+		if(this.effects == true){
+			document.getElementById('previous_filter').disabled = false;
+			document.getElementById('next_filter').disabled = false;
+			if(index == 0){
+				document.getElementById('previous_filter').disabled = true;
+				}
+			if(index == FILTERS_LIST.length-1){
+				document.getElementById('next_filter').disabled = true;
+				}
+			//previous
+			document.getElementById('previous_filter').addEventListener('click', function(event){
+				POP.hide();
+				MENU.last_menu = FILTERS_LIST[prev_index].name;
+				MENU.do_menu([FILTERS_LIST[prev_index].name]);
+				});
+			//next
+			document.getElementById('next_filter').addEventListener('click', function(event){
+				POP.hide();
+				MENU.last_menu = FILTERS_LIST[next_index].name;
+				MENU.do_menu([FILTERS_LIST[next_index].name]);
+				});
+			//onchange
+			var effect_browser = document.getElementById('effect_browser');
+			effect_browser.addEventListener('change', function(event){
+				var value = effect_browser.options[effect_browser.selectedIndex].value;
+				POP.hide();
+				MENU.last_menu = FILTERS_LIST[value].name;
+				MENU.do_menu([FILTERS_LIST[value].name]);
+				});
+			}
+	
 		//load preview?
 		if(this.preview !== false && this.preview_in_main == false){
 			//original
@@ -218,6 +297,7 @@ function popup(){
 		this.preview = false;
 		this.onload = false;
 		this.preview_in_main = false;
+		this.effects = false;
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 		};
 	//renders preview. If input=range supported, is called on every param update - must be fast...
@@ -262,7 +342,7 @@ function popup(){
 					response[key] = value;
 					}
 				}
-			
+				
 			//call handler
 			if(this.preview_in_main == false)
 				this.preview(response, pop_post, POP.width_mini, POP.height_mini);
@@ -311,6 +391,7 @@ function popup(){
 		this.preview = false;
 		this.onload = false;
 		this.preview_in_main = false;
+		this.effects = false;
 		if(this.handler != ''){
 			if(typeof this.handler == "string")
 				window[this.handler](response);

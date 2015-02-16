@@ -261,12 +261,15 @@ function LAYER_CLASS(){
 		this.resize_canvas("canvas_back");
 		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 		this.resize_canvas("canvas_front", false);
+		this.resize_canvas("canvas_grid", true);
 		for(i in LAYERS){
 			if(repaint === false)
 				this.resize_canvas(LAYERS[i].name, false);
 			else
 				this.resize_canvas(LAYERS[i].name, true);
 			}
+		
+		DRAW.draw_grid();
 		
 		document.getElementById('resize-w').style.marginLeft = (106+W)+"px";
 		document.getElementById('resize-w').style.marginTop = (1+H/2)+"px";

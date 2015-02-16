@@ -61,10 +61,37 @@ function TOOLS_CLASS(){
 				var key = k.replace("_values","");
 				this.action_data().attributes[key] = object.value;
 				}
+			else if(this.action_data().attributes[k][0] == '#'){
+				//color
+				var key = k.replace("_values","");
+				this.action_data().attributes[key] = object.value;
+				}
 			else{
 				//numbers
 				if(next_value != undefined){
-					object.value = parseInt(this.action_data().attributes[k]) + next_value;
+					if(next_value > 0){
+						if(parseInt(this.action_data().attributes[k]) == 0)
+							object.value = 1;
+						else if(parseInt(this.action_data().attributes[k]) == 1)
+							object.value = 5;
+						else if(parseInt(this.action_data().attributes[k]) == 5)
+							object.value = 10;
+						else
+							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+						}
+					else if(next_value < 0){
+						if(parseInt(this.action_data().attributes[k]) == 1)
+							object.value = 0;
+						else if(parseInt(this.action_data().attributes[k]) <= 5)
+							object.value = 1;
+						else if(parseInt(this.action_data().attributes[k]) <= 10)
+							object.value = 5;
+						else if(parseInt(this.action_data().attributes[k]) <= 20)
+							object.value = 10;
+						else
+							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+						}
+					
 					if(object.value < 0) object.value = 0;
 					if(object.value > max_value) object.value = max_value;
 					}
@@ -84,10 +111,11 @@ function TOOLS_CLASS(){
 				document.getElementById(k).value = object.value;
 				}
 			if(this.action_data().on_update != undefined)
-				window[this.action_data().on_update](object.value);
+				TOOLS[this.action_data().on_update](object.value);
 			}
 		};
 	this.action = function(key){
+		TOOLS[key]('init', {valid:true});
 		if(ACTION == key) return false;
 		
 		//change
@@ -96,7 +124,7 @@ function TOOLS_CLASS(){
 		ACTION = key;
 		document.getElementById(key).className = "active";
 		this.show_action_attributes();
-	
+		
 		return false;
 		};
 	this.action_data = function(){	
@@ -110,6 +138,7 @@ function TOOLS_CLASS(){
 		var step = 10;
 		for(var k in this.action_data().attributes){
 			var title = k[0].toUpperCase() + k.slice(1);
+			title = title.replace("_"," ");
 			if(TOOLS.action_data().attributes[k+"_values"] != undefined) continue;
 			if(this.action_data().attributes[k]===true || this.action_data().attributes[k]===false){
 				//true / false
@@ -130,22 +159,32 @@ function TOOLS_CLASS(){
 					}
 				html += '</select>';
 				}
-			else{
-				//numbers
+			else if(TOOLS.action_data().attributes[k][0] == '#'){
+				//color
 				html += '<table style="width:100%;">';	//table for 100% width
 				html += '<tr>';
-				html += '<td style="font-weight:bold;padding-right:3px;">'+title+':</td>';
+				html += '<td style="font-weight:bold;width:45px;">'+title+':</td>';
+				html += '<td><input onchange="TOOLS.update_attribute(this);" type="color" id="'+k+'" value="'+TOOLS.action_data().attributes[k]+'" /></td>';
+				html += '</tr>';
+				html += '</table>';
+				}
+			else{
+				//numbers
+				html += '<div id="'+k+'_container">';
+				html += '<table style="width:100%;">';	//table for 100% width
+				html += '<tr>';
+				html += '<td style="font-weight:bold;padding-right:2px;white-space:nowrap;">'+title+':</td>';
 				html += '<td><input onKeyUp="TOOLS.update_attribute(this);" type="text" id="'+k+'" value="'+TOOLS.action_data().attributes[k]+'" /></td>';
 				html += '</tr>';
-				html += '</table>';	//78
+				html += '</table>';
 				html += '<div style="float:left;width:32px;" onclick="TOOLS.update_attribute(this, '+(step)+')" class="attribute-area" id="'+k+'">+</div>';
 				html += '<div style="margin-left:48px;margin-bottom:15px;" onclick="TOOLS.update_attribute(this, '+(-step)+')" class="attribute-area" id="'+k+'">-</div>';
-				}
+				html += '</div>';
+			}
 			}
 		document.getElementById("action_attributes").innerHTML = html;
 		};
 	this.set_color = function(object){
-		COLOUR_LAST = COLOUR;
 		if(HELPER.chech_input_color_support('main_colour') == true && object.id == 'main_colour')
 			COLOUR = object.value;
 		else
@@ -165,7 +204,6 @@ function TOOLS_CLASS(){
 		};
 	this.set_color_manual = function(object){
 		if(object.value.length == 7){
-			COLOUR_LAST = COLOUR;
 			COLOUR = object.value;
 			this.sync_colors();
 			}
@@ -184,7 +222,6 @@ function TOOLS_CLASS(){
 				object.value = colours[c];
 				return false;
 				}
-			COLOUR_LAST = COLOUR;
 			COLOUR = "#" + ("000000" + HELPER.rgbToHex(document.getElementById("rgb_r").value, document.getElementById("rgb_g").value, document.getElementById("rgb_b").value)).slice(-6);
 			ALPHA = document.getElementById("rgb_a").value;
 			document.getElementById("rgb_a").value = ALPHA;
@@ -245,7 +282,6 @@ function TOOLS_CLASS(){
 		if(c3.g > 255) c3.g = 255;
 		if(c3.b > 255) c3.b = 255;
 		
-		COLOUR_LAST = COLOUR;
 		COLOUR = "#" + ("000000" + HELPER.rgbToHex(c3.r, c3.g, c3.b)).slice(-6);
 		this.sync_colors();
 		};
@@ -267,7 +303,6 @@ function TOOLS_CLASS(){
 					mouse_y = event.layerY;
 					}
 				var c = document.getElementById("c_all").getContext("2d").getImageData(mouse_x, mouse_y, 1, 1).data;
-				COLOUR_LAST = COLOUR;
 				COLOUR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 				TOOLS.sync_colors();
 				COLOUR_copy = COLOUR;
@@ -281,7 +316,7 @@ function TOOLS_CLASS(){
 		if(mouse == undefined) return false;
 		if(mouse.valid == false) return true;
 		if(mouse.click_valid == false) return true;
-		if(event.target.id == "canvas_preview") return true;
+		if(event != undefined && event.target.id == "canvas_preview") return true;
 		if(type == 'drag'){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.drawImage(canvas_active(true), mouse.x - mouse.click_x, mouse.y - mouse.click_y);
@@ -299,7 +334,7 @@ function TOOLS_CLASS(){
 		if(mouse.valid == false) return true;
 		if(type == 'click'){
 			MAIN.save_state();
-			DRAW.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, TOOLS.action_data().attributes.sensitivity);
+			DRAW.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, TOOLS.action_data().attributes.sensitivity, TOOLS.action_data().attributes.anti_aliasing);
 			}
 		};
 	this.erase = function(type, mouse, event){				
@@ -408,14 +443,13 @@ function TOOLS_CLASS(){
 			MAIN.save_state();
 			var color_to = HELPER.hex2rgb(COLOUR);
 			color_to.a = ALPHA;
-			DRAW.toolFiller(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, color_to, TOOLS.action_data().attributes.sensitivity);
+			DRAW.toolFiller(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, color_to, TOOLS.action_data().attributes.sensitivity, TOOLS.action_data().attributes.anti_aliasing);
 			}
 		};
 	this.pick_color = function(type, mouse, event){
 		if(mouse.valid == false) return true;
 		if(type == 'click'){
 			var c = canvas_active().getImageData(mouse.x, mouse.y, 1, 1).data;
-			COLOUR_LAST = COLOUR;
 			COLOUR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 			
 			//set alpha
@@ -773,6 +807,43 @@ function TOOLS_CLASS(){
 				HELPER.drawEllipseByCenter(canvas_active(), mouse.click_x, mouse.click_y, dist_x*2, dist_y*2, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
 			}
 		};
+	this.update_brush = function(){
+		document.getElementById('blur').style.display='';
+		if(TOOLS.action_data().attributes.type != 'Brush')
+			document.getElementById('blur').style.display='none';
+		};
+	this.desaturate_tool = function(type, mouse, event){
+		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
+		if(type == 'click'){
+			MAIN.save_state();
+			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
+			var imageData = canvas_active().getImageData(xx, yy, size, size);
+			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
+			}
+		else if(type == 'drag'){
+			var param1 = TOOLS.action_data().attributes.strength;
+			var imageData = canvas_active().getImageData(xx, yy, size, size);
+			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
+			}
+		if(type == 'move' || type == 'drag'){
+			//show size
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
+			canvas_front.lineWidth = 1;
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
+			}
+		};
 	this.brush = function(type, mouse, event){
 		if(mouse.valid == false) return true;
 		var brush_type = TOOLS.action_data().attributes.type;
@@ -781,36 +852,80 @@ function TOOLS_CLASS(){
 		if(type == 'click')
 			MAIN.save_state();
 		
-		if(brush_type == 'Simple'){
-			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				canvas_active().strokeStyle = COLOUR;
+		if(brush_type == 'Brush'){
+			if(type == 'click'){
+				//init settings
+				canvas_active().beginPath();
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 				canvas_active().lineWidth = TOOLS.action_data().attributes.size;
 				canvas_active().lineCap = 'round';
+				canvas_active().lineJoin = 'round';
 				
-				canvas_active().beginPath();
+				if(ALPHA < 255){
+					canvas_front.beginPath();
+					canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+					canvas_front.lineWidth = TOOLS.action_data().attributes.size;
+					canvas_front.lineCap = 'round';
+					canvas_front.lineJoin = 'round';
+					}
+				
+				//blur
+				canvas_active().shadowBlur = 0;
+				if(TOOLS.action_data().attributes.anti_alias == true){	
+					canvas_active().shadowColor = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+					canvas_active().shadowBlur = Math.round(TOOLS.action_data().attributes.size);
+					}
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				if(ALPHA == 255)
+					canvas_active().beginPath();
 				canvas_active().moveTo(mouse.last_x, mouse.last_y);
 				canvas_active().lineTo(mouse.x, mouse.y);
-				canvas_active().stroke();
-				canvas_active().closePath(); 	
-				}
-			else if(type == 'release'){
-				canvas_active().beginPath();
-				canvas_active().arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, 2 * Math.PI, false);
-				canvas_active().fillStyle = COLOUR;
-				canvas_active().fill();
-				}
-			else if(type == 'move'){
-				//show size
-				var size = TOOLS.action_data().attributes.size;
-				if(size >= 15){
-					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				if(ALPHA == 255)
+					canvas_active().stroke();
+				
+				//now draw preview
+				if(ALPHA < 255){
 					canvas_front.beginPath();
-					canvas_front.strokeStyle = "#000000";
-					canvas_front.arc(mouse.x, mouse.y, size/2, 0, Math.PI*2, true);
+					//clean from last line
+					canvas_front.globalCompositeOperation = "destination-out";
+					canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", 1)";
+					canvas_front.moveTo(mouse.last_x, mouse.last_y);
+					canvas_front.lineTo(mouse.x, mouse.y);
+					canvas_front.stroke();
+					//reset
+					canvas_front.strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+					canvas_front.globalCompositeOperation = "source-over";
+					//draw new line segment
+					canvas_front.moveTo(mouse.last_x, mouse.last_y);
+					canvas_front.lineTo(mouse.x, mouse.y);
 					canvas_front.stroke();
 					}
 				}
-			}	
+			else if(type == 'release'){
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				//paint everything
+				canvas_active().stroke();
+				
+				//if mouse was not moved
+				if(mouse.click_x == mouse.x && mouse.click_y == mouse.y){
+					canvas_active().beginPath();
+					canvas_active().arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, 2 * Math.PI, false);
+					canvas_active().fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+					canvas_active().fill();
+					}
+				canvas_active().shadowBlur = 0;
+				}
+			else if(type == 'move'){
+				//show size
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_front.beginPath();
+				canvas_front.strokeStyle = "#000000";
+				canvas_front.lineWidth = 1;
+				canvas_front.arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, Math.PI*2, true);
+				canvas_front.stroke();
+				}
+			}
 		else if(brush_type == 'BezierCurve'){
 			if(type == 'click')
 				BezierCurveBrush.startCurve(mouse.x, mouse.y);
@@ -819,7 +934,20 @@ function TOOLS_CLASS(){
 				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 				canvas_active().lineWidth = 0.5;
 				
-				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y);
+				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y, TOOLS.action_data().attributes.size);
+				}
+			}
+		else if(brush_type == 'Chrome'){
+			if(type == 'click'){
+				chrome_brush.init(canvas_active());
+				chrome_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				chrome_brush.stroke(color_rgb, mouse.x, mouse.y, TOOLS.action_data().attributes.size);
 				}
 			}
 		else if(brush_type == 'Fur'){
@@ -846,7 +974,8 @@ function TOOLS_CLASS(){
 					b = points[e][0] - points[count][0];
 					a = points[e][1] - points[count][1];
 					g = b * b + a * a;
-					if (g < 2000 && Math.random() > g / 2000) {
+					var g_size = Math.round(400 * TOOLS.action_data().attributes.size);
+					if (g < g_size && Math.random() > g / g_size) {
 						canvas_active().beginPath();
 						canvas_active().moveTo(f + (b * 0.5), c + (a * 0.5));
 						canvas_active().lineTo(f - (b * 0.5), c - (a * 0.5));
@@ -856,63 +985,6 @@ function TOOLS_CLASS(){
 				prevMouseX = f;
 				prevMouseY = c;
 				count++;
-				}
-			}
-		else if(brush_type == 'Sketchy'){
-			if(type == 'click'){
-				sketchy_brush.init(canvas_active());
-				sketchy_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}
-		else if(brush_type == 'Shaded'){
-			if(type == 'click'){
-				shaded_brush.init(canvas_active());
-				shaded_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				shaded_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}	
-		else if(brush_type == 'Chrome'){
-			if(type == 'click'){
-				chrome_brush.init(canvas_active());
-				chrome_brush.strokeStart(mouse.x, mouse.y);
-				}
-			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				var color_rgb = HELPER.hex2rgb(COLOUR);
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 1;
-				
-				chrome_brush.stroke(color_rgb, mouse.x, mouse.y);
-				}
-			}
-		else if(brush_type == 'Broken'){
-			if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
-				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
-				canvas_active().lineWidth = 0.5;
-				var power = TOOLS.action_data().attributes.size;
-				
-				//logic is broken here...
-				mouse.x += mouse.x % power - round(power/2);
-				mouse.y += mouse.y % power - round(power/2);
-				mouse.last_x += mouse.x % power - round(power/2);
-				mouse.last_y += mouse.y % power - round(power/2);
-				
-				canvas_active().beginPath();
-				canvas_active().moveTo(mouse.last_x, mouse.last_y);
-				canvas_active().lineTo(mouse.x, mouse.y);
-				canvas_active().stroke();
 				}
 			}
 		else if(brush_type == 'Grouped'){
@@ -951,14 +1023,56 @@ function TOOLS_CLASS(){
 					canvas_active().stroke();
 					}
 				}
-			}					
+			}
+		else if(brush_type == 'Shaded'){
+			if(type == 'click'){
+				shaded_brush.init(canvas_active());
+				shaded_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				shaded_brush.stroke(color_rgb, mouse.x, mouse.y, TOOLS.action_data().attributes.size);
+				}
+			}
+		else if(brush_type == 'Sketchy'){
+			if(type == 'click'){
+				sketchy_brush.init(canvas_active());
+				sketchy_brush.strokeStart(mouse.x, mouse.y);
+				}
+			else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+				var color_rgb = HELPER.hex2rgb(COLOUR);
+				canvas_active().strokeStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
+				canvas_active().lineWidth = 1;
+				
+				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y, TOOLS.action_data().attributes.size);
+				}
+			}
 		};
 	this.gradient_tool = function(type, mouse, event){
-		if(mouse.valid == false) return true;
+		if(mouse != undefined && mouse.valid == false && type != 'init') return true;
 		var power = TOOLS.action_data().attributes.power;
-		if(power == 100) power = 99;
-		var color_rgb = HELPER.hex2rgb(COLOUR);
-		if(type == 'drag'){
+		if(power > 99) power = 99;
+		//var color1, color2;
+		
+		if(type == 'init'){
+			POP.add({name: "param1",	title: "Color #1:",		value: '#000000', type: 'color'	});
+			POP.add({name: "param2",	title: "Transparency #1:",	value: '255',	range:[0, 255]	});	
+			POP.add({name: "param3",	title: "Color #2:",		value: '#ffffff',  type: 'color'	});
+			POP.add({name: "param4",	title: "Transparency #2:",	value: '255',	range:[0, 255]	});
+			POP.preview_in_main = true;
+			POP.show('Text', function(user_response){
+					MAIN.save_state();
+					color1 = HELPER.hex2rgb(user_response.param1);
+					color1.a = parseInt(user_response.param2);
+					
+					color2 = HELPER.hex2rgb(user_response.param3);
+					color2.a = parseInt(user_response.param4);
+					});
+			}
+		else if(type == 'drag'){
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 
 			if(TOOLS.action_data().attributes.radial == false){
@@ -968,16 +1082,14 @@ function TOOLS_CLASS(){
 					var grd = canvas_front.createLinearGradient(
 						mouse.click_x, mouse.click_y, 
 						mouse.x, mouse.y);
-					grd.addColorStop(0, COLOUR_LAST);
-					grd.addColorStop(1, COLOUR);
 					}
 				else{
 					var grd = canvas_front.createLinearGradient(
 						mouse.x, mouse.y, 
 						mouse.click_x, mouse.click_y);
-					grd.addColorStop(0, COLOUR);
-					grd.addColorStop(1, COLOUR_LAST);
 					}
+				grd.addColorStop(0, "rgba("+color1.r+", "+color1.g+", "+color1.b+", "+color1.a/255+")");
+				grd.addColorStop(1, "rgba("+color2.r+", "+color2.g+", "+color2.b+", "+color2.a/255+")");
 				canvas_front.fillStyle = grd;
 				canvas_front.fill();
 				}
@@ -989,8 +1101,8 @@ function TOOLS_CLASS(){
 				var radgrad = canvas_front.createRadialGradient(
 					mouse.click_x, mouse.click_y, distance*power/100,
 					mouse.click_x, mouse.click_y, distance);
-				radgrad.addColorStop(0, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
-				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+				radgrad.addColorStop(0, "rgba("+color1.r+", "+color1.g+", "+color1.b+", "+color1.a/255+")");
+				radgrad.addColorStop(1, "rgba("+color2.r+", "+color2.g+", "+color2.b+", "+color2.a/255+")");
 				
 				canvas_front.fillStyle = radgrad;
 				canvas_front.fillRect(0,0,WIDTH,HEIGHT);
@@ -1014,16 +1126,14 @@ function TOOLS_CLASS(){
 					var grd = canvas_active().createLinearGradient(
 						mouse.click_x, mouse.click_y, 
 						mouse.x, mouse.y);
-					grd.addColorStop(0, COLOUR_LAST);
-					grd.addColorStop(1, COLOUR);
 					}
 				else{
 					var grd = canvas_active().createLinearGradient(
 						mouse.x, mouse.y, 
 						mouse.click_x, mouse.click_y);
-					grd.addColorStop(0, COLOUR);
-					grd.addColorStop(1, COLOUR_LAST);
 					}
+				grd.addColorStop(0, "rgba("+color1.r+", "+color1.g+", "+color1.b+", "+color1.a/255+")");
+				grd.addColorStop(1, "rgba("+color2.r+", "+color2.g+", "+color2.b+", "+color2.a/255+")");
 				canvas_active().fillStyle = grd;
 				canvas_active().fill();
 				}
@@ -1035,8 +1145,8 @@ function TOOLS_CLASS(){
 				var radgrad = canvas_active().createRadialGradient(
 					mouse.click_x, mouse.click_y, distance*power/100,
 					mouse.click_x, mouse.click_y, distance);
-				radgrad.addColorStop(0, "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")");
-				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+				radgrad.addColorStop(0, "rgba("+color1.r+", "+color1.g+", "+color1.b+", "+color1.a/255+")");
+				radgrad.addColorStop(1, "rgba("+color2.r+", "+color2.g+", "+color2.b+", "+color2.a/255+")");
 				
 				canvas_active().fillStyle = radgrad;
 				canvas_active().fillRect(0,0,WIDTH,HEIGHT);
@@ -1045,108 +1155,266 @@ function TOOLS_CLASS(){
 		};
 	this.blur_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
 			}
 		};
 	this.sharpen_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		var xx = mouse.x - size/2;
+		var yy = mouse.y - size/2;
+		if(xx < 0) xx = 0;
+		if(yy < 0) yy = 0;
+		
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
-			var param1 = TOOLS.action_data().attributes.strength;
+			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'drag'){
-			var size = TOOLS.action_data().attributes.size;
-			var xx = mouse.x - size/2;
-			var yy = mouse.y - size/2;
 			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
-			canvas_active().putImageData(filtered, xx, yy);
-			DRAW.zoom();
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x-size_half, mouse.y-size_half, mouse.x+size_half, mouse.y+size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
+			}
+		};
+	this.burn_dodge_tool = function(type, mouse, event){
+		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var power = TOOLS.action_data().attributes.power*2.5;
+		
+		if(type == 'click'){
+			MAIN.save_state();
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.save();
+			CON.clear_front_on_release = false;
+			
+			//init settings
+			canvas_active().beginPath();
+			canvas_active().lineWidth = TOOLS.action_data().attributes.size;
+			canvas_active().lineCap = 'round';
+			canvas_active().lineJoin = 'round';
+
+			canvas_front.beginPath();
+			if(TOOLS.action_data().attributes.burn == true)
+				canvas_front.strokeStyle = "rgba(0, 0, 0, "+power/255+")";
+			else
+				canvas_front.strokeStyle = "rgba(255, 255, 255, "+power/255+")";
+			canvas_front.lineWidth = TOOLS.action_data().attributes.size;
+			canvas_front.lineCap = 'round';
+			canvas_front.lineJoin = 'round';
+			}
+		else if(type == 'drag' && mouse.last_x != false && mouse.last_y != false){
+			//now draw preview
+			canvas_front.beginPath();
+			//clean from last line
+			canvas_front.globalCompositeOperation = "destination-out";
+			canvas_front.moveTo(mouse.last_x, mouse.last_y);
+			canvas_front.lineTo(mouse.x, mouse.y);
+			canvas_front.stroke();
+			//reset
+			canvas_front.globalCompositeOperation = "source-over";
+			//draw new line segment
+			canvas_front.moveTo(mouse.last_x, mouse.last_y);
+			canvas_front.lineTo(mouse.x, mouse.y);
+			canvas_front.stroke();
+			}
+		else if(type == 'release'){
+			//todo: use screen+multiply or burn+dodge
+			canvas_active().globalCompositeOperation = "soft-light";
+			canvas_active().shadowBlur = 5;
+			canvas_active().drawImage(document.getElementById("canvas_front"), 0, 0);
+			canvas_active().globalCompositeOperation = "source-over";
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			CON.clear_front_on_release = true;
+
+			//if mouse was not moved
+			if(mouse.click_x == mouse.x && mouse.click_y == mouse.y){
+				canvas_active().globalCompositeOperation = "soft-light";
+				canvas_active().beginPath();
+				canvas_active().arc(mouse.x, mouse.y, TOOLS.action_data().attributes.size/2, 0, 2 * Math.PI, false);
+				if(TOOLS.action_data().attributes.burn == true){
+					canvas_active().fillStyle = "rgba(0, 0, 0, "+power/255+")";
+					}
+				else{
+					canvas_active().fillStyle = "rgba(255, 255, 255, "+power/255+")";
+					}
+				canvas_active().shadowBlur = 5;
+				canvas_active().fill();
+				canvas_active().globalCompositeOperation = "source-over";
+				}
+			canvas_active().shadowBlur = 0;
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.restore();
+			}
+		else if(type == 'move' && CON.isDrag == false){
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
+			canvas_front.arc(mouse.x, mouse.y, size/2, 0, Math.PI*2, true);
+			canvas_front.stroke();
+			}
+		};
+	this.crop_tool = function(type, mouse, event){
+		if(mouse.click_valid == false) return true;
+		if(type == 'drag'){
+			if(mouse.x < 0) mouse.x = 0;
+			if(mouse.y < 0) mouse.y = 0;
+			if(mouse.x >= WIDTH) mouse.x = WIDTH-1;
+			if(mouse.y >= HEIGHT) mouse.y = HEIGHT-1;
+			if(mouse.click_x >= WIDTH) mouse.click_x = WIDTH-1;
+			if(mouse.click_y >= HEIGHT) mouse.click_y = HEIGHT-1;
+			if(TOOLS.select_square_action == ''){
+				document.body.style.cursor = "crosshair";
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_front.fillStyle = "rgba(0, 255, 0, 0.3)";
+				canvas_front.fillRect(mouse.click_x, mouse.click_y, mouse.x - mouse.click_x, mouse.y - mouse.click_y);
+				}
+			}
+		else if(type == 'move' && TOOLS.select_data != false){
+			if(CON.isDrag == true) return true;
+			canvas_front.lineWidth = 1;
+			border_size = 5;
+			TOOLS.select_square_action = '';
+			
+			if(TOOLS.select_square_action == '' 
+			  && mouse.x > TOOLS.select_data.x && mouse.y > TOOLS.select_data.y
+			  && mouse.x < TOOLS.select_data.x + TOOLS.select_data.w && mouse.y < TOOLS.select_data.y + TOOLS.select_data.h){
+				TOOLS.select_square_action = 'move';
+			  	document.body.style.cursor = 'pointer';
+				}
+			if(TOOLS.select_square_action == '' && mouse.valid == true)
+				document.body.style.cursor = "auto";
+			}
+		else if(type == 'release'){
+			if(mouse.x < 0) mouse.x = 0;
+			if(mouse.y < 0) mouse.y = 0;
+			if(mouse.x >= WIDTH) mouse.x = WIDTH-1;
+			if(mouse.y >= HEIGHT) mouse.y = HEIGHT-1;
+			if(mouse.click_x >= WIDTH) mouse.click_x = WIDTH-1;
+			if(mouse.click_y >= HEIGHT) mouse.click_y = HEIGHT-1;
+	
+			if(TOOLS.select_square_action == ''){
+				if(mouse.x != mouse.click_x && mouse.y != mouse.click_y){
+					TOOLS.select_data = {
+						x: 	Math.min(mouse.x, mouse.click_x),
+						y: 	Math.min(mouse.y, mouse.click_y),
+						w: 	Math.abs(mouse.x - mouse.click_x),
+						h: 	Math.abs(mouse.y - mouse.click_y)
+						};
+					}
+				}
+			TOOLS.draw_selected_area(true);
+			
+			LAYER.update_info_block();
+			}
+		else if(type == 'click' && TOOLS.select_data != false){
+			document.body.style.cursor = "auto";
+			if(mouse.x > TOOLS.select_data.x && mouse.y > TOOLS.select_data.y
+			  && mouse.x < TOOLS.select_data.x + TOOLS.select_data.w && mouse.y < TOOLS.select_data.y + TOOLS.select_data.h){
+				MAIN.save_state();
+				for(var i in LAYERS){
+					var layer = document.getElementById(LAYERS[i].name).getContext("2d");
+
+					var tmp = layer.getImageData(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
+					layer.clearRect(0, 0, WIDTH, HEIGHT);
+					layer.putImageData(tmp, 0, 0);
+					}
+
+				//resize
+				MAIN.save_state();
+				WIDTH = TOOLS.select_data.w;
+				HEIGHT = TOOLS.select_data.h;
+				RATIO = WIDTH/HEIGHT;
+				LAYER.set_canvas_size();
+
+				TOOLS.select_data = false;
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				}
 			}
 		};
 	this.clone_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
+		var size = TOOLS.action_data().attributes.size;
+		var size_half = Math.round(size/2);
+		
 		if(type == 'click'){
 			MAIN.save_state();
-			var size = TOOLS.action_data().attributes.size;
 	
 			if(clone_data === false){
 				POP.add({html: 'Source is empty, right click on image first.'	});
 				POP.show('Error', '');
 				}
 			else{
-				//write clone data
-				canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2, size, size);
+				//draw rounded image
+				HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, clone_data, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 				}
 			}
 		else if(type == 'right_click'){
-			var size = TOOLS.action_data().attributes.size;
-			
 			//save clone source
 			clone_data = document.createElement("canvas");
 			clone_data.width = size;
 			clone_data.height = size;
-			clone_data.getContext("2d").drawImage(canvas_active(true), mouse.x - size/2, mouse.y - size/2, size, size, 0, 0, size, size);
+			var xx = mouse.x - size_half;
+			var yy = mouse_y - size_half;
+			if(xx < 0) xx = 0;
+			if(yy < 0) yy = 0;
+			clone_data.getContext("2d").drawImage(canvas_active(true), xx, yy, size, size, 0, 0, size, size);
 			return false;
 			}
 		else if(type == 'drag'){
 			if(event.which == 3) return true;
 			if(clone_data === false) return false;	//no source
-			var size = TOOLS.action_data().attributes.size;
-	
-			//write clone data
-			canvas_active().drawImage(clone_data, mouse.x - size/2, mouse.y - size/2);
+			
+			//draw rounded image
+			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, clone_data, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		else if(type == 'move'){
-			var size = TOOLS.action_data().attributes.size;
-			var size_half = round(size/2);
-			
+			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.beginPath();
+			canvas_front.strokeStyle = "#000000";
 			canvas_front.lineWidth = 1;
-			HELPER.dashedRect(canvas_front, mouse.x - size_half, mouse.y - size_half, mouse.x + size_half, mouse.y + size_half, 1, '#000000');
+			canvas_front.arc(mouse.x, mouse.y, size_half, 0, Math.PI*2, true);
+			canvas_front.stroke();
 			}
 		};
 	this.select_square = function(type, mouse, event){
@@ -1397,7 +1665,7 @@ function TOOLS_CLASS(){
 			return true;
 		return false;
 		};
-	this.draw_selected_area = function(){		
+	this.draw_selected_area = function(no_resize){		
 		if(TOOLS.select_data == false) return false;
 		//draw area
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1421,6 +1689,7 @@ function TOOLS_CLASS(){
 			canvas_front.lineWidth = 1;
 			canvas_front.strokeRect(x+0.5, y+0.5, w, h);
 			}
+		if(no_resize == true) return true;
 	
 		//draw carners
 		square(x, y, 0, 0);
@@ -1527,7 +1796,7 @@ function TOOLS_CLASS(){
 			c.stroke();
 			}
 		
-		document.getElementById("pop_data_totalpixel").value = HELPER.format("#,##0.####", total);
+		document.getElementById("pop_data_totalpixel").value = HELPER.number_format(total, 0);
 		if(total > 0)
 			average = round(sum * 10 / total / 3) / 10;
 		else
@@ -1660,7 +1929,7 @@ function TOOLS_CLASS(){
 			}
 		};
 	//method = otsu
-	this.thresholding = function(method, ctx, W, H){
+	this.thresholding = function(method, ctx, W, H, only_level){
 		var img = ctx.getImageData(0, 0, W, H);
 		var imgData = img.data;
 		var hist_data = [];
@@ -1676,6 +1945,8 @@ function TOOLS_CLASS(){
 			level = this.otsu(hist_data, W*H);
 		else
 			alert('ERROR: unknown method in TOOLS.thresholding().');
+		if(only_level === true)
+			return level;
 		var c;
 		for(var i = 0; i < imgData.length; i += 4){		
 			if(imgData[i+3] == 0) continue;	//transparent
@@ -1717,5 +1988,127 @@ function TOOLS_CLASS(){
 			}
 		return threshold;
 		};
-	var x_cache = [];
+	this.convert_color_to_alpha = function(context, W, H, color, level){
+		level = level * 10;
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var grey, new_grey;
+		var back_color = HELPER.hex2rgb(color);
+		var back_grey = round(0.2126 * back_color.r + 0.7152 * back_color.g + 0.0722 * back_color.b);
+
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			if(grey < back_grey)
+				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(0 - back_grey)*2.55); //darker color
+			else
+				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(255 - back_grey)*2.55); //lighter color
+			imgData[i+3] = 255 - Math.round((255 - imgData[i+3]) * level / 100);
+			
+			//combining 2 layers in future will change colors, so make changes to get same colors in final image
+			//color_result = color_1 * (alpha_1 / 255) * (1 - A2 / 255) + color_2 * (alpha_2 / 255)
+			//color_2 = (color_result - color_1 * (alpha_1 / 255) * (1 - A2 / 255)) / (alpha_2 / 255)
+			imgData[i]   = Math.ceil((imgData[i]   - back_color.r * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i+1] = Math.ceil((imgData[i+1] - back_color.g * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			imgData[i+2] = Math.ceil((imgData[i+2] - back_color.b * (1-imgData[i+3]/255)) / (imgData[i+3]/255));
+			}
+		context.putImageData(img, 0, 0);
+		};
+	this.color_zoom = function(context, W, H, zoom, center){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var grey;
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			
+			for(var j=0; j<3; j++){
+				var k = i+j;
+				if(grey > center)
+					imgData[k] += (imgData[k] - center) * zoom;
+				else if(grey < center)
+					imgData[k] -= (center - imgData[k]) * zoom;
+				if(imgData[k] < 0)
+					imgData[k] = 0;
+				if(imgData[k] > 255)
+					imgData[k] = 255;
+				}
+			}
+		context.putImageData(img, 0, 0);
+		};
+	this.recover_alpha = function(context, W, H, level){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var tmp;
+		level = parseInt(level);
+		for(var i = 0; i < imgData.length; i += 4){		
+			tmp = imgData[i+3] + level;
+			if(tmp > 255)
+				tmp = 255;
+			imgData[i+3] = tmp;
+			}
+		context.putImageData(img, 0, 0);
+		};
+	this.heatmap_effect = function(context, W, H){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var grey, RGB;
+		for(var i = 0; i < imgData.length; i += 4){		
+			if(imgData[i+3] == 0) continue;	//transparent
+			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
+			RGB = this.color2heat(grey);
+			imgData[i] = RGB.R;
+			imgData[i+1] = RGB.G;
+			imgData[i+2] = RGB.B;
+			}
+		context.putImageData(img, 0, 0);
+		};
+	this.color2heat = function(value){
+		var RGB = {R:0,G:0,B:0};
+		value = value / 255;
+		if (0 <= value && value <= 1/8) {
+			RGB.R = 0;
+			RGB.G = 0;
+			RGB.B = 4*value + .5; // .5 - 1 // b = 1/2
+		} else if (1/8 < value && value <= 3/8) {
+			RGB.R = 0;
+			RGB.G = 4*value - .5; // 0 - 1 // b = - 1/2
+			RGB.B = 1; // small fix
+		} else if (3/8 < value && value <= 5/8) {
+			RGB.R = 4*value - 1.5; // 0 - 1 // b = - 3/2
+			RGB.G = 1;
+			RGB.B = -4*value + 2.5; // 1 - 0 // b = 5/2
+		} else if (5/8 < value && value <= 7/8) {
+			RGB.R = 1;
+			RGB.G = -4*value + 3.5; // 1 - 0 // b = 7/2
+			RGB.B = 0;
+		} else if (7/8 < value && value <= 1) {
+			RGB.R = -4*value + 4.5; // 1 - .5 // b = 9/2
+			RGB.G = 0;
+			RGB.B = 0;
+		} else {    // should never happen - value > 1
+			RGB.R = .5;
+			RGB.G = 0;
+			RGB.B = 0;
+		}
+		// scale for hex conversion
+		RGB.R *= 255;
+		RGB.G *= 255;
+		RGB.B *= 255;
+		
+		RGB.R = Math.round(RGB.R);
+		RGB.G = Math.round(RGB.G);
+		RGB.B = Math.round(RGB.B);
+		
+		return RGB;
+		};
+	this.add_borders = function(context, W, H, color, size){
+		context.strokeStyle = color;
+		context.lineWidth = size;
+		HELPER.roundRect(context, 0 + 0.5, 0 + 0.5, 
+			W-1, H-1, 
+			0, false, true);
+		};
 	}
