@@ -139,6 +139,11 @@ function DRAW_CLASS(){
 		};
 	this.tool_magic_wand = function(context, W, H, x, y, sensitivity, anti_aliasing){
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+		
+		canvas_front.rect(0, 0, WIDTH, HEIGHT);
+		canvas_front.fillStyle = "rgba(255, 255, 255, 0)";
+		canvas_front.fill(); 
+		
 		var img_tmp = canvas_front.getImageData(0, 0, W, H);
 		var imgData_tmp = img_tmp.data;
 		
@@ -190,13 +195,11 @@ function DRAW_CLASS(){
 					}
 				}
 			}
-		canvas_front.putImageData(img_tmp, 0, 0);
 		//destination-out + blur = anti-aliasing
+		if(anti_aliasing == true)
+			img_tmp = ImageFilters.StackBlur(img_tmp, 2);
+		canvas_front.putImageData(img_tmp, 0, 0);
 		context.globalCompositeOperation = "destination-out";
-		if(anti_aliasing == true){
-			context.shadowColor = "rgba("+color_to.r+", "+color_to.g+", "+color_to.b+", "+color_to.a/255+")";
-			context.shadowBlur = 5;
-			}
 		context.drawImage(document.getElementById("canvas_front"), 0, 0);
 		//reset
 		context.shadowBlur = 0;

@@ -100,7 +100,7 @@ function MENU_CLASS(){
 	//information
 	this.image_information = function(){
 		var colors = TOOLS.unique_colors_count(canvas_active(true));
-		colors = HELPER.format("#,##0.####", colors);
+		colors = HELPER.number_format(colors, 0);
 
 		POP.add({title: "Width:",	value: WIDTH	});
 		POP.add({title: "Height:",	value: HEIGHT	});
@@ -1183,8 +1183,8 @@ function MENU_CLASS(){
 		};
 	this.effects_tilt_shift = function(){
 		//extra
-		POP.add({name: "param7",	title: "Saturation:",	value: "30",	range: [0, 100] });
-		POP.add({name: "param8",	title: "Sharpen:",	value: "3",	range: [1, 10] });		
+		POP.add({name: "param7",	title: "Saturation:",	value: "5",	range: [0, 100] });
+		POP.add({name: "param8",	title: "Sharpen:",	value: "2",	range: [1, 10] });		
 		//main
 		POP.add({name: "param1",	title: "Blur Radius:",	value: "15",	range: [0, 50] });
 		POP.add({name: "param2",	title: "Gradient Radius:",	value: "200",	range: [0, 400] });
@@ -1522,7 +1522,6 @@ function MENU_CLASS(){
 		POP.add({name: "width",	title: "Enter new width:",	value: '', placeholder:WIDTH });
 		POP.add({name: "height",title: "Enter new height:",	value: '', placeholder:HEIGHT });
 		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"]});
-		POP.add({name: "ratio",title: "Preserve ratio:",	values: ["Yes", "No"]});
 		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No" });
 		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No" });
 		POP.show('Resize', MENU.resize_layer);
@@ -1531,23 +1530,17 @@ function MENU_CLASS(){
 		MAIN.save_state();
 		var width = parseInt(user_response.width);
 		var height = parseInt(user_response.height);
-		var ratio_mode = user_response.ratio;
 		var preblur = user_response.preblur;
 		var sharpen = user_response.sharpen;
 		if( (isNaN(width) || width<1) && (isNaN(height) || height<1) ) return false;
+		if(width == WIDTH && height == HEIGHT) return false;
 		
 		//if only 1 dimension was provided
-		if(ratio_mode == 'Yes'){
+		if(isNaN(width) || isNaN(height)){
 			if(isNaN(width) || width<1)
 				width = Math.round(height * RATIO);
 			if(isNaN(height) || height<1)
-				height = Math.round(width * RATIO);
-			}
-		else{
-			if(isNaN(width) || width<1)
-				width = WIDTH;
-			if(isNaN(height) || height<1)
-				height = HEIGHT;
+				height = Math.round(width / RATIO);
 			}
 		
 		//if increasing size - use simple way - its good enough
@@ -1558,10 +1551,7 @@ function MENU_CLASS(){
 		if(preblur == 'Yes'){
 			var ratio_w = WIDTH / width;
 			var ratio_h = HEIGHT / height;
-			if(ratio_mode == 'Yes')
-				var ratio_avg = Math.max(ratio_w, ratio_h);
-			else
-				var ratio_avg = Math.min(ratio_w, ratio_h);
+			var ratio_avg = Math.max(ratio_w, ratio_h);
 			var power = ratio_avg * 0.3;
 			if(power > 0.6){
 				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
@@ -1569,17 +1559,10 @@ function MENU_CLASS(){
 				canvas_active().putImageData(filtered, 0, 0);
 				}
 			}
+		if(width > WIDTH || height > HEIGHT)
+			user_response.mode = "Resize";
 		//Hermite - good and fast
 		if(user_response.mode == "Resample - Hermite"){
-			if(ratio_mode == 'Yes'){
-				if(width / height > RATIO)
-					width = Math.round(height * RATIO);
-				else
-					height = Math.round(width / RATIO);
-					}
-			if(width == WIDTH && height == HEIGHT) return false;
-			if(width > WIDTH || height > HEIGHT) return false;
-			
 			DRAW.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
 			if(MENU.last_menu != 'layer_resize'){
 				WIDTH = width;
@@ -1592,15 +1575,8 @@ function MENU_CLASS(){
 			DRAW.zoom();
 			}
 		//simple resize	
-		else if(user_response.mode == "Resize"){
+		if(user_response.mode == "Resize"){
 			//simple resize - FAST
-			if(ratio_mode == 'Yes'){
-				if(width / height > RATIO)
-					width = round(height * RATIO);
-				else
-					height = round(width / RATIO);
-					}		
-			
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
 			tmp_data.height = HEIGHT;

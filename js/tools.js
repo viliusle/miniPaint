@@ -1796,7 +1796,7 @@ function TOOLS_CLASS(){
 			c.stroke();
 			}
 		
-		document.getElementById("pop_data_totalpixel").value = HELPER.format("#,##0.####", total);
+		document.getElementById("pop_data_totalpixel").value = HELPER.number_format(total, 0);
 		if(total > 0)
 			average = round(sum * 10 / total / 3) / 10;
 		else

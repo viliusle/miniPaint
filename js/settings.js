@@ -43,11 +43,11 @@ var ACTION_DATA = [
 	{name: 'brush', 	title: 'Brush',			icon: ['all.png', -500+6, 3],	attributes: {type: 'Brush', type_values: ['Brush', 'BezierCurve', 'Chrome', 'Fur', 'Grouped', 'Shaded', 'Sketchy'], size: 5, anti_alias: false  }, on_update: 'update_brush', },
 	{name: 'blur_tool', 	title: 'Blur tool',		icon: ['all.png', -250+5, -50+2],	attributes: {size: 30, strength: 1}	},
 	{name: 'sharpen_tool', 	title: 'Sharpen tool',		icon: ['all.png', -300+5, -50+2],	attributes: {size: 30, strength: 0.5}	},
+	{name: 'burn_dodge_tool', title: 'Burn/Dodge tool',		icon: ['all.png', -500+3, -50+4],	attributes: {burn: true, size: 30, power: 50}	},
+	{name: 'desaturate_tool', title: 'Desaturate',		icon: ['all.png', -550+3, -00+4],	attributes: {size: 50, anti_alias: true}	},
 	{name: 'clone_tool', 	title: 'Clone tool',		icon: ['all.png', -350+4, -50+3],	attributes: {size: 30, anti_alias: true}	},
 	{name: 'gradient_tool', title: 'Gradient',		icon: ['all.png', -400+3, -50+4],	attributes: {radial: false, power: 50}	},
 	{name: 'crop_tool',	title: 'Crop',			icon: ['all.png', -450+2, -50+2],	attributes: {	} },
-	{name: 'burn_dodge_tool', title: 'Burn/Dodge',		icon: ['all.png', -500+3, -50+4],	attributes: {burn: true, size: 30, power: 50}	},
-	{name: 'desaturate_tool', title: 'Desaturate',		icon: ['all.png', -550+3, -00+4],	attributes: {size: 50, anti_alias: true}	},
 	];
 
 var CREDITS = [
