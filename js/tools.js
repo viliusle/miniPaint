@@ -615,13 +615,15 @@ function TOOLS_CLASS(){
 		var yy = mouse.y;
 		if(type == 'click'){
 			POP.add({name: "text",		title: "Text:",	value: "", type: 'textarea'	});
-			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2	});	
+			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2	});
+			POP.add({name: "color",		title: "Color:",	value: "#000000", type: "color" 	});
 			POP.add({name: "style",		title: "Font style:",	values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select'	});
 			POP.add({name: "family",	title: "Font family:",	values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],  type: 'select'	});
 			POP.add({name: "size_3d",	title: "3D size:",	value: 0, range: [0, 200] 	});	
 			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select' 	});
 			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"] 	});
-			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10] 	});
+			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [1, 20] 	});
+			POP.add({name: "shadow_color",	title: "Shadow color:",	value: "#000000", type: "color" 	});
 			POP.add({name: "fill_style",	title: "Fill style:",	values: ["Fill", "Stroke", "Both"], type: 'select' 	});
 			POP.add({name: "stroke_size",	title: "Stroke size:",	value: 1, range: [1, 100] 	});
 			POP.preview_in_main = true;
@@ -649,10 +651,12 @@ function TOOLS_CLASS(){
 	this.letters_render = function(canvas, xx, yy, user_response){
 		var text = user_response.text;
 		var size = parseInt(user_response.size);
+		var color = user_response.color;
 		var dpth = parseInt(user_response.size_3d);
 		var pos_3d = user_response.pos_3d;
 		var shadow = user_response.shadow;
 		var shadow_blur = parseInt(user_response.shadow_blur);
+		var shadow_color = user_response.shadow_color;
 		var font = user_response.family;
 		var font_style = user_response.style;
 		var fill_style = user_response.fill_style;
@@ -676,7 +680,7 @@ function TOOLS_CLASS(){
 			dy = 1;
 			}
 		
-		var color_rgb = HELPER.hex2rgb(COLOUR);
+		var color_rgb = HELPER.hex2rgb(color);
 		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 		canvas.font = font_style+" "+size+"px "+font;
 		var letters_height = HELPER.font_pixel_to_height(size);
@@ -684,7 +688,7 @@ function TOOLS_CLASS(){
 		//shadow
 		if(shadow == 'Yes'){
 			canvas.save();
-			canvas.shadowColor = "#000000";
+			canvas.shadowColor = shadow_color;
 			canvas.shadowBlur = shadow_blur;
 			canvas.shadowOffsetX = dx;
 			canvas.shadowOffsetY = dy;
