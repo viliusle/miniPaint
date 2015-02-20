@@ -1992,23 +1992,17 @@ function TOOLS_CLASS(){
 			}
 		return threshold;
 		};
-	this.convert_color_to_alpha = function(context, W, H, color, level){
-		level = level * 10;
+	this.convert_color_to_alpha = function(context, W, H, color){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
-		var grey, new_grey;
 		var back_color = HELPER.hex2rgb(color);
-		var back_grey = round(0.2126 * back_color.r + 0.7152 * back_color.g + 0.0722 * back_color.b);
 
 		for(var i = 0; i < imgData.length; i += 4){		
 			if(imgData[i+3] == 0) continue;	//transparent
 
-			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
-			if(grey < back_grey)
-				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(0 - back_grey)*2.55); //darker color
-			else
-				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(255 - back_grey)*2.55); //lighter color
-			imgData[i+3] = 255 - Math.round((255 - imgData[i+3]) * level / 100);
+			//calculate difference from requested color, and change alpha
+			var diff = Math.abs(imgData[i] - back_color.r) + Math.abs(imgData[i+1] - back_color.g) + Math.abs(imgData[i+2] - back_color.b)/3;
+			imgData[i+3] = Math.round(diff);
 			
 			//combining 2 layers in future will change colors, so make changes to get same colors in final image
 			//color_result = color_1 * (alpha_1 / 255) * (1 - A2 / 255) + color_2 * (alpha_2 / 255)

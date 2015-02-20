@@ -550,20 +550,15 @@ function MENU_CLASS(){
 	//extract alpha channel
 	this.tools_color2alpha = function(){
 		POP.add({name: "param1",	title: "Color:",	value: COLOUR,	type: 'color' });
-		POP.add({name: "param2",	title: "Sensitivity:",	value: "5",	range: [1, 9] });
 		POP.show('Color to alpha', function(user_response){
 				MAIN.save_state();
 				var param1 = user_response.param1;
-				var param2 = parseInt(user_response.param2);
-
-				TOOLS.convert_color_to_alpha(canvas_active(), WIDTH, HEIGHT, param1, param2);
+				TOOLS.convert_color_to_alpha(canvas_active(), WIDTH, HEIGHT, param1);
 				DRAW.zoom();
 				},
 			function(user_response, canvas_preview, w, h){
 				var param1 = user_response.param1;
-				var param2 = parseInt(user_response.param2);
-
-				TOOLS.convert_color_to_alpha(canvas_preview, w, h, param1, param2);
+				TOOLS.convert_color_to_alpha(canvas_preview, w, h, param1);
 				});
 		};
 	//expands colors
