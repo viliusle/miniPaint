@@ -406,25 +406,28 @@ function DRAW_CLASS(){
 		
 		//collect top colors
 		var colors_top = [];
-		for(var i = 0; i < imgData.length; i += 40){	//check pixel and skip 10.
-			if(imgData[i+3] == 0) continue;	//transparent
-			var key = imgData[i]+"."+imgData[i+1]+"."+imgData[i+2];
-			
-			if(colors_top[key] == undefined)
-				colors_top[key] = [1, imgData[i], imgData[i+1], imgData[i+2]];
-			else
-				colors_top[key][0]++;
-			}
-		
+		var skip = 5;
+		for(var j = 0; j < H; j += skip){
+			for(var i = 0; i < W; i += skip){
+				var k = ((j * (img.width * 4)) + (i * 4));
+				if(imgData[k+3] == 0) continue;	//transparent
+				
+				var key = imgData[k]+"."+imgData[k+1]+"."+imgData[k+2];
+
+				if(colors_top[key] == undefined)
+					colors_top[key] = [1, imgData[k], imgData[k+1], imgData[k+2]];
+				else
+					colors_top[key][0]++;	
+				}
+			}								//console.log(colors_top);
 		//sort
-		colors_top.sort(function(a,b) { return parseFloat(b[0]) - parseFloat(a[0]); } );
-		var colors_top_sort = [];
-		for (var i in colors_top)
-			colors_top_sort.push(colors_top[i]);
-		colors_top_sort.sort(function(a, b) {return b[0] - a[0];});
-		colors_top = colors_top_sort;
+		var keys = []; 
+		for(var key in colors_top) keys.push(key);
+		colors_top = keys.sort(function(a,b){return colors_top[b][0]-colors_top[a][0]});
+		keys = [];
+		var colors_top_sort = colors_top;					//console.log(colors_top);
 		
-		if(colors_top.length > 256){	
+		if(colors_top.length > 256){
 			var last = colors_top[0];
 			for(var i=1; i<colors_top.length; i++){
 				var diffR = colors_top[i][1] - last[1];
@@ -435,7 +438,7 @@ function DRAW_CLASS(){
 				if(diff > 100)
 					last = colors_top[i]; //save last good
 				else{
-					//to close, remove it
+					//too close, remove it
 					colors_top.splice(i, 1); i--;
 					}
 				}

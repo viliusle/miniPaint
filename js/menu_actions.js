@@ -273,8 +273,8 @@ function MENU_CLASS(){
 	//enchance colors
 	this.image_decrease_colors = function(){
 		POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100] });
-		POP.add({name: "param2",	title: "Dithering:",	values: ["Yes", "No"] });
-		POP.add({name: "param3",	title: "Greyscale:",	values: ["Yes", "No"], value: "No" });
+		POP.add({name: "param2",	title: "Dithering:",	values: ["No", "Yes"],  });
+		POP.add({name: "param3",	title: "Greyscale:",	values: ["No", "Yes"],  });
 		POP.show('Decrease colors', function(user_response){
 			MAIN.save_state();
 			var param1 = parseInt(user_response.param1);
