@@ -406,6 +406,7 @@ function DRAW_CLASS(){
 		
 		//collect top colors
 		var colors_top = [];
+		var colors_top_tmp = [];
 		var skip = 5;
 		for(var j = 0; j < H; j += skip){
 			for(var i = 0; i < W; i += skip){
@@ -414,18 +415,16 @@ function DRAW_CLASS(){
 				
 				var key = imgData[k]+"."+imgData[k+1]+"."+imgData[k+2];
 
-				if(colors_top[key] == undefined)
-					colors_top[key] = [1, imgData[k], imgData[k+1], imgData[k+2]];
+				if(colors_top_tmp[key] == undefined)
+					colors_top_tmp[key] = [1, imgData[k], imgData[k+1], imgData[k+2]];
 				else
-					colors_top[key][0]++;	
+					colors_top_tmp[key][0]++;	
 				}
-			}								//console.log(colors_top);
+			}
 		//sort
-		var keys = []; 
-		for(var key in colors_top) keys.push(key);
-		colors_top = keys.sort(function(a,b){return colors_top[b][0]-colors_top[a][0]});
-		keys = [];
-		var colors_top_sort = colors_top;					//console.log(colors_top);
+		for(var k in colors_top_tmp)
+			colors_top.push([colors_top_tmp[k][0], colors_top_tmp[k][1], colors_top_tmp[k][2], colors_top_tmp[k][3] ]);
+		colors_top.sort(function(a,b){return b[0] - a[0]});
 		
 		if(colors_top.length > 256){
 			var last = colors_top[0];
@@ -440,21 +439,15 @@ function DRAW_CLASS(){
 				else{
 					//too close, remove it
 					colors_top.splice(i, 1); i--;
+					if(colors_top.length <= colors)
+						break;
 					}
 				}
-			if(colors_top.length < 100){
-				//oops, we deleted too much ...
-				colors_top = colors_top_sort;
-				colors_top_sort.splice(256);
-				}
-			colors_top_sort.splice(512);
 			}
-		colors_top_sort = [];	
 		
 		var palette = [];
 		var min = 0;
 		var index;
-		var top_color_n;
 		for(var i in colors_top){
 			if(colors_top[i][0] > min){
 				min = colors_top[0];
@@ -463,13 +456,9 @@ function DRAW_CLASS(){
 			}
 		//add main color
 		palette.push([colors_top[index][1], colors_top[index][2], colors_top[index][3]]);
-		top_color_n = colors_top[index][0];
 		
 		//increase pallete - use only different colors
 		for(var c=1; c<colors; c++){
-			var diff_all=0;
-			var max_all = 0;
-			var index_all;
 			//reset
 			for(var i in colors_top)
 				colors_top[i][4] = [];
@@ -477,14 +466,12 @@ function DRAW_CLASS(){
 				var diff;
 				var max = 0;
 				var index;
-				var diff_tmp = [];
 				for(var i in colors_top){
 					var diffR = colors_top[i][1] - palette[p][0];
 					var diffG = colors_top[i][2] - palette[p][1];
 					var diffB = colors_top[i][3] - palette[p][2];
 					diff = Math.sqrt(diffR*diffR + diffG*diffG + diffB*diffB); //max 441
 					//density fix
-					//diff *= colors_top[i][0];// * 441 / top_color_n;
 					colors_top[i][4].push(diff);
 					}
 				}
