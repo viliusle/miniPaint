@@ -1,6 +1,8 @@
 /*
 TODO:	
 	grains
+	test with big images
+		max canvas size
 */
 
 var MAIN = new MAIN_CLASS();

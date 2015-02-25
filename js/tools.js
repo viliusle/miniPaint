@@ -2109,4 +2109,41 @@ function TOOLS_CLASS(){
 			W-1, H-1, 
 			0, false, true);
 		};
+	this.grains_effect = function(context, W, H){
+		var size = 2;
+		var gap = 2; //+-1
+		var log = [];
+		context.fillStyle = "#ff0000";
+		for(var i=0; i<W; i++)
+			log[i] = -2;
+		
+		function draw_grain(x, y){
+			if(x < 0 || y < 0 || x >= W || y >= H) return false;
+			var k = ((y * (W * 4)) + (x * 4));
+
+			//draw circle
+			context.beginPath();
+			context.arc(x, y, size, 0, Math.PI*2, true);
+			context.fill();
+			
+			//log
+			log[x] = y;
+			}
+		
+		for(var y = 0; y < H; y++){
+			for(var x = 0; x < W; x += + HELPER.getRandomInt(2, 4)){
+				var k = ((y * (W * 4)) + (x * 4));
+				
+				var gap_size = HELPER.getRandomInt(1, 2);
+				
+				if(log[x] + gap_size > y) continue;
+				if(log[x-1] + gap_size > y) continue;
+				if(log[x-2] + gap_size > y) continue;
+				if(log[x+1] + gap_size > y) continue;
+				if(log[x+2] + gap_size > y) continue;
+				
+				draw_grain(x, y);
+				}
+			}	
+		};
 	}

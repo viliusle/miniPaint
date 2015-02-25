@@ -74,6 +74,7 @@ var FILTERS_LIST = [
 	{title: 'Emboss',		name: 'effects_Emboss' },
 	{title: 'Enrich',		name: 'effects_Enrich' },
 	{title: 'Gamma',		name: 'effects_Gamma' },
+	{title: 'Grains',		name: 'effects_Grains' },
 	{title: 'Heatmap',		name: 'effects_heatmap' },
 	{title: 'HSL Adjustment',	name: 'effects_HSLAdjustment' },
 	{title: 'JPG Compression',	name: 'effects_jpg_vintage' },

@@ -276,14 +276,21 @@ function MENU_CLASS(){
 		POP.add({name: "param2",	title: "Dithering:",	values: ["No", "Yes"],  });
 		POP.add({name: "param3",	title: "Greyscale:",	values: ["No", "Yes"],  });
 		POP.show('Decrease colors', function(user_response){
-			MAIN.save_state();
-			var param1 = parseInt(user_response.param1);
-			if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
-			if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+				MAIN.save_state();
+				var param1 = parseInt(user_response.param1);
+				if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
+				if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
 
-			DRAW.decrease_colors(canvas_active(), WIDTH, HEIGHT, param1, param2, param3);
-			DRAW.zoom();
-			});
+				DRAW.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param2, param3);
+				DRAW.zoom();
+				},
+			function(user_response, canvas_preview, w, h){
+				var param1 = parseInt(user_response.param1);
+				if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
+				if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+
+				DRAW.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param2, param3);
+				});
 		};	
 	//negative
 	this.image_negative = function(){
@@ -622,19 +629,36 @@ function MENU_CLASS(){
 	this.effects_bw = function(){
 		var default_level = TOOLS.thresholding('otsu', canvas_active(), WIDTH, HEIGHT, true);
 		POP.add({name: "param1",	title: "Level:",	value: default_level,	range: [0, 255] });
+		POP.add({name: "param2",	title: "Dithering:",	values: ['No', 'Yes'], onchange: "MENU.effects_bw_onchange()" });
 		POP.effects = true;
 		POP.show('Black and White', function(user_response){
 				MAIN.save_state();
 				var param1 = parseInt(user_response.param1);
+				var param2 = false;
+				if(user_response.param2 == 'Yes')
+					param2 = true;
 
-				DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT, param1);
+				DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT, param1, param2);
 				DRAW.zoom();
 				},
 			function(user_response, canvas_preview, w, h){
 				var param1 = parseInt(user_response.param1);
+				var param2 = false;
+				if(user_response.param2 == 'Yes')
+					param2 = true;
 
-				DRAW.effect_bw(canvas_preview, w, h, param1);
+				DRAW.effect_bw(canvas_preview, w, h, param1, param2);
 				});
+		};
+	this.effects_bw_onchange = function(){
+		var levels = document.getElementById("pop_data_param1");
+		var dithering_no = document.getElementById("pop_data_param2_poptmp0");
+		var dithering_yes = document.getElementById("pop_data_param2_poptmp1");
+		
+		if(dithering_no.checked == true)	levels.disabled = false;
+		else if(dithering_yes.checked == true)	levels.disabled = true;
+		
+		POP.view();
 		};
 	this.effects_BoxBlur = function(){
 		POP.add({name: "param1",	title: "H Radius:",	value: "3",	range: [1, 20] });
@@ -940,6 +964,16 @@ function MENU_CLASS(){
 				var imageData = canvas_preview.getImageData(0, 0, w, h);
 				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
 				canvas_preview.putImageData(filtered, 0, 0);
+				});
+		};
+	this.effects_Grains = function(){
+		POP.effects = true;
+		POP.show('Grains', function(user_response){
+				MAIN.save_state();
+				TOOLS.grains_effect(canvas_active(), WIDTH, HEIGHT);
+				},
+			function(user_response, canvas_preview, w, h){
+				TOOLS.grains_effect(canvas_preview, w, h);
 				});
 		};
 	this.effects_heatmap = function(){
