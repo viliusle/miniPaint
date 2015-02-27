@@ -12,6 +12,7 @@ about:		adds vintage effect, functions:
 			grains_big
 			optics
 			dusts
+usage:		VINTAGE.___function___(canvas_ctx, width, height, param1, param2);
 theory:		Ken, http://stackoverflow.com/questions/13355119/vintage-ing-image-with-javascript/18862003#18862003
 libs:		imagefilters.js, url: https://github.com/arahaya/ImageFilters.js
 		glfx.js url: http://evanw.github.com/glfx.js/
