@@ -968,12 +968,15 @@ function MENU_CLASS(){
 		};
 	this.effects_Grains = function(){
 		POP.effects = true;
+		POP.add({name: "param1",	title: "Level:",		value: "30",	range: [0, 50] });
 		POP.show('Grains', function(user_response){
+				var param1 = parseInt(user_response.param1);
 				MAIN.save_state();
-				TOOLS.grains_effect(canvas_active(), WIDTH, HEIGHT);
+				TOOLS.grains_effect(canvas_active(), WIDTH, HEIGHT, param1);
 				},
 			function(user_response, canvas_preview, w, h){
-				TOOLS.grains_effect(canvas_preview, w, h);
+				var param1 = parseInt(user_response.param1);
+				TOOLS.grains_effect(canvas_preview, w, h, param1);
 				});
 		};
 	this.effects_heatmap = function(){
@@ -1313,7 +1316,7 @@ function MENU_CLASS(){
 		POP.add({name: "light_leak",	title: "Light leak:",		value: "90",	range: [0, 150] });
 		POP.add({name: "de_saturation",	title: "Desaturation:",		value: "40",	range: [0, 100] });
 		POP.add({name: "exposure",	title: "Exposure level:",	value: "80",	range: [0, 150] });
-		POP.add({name: "grains",	title: "Grains level:",		value: "10",	range: [0, 50] });
+		POP.add({name: "grains",	title: "Grains level:",		value: "20",	range: [0, 50] });
 		POP.add({name: "big_grains",	title: "Big grains level:",	value: "20",	range: [0, 50] });
 		POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 0.5], step: 0.01 });
 		POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 0.7], step: 0.01 });
@@ -1419,8 +1422,13 @@ function MENU_CLASS(){
 	//======================================================================
 
 	this.save_dialog = function(e){
+		//find default format
+		var save_default = SAVE_TYPES[0];	//png
+		if(HELPER.getCookie('save_default') == 'jpg')
+			save_default = SAVE_TYPES[1]; //jpg
+		
 		POP.add({name: "name",		title: "File name:",		value: [SAVE_NAME]	});
-		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES	});	
+		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES, value: save_default	});	
 		POP.add({name: "quality",	title: "Quality (1-100):",	value: 90,		range: [1, 100]	});
 		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected']		});
 		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes']		});
@@ -1639,6 +1647,17 @@ function MENU_CLASS(){
 		var tempCtx = tempCanvas.getContext("2d");
 		tempCanvas.width = WIDTH;
 		tempCanvas.height = HEIGHT;
+		
+		//save choosen type
+		var save_default = SAVE_TYPES[0];	//png
+		if(HELPER.getCookie('save_default') == 'jpg')
+			save_default = SAVE_TYPES[1]; //jpg
+		if(user_response.type != save_default && user_response.type == SAVE_TYPES[0])
+			HELPER.setCookie('save_default', 'png' , 30);
+		else if(user_response.type != save_default && user_response.type == SAVE_TYPES[1])
+			HELPER.setCookie('save_default', 'jpg' , 30);
+		else 
+		
 		if(MAIN.TRANSPARENCY == false){
 			tempCtx.beginPath();
 			tempCtx.rect(0, 0, WIDTH, HEIGHT);

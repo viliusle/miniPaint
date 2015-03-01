@@ -827,15 +827,13 @@ function TOOLS_CLASS(){
 		
 		if(type == 'click'){
 			MAIN.save_state();
-			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			var filtered = ImageFilters.GrayScale(imageData);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		else if(type == 'drag'){
-			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			var filtered = ImageFilters.GrayScale(imageData);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		if(type == 'move' || type == 'drag'){
@@ -1199,7 +1197,7 @@ function TOOLS_CLASS(){
 		
 		if(type == 'click'){
 			MAIN.save_state();
-			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
+			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -2109,41 +2107,32 @@ function TOOLS_CLASS(){
 			W-1, H-1, 
 			0, false, true);
 		};
-	this.grains_effect = function(context, W, H){
-		var size = 2;
-		var gap = 2; //+-1
-		var log = [];
-		context.fillStyle = "#ff0000";
-		for(var i=0; i<W; i++)
-			log[i] = -2;
-		
-		function draw_grain(x, y){
-			if(x < 0 || y < 0 || x >= W || y >= H) return false;
-			var k = ((y * (W * 4)) + (x * 4));
-
-			//draw circle
-			context.beginPath();
-			context.arc(x, y, size, 0, Math.PI*2, true);
-			context.fill();
-			
-			//log
-			log[x] = y;
-			}
-		
-		for(var y = 0; y < H; y++){
-			for(var x = 0; x < W; x += + HELPER.getRandomInt(2, 4)){
-				var k = ((y * (W * 4)) + (x * 4));
+	this.grains_effect = function(context, W, H, level){
+		if(level == 0) return context;
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;	
+		for(var j = 0; j < H; j++){
+			for(var i = 0; i < W; i++){		
+				var x = (i + j*W) * 4;
+				if(imgData[x+3] == 0) continue;	//transparent
+				//increase it's lightness
+				var delta = HELPER.getRandomInt(0, level);
+				if(delta == 0) continue;
 				
-				var gap_size = HELPER.getRandomInt(1, 2);
-				
-				if(log[x] + gap_size > y) continue;
-				if(log[x-1] + gap_size > y) continue;
-				if(log[x-2] + gap_size > y) continue;
-				if(log[x+1] + gap_size > y) continue;
-				if(log[x+2] + gap_size > y) continue;
-				
-				draw_grain(x, y);
+				if(imgData[x] - delta < 0)
+					imgData[x] = -(imgData[x] - delta);
+				else
+					imgData[x] = imgData[x] - delta;
+				if(imgData[x+1] - delta < 0)
+					imgData[x+1] = -(imgData[x+1] - delta);
+				else
+					imgData[x+1] = imgData[x+1] - delta;
+				if(imgData[x+2] - delta < 0)
+					imgData[x+2] = -(imgData[x+2] - delta);
+				else
+					imgData[x+2] = imgData[x+2] - delta;
 				}
 			}	
+		context.putImageData(img, 0, 0);
 		};
 	}

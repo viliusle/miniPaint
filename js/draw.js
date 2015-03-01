@@ -439,7 +439,7 @@ function DRAW_CLASS(){
 					}
 				}
 			}
-		context.putImageData(img, 0, 0);	
+		context.putImageData(img, 0, 0);
 		};
 	this.decrease_colors = function(canvas_source, canvas_destination, W, H, colors, dithering, greyscale){
 		var context = canvas_destination.getContext("2d");

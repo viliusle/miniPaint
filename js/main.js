@@ -1,9 +1,3 @@
-/*
-TODO:	
-	grains
-	test with big images
-*/
-
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);
 
