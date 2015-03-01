@@ -1,8 +1,3 @@
-/*
-TODO:	
-	grains
-*/
-
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);
 

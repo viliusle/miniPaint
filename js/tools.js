@@ -615,13 +615,15 @@ function TOOLS_CLASS(){
 		var yy = mouse.y;
 		if(type == 'click'){
 			POP.add({name: "text",		title: "Text:",	value: "", type: 'textarea'	});
-			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2	});	
+			POP.add({name: "size",		title: "Size:",	value: 20, range: [2, 1000], step: 2	});
+			POP.add({name: "color",		title: "Color:",	value: "#000000", type: "color" 	});
 			POP.add({name: "style",		title: "Font style:",	values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select'	});
 			POP.add({name: "family",	title: "Font family:",	values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],  type: 'select'	});
 			POP.add({name: "size_3d",	title: "3D size:",	value: 0, range: [0, 200] 	});	
 			POP.add({name: "pos_3d",	title: "3D position:",	values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"],  type: 'select' 	});
 			POP.add({name: "shadow",	title: "Shadow:",	values: ["No", "Yes"] 	});
-			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [2, 10] 	});
+			POP.add({name: "shadow_blur",	title: "Shadow blur:",	value: 6, range: [1, 20] 	});
+			POP.add({name: "shadow_color",	title: "Shadow color:",	value: "#000000", type: "color" 	});
 			POP.add({name: "fill_style",	title: "Fill style:",	values: ["Fill", "Stroke", "Both"], type: 'select' 	});
 			POP.add({name: "stroke_size",	title: "Stroke size:",	value: 1, range: [1, 100] 	});
 			POP.preview_in_main = true;
@@ -649,10 +651,12 @@ function TOOLS_CLASS(){
 	this.letters_render = function(canvas, xx, yy, user_response){
 		var text = user_response.text;
 		var size = parseInt(user_response.size);
+		var color = user_response.color;
 		var dpth = parseInt(user_response.size_3d);
 		var pos_3d = user_response.pos_3d;
 		var shadow = user_response.shadow;
 		var shadow_blur = parseInt(user_response.shadow_blur);
+		var shadow_color = user_response.shadow_color;
 		var font = user_response.family;
 		var font_style = user_response.style;
 		var fill_style = user_response.fill_style;
@@ -676,7 +680,7 @@ function TOOLS_CLASS(){
 			dy = 1;
 			}
 		
-		var color_rgb = HELPER.hex2rgb(COLOUR);
+		var color_rgb = HELPER.hex2rgb(color);
 		canvas.fillStyle = "rgba("+color_rgb.r+", "+color_rgb.g+", "+color_rgb.b+", "+ALPHA/255+")";
 		canvas.font = font_style+" "+size+"px "+font;
 		var letters_height = HELPER.font_pixel_to_height(size);
@@ -684,7 +688,7 @@ function TOOLS_CLASS(){
 		//shadow
 		if(shadow == 'Yes'){
 			canvas.save();
-			canvas.shadowColor = "#000000";
+			canvas.shadowColor = shadow_color;
 			canvas.shadowBlur = shadow_blur;
 			canvas.shadowOffsetX = dx;
 			canvas.shadowOffsetY = dy;
@@ -823,15 +827,13 @@ function TOOLS_CLASS(){
 		
 		if(type == 'click'){
 			MAIN.save_state();
-			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			var filtered = ImageFilters.GrayScale(imageData);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		else if(type == 'drag'){
-			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
-			var filtered = ImageFilters.GrayScale(imageData, param1);	//add effect
+			var filtered = ImageFilters.GrayScale(imageData);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"), TOOLS.action_data().attributes.anti_alias);
 			}
 		if(type == 'move' || type == 'drag'){
@@ -1195,7 +1197,7 @@ function TOOLS_CLASS(){
 		
 		if(type == 'click'){
 			MAIN.save_state();
-			var param1 = TOOLS.action_data().attributes.strength;	param1 = 0.5
+			var param1 = TOOLS.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
 			HELPER.drawImage_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1988,23 +1990,17 @@ function TOOLS_CLASS(){
 			}
 		return threshold;
 		};
-	this.convert_color_to_alpha = function(context, W, H, color, level){
-		level = level * 10;
+	this.convert_color_to_alpha = function(context, W, H, color){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
-		var grey, new_grey;
 		var back_color = HELPER.hex2rgb(color);
-		var back_grey = round(0.2126 * back_color.r + 0.7152 * back_color.g + 0.0722 * back_color.b);
 
 		for(var i = 0; i < imgData.length; i += 4){		
 			if(imgData[i+3] == 0) continue;	//transparent
 
-			grey = round(0.2126 * imgData[i] + 0.7152 * imgData[i+1] + 0.0722 * imgData[i+2]);
-			if(grey < back_grey)
-				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(0 - back_grey)*2.55); //darker color
-			else
-				imgData[i+3] = Math.round(Math.abs(back_grey - grey)*100/Math.abs(255 - back_grey)*2.55); //lighter color
-			imgData[i+3] = 255 - Math.round((255 - imgData[i+3]) * level / 100);
+			//calculate difference from requested color, and change alpha
+			var diff = Math.abs(imgData[i] - back_color.r) + Math.abs(imgData[i+1] - back_color.g) + Math.abs(imgData[i+2] - back_color.b)/3;
+			imgData[i+3] = Math.round(diff);
 			
 			//combining 2 layers in future will change colors, so make changes to get same colors in final image
 			//color_result = color_1 * (alpha_1 / 255) * (1 - A2 / 255) + color_2 * (alpha_2 / 255)
@@ -2110,5 +2106,33 @@ function TOOLS_CLASS(){
 		HELPER.roundRect(context, 0 + 0.5, 0 + 0.5, 
 			W-1, H-1, 
 			0, false, true);
+		};
+	this.grains_effect = function(context, W, H, level){
+		if(level == 0) return context;
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;	
+		for(var j = 0; j < H; j++){
+			for(var i = 0; i < W; i++){		
+				var x = (i + j*W) * 4;
+				if(imgData[x+3] == 0) continue;	//transparent
+				//increase it's lightness
+				var delta = HELPER.getRandomInt(0, level);
+				if(delta == 0) continue;
+				
+				if(imgData[x] - delta < 0)
+					imgData[x] = -(imgData[x] - delta);
+				else
+					imgData[x] = imgData[x] - delta;
+				if(imgData[x+1] - delta < 0)
+					imgData[x+1] = -(imgData[x+1] - delta);
+				else
+					imgData[x+1] = imgData[x+1] - delta;
+				if(imgData[x+2] - delta < 0)
+					imgData[x+2] = -(imgData[x+2] - delta);
+				else
+					imgData[x+2] = imgData[x+2] - delta;
+				}
+			}	
+		context.putImageData(img, 0, 0);
 		};
 	}

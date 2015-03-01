@@ -273,17 +273,24 @@ function MENU_CLASS(){
 	//enchance colors
 	this.image_decrease_colors = function(){
 		POP.add({name: "param1",	title: "Colors:",	value: "10",	range: [2, 100] });
-		POP.add({name: "param2",	title: "Dithering:",	values: ["Yes", "No"] });
-		POP.add({name: "param3",	title: "Greyscale:",	values: ["Yes", "No"], value: "No" });
+		POP.add({name: "param2",	title: "Dithering:",	values: ["No", "Yes"],  });
+		POP.add({name: "param3",	title: "Greyscale:",	values: ["No", "Yes"],  });
 		POP.show('Decrease colors', function(user_response){
-			MAIN.save_state();
-			var param1 = parseInt(user_response.param1);
-			if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
-			if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+				MAIN.save_state();
+				var param1 = parseInt(user_response.param1);
+				if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
+				if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
 
-			DRAW.decrease_colors(canvas_active(), WIDTH, HEIGHT, param1, param2, param3);
-			DRAW.zoom();
-			});
+				DRAW.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param2, param3);
+				DRAW.zoom();
+				},
+			function(user_response, canvas_preview, w, h){
+				var param1 = parseInt(user_response.param1);
+				if(user_response.param2 == 'Yes') param2 = true; else param2 = false;
+				if(user_response.param3 == 'Yes') param3 = true; else param3 = false;
+
+				DRAW.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param2, param3);
+				});
 		};	
 	//negative
 	this.image_negative = function(){
@@ -550,20 +557,15 @@ function MENU_CLASS(){
 	//extract alpha channel
 	this.tools_color2alpha = function(){
 		POP.add({name: "param1",	title: "Color:",	value: COLOUR,	type: 'color' });
-		POP.add({name: "param2",	title: "Sensitivity:",	value: "5",	range: [1, 9] });
 		POP.show('Color to alpha', function(user_response){
 				MAIN.save_state();
 				var param1 = user_response.param1;
-				var param2 = parseInt(user_response.param2);
-
-				TOOLS.convert_color_to_alpha(canvas_active(), WIDTH, HEIGHT, param1, param2);
+				TOOLS.convert_color_to_alpha(canvas_active(), WIDTH, HEIGHT, param1);
 				DRAW.zoom();
 				},
 			function(user_response, canvas_preview, w, h){
 				var param1 = user_response.param1;
-				var param2 = parseInt(user_response.param2);
-
-				TOOLS.convert_color_to_alpha(canvas_preview, w, h, param1, param2);
+				TOOLS.convert_color_to_alpha(canvas_preview, w, h, param1);
 				});
 		};
 	//expands colors
@@ -627,19 +629,36 @@ function MENU_CLASS(){
 	this.effects_bw = function(){
 		var default_level = TOOLS.thresholding('otsu', canvas_active(), WIDTH, HEIGHT, true);
 		POP.add({name: "param1",	title: "Level:",	value: default_level,	range: [0, 255] });
+		POP.add({name: "param2",	title: "Dithering:",	values: ['No', 'Yes'], onchange: "MENU.effects_bw_onchange()" });
 		POP.effects = true;
 		POP.show('Black and White', function(user_response){
 				MAIN.save_state();
 				var param1 = parseInt(user_response.param1);
+				var param2 = false;
+				if(user_response.param2 == 'Yes')
+					param2 = true;
 
-				DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT, param1);
+				DRAW.effect_bw(canvas_active(), WIDTH, HEIGHT, param1, param2);
 				DRAW.zoom();
 				},
 			function(user_response, canvas_preview, w, h){
 				var param1 = parseInt(user_response.param1);
+				var param2 = false;
+				if(user_response.param2 == 'Yes')
+					param2 = true;
 
-				DRAW.effect_bw(canvas_preview, w, h, param1);
+				DRAW.effect_bw(canvas_preview, w, h, param1, param2);
 				});
+		};
+	this.effects_bw_onchange = function(){
+		var levels = document.getElementById("pop_data_param1");
+		var dithering_no = document.getElementById("pop_data_param2_poptmp0");
+		var dithering_yes = document.getElementById("pop_data_param2_poptmp1");
+		
+		if(dithering_no.checked == true)	levels.disabled = false;
+		else if(dithering_yes.checked == true)	levels.disabled = true;
+		
+		POP.view();
 		};
 	this.effects_BoxBlur = function(){
 		POP.add({name: "param1",	title: "H Radius:",	value: "3",	range: [1, 20] });
@@ -945,6 +964,19 @@ function MENU_CLASS(){
 				var imageData = canvas_preview.getImageData(0, 0, w, h);
 				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
 				canvas_preview.putImageData(filtered, 0, 0);
+				});
+		};
+	this.effects_Grains = function(){
+		POP.effects = true;
+		POP.add({name: "param1",	title: "Level:",		value: "30",	range: [0, 50] });
+		POP.show('Grains', function(user_response){
+				var param1 = parseInt(user_response.param1);
+				MAIN.save_state();
+				TOOLS.grains_effect(canvas_active(), WIDTH, HEIGHT, param1);
+				},
+			function(user_response, canvas_preview, w, h){
+				var param1 = parseInt(user_response.param1);
+				TOOLS.grains_effect(canvas_preview, w, h, param1);
 				});
 		};
 	this.effects_heatmap = function(){
@@ -1284,7 +1316,7 @@ function MENU_CLASS(){
 		POP.add({name: "light_leak",	title: "Light leak:",		value: "90",	range: [0, 150] });
 		POP.add({name: "de_saturation",	title: "Desaturation:",		value: "40",	range: [0, 100] });
 		POP.add({name: "exposure",	title: "Exposure level:",	value: "80",	range: [0, 150] });
-		POP.add({name: "grains",	title: "Grains level:",		value: "10",	range: [0, 50] });
+		POP.add({name: "grains",	title: "Grains level:",		value: "20",	range: [0, 50] });
 		POP.add({name: "big_grains",	title: "Big grains level:",	value: "20",	range: [0, 50] });
 		POP.add({name: "vignette1",	title: "Vignette size:",	value: "0.3",	range: [0, 0.5], step: 0.01 });
 		POP.add({name: "vignette2",	title: "Vignette amount:",	value: "0.5",	range: [0, 0.7], step: 0.01 });
@@ -1390,8 +1422,13 @@ function MENU_CLASS(){
 	//======================================================================
 
 	this.save_dialog = function(e){
+		//find default format
+		var save_default = SAVE_TYPES[0];	//png
+		if(HELPER.getCookie('save_default') == 'jpg')
+			save_default = SAVE_TYPES[1]; //jpg
+		
 		POP.add({name: "name",		title: "File name:",		value: [SAVE_NAME]	});
-		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES	});	
+		POP.add({name: "type",		title: "Save as type:",		values: SAVE_TYPES, value: save_default	});	
 		POP.add({name: "quality",	title: "Quality (1-100):",	value: 90,		range: [1, 100]	});
 		POP.add({name: "layers",	title: "Save layers:",		values: ['All', 'Selected']		});
 		POP.add({name: "trim",		title: "Trim:",			values: ['No', 'Yes']		});
@@ -1610,6 +1647,17 @@ function MENU_CLASS(){
 		var tempCtx = tempCanvas.getContext("2d");
 		tempCanvas.width = WIDTH;
 		tempCanvas.height = HEIGHT;
+		
+		//save choosen type
+		var save_default = SAVE_TYPES[0];	//png
+		if(HELPER.getCookie('save_default') == 'jpg')
+			save_default = SAVE_TYPES[1]; //jpg
+		if(user_response.type != save_default && user_response.type == SAVE_TYPES[0])
+			HELPER.setCookie('save_default', 'png' , 30);
+		else if(user_response.type != save_default && user_response.type == SAVE_TYPES[1])
+			HELPER.setCookie('save_default', 'jpg' , 30);
+		else 
+		
 		if(MAIN.TRANSPARENCY == false){
 			tempCtx.beginPath();
 			tempCtx.rect(0, 0, WIDTH, HEIGHT);
