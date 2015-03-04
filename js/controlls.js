@@ -656,6 +656,7 @@ function CLIPBOARD_CLASS(canvas_id){
 		};
 	//on keyboard press
 	this.on_keyboard_action = function(event){
+		if(POP.active == true) return true;
 		k = event.keyCode;
 		//ctrl
 		if(k==17 || event.metaKey || event.ctrlKey){	
