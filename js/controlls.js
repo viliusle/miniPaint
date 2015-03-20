@@ -365,10 +365,12 @@ function CONTROLLS_CLASS(){
 				}
 			}
 		//check tools functions
-		for (i in TOOLS){
-			if(i == ACTION){
-				TOOLS[i]('move', CON.mouse, event);
-				break;
+		if(CON.isDrag === false){
+			for (i in TOOLS){
+				if(i == ACTION){
+					TOOLS[i]('move', CON.mouse, event);
+					break;
+					}
 				}
 			}
 	

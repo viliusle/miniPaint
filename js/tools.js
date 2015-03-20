@@ -812,9 +812,9 @@ function TOOLS_CLASS(){
 			}
 		};
 	this.update_brush = function(){
-		document.getElementById('blur').style.display='';
+		document.getElementById('anti_alias').style.display='';
 		if(TOOLS.action_data().attributes.type != 'Brush')
-			document.getElementById('blur').style.display='none';
+			document.getElementById('anti_alias').style.display='none';
 		};
 	this.desaturate_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;
@@ -854,7 +854,7 @@ function TOOLS_CLASS(){
 		if(type == 'click')
 			MAIN.save_state();
 		
-		if(brush_type == 'Brush'){
+		if(brush_type == 'Brush'){		
 			if(type == 'click'){
 				//init settings
 				canvas_active().beginPath();
