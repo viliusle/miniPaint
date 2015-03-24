@@ -1,13 +1,13 @@
-miniPaint - Online graphics editing tool using HTML5.
-
-Demo: http://viliusle.github.io/miniPaint/
-
-License: GPL
+##miniPaint
 
 Online graphics editing tool use HTML5 technologies like Canvas, Offline support,
 Drag and Drop. Key features: layers, transparency, filters, no-flash, open source. 
 
-Browser Support: Firefox, Chrome. Safari and IE-11 has issues with some HTML5 features.
+**Demo**: http://viliusle.github.io/miniPaint/
+
+**License**: GPL
+
+**Browser Support**: Firefox, Chrome. Safari and IE-11 has issues with some HTML5 features.
 
 ##Features:
 
@@ -42,36 +42,34 @@ Browser Support: Firefox, Chrome. Safari and IE-11 has issues with some HTML5 fe
 - Keyboard shortcuts.
 - Effect browser.
 - Zoom.
-
-##Effects:
-
-- Black and White (dithering).
-- Blur (box, Gaussian, stack, zoom).
-- Bulge/Pinch.
-- Colorize.
-- Denoise.
-- Desaturate.
-- Dither.
-- Dot Screen.
-- Edge.
-- Emboss.
-- Enrich.
-- Gamma.
-- Grains.
-- GrayScale.
-- Heatmap.
-- HSL Adjustment.
-- JPG Compression.
-- Mosaic.
-- Oil.
-- Perspective.
-- Posterize.
-- Sepia.
-- Sharpen.
-- Solarize.
-- Tilt Shift.
-- Vignette.
-- Vintage.
+- Effects:
+  - Black and White (dithering).
+  - Blur (box, Gaussian, stack, zoom).
+  - Bulge/Pinch.
+  - Colorize.
+  - Denoise.
+  - Desaturate.
+  - Dither.
+  - Dot Screen.
+  - Edge.
+  - Emboss.
+  - Enrich.
+  - Gamma.
+  - Grains.
+  - GrayScale.
+  - Heatmap.
+  - HSL Adjustment.
+  - JPG Compression.
+  - Mosaic.
+  - Oil.
+  - Perspective.
+  - Posterize.
+  - Sepia.
+  - Sharpen.
+  - Solarize.
+  - Tilt Shift.
+  - Vignette.
+  - Vintage.
 
 ##Libraries used:
 
