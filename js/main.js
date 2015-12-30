@@ -1,8 +1,3 @@
-/*
-TODO:	
-	letters
-*/
-
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);
 
@@ -44,6 +39,7 @@ function MAIN_CLASS(){
 			document.getElementById("main_colour_alt").style.display = '';
 			document.getElementById("main_colour_alt").style.backgroundColor = COLOUR;
 			}
+		canvas_grid.globalAlpha = 0.8;
 		};
 	this.save_state = function(){
 		undo_level = 0;

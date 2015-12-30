@@ -12,6 +12,7 @@ about:		adds vintage effect, functions:
 			grains_big
 			optics
 			dusts
+usage:		VINTAGE.___function___(canvas_ctx, width, height, param1, param2);
 theory:		Ken, http://stackoverflow.com/questions/13355119/vintage-ing-image-with-javascript/18862003#18862003
 libs:		imagefilters.js, url: https://github.com/arahaya/ImageFilters.js
 		glfx.js url: http://evanw.github.com/glfx.js/
@@ -93,13 +94,18 @@ function VINTAGE_CLASS(){
 				var delta = this.getRandomInt(0, level);
 				if(delta == 0) continue;
 				
-				imgData[x] = imgData[x] + delta;
-				imgData[x+1] = imgData[x+1] + delta;
-				imgData[x+2] = imgData[x+2] + delta;
-				
-				if(imgData[x] > 255) imgData[x] = 255;
-				if(imgData[x+1] > 255) imgData[x+1] = 255;
-				if(imgData[x+2] > 255) imgData[x+2] = 255;
+				if(imgData[x] - delta < 0)
+					imgData[x] = -(imgData[x] - delta);
+				else
+					imgData[x] = imgData[x] - delta;
+				if(imgData[x+1] - delta < 0)
+					imgData[x+1] = -(imgData[x+1] - delta);
+				else
+					imgData[x+1] = imgData[x+1] - delta;
+				if(imgData[x+2] - delta < 0)
+					imgData[x+2] = -(imgData[x+2] - delta);
+				else
+					imgData[x+2] = imgData[x+2] - delta;
 				}
 			}	
 		context.putImageData(img, 0, 0);

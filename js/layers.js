@@ -69,7 +69,7 @@ function LAYER_CLASS(){
 				DRAW.zoom();
 				};
 			img.onerror = function(ex){
-				POP.add({title: "Message:", value: 'The image could not be loaded.'});
+				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});
 				if(data.substring(0,4) == 'http')
 					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.'});
 				POP.show('Error', '.');
@@ -261,12 +261,15 @@ function LAYER_CLASS(){
 		this.resize_canvas("canvas_back");
 		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 		this.resize_canvas("canvas_front", false);
+		this.resize_canvas("canvas_grid", true);
 		for(i in LAYERS){
 			if(repaint === false)
 				this.resize_canvas(LAYERS[i].name, false);
 			else
 				this.resize_canvas(LAYERS[i].name, true);
 			}
+		
+		DRAW.draw_grid();
 		
 		document.getElementById('resize-w').style.marginLeft = (106+W)+"px";
 		document.getElementById('resize-w').style.marginTop = (1+H/2)+"px";

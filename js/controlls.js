@@ -23,6 +23,7 @@ function CONTROLLS_CLASS(){
 	this.mini_rect_data = { w: 0, h:0 };
 	this.isDrag = false;
 	this.sr_size = 8;	//selected area resize rects size
+	this.clear_front_on_release = true;
 	var autosize = true;
 	var mouse_click_x = false;
 	var mouse_click_y = false;
@@ -121,7 +122,7 @@ function CONTROLLS_CLASS(){
 				MAIN.grid = true;
 			else
 				MAIN.grid = false;
-			DRAW.draw_grid(canvas_back, 50, 50);	
+			DRAW.draw_grid();	
 			}
 		//del
 		else if(k==46){
@@ -141,6 +142,10 @@ function CONTROLLS_CLASS(){
 			if(CON.ctrl_pressed == false)
 				CON.ctrl_pressed = true;
 			}
+		//d
+		else if(k==68){
+			MENU.do_menu(['layer_dublicate']);
+			}
 		//a
 		else if(k==65){
 			if(CON.ctrl_pressed == true){
@@ -152,28 +157,6 @@ function CONTROLLS_CLASS(){
 					};
 				TOOLS.draw_selected_area();
 				return false;
-				}
-			}
-		//x
-		else if(k==88){
-			if(CON.ctrl_pressed == true && TOOLS.select_data != false){
-				MAIN.save_state();
-				MENU.copy_to_clipboard();
-				canvas_active().clearRect(TOOLS.select_data.x, TOOLS.select_data.y, TOOLS.select_data.w, TOOLS.select_data.h);
-				TOOLS.select_data = false;
-				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-				}
-			}
-		//c
-		else if(k==67){
-			if(CON.ctrl_pressed == true && TOOLS.select_data != false)
-				MENU.copy_to_clipboard();
-			else if(CON.ctrl_pressed == false){
-				MAIN.save_state();
-				var param1 = parseInt(3);
-				var param2 = parseInt(30);
-				DRAW.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, true);
-				DRAW.zoom();
 				}
 			}
 		//v
@@ -402,8 +385,6 @@ function CONTROLLS_CLASS(){
 			
 		if(ACTION != 'select_square')
 			TOOLS.select_square_action = '';
-			
-
 		
 		mouse_x_move_last = CON.mouse.x;
 		mouse_y_move_last = CON.mouse.y;
@@ -419,7 +400,8 @@ function CONTROLLS_CLASS(){
 			TOOLS.select_data = false;
 		
 		//check tools functions
-		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+		if(CON.clear_front_on_release == true)
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 		TOOLS.draw_selected_area();
 		for (i in TOOLS){
 			if(i == ACTION){
@@ -462,6 +444,9 @@ function CONTROLLS_CLASS(){
 		
 			var FR = new FileReader();	
 			FR.file = e.dataTransfer.files[i];
+			
+			if(e.dataTransfer.files.length == 1)
+				SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
 						
 			FR.onload = function(event){
 				if(this.file.type != 'text/xml'){
@@ -615,7 +600,7 @@ function CLIPBOARD_CLASS(canvas_id){
 					}
 				/*else{
 					//html
-					setTimeout(function(){
+					/*setTimeout(function(){
 						if(reading_dom == true) return false;
 						_self.paste_createText(pasteCatcher.innerHTML, false);
 						reading_dom = true;
@@ -656,7 +641,7 @@ function CLIPBOARD_CLASS(canvas_id){
 						}
 					/*else if(items[i].type.indexOf("text") !== -1){
 						//text or html
-						if(plain_text_used == false)
+						/*if(plain_text_used == false)
 							this.paste_createText(e.clipboardData.getData('text/plain'));
 						plain_text_used = true;
 						}*/
