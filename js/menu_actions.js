@@ -1656,7 +1656,6 @@ function MENU_CLASS(){
 			HELPER.setCookie('save_default', 'png' , 30);
 		else if(user_response.type != save_default && user_response.type == SAVE_TYPES[1])
 			HELPER.setCookie('save_default', 'jpg' , 30);
-		else 
 		
 		if(MAIN.TRANSPARENCY == false){
 			tempCtx.beginPath();
@@ -1680,7 +1679,6 @@ function MENU_CLASS(){
 			tempCanvas.width = WIDTH - trim_info.right - trim_info.left;
 			tempCanvas.height = HEIGHT - trim_info.bottom - trim_info.top;
 			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
-			
 			}
 		
 		//detect type
@@ -1688,11 +1686,11 @@ function MENU_CLASS(){
 		user_response.type = parts[0];
 		
 		//auto detect?
-		if(HELPER.strpos(fname, '.png')==true)		user_response.type = 'PNG';
-		else if(HELPER.strpos(fname, '.jpg')==true)	user_response.type = 'JPG';
-		else if(HELPER.strpos(fname, '.xml')==true)	user_response.type = 'XML';
-		else if(HELPER.strpos(fname, '.bmp')==true)	user_response.type = 'BMP';
-		else if(HELPER.strpos(fname, '.webp')==true)	user_response.type = 'WEBP';
+		if(HELPER.strpos(fname, '.png') !== false) user_response.type = 'PNG';
+		else if(HELPER.strpos(fname, '.jpg') !== false) user_response.type = 'JPG';
+		else if(HELPER.strpos(fname, '.xml') !== false) user_response.type = 'XML';
+		else if(HELPER.strpos(fname, '.bmp') !== false) user_response.type = 'BMP';
+		else if(HELPER.strpos(fname, '.webp') !== false) user_response.type = 'WEBP';
 		
 		//prepare data
 		if(user_response.type == 'PNG'){

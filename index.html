@@ -32,7 +32,7 @@
 		</div>
 		<div style="margin-top:10px;padding:3px 0px 3px 3px;" class="block" id="all_colors"></div>
 		<div class="block">
-			<input style="width:98%;border:1px solid #393939;" type="text" id="color_hex" value="#000000" onKeyUp="TOOLS.set_color_manual(this)" /><br />
+			<input style="width:98%;border:1px solid #393939;" type="text" id="color_hex" value="#000000" onpaste="TOOLS.set_color_manual(this)" onKeyUp="TOOLS.set_color_manual(this)" /><br />
 			<div id="main_colour_rgb">
 				Red:   <input id="rgb_r" onKeyUp="TOOLS.set_color_rgb(this, 'r')" type="text" value="255" /><br />
 				Green: <input id="rgb_g" onKeyUp="TOOLS.set_color_rgb(this, 'g')" type="text" value="255" /><br />

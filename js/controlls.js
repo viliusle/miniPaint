@@ -628,6 +628,9 @@ function CLIPBOARD_CLASS(canvas_id){
 		paste_mode = '';
 		pasteCatcher.innerHTML = '';
 		var plain_text_used = false;
+		
+		
+		
 		if(e.clipboardData){
 			var items = e.clipboardData.items;
 			if (items){
@@ -661,12 +664,17 @@ function CLIPBOARD_CLASS(canvas_id){
 		if(POP.active == true) return true;
 		k = event.keyCode;
 		//ctrl
-		if(k==17 || event.metaKey || event.ctrlKey){	
+		if(k==17 || event.metaKey || event.ctrlKey){
 			if(ctrl_pressed == false)
 				ctrl_pressed = true;
 			}
-		//c
+		//v
 		if(k==86){
+			if(document.activeElement != undefined && document.activeElement.type == 'text'){
+				//let user paste into some input
+				return false;
+			}
+			
 			if(ctrl_pressed == true && !window.Clipboard)
 				pasteCatcher.focus();
 			}

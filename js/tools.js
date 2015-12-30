@@ -203,6 +203,10 @@ function TOOLS_CLASS(){
 		document.getElementById("rgb_b").value = colours.b;
 		};
 	this.set_color_manual = function(object){
+		if(object.value.length == 6 && object.value[0] != '#'){
+			COLOUR = '#'+object.value;
+			this.sync_colors();
+			}
 		if(object.value.length == 7){
 			COLOUR = object.value;
 			this.sync_colors();
