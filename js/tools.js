@@ -819,9 +819,6 @@ function TOOLS_CLASS(){
 		document.getElementById('anti_alias').style.display='';
 		if(TOOLS.action_data().attributes.type != 'Brush')
 			document.getElementById('anti_alias').style.display='none';
-		document.getElementById('blur').style.display='';
-		if(TOOLS.action_data().attributes.type != 'Brush')
-			document.getElementById('blur').style.display='none';
 		};
 	this.desaturate_tool = function(type, mouse, event){
 		if(mouse.valid == false) return true;

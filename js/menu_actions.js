@@ -213,9 +213,6 @@ function MENU_CLASS(){
 		POP.add({name: "param_red",	title: "Red channel:",	value: "0",	range: [-255, 255] });
 		POP.add({name: "param_green",	title: "Green channel:",	value: "0",	range: [-255, 255] });
 		POP.add({name: "param_blue",	title: "Blue channel:",	value: "0",	range: [-255, 255] });
-		POP.add({name: "param_red",	title: "Red offset:",	value: "0",	range: [-255, 255] });
-		POP.add({name: "param_green",	title: "Green offset:",	value: "0",	range: [-255, 255] });
-		POP.add({name: "param_blue",	title: "Blue offset:",	value: "0",	range: [-255, 255] });
 		POP.add({name: "param_h",	title: "Hue:",		value: "0",	range: [-180, 180] });
 		POP.add({name: "param_s",	title: "Saturation:",	value: "0",	range: [-100, 100] });
 		POP.add({name: "param_l",	title: "Luminance:",	value: "0",	range: [-100, 100] });
