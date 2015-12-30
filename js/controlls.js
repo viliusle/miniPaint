@@ -365,10 +365,12 @@ function CONTROLLS_CLASS(){
 				}
 			}
 		//check tools functions
-		for (i in TOOLS){
-			if(i == ACTION){
-				TOOLS[i]('move', CON.mouse, event);
-				break;
+		if(CON.isDrag === false){
+			for (i in TOOLS){
+				if(i == ACTION){
+					TOOLS[i]('move', CON.mouse, event);
+					break;
+					}
 				}
 			}
 	
@@ -598,14 +600,14 @@ function CLIPBOARD_CLASS(canvas_id){
 					img = pasteCatcher.firstElementChild.src;
 					_self.paste_createImage(pasteCatcher.firstElementChild.src);
 					}
-				/*else{
+				else{
 					//html
 					/*setTimeout(function(){
 						if(reading_dom == true) return false;
 						_self.paste_createText(pasteCatcher.innerHTML, false);
 						reading_dom = true;
-						}, 10);
-					}*/
+						}, 10);*/
+					}
 				}
 			/*else if(pasteCatcher.children.length == 0){
 				//text
@@ -626,6 +628,9 @@ function CLIPBOARD_CLASS(canvas_id){
 		paste_mode = '';
 		pasteCatcher.innerHTML = '';
 		var plain_text_used = false;
+		
+		
+		
 		if(e.clipboardData){
 			var items = e.clipboardData.items;
 			if (items){
@@ -639,12 +644,12 @@ function CLIPBOARD_CLASS(canvas_id){
 						var source = URLObj.createObjectURL(blob);
 						this.paste_createImage(source);
 						}
-					/*else if(items[i].type.indexOf("text") !== -1){
+					else if(items[i].type.indexOf("text") !== -1){
 						//text or html
 						/*if(plain_text_used == false)
 							this.paste_createText(e.clipboardData.getData('text/plain'));
-						plain_text_used = true;
-						}*/
+						plain_text_used = true;*/
+						}
 					}
 				e.preventDefault();
 				}
@@ -656,14 +661,20 @@ function CLIPBOARD_CLASS(canvas_id){
 		};
 	//on keyboard press
 	this.on_keyboard_action = function(event){
+		if(POP.active == true) return true;
 		k = event.keyCode;
 		//ctrl
-		if(k==17 || event.metaKey || event.ctrlKey){	
+		if(k==17 || event.metaKey || event.ctrlKey){
 			if(ctrl_pressed == false)
 				ctrl_pressed = true;
 			}
-		//c
+		//v
 		if(k==86){
+			if(document.activeElement != undefined && document.activeElement.type == 'text'){
+				//let user paste into some input
+				return false;
+			}
+			
 			if(ctrl_pressed == true && !window.Clipboard)
 				pasteCatcher.focus();
 			}

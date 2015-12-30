@@ -9,9 +9,9 @@ var canvas_preview = document.getElementById("canvas_preview").getContext("2d");
 //settings
 var AUTHOR = 'ViliusL';
 var EMAIL = 'www.viliusl@gmail.com';
-var VERSION = '2.1';
-var WIDTH = 1152;				//canvas midth
-var HEIGHT = 648;				//canvas height
+var VERSION = '2.2.1';
+var WIDTH = 800;				//canvas midth
+var HEIGHT = 600;				//canvas height
 var RATIO = WIDTH/HEIGHT;			//width & height ratio
 var LAYERS = [];				//layers data
 var ACTION = 'select_tool';			///default action

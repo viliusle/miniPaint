@@ -203,6 +203,10 @@ function TOOLS_CLASS(){
 		document.getElementById("rgb_b").value = colours.b;
 		};
 	this.set_color_manual = function(object){
+		if(object.value.length == 6 && object.value[0] != '#'){
+			COLOUR = '#'+object.value;
+			this.sync_colors();
+			}
 		if(object.value.length == 7){
 			COLOUR = object.value;
 			this.sync_colors();
@@ -812,6 +816,9 @@ function TOOLS_CLASS(){
 			}
 		};
 	this.update_brush = function(){
+		document.getElementById('anti_alias').style.display='';
+		if(TOOLS.action_data().attributes.type != 'Brush')
+			document.getElementById('anti_alias').style.display='none';
 		document.getElementById('blur').style.display='';
 		if(TOOLS.action_data().attributes.type != 'Brush')
 			document.getElementById('blur').style.display='none';
@@ -854,7 +861,7 @@ function TOOLS_CLASS(){
 		if(type == 'click')
 			MAIN.save_state();
 		
-		if(brush_type == 'Brush'){
+		if(brush_type == 'Brush'){		
 			if(type == 'click'){
 				//init settings
 				canvas_active().beginPath();
