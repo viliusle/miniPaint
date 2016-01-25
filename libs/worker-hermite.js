@@ -14,10 +14,11 @@ onmessage = function (event){
 	var ratio_h = H / H2;
 	var ratio_w_half = Math.ceil(ratio_w/2);
 	var ratio_h_half = Math.ceil(ratio_h/2);
-	var start_row = Math.round(H2*core/max_cores);
-	var offset = Math.round(H2*core/max_cores) * W2 * 4;
+	var start_row = Math.ceil(H2*core/max_cores)-1; 
+	if(start_row < 0) start_row = 0;
+	var offset = Math.floor(H2*core/max_cores) * W2 * 4;
 	
-	for(var j = start_row; j < start_row + Math.round(H2/max_cores); j++){
+	for(var j = start_row; j < start_row + Math.ceil(H2/max_cores); j++){
 		for(var i = 0; i < W2; i++){
 			var x2 = (i + j*W2) * 4;
 			var weight = 0;
@@ -45,7 +46,7 @@ onmessage = function (event){
 						}
 					}
 				}
-			var x2 = (i + j*W2) * 4 - offset;		//var x2 = (Math.ceil(i*W2/W) + Math.ceil(j*H2/H)*W2) * 4 - offset;
+			var x2 = (i + j*W2) * 4 - offset;
 			data2[x2]     = gx_r / weights;
 			data2[x2 + 1] = gx_g / weights;
 			data2[x2 + 2] = gx_b / weights;
