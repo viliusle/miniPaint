@@ -1,5 +1,5 @@
 /*
-author:	Vladimir Seregin (Peko)
+author:	Vladimir Seregin (Peko), http://jsdo.it/peko/wKvk
 
 usage:	var KDTREE = new datastructure.KDTree([{x: 22, y:55},...]);
 	var nearest = KDTREE.getNearestNeighbours({x: x, y: y}, NUM_NEAREST);
