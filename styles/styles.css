@@ -51,6 +51,7 @@ table{
 }
 input[type="text"], input[type="button"], select, input[type="number"]{
 	border:1px solid #393939;
+	padding:1px 3px;
 	}
 input[type="range"]{
 	margin-left:0px;
@@ -182,7 +183,7 @@ input[type="button"]{
 #popup{
 	position:fixed;
 	border:1px solid #000000;
-	background-color:#dbeaf9;
+	background-color: #bbb;
 	width:400px;
 	max-height:550px;
 	overflow-y:scroll;
@@ -193,6 +194,7 @@ input[type="button"]{
 	display:none;
 	padding:10px;
 	font-size:12px;
+	color: #333;
 	}
 #popup h2{
 	margin-top:0px;
@@ -213,6 +215,10 @@ input[type="button"]{
 	width:60px;
 	height:25px;
 	}
+#popup input[type="text"], #popup input[type="number"], #popup textarea{
+	box-sizing: border-box;
+	width:100%;
+	}
 #resize-w, #resize-h, #resize-wh{
 	background-color:#393939;
 	width:5px;
@@ -222,8 +228,9 @@ input[type="button"]{
 	top:35px;
 	}
 #color_hex{
-	width:98%;
-	border:1px solid #393939;	
+	width: 100%;
+	border:1px solid #393939;
+	box-sizing: border-box;
 }
 #canvas_grid{
 	display:none;

@@ -1556,8 +1556,10 @@ function MENU_CLASS(){
 		LAYER.layer_renew();
 		};
 	this.resize_box = function(){
-		POP.add({name: "width",	title: "Enter new width:",	value: '', placeholder:WIDTH });
-		POP.add({name: "height",title: "Enter new height:",	value: '', placeholder:HEIGHT });
+		POP.add({name: "width",	title: "Width (pixels):",	value: '', placeholder:WIDTH });
+		POP.add({name: "height",title: "Height (pixels):",	value: '', placeholder:HEIGHT });
+		POP.add({name: "width_percent",	title: "Width (%):",	value: '', placeholder:100 });
+		POP.add({name: "height_percent",title: "Height (%):",	value: '', placeholder:100 });
 		POP.add({name: "mode",	title: "Mode:",	value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"]});
 		POP.add({name: "preblur",title: "Pre-Blur:",	values: ["Yes", "No"], value: "No" });
 		POP.add({name: "sharpen",title: "Apply sharpen:",	values: ["Yes", "No"], value: "No" });
@@ -1567,16 +1569,29 @@ function MENU_CLASS(){
 		MAIN.save_state();
 		var width = parseInt(user_response.width);
 		var height = parseInt(user_response.height);
+		var width_100 = parseInt(user_response.width_percent);
+		var height_100 = parseInt(user_response.height_percent);
 		var preblur = user_response.preblur;
 		var sharpen = user_response.sharpen;
-		if( (isNaN(width) || width<1) && (isNaN(height) || height<1) ) return false;
+		if( isNaN(width) && isNaN(height) && isNaN(width_100) && isNaN(height_100) ) return false;
 		if(width == WIDTH && height == HEIGHT) return false;
+		
+		//if dimension with percent provided
+		if( isNaN(width) && isNaN(height) ){
+			if(isNaN(width_100) == false){
+				width = Math.round(WIDTH * width_100 / 100);
+			}
+			if(isNaN(height_100) == false){
+				height = Math.round(HEIGHT * height_100 / 100);
+			}
+			
+		}
 		
 		//if only 1 dimension was provided
 		if(isNaN(width) || isNaN(height)){
-			if(isNaN(width) || width<1)
+			if(isNaN(width))
 				width = Math.round(height * RATIO);
-			if(isNaN(height) || height<1)
+			if(isNaN(height))
 				height = Math.round(width / RATIO);
 			}
 		

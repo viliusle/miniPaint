@@ -172,9 +172,9 @@ function popup(){
 						if(parameter.placeholder == undefined)
 							parameter.placeholder = '';						
 						if(parameter.type == 'textarea')
-							html += '<td><textarea style="width:100%;height:80px;" id="pop_data_'+parameter.name+'" placeholder="'+parameter.placeholder+'">'+parameter.value+'</textarea></td>';
+							html += '<td><textarea style="height:80px;" id="pop_data_'+parameter.name+'" placeholder="'+parameter.placeholder+'">'+parameter.value+'</textarea></td>';
 						else
-							html += '<td colspan="2"><input style="width:100%;" type="text" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" placeholder="'+parameter.placeholder+'" onkeyup="POP.validate(this);" /></td>';
+							html += '<td colspan="2"><input type="text" id="pop_data_'+parameter.name+'" value="'+parameter.value+'" placeholder="'+parameter.placeholder+'" onkeyup="POP.validate(this);" /></td>';
 						}
 					}
 				}
@@ -196,7 +196,7 @@ function popup(){
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g,'').replace(/ +/g,'-');
 				id_tmp = id_tmp.substring(0, 10);
 				if(str.length < 40)
-					html += '<td colspan="2"><input style="width:100%;color:#393939;padding-left:5px;" disabled="disabled" type="text" id="pop_data_'+id_tmp+'" value="'+parameter.value+'" /></td>';
+					html += '<td colspan="2"><input style="color:#393939;" disabled="disabled" type="text" id="pop_data_'+id_tmp+'" value="'+parameter.value+'" /></td>';
 				else
 					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">'+parameter.value+'</textarea></td>';
 				}
