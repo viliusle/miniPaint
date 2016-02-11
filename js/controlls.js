@@ -484,7 +484,6 @@ function CONTROLLS_CLASS(){
 			}
 		if(n_valid == 0)
 			progress.style.display='none';
-		document.getElementById("drop_zone").style.display='none';
 		};
 	this.mouse_wheel_handler = function(e){	//return true;
 		var step = 100;		e.preventDefault();
@@ -514,10 +513,11 @@ function CONTROLLS_CLASS(){
 	this.scroll_window = function(){
 		var pad_left = 109;
 		var pad_top = 34;
+		var pad_right = 170;
 		var dim = HELPER.get_dimensions();
 		var page_w = dim[0];
 		var page_h = dim[1];
-		var total_w = (WIDTH * ZOOM/100)  + pad_left;
+		var total_w = (WIDTH * ZOOM/100)  + pad_left + pad_right;
 		var total_h = (HEIGHT * ZOOM/100) + pad_top;
 		var visible_w = page_w - 60;
 		var visible_h = page_h - 60;
@@ -546,10 +546,11 @@ function CONTROLLS_CLASS(){
 	this.calc_preview_auto = function(){
 		var pad_left = 109;
 		var pad_top = 34;
+		var pad_right = 170;
 		var dim = HELPER.get_dimensions();
 		var page_w = dim[0];
 		var page_h = dim[1];
-		var total_w = (WIDTH * ZOOM/100)  + pad_left;
+		var total_w = (WIDTH * ZOOM/100)  + pad_left + pad_right;
 		var total_h = (HEIGHT * ZOOM/100) + pad_top;
 		var visible_w = page_w - 60;
 		var visible_h = page_h - 60;		

@@ -73,17 +73,6 @@ input[type="button"]{
 #canvas_back{
 	background-color:#ffffff;
 	}
-#drop_zone{ 
-	border:5px dashed  #CCCCCC;
-	text-align: center; 
-	width:400px;
-	height:200px;
-	margin:10px;
-	margin-left:60px;
-	display:none;
-	position:absolute;
-	background-color:#ffffff;
-	}
 #canvas_container{
 	margin:10px 5px 5px 5px;
 	}
@@ -230,7 +219,24 @@ input[type="button"]{
 	height:5px;
 	margin-left:105px;
 	position:absolute;
+	top:35px;
 	}
+#color_hex{
+	width:98%;
+	border:1px solid #393939;	
+}
+#canvas_grid{
+	display:none;
+	pointer-events:none;
+}
+#all_colors{
+	margin-top:10px;
+	padding:3px 0px 3px 3px;
+}
+#canvas_front{
+	position:relative;
+	margin-right:170px;
+}
 
 /* ==== classes ============================================================= */
 
@@ -461,7 +467,6 @@ input[type="button"]{
 	#menu_left,
 	#layers_container,
 	#canvas_back,
-	#drop_zone,
 	.ddsmoothmenu{
 		display: none;
 		height: 0;

@@ -9,12 +9,6 @@
 <link rel="shortcut icon" href="img/favicon.png" />
 </head>
 <body>
-<div id="drop_zone">
-	<div style="margin-top:70px;">
-		<span style="font-size: 40px;">DROP</span> 
-		or <input type="file" onchange="upload_browse(this.files)" />
-	</div>
-</div>
 <div id="canvas_container">
 	<div id="menu_left">
 		<div id="menu_left_container">
@@ -30,9 +24,9 @@
 			<input type="color" id="main_colour" value="" onchange="TOOLS.set_color(this);" />
 			<div style="display:none;" id="main_colour_alt" onclick="TOOLS.toggle_color_select();"></div>
 		</div>
-		<div style="margin-top:10px;padding:3px 0px 3px 3px;" class="block" id="all_colors"></div>
+		<div class="block" id="all_colors"></div>
 		<div class="block">
-			<input style="width:98%;border:1px solid #393939;" type="text" id="color_hex" value="#000000" onpaste="TOOLS.set_color_manual(this)" onKeyUp="TOOLS.set_color_manual(this)" /><br />
+			<input type="text" id="color_hex" value="#000000" onpaste="TOOLS.set_color_manual(this)" onKeyUp="TOOLS.set_color_manual(this)" /><br />
 			<div id="main_colour_rgb">
 				Red:   <input id="rgb_r" onKeyUp="TOOLS.set_color_rgb(this, 'r')" type="text" value="255" /><br />
 				Green: <input id="rgb_g" onKeyUp="TOOLS.set_color_rgb(this, 'g')" type="text" value="255" /><br />
@@ -67,7 +61,7 @@
 		<canvas id="Background"></canvas>
 		<div id="canvas_more"></div>
 		<canvas id="canvas_front"></canvas>
-		<canvas style="display:none;pointer-events:none;" id="canvas_grid"></canvas>
+		<canvas id="canvas_grid"></canvas>
 	</div>
 	<div id="resize-w"></div>
 	<div id="resize-h"></div>
