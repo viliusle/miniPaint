@@ -1042,8 +1042,8 @@ function MENU_CLASS(){
 				if(quality>100 || quality < 1 || isNaN(quality)==true)
 					quality = 80;
 				quality = quality/100;
-				var canvas_container = document.getElementById("pop_post");
-				var data = canvas_container.toDataURL('image/jpeg', quality);
+				var element = document.getElementById("pop_post");
+				var data = element.toDataURL('image/jpeg', quality);
 				var img = new Image;				
 				img.onload = function(){
 					canvas_preview.clearRect(0, 0, w, h);	
@@ -1866,19 +1866,7 @@ function MENU_CLASS(){
 					if(responce === true)
 						return false;
 					}
-				
-				//finish progress
-				var progress = document.getElementById('uploadprogress');
-				progress.value = progress.innerHTML = 100;
-				progress.style.display='none';
 				};		
-			FR.onprogress = (function(e){
-				return function(e){
-				 	var complete = (e.loaded / e.total * 100 | 0);
-				 	var progress = document.getElementById('uploadprogress');
-					progress.value = progress.innerHTML = complete;
-					};
-				})(f);
 			if(f.type == "text/plain")
 				FR.readAsText(f);
 			else if(f.type == "text/xml")

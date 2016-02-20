@@ -9,8 +9,9 @@
 <link rel="shortcut icon" href="img/favicon.png" />
 </head>
 <body>
-<div id="canvas_container">
-	<div id="menu_left">
+<div id="wrapper">
+	<div id="sidebar_left">
+		<a id="logo" href="">miniPaint</a>
 		<div id="menu_left_container">
 			<noscript>
 				Select object tool, Select area tool, Magic Wand Tool, 
@@ -26,7 +27,7 @@
 		</div>
 		<div class="block" id="all_colors"></div>
 		<div class="block">
-			<input type="text" id="color_hex" value="#000000" onpaste="TOOLS.set_color_manual(this)" onKeyUp="TOOLS.set_color_manual(this)" /><br />
+			<input type="text" id="color_hex" value="#000000" /><br />
 			<div id="main_colour_rgb">
 				Red:   <input id="rgb_r" onKeyUp="TOOLS.set_color_rgb(this, 'r')" type="text" value="255" /><br />
 				Green: <input id="rgb_g" onKeyUp="TOOLS.set_color_rgb(this, 'g')" type="text" value="255" /><br />
@@ -37,7 +38,18 @@
 		<div class="block" id="info"></div>
 		<div class="block" id="action_attributes"></div>
 	</div>
-	<div id="layers_container">
+	<div id="canvas_wrapper">
+		<canvas id="canvas_back"><div class="error">Your browser doesn't support canvas.</div></canvas>
+		<canvas id="Background"></canvas>
+		<div id="canvas_more"></div>
+		<canvas id="canvas_front"></canvas>
+		<canvas id="canvas_grid"></canvas>
+
+		<div id="resize-w"></div>
+		<div id="resize-h"></div>
+		<div id="resize-wh"></div>
+	</div>
+	<div id="sidebar_right">
 		<div id="preview">
 			<canvas id="canvas_preview"></canvas>
 			<div style="margin-top:105px;padding-left:5px;">
@@ -56,16 +68,6 @@
 			<div style="margin-top:5px;" id="layers"></div>
 		</div>
 	</div>
-	<div id="canvas_layers">
-		<canvas id="canvas_back"><div class="error">Your browser doesn't support canvas.</div></canvas>
-		<canvas id="Background"></canvas>
-		<div id="canvas_more"></div>
-		<canvas id="canvas_front"></canvas>
-		<canvas id="canvas_grid"></canvas>
-	</div>
-	<div id="resize-w"></div>
-	<div id="resize-h"></div>
-	<div id="resize-wh"></div>
 </div>
 <div id="main_menu" class="ddsmoothmenu">
 	<ul>
@@ -215,7 +217,6 @@
 	</li>
 	</ul>
 </div>
-<progress id="uploadprogress" min="0" max="100" value="0">0</progress>
 <div style="display:none;" id="tmp"></div>
 <div id="popup"></div>
 

@@ -16,6 +16,8 @@ document.addEventListener("mousewheel", CON.mouse_wheel_handler, false);	//mouse
 document.addEventListener("DOMMouseScroll", CON.mouse_wheel_handler, false);	//mouse scroll
 window.onresize = CON.calc_preview_auto;					//window resize
 document.oncontextmenu = function(e) {return CON.mouse_right_click(e); };	//mouse right click
+document.getElementById('color_hex').onkeyup = function(e){ TOOLS.set_color_manual(e); };	//on main color type
+document.getElementById('color_hex').onpaste = function(e){	TOOLS.set_color_manual(e); }; // on paste in main color input
 
 function CONTROLLS_CLASS(){
 	this.mouse;
@@ -437,9 +439,6 @@ function CONTROLLS_CLASS(){
 	//upload drop zone
 	this.upload_drop = function(e){
 		e.preventDefault();
-		var progress = document.getElementById('uploadprogress');
-		progress.style.display='block';
-		progress.value = progress.innerHTML = 0;
 		MAIN.save_state();
 		var n_valid = 0;
 		for (var i = 0, f; i < e.dataTransfer.files.length ; i++){
@@ -465,19 +464,7 @@ function CONTROLLS_CLASS(){
 					if(responce === true)
 						return false;
 					}
-				
-				//finish progress
-				var progress = document.getElementById('uploadprogress');
-				progress.value = progress.innerHTML = 100;
-				progress.style.display='none';
 				};		
-			FR.onprogress = (function(e){
-				return function(e){
-				 	var complete = (e.loaded / e.total * 100 | 0);
-				 	var progress = document.getElementById('uploadprogress');
-					progress.value = progress.innerHTML = complete;
-					};
-				})(f);
 			if(f.type == "text/plain")
 				FR.readAsText(f);
 			else if(f.type == "text/xml")
@@ -535,7 +522,9 @@ function CONTROLLS_CLASS(){
 		xx = xx - scrollbar_w/2;
 		yy = yy - scrollbar_h/2;
 		
-		scrollTo(xx, yy);
+		var canvas_wrapper = document.getElementById('canvas_wrapper');
+		canvas_wrapper.scrollTop = yy;
+		canvas_wrapper.scrollLeft = xx;
 		};
 	this.calc_preview_by_mouse = function(mouse_x, mouse_y){
 		CON.ZOOM_X = mouse_x - CON.mini_rect_data.w/2;

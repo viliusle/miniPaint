@@ -274,12 +274,12 @@ function LAYER_CLASS(){
 		
 		DRAW.draw_grid();
 		
-		document.getElementById('resize-w').style.marginLeft = (106+W)+"px";
-		document.getElementById('resize-w').style.marginTop = (1+H/2)+"px";
-		document.getElementById('resize-h').style.marginLeft = (106+W/2)+"px";
-		document.getElementById('resize-h').style.marginTop = (1+H)+"px";
-		document.getElementById('resize-wh').style.marginLeft = (106+W)+"px";
-		document.getElementById('resize-wh').style.marginTop = (1+H)+"px";
+		document.getElementById('resize-w').style.marginLeft = W + "px";
+		document.getElementById('resize-w').style.marginTop = Math.round(H/2) + "px";
+		document.getElementById('resize-h').style.marginLeft = Math.round(W/2) + "px";
+		document.getElementById('resize-h').style.marginTop = H + "px";
+		document.getElementById('resize-wh').style.marginLeft = W + "px";
+		document.getElementById('resize-wh').style.marginTop = H + "px";
 		
 		this.update_info_block();
 		CON.calc_preview_auto();

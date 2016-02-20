@@ -879,9 +879,6 @@ function DRAW_CLASS(){
 		var data2 = img2.data;
 		var cores = 8;
 		var cpu_in_use = 0;
-		var progress = document.getElementById('uploadprogress');
-		progress.style.display='block';
-		progress.value = progress.innerHTML = 0;
 		canvas.getContext("2d").clearRect(0, 0, W, H);
 
 		for(var c = 0; c < cores; c++){
@@ -890,7 +887,6 @@ function DRAW_CLASS(){
 			my_worker.onmessage = function(event){		//log(event.data);return false;
 				cpu_in_use--;
 			 	var complete = ((cores - cpu_in_use) / cores * 100 | 0);
-				progress.value = progress.innerHTML = complete;
 				var offset = event.data.offset;	//log( event.data.data.length);
 				
 				for(var i = 0; i < event.data.data.length; i += 4){
@@ -907,7 +903,6 @@ function DRAW_CLASS(){
 					canvas.getContext("2d").clearRect(0, 0, W, H);
 					canvas.getContext("2d").putImageData(img2, 0, 0);
 					
-					progress.style.display='none';
 					if(MENU.last_menu != 'layer_resize')
 						DRAW.trim();
 					DRAW.zoom();

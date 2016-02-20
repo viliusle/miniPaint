@@ -205,7 +205,8 @@ function TOOLS_CLASS(){
 		document.getElementById("rgb_g").value = colours.g;
 		document.getElementById("rgb_b").value = colours.b;
 		};
-	this.set_color_manual = function(object){
+	this.set_color_manual = function(event){
+		var object = event.target;
 		if(object.value.length == 6 && object.value[0] != '#'){
 			COLOUR = '#'+object.value;
 			this.sync_colors();

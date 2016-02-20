@@ -1,5 +1,7 @@
 /* ==== main ================================================================ */
-	
+*{
+	box-sizing: border-box;
+}
 body {
 	font-size: 75%; /* Resets to 12px */
 	font-family: Arial, Helvetica, sans-serif;
@@ -8,11 +10,8 @@ body {
 	padding: 0px;
 	padding-top: 25px;
 	background-color:#727272;
-	width: 100%;
 	font-weight: normal;
-	min-width:800px;
-	margin-right:15px;
-	overflow-y: scroll;
+	overflow: hidden;
 	}
 canvas{
 	border:1px solid #808080;
@@ -66,6 +65,58 @@ input[type="button"]{
 
 /* ==== ID ================================================================== */
 
+#wrapper{
+	margin:10px 5px 5px 5px;
+	position:relative;
+	min-height: 500px;
+	}
+#sidebar_left{
+	position: absolute;
+	width: 100px;
+	z-index: 100;
+	}
+#sidebar_right{
+	position: absolute;
+	width: 152px;
+	right:0;
+	top:0;
+	z-index: 100;
+	}
+#canvas_wrapper{
+	position:relative;
+	margin: 0 157px 0 105px;
+	overflow: hidden;
+	height: calc(100vh - 35px);
+	}
+#logo{
+	display: block;
+	height: 30px;
+	padding: 5px 5px 5px 36px;
+	margin: 5px 0 10px 0;
+	background: url("../img/logo.png") no-repeat 3px 0px;
+	background-size: auto 30px;
+	text-decoration: none;
+	font-weight: bold;
+	color: #ffffff;
+	font-size: 13px;
+	}
+#logo:hover{
+	animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+	}
+@keyframes shake {
+	10%, 90% {
+		background-position: 2px 0px;
+	}
+	20%, 80% {
+		background-position: 5px 0px;
+	}
+	30%, 50%, 70% {
+		background-position: 0px 0px;
+	}
+	40%, 60% {
+		background-position: 6px 0px;
+	}
+}
 #canvas_handlers{
 	border:1px solid #808080;
 	position: absolute;
@@ -73,18 +124,6 @@ input[type="button"]{
 	}	
 #canvas_back{
 	background-color:#ffffff;
-	}
-#canvas_container{
-	margin:10px 5px 5px 5px;
-	}
-#uploadprogress{
-	position:absolute;
-	top:5px;
-	z-index:100;
-	left:300px;
-	height:15px;
-	width:600px;
-	display:none;
 	}
 #main_colour{
 	border:1px solid #393939;
@@ -115,44 +154,16 @@ input[type="button"]{
 	height:150px;
 	background-color:#989898;
 	border:1px solid #393939;
-	margin:0px;
-	padding:0px;
-	position:fixed;
-	right:10px;
-	z-index:10;
+	margin-bottom: 5px;
 	}
 #preview canvas{
 	cursor: pointer;
 	}
 #layers_base{
-	width:140px; 
-	background-color:#989898;
-	border:1px solid #393939;
-	padding:5px;	
-	position:fixed;
-	right:10px;
-	top:195px;
-	z-index:10;
-	}
-#layers_base{
-	width:140px; 
-	background-color:#989898;
-	border:1px solid #393939;
-	padding:5px;	
-	position:fixed;
-	right:10px;
-	top:195px;
-	z-index:10;
-	}
-#canvas_layers{
-	margin-left:105px;
-	}
-#menu_left{
-	position:fixed;
-	width:100px; 
-	min-height:490px;
-	margin-right:5px;
-	z-index:11;
+	background-color: #989898;
+	border: 1px solid #393939;
+	padding: 5px;
+	margin-bottom: 5px;
 	}
 #menu_left_container .active{
 	background-color: #5680c1 !important;
@@ -161,9 +172,9 @@ input[type="button"]{
 	float:left;
 	border: 1px solid #393939;
 	background: #989898 url('img/all.png') no-repeat 0px 0px;
-	width:22px;
+	width:24px;
+	height:24px;
 	margin:0px 1px 1px 0px;
-	height:22px;
 	overflow:hidden;
 	display:block;
 	}
@@ -216,7 +227,6 @@ input[type="button"]{
 	height:25px;
 	}
 #popup input[type="text"], #popup input[type="number"], #popup textarea{
-	box-sizing: border-box;
 	width:100%;
 	}
 #resize-w, #resize-h, #resize-wh{
@@ -225,12 +235,11 @@ input[type="button"]{
 	height:5px;
 	margin-left:105px;
 	position:absolute;
-	top:35px;
+	top:0;
 	}
 #color_hex{
 	width: 100%;
 	border:1px solid #393939;
-	box-sizing: border-box;
 }
 #canvas_grid{
 	display:none;
@@ -242,7 +251,6 @@ input[type="button"]{
 }
 #canvas_front{
 	position:relative;
-	margin-right:170px;
 }
 
 /* ==== classes ============================================================= */
@@ -260,7 +268,7 @@ input[type="button"]{
 	padding:1px 5px 3px 5px;
 	border-radius:3px;
 	font-size:11px;
-	height:13px;
+	height:19px;
 	overflow:hidden;
 	color:#333333;
 	}
@@ -313,8 +321,8 @@ input[type="button"]{
 	cursor:pointer;
 	}
 .mini-color{
-	width:14px;
-	height:14px;
+	width:16px;
+	height:16px;
 	margin:0px 3px 3px 0px;
 	float:left;
 	border:1px solid #393939;
@@ -471,15 +479,15 @@ input[type="button"]{
 	progress,
 	.menu,
 	#resize-w,#resize-h, #resize-wh,
-	#menu_left,
-	#layers_container,
+	#sidebar_left,
+	#sidebar_right,
 	#canvas_back,
 	.ddsmoothmenu{
 		display: none;
 		height: 0;
 		width: 0;
 	}
-	#canvas_layers{
+	#canvas_wrapper{
 		margin:0px;
 		padding:0px;
 		}
