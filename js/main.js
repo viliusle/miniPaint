@@ -1,3 +1,6 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, LAYER, DRAW, MENU, TOOLS */
+/* global canvas_main, canvas_back, COLOUR, ALPHA, canvas_grid */
+
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);
 
@@ -7,7 +10,7 @@ function MAIN_CLASS(){
 	var LAYERS_ARCHIVE = [{}, {}, {}];	
 	var undo_level = 0;
 	
-	this.init = function(first_load){
+	this.init = function(first_load){		
 		if(first_load===true){
 			TOOLS.draw_helpers();
 			POP.height_mini = Math.round(POP.width_mini * HEIGHT / WIDTH);

@@ -28,11 +28,11 @@ canvas{
 	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
 	
 	/* disable antialiasing */
-        image-rendering: -moz-crisp-edges;         /* Firefox */
-        image-rendering:   -o-crisp-edges;         /* Opera */
-        image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
-        image-rendering: crisp-edges;
-        -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
+	image-rendering: -moz-crisp-edges; /* Firefox */
+	image-rendering: -o-crisp-edges; /* Opera */
+	image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
+	image-rendering: crisp-edges;
+	-ms-interpolation-mode: nearest-neighbor; /* IE (non-standard property) */
 	}
 img{
 	border: none;

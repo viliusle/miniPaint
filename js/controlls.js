@@ -1,3 +1,6 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, TOOLS, LAYER, DRAW, MENU */
+/* global ACTION, canvas_active, canvas_front, WIDTH, HEIGHT, ZOOM, EXIF */
+
 var CON = new CONTROLLS_CLASS();
 
 //keyboard handlers
@@ -266,7 +269,7 @@ function CONTROLLS_CLASS(){
 		mouse_click_x = CON.mouse.x;
 		mouse_click_y = CON.mouse.y;
 		
-		for (i in TOOLS){
+		for (var i in TOOLS){
 			if(i == ACTION){
 				return TOOLS[i]('right_click', CON.mouse, event);
 				break;
@@ -300,7 +303,7 @@ function CONTROLLS_CLASS(){
 		
 		
 		//check tools functions
-		for (i in TOOLS){
+		for (var i in TOOLS){
 			if(i == ACTION){
 				TOOLS[i]('click', CON.mouse, event);
 				break;
@@ -378,7 +381,7 @@ function CONTROLLS_CLASS(){
 		if(CON.isDrag === false) return false;	//only drag now
 		
 		//check tools functions
-		for (i in TOOLS){
+		for (var i in TOOLS){
 			if(i == ACTION){
 				TOOLS[i]('drag', CON.mouse, event);
 				break;
@@ -405,7 +408,7 @@ function CONTROLLS_CLASS(){
 		if(CON.clear_front_on_release == true)
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 		TOOLS.draw_selected_area();
-		for (i in TOOLS){
+		for (var i in TOOLS){
 			if(i == ACTION){
 				TOOLS[i]('release', CON.mouse, event);
 				break;

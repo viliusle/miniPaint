@@ -14,4 +14,4 @@ ddsmoothmenu.init({
 	mainmenuid: "main_menu",
 	method: 'toggle', //'hover' (default) or 'toggle'
 	contentsource: "markup",
-	})
+	});

@@ -1,3 +1,7 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, LAYER, DRAW, MENU, TOOLS */
+/* global WIDTH, HEIGHT, fx, canvas_active, canvas_front, canvas_preview, ImageFilters, VINTAGE, EXIF, SAVE_TYPES, CREDITS, VERSION, AUTHOR, EMAIL, COLOUR, SIFT */
+
+
 var MENU = new MENU_CLASS();
 
 function MENU_CLASS(){

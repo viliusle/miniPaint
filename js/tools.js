@@ -1,3 +1,6 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, LAYER, DRAW */
+/* global ACTION_DATA, canvas_active, canvas_front, WIDTH, HEIGHT, ZOOM, ImageFilters, BezierCurveBrush, chrome_brush, shaded_brush, sketchy_brush */
+
 var TOOLS = new TOOLS_CLASS();
 
 function TOOLS_CLASS(){
@@ -1822,7 +1825,7 @@ function TOOLS_CLASS(){
 		tmp.height = HEIGHT;
 		var W = WIDTH;
 		var H = HEIGHT;
-		for(i in LAYERS){
+		for(var i in LAYERS){
 			if(i == LAYER.layer_active) continue;	//end
 			if(LAYERS[i].visible == false) continue;
 			

@@ -1,3 +1,6 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, LAYER, DRAW, MENU, TOOLS */
+/* global WIDTH, HEIGHT, ZOOM, LAYERS, canvas_front, canvas_back */
+
 var LAYER = new LAYER_CLASS();
 
 function LAYER_CLASS(){
@@ -131,7 +134,7 @@ function LAYER_CLASS(){
 		layer_from.opacity = tmp;
 		
 		LAYER.layer_active = LAYERS.length-1;
-		for(i in LAYERS){
+		for(var i in LAYERS){
 			if(LAYERS[i].name == layer_to.name){
 				LAYER.layer_active = i;
 				break;
@@ -190,7 +193,7 @@ function LAYER_CLASS(){
 		};
 	this.layer_renew = function(){	
 		var html = '';
-		for(i in LAYERS){
+		for(var i in LAYERS){
 			//create
 			if(LAYER.layer_active==i)
 				html += '<div class="layer active">';
@@ -262,7 +265,7 @@ function LAYER_CLASS(){
 		DRAW.draw_background(canvas_back, WIDTH, HEIGHT);
 		this.resize_canvas("canvas_front", false);
 		this.resize_canvas("canvas_grid", true);
-		for(i in LAYERS){
+		for(var i in LAYERS){
 			if(repaint === false)
 				this.resize_canvas(LAYERS[i].name, false);
 			else
@@ -334,7 +337,7 @@ function LAYER_CLASS(){
 			});
 		};
 	this.canvas_active = function(base){
-		for(i in LAYERS){
+		for(var i in LAYERS){
 			if(LAYER.layer_active==i){
 				if(base == undefined)
 					return document.getElementById(LAYERS[i].name).getContext("2d");
@@ -346,7 +349,7 @@ function LAYER_CLASS(){
 	}
 
 function canvas_active(base){
-	for(i in LAYERS){
+	for(var i in LAYERS){
 		if(LAYER.layer_active==i){
 			if(base == undefined)
 				return document.getElementById(LAYERS[i].name).getContext("2d");

@@ -1,6 +1,8 @@
 //about:	SIFT: scale-invariant-feature-transform, keypoints, panorama
 //author:	ViliusL
 
+/* global HELPER, DRAW, ImageFilters, LAYER, canvas_active */
+
 var SIFT = new SIFT_CLASS();
 
 function SIFT_CLASS(){

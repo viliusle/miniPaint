@@ -1,3 +1,6 @@
+/* global HELPER, POP, MAIN, LAYERS, CON, LAYER, DRAW, MENU */
+/* global ACTION, canvas_active, canvas_front, canvas_preview, canvas_grid, WIDTH, HEIGHT, ZOOM, ImageFilters */
+
 var DRAW = new DRAW_CLASS();
 
 function DRAW_CLASS(){

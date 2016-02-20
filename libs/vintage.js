@@ -18,6 +18,8 @@ libs:		imagefilters.js, url: https://github.com/arahaya/ImageFilters.js
 		glfx.js url: http://evanw.github.com/glfx.js/
 */
 
+/* global fx, ImageFilters, canvas_active */
+
 var VINTAGE = new VINTAGE_CLASS();
 
 function VINTAGE_CLASS(){

@@ -20,6 +20,10 @@ POP.add() parameters:
 	function	function		'cutom_function'
 	onchange	function		'CLASS.onchange_function'
 */
+
+/* global HELPER, MENU, DRAW, POP, LAYER */
+/* global FILTERS_LIST, LAYERS, canvas_front, WIDTH, HEIGHT */
+
 var POP = new popup();
 
 function popup(){

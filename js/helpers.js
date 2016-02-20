@@ -1,3 +1,5 @@
+/* global WIDTH, HEIGHT, parseInt */
+
 var HELPER = new HELPER_CLASS();
 
 function HELPER_CLASS(){
@@ -217,8 +219,8 @@ function HELPER_CLASS(){
 		return "#" + HELPER.hex(rgb[1]) + HELPER.hex(rgb[2]) + HELPER.hex(rgb[3]);
 		};
         this.hex = function(x){
-	        return ("0" + parseInt(x).toString(16)).slice(-2);
-	        };
+		return ("0" + parseInt(x).toString(16)).slice(-2);
+		};
 	this.hex2rgb = function(hex) {
 		if (hex[0]=="#") hex=hex.substr(1);
 		if (hex.length==3) {
@@ -345,7 +347,8 @@ function HELPER_CLASS(){
 		var decSeparator = decSeparator == undefined ? "." : decSeparator;
 		var thouSeparator = thouSeparator == undefined ? "," : thouSeparator;
 		var sign = n < 0 ? "-" : "";
-		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
+		var n = Math.abs(+n || 0).toFixed(decPlaces);
+		var i = parseInt(n);
 		var j = (j = i.length) > 3 ? j % 3 : 0;
 		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
 		};
