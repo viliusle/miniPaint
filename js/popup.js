@@ -64,7 +64,7 @@ function popup(){
 		if(onload_handler != undefined)
 			this.onload = onload_handler;
 		var html = '';
-		
+
 		var dim = HELPER.get_dimensions();
 		popup = document.getElementById('popup');
 		popup.style.top = 150+'px';
@@ -101,6 +101,16 @@ function popup(){
 			html += '</span>';
 			}
 		html += '<h2 id="popup_drag">'+title+'</h2>';
+		
+		//preview area
+		if(this.preview !== false && this.preview_in_main == false){
+			html += '<div style="margin-top:15px;margin-bottom:15px;">';
+			html += '<canvas style="position:relative;float:left;margin-right:5px;border:1px solid #393939;" width="'+POP.width_mini+'" height="'+POP.height_mini+'" id="pop_pre"></canvas>';
+			html += '<canvas style="position:relative;border:1px solid #393939;background-color:#ffffff;" width="'+POP.width_mini+'" height="'+POP.height_mini+'" id="pop_post"></canvas>';
+			html += '</div>';
+			}
+		
+		//settings
 		html += '<table style="width:99%;">';
 		for(var i in parameters){
 			var parameter = parameters[i];
@@ -207,12 +217,8 @@ function popup(){
 			html += '</tr>';
 			}
 		html += '</table>';
-		if(this.preview !== false && this.preview_in_main == false){
-			html += '<div style="margin-top:15px;">';
-			html += '<canvas style="position:relative;float:left;margin-right:5px;border:1px solid #393939;" width="'+POP.width_mini+'" height="'+POP.height_mini+'" id="pop_pre"></canvas>';
-			html += '<canvas style="position:relative;border:1px solid #393939;background-color:#ffffff;" width="'+POP.width_mini+'" height="'+POP.height_mini+'" id="pop_post"></canvas>';
-			html += '</div>';
-			}
+
+		//action buttons
 		html += '<div style="text-align:center;margin-top:20px;margin-bottom:15px;">';
 		html += '<input type="button" onclick="POP.save();" class="button" value="OK" />';
 		html += '<input type="button" onclick="POP.hide();" class="button" value="Cancel" />';
