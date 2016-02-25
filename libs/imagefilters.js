@@ -254,7 +254,6 @@ ImageFilters.utils = {
 };
 
 
-// TODO
 ImageFilters.Translate = function (srcImageData, x, y, interpolation) {
 
 };
@@ -1181,15 +1180,11 @@ ImageFilters.Desaturate = function (srcImageData) {
 	return dstImageData;
 };
 
-/**
- * TODO: use bilinear
- */
 ImageFilters.DisplacementMapFilter = function (srcImageData, mapImageData, mapX, mapY, componentX, componentY, scaleX, scaleY, mode) {
 	var srcPixels = srcImageData.data,
 		srcWidth = srcImageData.width,
 		srcHeight = srcImageData.height,
 		srcLength = srcPixels.length,
-//        dstImageData = this.utils.createImageData(srcWidth, srcHeight),
 		dstImageData = ImageFilters.Clone(srcImageData),
 		dstPixels = dstImageData.data;
 
@@ -1993,7 +1988,6 @@ ImageFilters.Twril = function (srcImageData, centerX, centerY, radius, angle, ed
 				} else {
 					// nearest neighbor
 					// round tx, ty
-					// TODO edge actions!!
 					srcIndex = ((ty + 0.5 | 0) * srcWidth + (tx + 0.5 | 0)) << 2;
 					dstPixels[dstIndex] = srcPixels[srcIndex];
 					dstPixels[dstIndex + 1] = srcPixels[srcIndex + 1];

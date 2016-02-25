@@ -8,13 +8,12 @@ body {
 	color: #000000;
 	margin: 0px;
 	padding: 0px;
-	padding-top: 25px;
+	padding-top: 30px;
 	background-color:#727272;
 	font-weight: normal;
 	overflow: hidden;
-	}
+}
 canvas{
-	border:1px solid #808080;
 	position: absolute;
 	outline: none;
 	/* disable select canvas */
@@ -25,14 +24,14 @@ canvas{
 	-ms-user-select: none;
 	user-select: none;
 	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
-	
+
 	/* disable antialiasing */
 	image-rendering: -moz-crisp-edges; /* Firefox */
 	image-rendering: -o-crisp-edges; /* Opera */
 	image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
 	image-rendering: crisp-edges;
 	-ms-interpolation-mode: nearest-neighbor; /* IE (non-standard property) */
-	}
+}
 img{
 	border: none;
 }
@@ -51,14 +50,14 @@ table{
 input[type="text"], input[type="button"], select, input[type="number"]{
 	border:1px solid #393939;
 	padding:1px 3px;
-	}
+}
 input[type="range"]{
 	margin-left:0px;
 	width:100%;
-	}
+}
 input[type="button"]:disabled {
 	visibility:hidden;
-	}
+}
 input[type="button"]{
 	background: #dddddd;
 }
@@ -66,28 +65,32 @@ input[type="button"]{
 /* ==== ID ================================================================== */
 
 #wrapper{
-	margin:10px 5px 5px 5px;
+	margin: 5px;
 	position:relative;
 	min-height: 500px;
-	}
+}
 #sidebar_left{
 	position: absolute;
 	width: 100px;
 	z-index: 100;
-	}
+}
 #sidebar_right{
 	position: absolute;
 	width: 152px;
 	right:0;
 	top:0;
 	z-index: 100;
-	}
+}
 #canvas_wrapper{
 	position:relative;
 	margin: 0 157px 0 105px;
 	overflow: hidden;
 	height: calc(100vh - 35px);
-	}
+}
+#canvas_wrapper canvas{
+	border: 1px solid #393939;
+	box-sizing: content-box;
+}
 #logo{
 	display: block;
 	height: 30px;
@@ -99,10 +102,10 @@ input[type="button"]{
 	font-weight: bold;
 	color: #ffffff;
 	font-size: 13px;
-	}
+}
 #logo:hover{
 	animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-	}
+}
 @keyframes shake {
 	10%, 90% {
 		background-position: 2px 0px;
@@ -121,10 +124,12 @@ input[type="button"]{
 	border:1px solid #808080;
 	position: absolute;
 	margin-left:105px;
-	}	
+}	
 #canvas_back{
+	position: absolute;
 	background-color:#ffffff;
-	}
+	outline: none;
+}
 #main_colour{
 	border:1px solid #393939;
 	background-color:#727272;
@@ -133,41 +138,41 @@ input[type="button"]{
 	height:40px;
 	margin:0px;
 	padding:0px;
-	}
+}
 #main_colour_alt{
 	border:1px solid #393939;
 	margin-top:10px;
 	width:100%;
 	height:40px;
-	}
+}
 #main_colour_rgb{
 	margin-top:5px;
 	width:100%;
 	color:#000000;
 	text-align:right;
-	}
+}
 #main_colour_rgb input{
 	width:35px;
-	}
+}
 #preview{
 	width:150px;
 	height:150px;
 	background-color:#989898;
 	border:1px solid #393939;
 	margin-bottom: 5px;
-	}
+}
 #preview canvas{
 	cursor: pointer;
-	}
+}
 #layers_base{
 	background-color: #989898;
 	border: 1px solid #393939;
 	padding: 5px;
 	margin-bottom: 5px;
-	}
+}
 #menu_left_container .active{
 	background-color: #5680c1 !important;
-	}		
+}		
 #menu_left_container a{
 	float:left;
 	border: 1px solid #393939;
@@ -177,20 +182,20 @@ input[type="button"]{
 	margin:0px 1px 1px 0px;
 	overflow:hidden;
 	display:block;
-	}
+}
 #action_attributes{
 	min-height:20px;
 	font-size:11px;
-	}
+}
 #info{
 	padding:5px 3px 5px 2px;
 	min-height:57px;
 	font-size:11px;
-	}	
+}	
 #action_attributes input{
 	font-size:11px;
 	width:100%;
-	}
+}
 #popup{
 	position:fixed;
 	border:1px solid #000000;
@@ -206,29 +211,30 @@ input[type="button"]{
 	padding:10px;
 	font-size:12px;
 	color: #333;
-	}
+	z-index: 100;
+}
 #popup h2{
 	margin-top:0px;
 	cursor:move;
-	}
+}
 #popup td{
 	height:20px;
-	}
+}
 #popup textarea{
 	color:#000000;
 	width:100%;
 	border:1px solid #393939;
 	padding-left:5px;
-	}
+}
 #popup .button{
 	margin-right:5px;
 	background-color:#5680c1;
 	width:60px;
 	height:25px;
-	}
+}
 #popup input[type="text"], #popup input[type="number"], #popup textarea{
 	width:100%;
-	}
+}
 #resize-w, #resize-h, #resize-wh{
 	background-color:#393939;
 	width:5px;
@@ -236,21 +242,17 @@ input[type="button"]{
 	margin-left:105px;
 	position:absolute;
 	top:0;
-	}
+}
 #color_hex{
 	width: 100%;
 	border:1px solid #393939;
 }
 #canvas_grid{
-	display:none;
 	pointer-events:none;
 }
 #all_colors{
 	margin-top:10px;
 	padding:3px 0px 3px 3px;
-}
-#canvas_front{
-	position:relative;
 }
 
 /* ==== classes ============================================================= */
@@ -260,7 +262,7 @@ input[type="button"]{
 	padding:5px;
 	margin-top:5px;
 	background-color:#818181;
-	}
+}
 .layer{
 	margin-bottom:2px;
 	border:1px solid #393939;
@@ -271,7 +273,7 @@ input[type="button"]{
 	height:19px;
 	overflow:hidden;
 	color:#333333;
-	}
+}
 .layers_arrow{
 	text-decoration:none;
 	color:#000000;
@@ -282,7 +284,7 @@ input[type="button"]{
 	padding:0px 5px 0px 5px;
 	border:1px solid #393939;
 	font-size:11px;
-	}
+}
 .layer_title{
 	display:block;
 	float:left;
@@ -290,10 +292,10 @@ input[type="button"]{
 	min-width:85px;
 	width:10px;
 	overflow:hidden;
-	}
+}
 #layers_base .active{
 	background-color:#5680c1;
-	}
+}
 .layer_delete{
 	float:right;
 	cursor:pointer;
@@ -301,7 +303,7 @@ input[type="button"]{
 	width:12px;
 	height:12px;
 	background: url('../img/all.png') no-repeat 0px -50px;
-	}
+}
 .layer_visible{
 	float:right;
 	cursor:pointer;
@@ -309,31 +311,31 @@ input[type="button"]{
 	width:12px;
 	height:12px;
 	background: url('../img/all.png') no-repeat -100px -50px;
-	}
+}
 .layer_unvisible{
 	background: url('../img/all.png') no-repeat -50px -50px;
-	}	
+}	
 .layer_add{
 	border:1px solid #393939;
 	padding:0px 4px 0px 4px;
 	text-decoration:none;
 	background-color:#5680c1;
 	cursor:pointer;
-	}
+}
 .mini-color{
 	width:16px;
 	height:16px;
 	margin:0px 3px 3px 0px;
 	float:left;
 	border:1px solid #393939;
-	}
+}
 .mini-color:hover{
 	cursor:pointer;
-	}
+}
 .attribute-title{
 	text-align:center;
 	font-weight:bold;
-	}
+}
 .attribute-area{
 	border:1px solid #393939;
 	background-color:#989898;
@@ -344,7 +346,7 @@ input[type="button"]{
 	/* disable select */
 	-webkit-user-select:none;
 	-moz-user-select:none;
-	}
+}
 .error{
 	padding:20px;
 	margin:10px;
@@ -352,12 +354,12 @@ input[type="button"]{
 	background-color:#ffffff;
 	width:400px;
 	font-weight:bold;
-	}
+}
 .group{
 	border:1px solid #888888;
 	margin:5px 0px 5px 0px;
 	padding:5px;
-	}
+}
 
 /* ==== menu ================================================================ */
 
@@ -371,43 +373,44 @@ input[type="button"]{
 	background: #2D2D2D;
 	width: 100%;
 	padding-left:10px;
-	}
+}
 .ddsmoothmenu ul{
 	z-index:100;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
-	}
+}
 .ddsmoothmenu ul li{
 	position: relative;		
 	display: inline;
 	float: left;
 	color: #2d2b2b;
-	}
+}
 .ddsmoothmenu ul li .rightarrowclass{
 	display: none !important;
-	}
+}
 .ddsmoothmenu ul li ul li .rightarrowclass{
 	display: block !important;
-	}
+}
 .ddsmoothmenu ul li a{	
 	display: block;
 	color: #2D2D2D;
-	padding: 8px 10px;
+	padding: 7px 10px 0 10px;
 	text-decoration: none;
 	color: #cccccc;
-	}
+	height:30px;
+}
 .ddsmoothmenu ul li a.selected {
 	background: #FFFFFF !important;
 	color: #2d2b2b;
-	}
+}
 .ddsmoothmenu ul li ul li a.selected {
 	background-color:#E4EBF8 !important;
-	}
+}
 .ddsmoothmenu ul li a:hover{
 	background: #E4EBF8;
 	color: #2D2D2D;
-	}
+}
 .ddsmoothmenu .hide_ul{
 	position: absolute;
 	left: -3000px;
@@ -415,7 +418,7 @@ input[type="button"]{
 	visibility: hidden;
 	border:1px solid #5680C1;
 	border-top:0px;
-	}
+}
 .ddsmoothmenu ul li ul{
 	position: absolute;
 	left: -3000px;
@@ -423,32 +426,34 @@ input[type="button"]{
 	visibility: hidden;
 	border:1px solid #5680C1;
 	border-top:0px;
-	}
+	margin-left: -1px;
+}
 .ddsmoothmenu ul li ul li{
 	display: list-item;
 	background: #ffffff;
 	float: none;
-	}
+}
 .ddsmoothmenu ul li ul li ul{
 	top: 0;
 	border-top:1px solid #5680C1;
-	}
+}
 .ddsmoothmenu ul li ul li a{
-	padding: 4px 5px 4px 5px;
+	padding-left: 5px;
+	padding-right:5px;
 	margin: 0;
 	color: #2D2D2D;
-	}	
+}	
 * html .ddsmoothmenu{height: 1%;} /*Hack for IE7 and below*/
 .downarrowclass{
 	position: absolute;
 	top: 12px;
 	right: 7px;
-	}
+}
 .rightarrowclass{
 	position: absolute;
 	top: 6px;
 	right: 5px;
-	}
+}
 .ddshadow{ 
 	position: absolute;
 	left: 0;
@@ -456,13 +461,13 @@ input[type="button"]{
 	width: 0;
 	height: 0;
 	background-color: #ccc;
-	}
+}
 .ddsmoothmenu .mid-line{
 	background-color:#ff0000;
 	border-top:1px solid #e5e5e5;
 	font-size:0;
 	padding:0 8px 0 8px;
-	}
+}
 
 /* ==== print =============================================================== */
 
@@ -490,11 +495,11 @@ input[type="button"]{
 	#canvas_wrapper{
 		margin:0px;
 		padding:0px;
-		}
+	}
 	canvas{
 		border:0px;
 		position: absolute;
 		top:0px;
 		left:0px;
-		}
 	}
+}
