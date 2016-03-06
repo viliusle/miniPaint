@@ -1298,15 +1298,14 @@ function DRAW_TOOLS_CLASS() {
 					layer.clearRect(0, 0, WIDTH, HEIGHT);
 					layer.putImageData(tmp, 0, 0);
 				}
-
+				
 				//resize
 				EDIT.save_state();
 				WIDTH = this.select_data.w;
 				HEIGHT = this.select_data.h;
 				LAYER.set_canvas_size();
 
-				this.select_data = false;
-				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+				EDIT.edit_clear();
 			}
 		}
 	};

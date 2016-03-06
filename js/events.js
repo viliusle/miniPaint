@@ -177,9 +177,7 @@ function EVENTS_CLASS() {
 			
 			DRAW.curve_points = [];
 			if (DRAW.select_data != false) {
-				DRAW.select_data = false;
-				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-				DRAW.select_square_action = '';
+				EDIT.edit_clear();
 			}
 		}
 		//z - undo

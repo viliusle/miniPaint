@@ -121,7 +121,7 @@ input[type="button"]{
 	font-size: 13px;
 }
 #logo:hover{
-	animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 @keyframes shake {
 	10%, 90% {
@@ -171,7 +171,7 @@ input[type="button"]{
 #main_colour_rgb input{
 	width:55px;
 }
-#main_colour_rgb span{
+#main_colour_rgb a{
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -179,10 +179,10 @@ input[type="button"]{
 	color: transparent;
 	margin-right: 5px;
 }
-#main_colour_rgb span.red{ background-color:#ff0000; }
-#main_colour_rgb span.green{ background-color:#00ff00; }
-#main_colour_rgb span.blue{ background-color:#0000ff; }
-#main_colour_rgb span.alpha{ background-color:#999999; }
+#main_colour_rgb a.red{ background-color:#ff0000; }
+#main_colour_rgb a.green{ background-color:#00ff00; }
+#main_colour_rgb a.blue{ background-color:#0000ff; }
+#main_colour_rgb a.alpha{ background: url('../img/sprites.png') no-repeat -550px -50px; }
 #preview{
 	width:150px;
 	height:150px;

@@ -70,6 +70,7 @@ function EDIT_CLASS() {
 	this.edit_clear = function () {
 		DRAW.select_data = false;
 		canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+		DRAW.select_square_action = '';
 	};
 
 	this.copy_to_clipboard = function () {
