@@ -1,6 +1,6 @@
 //http://www.dynamicdrive.com/dynamicindex1/ddsmoothmenu.htm
 var ddsmoothmenu={
-	arrowimages:{down:["rightarrowclass","img/right.gif",6],right:["rightarrowclass","img/right.gif",6]},
+	arrowimages:{down:["rightarrowclass","img/right.gif",0],right:["rightarrowclass","img/right.gif",0]},
 	transition:{overtime:0,outtime:0}, //duration of slide in/out animation, in milliseconds
 	shadow:false, //enable shadow?
 	//showhidedelay:{showdelay:100,hidedelay:200}, //set delay in milliseconds before sub menus appear and disappear, respectively

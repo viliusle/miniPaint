@@ -68,11 +68,16 @@ input[type="button"]{
 	margin: 5px;
 	position:relative;
 	min-height: 500px;
+	overflow: hidden;
 }
 #sidebar_left{
 	position: absolute;
-	width: 100px;
+	width: 105px;
 	z-index: 100;
+	left:0px;
+	padding:0 5px 5px 0;
+	transition: 0.2s;
+	-webkit-transition: 0.2s;
 }
 #sidebar_right{
 	position: absolute;
@@ -80,6 +85,18 @@ input[type="button"]{
 	right:0;
 	top:0;
 	z-index: 100;
+	transition: 0.2s;
+	background-color:#727272;
+	-webkit-transition: 0.2s;
+}
+#sidebar_left.active{
+	left:0 !important;
+	background-color: #727272;
+	box-shadow: 5px 0px 10px 0px rgba(0,0,0,0.75);
+}
+#sidebar_right.active{
+	right:0 !important;
+	box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 }
 #canvas_wrapper{
 	position:relative;
@@ -176,7 +193,7 @@ input[type="button"]{
 #menu_left_container a{
 	float:left;
 	border: 1px solid #393939;
-	background: #989898 url('img/all.png') no-repeat 0px 0px;
+	background: #989898 url('../img/sprites.png') no-repeat 0px 0px;
 	width:24px;
 	height:24px;
 	margin:0px 1px 1px 0px;
@@ -193,7 +210,7 @@ input[type="button"]{
 	font-size:11px;
 }	
 #action_attributes input{
-	font-size:11px;
+	font-size:12px;
 	width:100%;
 }
 #popup{
@@ -254,6 +271,12 @@ input[type="button"]{
 	margin-top:10px;
 	padding:3px 0px 3px 3px;
 }
+#mobile_menu{
+	display:none;
+	position: absolute;
+	width:100%;
+	top: 0;
+}
 
 /* ==== classes ============================================================= */
 
@@ -263,7 +286,7 @@ input[type="button"]{
 	margin-top:5px;
 	background-color:#818181;
 }
-.layer{
+#sidebar_right .layer{
 	margin-bottom:2px;
 	border:1px solid #393939;
 	background-color:#989898;
@@ -302,7 +325,7 @@ input[type="button"]{
 	padding:0px 3px 0px 3px;
 	width:12px;
 	height:12px;
-	background: url('../img/all.png') no-repeat 0px -50px;
+	background: url('../img/sprites.png') no-repeat 0px -50px;
 }
 .layer_visible{
 	float:right;
@@ -310,10 +333,10 @@ input[type="button"]{
 	padding:0px 3px 0px 3px;
 	width:12px;
 	height:12px;
-	background: url('../img/all.png') no-repeat -100px -50px;
+	background: url('../img/sprites.png') no-repeat -100px -50px;
 }
 .layer_unvisible{
-	background: url('../img/all.png') no-repeat -50px -50px;
+	background: url('../img/sprites.png') no-repeat -50px -50px;
 }	
 .layer_add{
 	border:1px solid #393939;
@@ -365,7 +388,6 @@ input[type="button"]{
 
 .ddsmoothmenu{
 	position:fixed;
-	z-index:99999;
 	top:0;
 	left:0;
 	width:100%;
@@ -373,18 +395,23 @@ input[type="button"]{
 	background: #2D2D2D;
 	width: 100%;
 	padding-left:10px;
+	z-index:100;
 }
 .ddsmoothmenu ul{
 	z-index:100;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
+	max-width:380px;
+	height:30px;
 }
 .ddsmoothmenu ul li{
 	position: relative;		
 	display: inline;
 	float: left;
 	color: #2d2b2b;
+	width:calc(100% / 7);
+	height:100%;
 }
 .ddsmoothmenu ul li .rightarrowclass{
 	display: none !important;
@@ -395,20 +422,21 @@ input[type="button"]{
 .ddsmoothmenu ul li a{	
 	display: block;
 	color: #2D2D2D;
-	padding: 7px 10px 0 10px;
 	text-decoration: none;
 	color: #cccccc;
 	height:30px;
+	text-align:center;
+	padding-top: 6px;
 }
 .ddsmoothmenu ul li a.selected {
-	background: #FFFFFF !important;
+	background-color: #FFFFFF !important;
 	color: #2d2b2b;
 }
 .ddsmoothmenu ul li ul li a.selected {
 	background-color:#E4EBF8 !important;
 }
 .ddsmoothmenu ul li a:hover{
-	background: #E4EBF8;
+	background-color: #E4EBF8;
 	color: #2D2D2D;
 }
 .ddsmoothmenu .hide_ul{
@@ -427,11 +455,20 @@ input[type="button"]{
 	border:1px solid #5680C1;
 	border-top:0px;
 	margin-left: -1px;
+	height:auto;
+	/* disabling nonsenses with JS */
+	width:140px !important; 
+	top:30px !important;
 }
 .ddsmoothmenu ul li ul li{
 	display: list-item;
 	background: #ffffff;
 	float: none;
+	height:auto;
+	width:100%;
+}
+.ddsmoothmenu ul li ul li a{
+	text-align:left;
 }
 .ddsmoothmenu ul li ul li ul{
 	top: 0;
@@ -442,7 +479,10 @@ input[type="button"]{
 	padding-right:5px;
 	margin: 0;
 	color: #2D2D2D;
-}	
+}
+.ddsmoothmenu ul li ul li ul{
+	top:0 !important;
+}
 * html .ddsmoothmenu{height: 1%;} /*Hack for IE7 and below*/
 .downarrowclass{
 	position: absolute;
@@ -467,6 +507,108 @@ input[type="button"]{
 	border-top:1px solid #e5e5e5;
 	font-size:0;
 	padding:0 8px 0 8px;
+}
+.left_mobile_menu, .right_mobile_menu{
+	position:absolute;
+	background: url('../img/sprites.png') no-repeat -50px -100px;
+	width:50px;
+	height:50px;
+	display:block;
+	top:0;
+	z-index:200;
+}
+.left_mobile_menu{left:0;}
+.right_mobile_menu{right:0;}
+
+/* ==== responsive ========================================================== */
+
+@media screen and (max-width:700px){
+	body{
+		padding-top:50px;
+	}
+	#sidebar_right{
+		right: -160px;
+	}
+	#canvas_wrapper{
+		margin-right: 0;
+	}
+	.ddsmoothmenu{
+		height:50px;
+	}
+	.ddsmoothmenu ul{
+		width: calc(100% - 50px);
+		height:50px;
+	}
+	.ddsmoothmenu ul li a{
+		height:50px;
+		padding-top: 12px;
+	}
+	.ddsmoothmenu ul li ul{
+		top:50px !important;
+	}
+	.ddsmoothmenu ul li ul li{
+		height:auto;
+	}
+	.ddsmoothmenu ul li ul li a{
+		height:30px;
+	}
+	#mobile_menu{
+		display:block;
+	}
+	.left_mobile_menu{
+		display:none;
+	}
+}
+@media screen and (max-width:550px){
+	#sidebar_left{
+		left: -110px;
+	}
+	#canvas_wrapper{
+		margin-left: 0px;
+	}
+	.left_mobile_menu{
+		display:block;
+	}
+	.ddsmoothmenu ul{
+		width: calc(100% - 100px);
+		margin-left:50px;
+	}
+}
+@media screen and (max-width:400px){
+	.ddsmoothmenu{
+		background: #666666;
+	}
+	.ddsmoothmenu .icon{
+		background-image: url('../img/sprites.png');
+		background-position: -91px -88px;
+		color: transparent !important;
+	}
+	.ddsmoothmenu .icon:hover{
+		background-color:#727272 !important;
+	}
+	.ddsmoothmenu .file{ background-position: -91px -88px; }
+	.ddsmoothmenu .edit{ background-position: -141px -88px; }
+	.ddsmoothmenu .image{ background-position: -191px -88px; }
+	.ddsmoothmenu .layer{ background-position: -241px -88px; }
+	.ddsmoothmenu .effects{ background-position: -291px -88px; }
+	.ddsmoothmenu .tools{ background-position: -341px -88px; }
+	.ddsmoothmenu .help{ background-position: -391px -88px; }
+	#popup{
+		top: 100px !important;
+		left: 0 !important;
+		right: 0 !important;
+		margin-left: 0;
+		width: auto;
+	}
+}
+@media screen and (max-width:350px){
+	.ddsmoothmenu .file{ background-position: -95px -88px; }
+	.ddsmoothmenu .edit{ background-position: -145px -88px; }
+	.ddsmoothmenu .image{ background-position: -195px -88px; }
+	.ddsmoothmenu .layer{ background-position: -245px -88px; }
+	.ddsmoothmenu .effects{ background-position: -295px -88px; }
+	.ddsmoothmenu .tools{ background-position: -345px -88px; }
+	.ddsmoothmenu .help{ background-position: -398px -88px; }
 }
 
 /* ==== print =============================================================== */

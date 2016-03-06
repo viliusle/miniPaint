@@ -132,7 +132,6 @@ function EDIT_CLASS() {
 			WIDTH = layers_archive[j].width;
 			HEIGHT = layers_archive[j].height;
 			LAYER.set_canvas_size(true);
-			return true;	//size changed, cant undo
 		}
 
 		//undo

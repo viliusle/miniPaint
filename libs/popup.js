@@ -182,10 +182,18 @@ function popup() {
 						//input or textarea
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
-						if (parameter.type == 'textarea')
+						if (parameter.type == 'textarea'){
 							html += '<td><textarea style="height:80px;" id="pop_data_' + parameter.name + '" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
-						else
-							html += '<td colspan="2"><input type="text" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" onkeyup="POP.validate(this);" /></td>';
+						}
+						else{
+							var input_type="text";
+							if(parameter.placeholder != undefined && typeof parameter.placeholder == 'number')
+								input_type = 'number';
+							if(parameter.value != undefined && typeof parameter.value == 'number')
+								input_type = 'number';
+							
+							html += '<td colspan="2"><input type="'+input_type+'" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" onkeyup="POP.validate(this);" /></td>';
+						}
 					}
 				}
 			}

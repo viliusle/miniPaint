@@ -247,10 +247,10 @@ function LAYER_CLASS() {
 	//create layer
 	this.layer_add = function (name, data, type) {
 		tmp = new Array();
+		layer_max_index++;
 		if (data == undefined) {
 			//empty layer
 			if (name == undefined) {
-				layer_max_index++;
 				name = 'Layer #' + (layer_max_index + 1);
 			}
 			tmp.name = name;
@@ -289,7 +289,6 @@ function LAYER_CLASS() {
 
 				for (var i in _this.layers) {
 					if (_this.layers[i].name == name) {
-						layer_max_index++;
 						name = 'Layer #' + (layer_max_index + 1);
 					}
 				}
@@ -555,6 +554,7 @@ function LAYER_CLASS() {
 		}
 	};
 	this.set_alpha = function () {
+		var _this = this;
 		if (this.layers[LAYER.layer_active].opacity == undefined)
 			this.layers[LAYER.layer_active].opacity = 1;
 		POP.add({name: "param1", title: "Alpha:", value: this.layers[LAYER.layer_active].opacity, range: [0, 1], step: 0.01});
@@ -562,7 +562,7 @@ function LAYER_CLASS() {
 			'Opacity',
 			function (user_response) {
 				var param1 = parseFloat(user_response.param1);
-				this.layers[LAYER.layer_active].opacity = param1;
+				_this.layers[LAYER.layer_active].opacity = param1;
 				canvas_active().globalAlpha = param1;
 
 				var img = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);

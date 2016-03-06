@@ -169,8 +169,6 @@ function DRAW_TOOLS_CLASS() {
 		context.globalCompositeOperation = 'source-over';
 	};
 	
-
-	
 	//type = click, right_click, drag, move, release
 	this.select_tool = function (type, mouse, event) {
 		if (mouse == undefined)
@@ -199,10 +197,12 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'release') {
-			if (mouse.valid == false || mouse.click_x === false)
+			if (mouse.valid == false || mouse.click_x === false){
 				return false;
-			if (mouse.x - mouse.click_x == 0 || mouse.y - mouse.click_y == 0)
+			}
+			if (mouse.x - mouse.click_x == 0 && mouse.y - mouse.click_y == 0){
 				return false;
+			}
 			EDIT.save_state();
 			var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
@@ -226,7 +226,7 @@ function DRAW_TOOLS_CLASS() {
 			return true;
 		if (type == 'click') {
 			EDIT.save_state();
-			this.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, GUI.action_data().attributes.sensitivity, GUI.action_data().attributes.anti_aliasing);
+			this.tool_magic_wand(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, GUI.action_data().attributes.power, GUI.action_data().attributes.anti_aliasing);
 		}
 	};
 	this.erase = function (type, mouse, event) {
@@ -343,7 +343,7 @@ function DRAW_TOOLS_CLASS() {
 			EDIT.save_state();
 			var color_to = HELPER.hex2rgb(COLOR);
 			color_to.a = ALPHA;
-			DRAW.toolFiller(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, color_to, GUI.action_data().attributes.sensitivity, GUI.action_data().attributes.anti_aliasing);
+			DRAW.toolFiller(canvas_active(), WIDTH, HEIGHT, mouse.x, mouse.y, color_to, GUI.action_data().attributes.power, GUI.action_data().attributes.anti_aliasing);
 		}
 	};
 	this.pick_color = function (type, mouse, event) {
@@ -450,9 +450,10 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'click') {
-			EDIT.save_state();
 			//curve
 			if (GUI.action_data().attributes.type == 'Curve') {
+				EDIT.save_state();
+				
 				canvas_active().beginPath();
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 				canvas_active().lineWidth = GUI.action_data().attributes.size;
@@ -472,7 +473,11 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'release') {
+			if (mouse.x - mouse.click_x == 0 && mouse.y - mouse.click_y == 0)
+				return false;
+
 			EDIT.save_state();
+			
 			canvas_active().beginPath();
 			canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 			canvas_active().lineWidth = GUI.action_data().attributes.size;
@@ -658,6 +663,8 @@ function DRAW_TOOLS_CLASS() {
 				EL.rectangle(canvas_front, mouse.click_x, mouse.click_y, width, height, fill);
 		}
 		else if (type == 'release') {
+			if(mouse.x == mouse.click_x && mouse.y == mouse.click_y)
+				return false;
 			EDIT.save_state();
 			
 			canvas_active().fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
@@ -686,9 +693,11 @@ function DRAW_TOOLS_CLASS() {
 				EL.ellipse_by_center(canvas_front, mouse.click_x, mouse.click_y, dist_x * 2, dist_y * 2, "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")");
 		}
 		else if (type == 'release') {
-			EDIT.save_state();
 			dist_x = mouse.x - mouse.click_x;
 			dist_y = mouse.y - mouse.click_y;
+			if(dist_x == 0 && dist_y == 0)
+				return false;
+			EDIT.save_state();
 			if (GUI.action_data().attributes.circle == true)
 				dist_x = dist_y = Math.min(dist_x, dist_y);
 			canvas_active().lineWidth = 1;
@@ -952,18 +961,15 @@ function DRAW_TOOLS_CLASS() {
 		var power = GUI.action_data().attributes.power;
 		if (power > 99)
 			power = 99;
-		//var color1, color2;
 
 		if (type == 'init') {
 			POP.add({name: "param1", title: "Color #1:", value: '#000000', type: 'color'});
 			POP.add({name: "param2", title: "Transparency #1:", value: '255', range: [0, 255]});
 			POP.add({name: "param3", title: "Color #2:", value: '#ffffff', type: 'color'});
 			POP.add({name: "param4", title: "Transparency #2:", value: '255', range: [0, 255]});
-			POP.preview_in_main = true;
 			POP.show(
 				'Text', 
 				function (user_response) {
-					EDIT.save_state();
 					color1 = HELPER.hex2rgb(user_response.param1);
 					color1.a = parseInt(user_response.param2);
 
@@ -1066,7 +1072,7 @@ function DRAW_TOOLS_CLASS() {
 			yy = 0;
 		if (type == 'click') {
 			EDIT.save_state();
-			var param1 = GUI.action_data().attributes.strength;
+			var param1 = GUI.action_data().attributes.power;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1076,7 +1082,7 @@ function DRAW_TOOLS_CLASS() {
 			EL.circle(canvas_front, mouse.x, mouse.y, size);
 		}
 		else if (type == 'drag') {
-			var param1 = GUI.action_data().attributes.strength;
+			var param1 = GUI.action_data().attributes.power;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1095,7 +1101,7 @@ function DRAW_TOOLS_CLASS() {
 		if (mouse.valid == false)
 			return true;
 		var size = GUI.action_data().attributes.size;
-		var size_half = Math.round(size / 2);
+		var param1 = 0.5;
 		var xx = mouse.x - size / 2;
 		var yy = mouse.y - size / 2;
 		if (xx < 0)
@@ -1105,7 +1111,6 @@ function DRAW_TOOLS_CLASS() {
 
 		if (type == 'click') {
 			EDIT.save_state();
-			var param1 = GUI.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1114,7 +1119,6 @@ function DRAW_TOOLS_CLASS() {
 			EL.circle(canvas_front, mouse.x, mouse.y, size);
 		}
 		else if (type == 'drag') {
-			var param1 = GUI.action_data().attributes.strength;
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.Sharpen(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1516,7 +1520,10 @@ function DRAW_TOOLS_CLASS() {
 				}
 			}
 			else {
+				if (mouse.x - mouse.click_x == 0 && mouse.y - mouse.click_y == 0)
+					return false;				
 				EDIT.save_state();
+				
 				if (this.select_square_action == 'move') {
 					if (this.select_data != false) {
 						select_data_tmp = canvas_active().getImageData(this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h);

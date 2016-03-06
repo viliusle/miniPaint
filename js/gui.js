@@ -388,7 +388,7 @@ function GUI_CLASS() {
 				html += '<table style="width:100%;">';	//table for 100% width
 				html += '<tr>';
 				html += '<td style="font-weight:bold;padding-right:2px;white-space:nowrap;">' + title + ':</td>';
-				html += '<td><input onKeyUp="GUI.update_attribute(this);" type="text" id="' + k + '" value="' + GUI.action_data().attributes[k] + '" /></td>';
+				html += '<td><input onKeyUp="GUI.update_attribute(this);" type="number" id="' + k + '" value="' + GUI.action_data().attributes[k] + '" /></td>';
 				html += '</tr>';
 				html += '</table>';
 				html += '<div style="float:left;width:32px;" onclick="GUI.update_attribute(this, ' + (step) + ')" class="attribute-area" id="' + k + '">+</div>';
@@ -604,4 +604,7 @@ function GUI_CLASS() {
 		}
 	};
 
+	this.toggle = function(query){
+		document.querySelector(query).classList.toggle("active");
+	};
 }

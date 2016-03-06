@@ -70,10 +70,14 @@
 		</div>
 	</div>
 </div>
+<div id="mobile_menu">
+	<a class="left_mobile_menu" onclick="GUI.toggle('#sidebar_left');return false;" href="#"></a>
+	<a class="right_mobile_menu" onclick="GUI.toggle('#sidebar_right');return false;" href="#"></a>
+</div>
 <div id="main_menu" class="ddsmoothmenu">
 	<ul>
 	<li>
-		<a href="#">File</a>
+		<a class="icon file" href="#">File</a>
 		<ul>
 			<li><a onclick="call_menu(FILE, 'file_new');" href="#">New</a></li>
 			<li><a onclick="call_menu(FILE, 'file_open');" href="#">Open...</a></li>
@@ -82,7 +86,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Edit</a>
+		<a class="icon edit" href="#">Edit</a>
 		<ul>
 			<li><a onclick="call_menu(EDIT, 'edit_undo');" href="#">Undo</a></li>
 			<li><div class="mid-line"></div></li>
@@ -95,7 +99,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Image</a>
+		<a class="icon image" href="#">Image</a>
 		<ul>
 			<li><a onclick="call_menu(IMAGE, 'image_information');" href="#">Information...</a></li>
 			<li><a onclick="call_menu(IMAGE, 'image_size');" href="#">Size...</a></li>
@@ -130,7 +134,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Layer</a>
+		<a class="icon layer" href="#">Layer</a>
 		<ul>
 			<li><a onclick="call_menu(LAYER, 'layer_new');" href="#">New</a></li>
 			<li><a onclick="call_menu(LAYER, 'layer_dublicate');" href="#">Dublicate</a></li>
@@ -157,7 +161,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Effects</a>
+		<a class="icon effects" href="#">Effects</a>
 		<ul id="effects_list">
 			<li><a onclick="call_menu(EFFECTS, 'effects_bw');" href="#">Black and White...</a>
 			<li>
@@ -196,7 +200,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Tools</a>
+		<a class="icon tools" href="#">Tools</a>
 		<ul>
 			<li><a onclick="call_menu(TOOLS, 'tools_borders');" href="#">Borders...</a></li>
 			<li><a onclick="call_menu(TOOLS, 'tools_sprites');" href="#">Sprites...</a></li>
@@ -208,7 +212,7 @@
 		</ul>
 	</li>
 	<li>
-		<a href="#">Help</a>
+		<a class="icon help" href="#">Help</a>
 		<ul>
 			<li><a onclick="call_menu(HELP, 'help_shortcuts');" href="#">Keyboard Shortcuts...</a></li>
 			<li><a onclick="window.location='http://viliusle.github.io/miniPaint/';" href="http://viliusle.github.io/miniPaint/">Website</a></li>

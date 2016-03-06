@@ -102,7 +102,7 @@ function FILE_CLASS() {
 				}
 				else {
 					//xml
-					var responce = MAIN.load_xml(event.target.result);
+					var responce = FILE.load_xml(event.target.result);
 					if (responce === true)
 						return false;
 				}
@@ -325,7 +325,7 @@ function FILE_CLASS() {
 	};
 	
 	this.load_xml = function (data) {
-		var xml = $.parseXML(data);
+		var xml = $.parseXML(data);	console.log(xml);
 		w = $(xml).find("width").text();
 		h = $(xml).find("height").text();
 

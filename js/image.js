@@ -411,8 +411,13 @@ function IMAGE_CLASS() {
 		}
 		if (width > WIDTH || height > HEIGHT)
 			user_response.mode = "Resize";
+		
+		var time1 = Date.now();
+		var resize_type;
+		
 		//Hermite - good and fast
 		if (user_response.mode == "Resample - Hermite") {
+			resize_type = 'Hermite';
 			this.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
 			if (GUI.last_menu != 'layer_resize') {
 				WIDTH = width;
@@ -427,6 +432,7 @@ function IMAGE_CLASS() {
 		}
 		//simple resize	
 		if (user_response.mode == "Resize") {
+			resize_type = 'Default';
 			//simple resize - FAST
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
@@ -434,19 +440,16 @@ function IMAGE_CLASS() {
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
-			if (width <= WIDTH) {
-				canvas_active().drawImage(tmp_data, 0, 0, width, height);
-			}
-			else {
-				WIDTH = Math.round(width);
-				HEIGHT = Math.round(height);
-				LAYER.set_canvas_size();
-				canvas_active().drawImage(tmp_data, 0, 0, width, height);
-			}
+			WIDTH = width;
+			HEIGHT = height;
+			LAYER.set_canvas_size();
+			canvas_active().drawImage(tmp_data, 0, 0, width, height);
 			if (GUI.last_menu != 'layer_resize')
 				this.trim();
 			GUI.zoom();
 		}
+		
+		console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
 
 		//sharpen after?
 		if (sharpen == 'Yes') {
@@ -885,7 +888,6 @@ function IMAGE_CLASS() {
 
 	//hermite resample
 	this.resample_hermite = function (canvas, W, H, W2, H2) {
-		var time1 = Date.now();
 		var img = canvas.getContext("2d").getImageData(0, 0, W, H);
 		var img2 = canvas.getContext("2d").getImageData(0, 0, W2, H2);
 		var data = img.data;
@@ -935,7 +937,6 @@ function IMAGE_CLASS() {
 				data2[x2 + 3] = gx_a / weights_alpha;
 			}
 		}
-		console.log("hermite = " + (Math.round(Date.now() - time1) / 1000) + " s");
 		canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
 		canvas.getContext("2d").putImageData(img2, 0, 0);
 	};

@@ -1,4 +1,4 @@
-/* global FILE, EDIT, HELPER, POP, MAIN, EVENTS, LAYER, IMAGE, GUI, DRAW */
+/* global FILE, EDIT, HELPER, POP, MAIN, EVENTS, LAYER, IMAGE, GUI, DRAW, EL */
 /* global canvas_active, canvas_front, WIDTH, HEIGHT, EXIF */
 
 var EVENTS = new EVENTS_CLASS();
@@ -34,7 +34,12 @@ function EVENTS_CLASS() {
 	/**
 	 * if user is holding ctrl
 	 */
-	this.ctrl_pressed = false; //17
+	this.ctrl_pressed = false;
+	
+	/**
+	 * if user is holding command key
+	 */
+	this.command_pressed = false;
 	
 	/**
 	 * if use is holding shift
@@ -111,10 +116,25 @@ function EVENTS_CLASS() {
 		k = event.keyCode;	//console.log(k);
 
 		if (k != 27) {
-			if (POP != undefined && POP.active == true)
-				return true; //dialog active
-			if (document.activeElement.type == 'text')
-				return true; //text input selected
+			//we can not touch these events!
+			if (POP != undefined && POP.active == true){
+				//dialog active
+				return true;
+			}
+			if (document.activeElement.type == 'text'){
+				//text input selected
+				return true;
+			}
+		}
+		
+		//ctrl
+		if (event.ctrlKey == true) {
+			EVENTS.ctrl_pressed = true;
+		}
+		//command
+		if(event.metaKey == true){
+			EVENTS.command_pressed = true;
+			EVENTS.ctrl_pressed = true;
 		}
 
 		//up
@@ -165,8 +185,9 @@ function EVENTS_CLASS() {
 		//z - undo
 		else if (k == 90) {
 			//undo
-			if (EVENTS.ctrl_pressed == true)
+			if (EVENTS.ctrl_pressed == true){
 				EDIT.undo();
+			}
 		}
 		//t - trim
 		else if (k == 84) {
@@ -209,19 +230,15 @@ function EVENTS_CLASS() {
 			}
 		}
 		//shift
-		else if (k == 16)
+		else if (k == 16){
 			EVENTS.shift_pressed = true;
-		//ctrl
-		else if (k == 17) {
-			if (EVENTS.ctrl_pressed == false)
-				EVENTS.ctrl_pressed = true;
 		}
 		//d
 		else if (k == 68) {
 			call_menu(LAYER, 'layer_dublicate');
 		}
 		//a
-		else if (k == 65) {
+		else if (k == 65) {	
 			if (EVENTS.ctrl_pressed == true) {
 				DRAW.select_data = {
 					x: 0,
@@ -257,13 +274,7 @@ function EVENTS_CLASS() {
 		//n - new layer
 		else if (k == 78)
 			LAYER.add_layer();
-
-		//mac support - ctrl
-		if (k == 17 || event.metaKey || event.ctrlKey) {
-			if (EVENTS.ctrl_pressed == false)
-				EVENTS.ctrl_pressed = true;
-		}
-
+		
 		GUI.zoom();
 		return true;
 	};
@@ -274,11 +285,14 @@ function EVENTS_CLASS() {
 		if (k == 16)
 			EVENTS.shift_pressed = false;
 		//ctrl
-		else if (k == 17)
+		else if (event.ctrlKey == false && EVENTS.ctrl_pressed == true) {
 			EVENTS.ctrl_pressed = false;
-		//mac support - ctrl
-		if (event.metaKey || event.ctrlKey || event.key == 'Meta')
+		}
+		//command
+		else if(event.metaKey == false && EVENTS.command_pressed == true){
+			EVENTS.command_pressed = false;
 			EVENTS.ctrl_pressed = false;
+		}
 	};
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function (event) {
@@ -500,6 +514,7 @@ function EVENTS_CLASS() {
 
 		//main window resize
 		if (resize_all != false && GUI.ZOOM == 100 && EVENTS.mouse.x > 0 && EVENTS.mouse.y > 0) {
+			EDIT.save_state();
 			EVENTS.autosize = false;
 			document.body.style.cursor = "auto";
 			if (resize_all == "w")
@@ -541,7 +556,7 @@ function EVENTS_CLASS() {
 				}
 				else {
 					//xml
-					var responce = MAIN.load_xml(event.target.result);
+					var responce = FILE.load_xml(event.target.result);
 					if (responce === true)
 						return false;
 				}
@@ -596,9 +611,9 @@ function EVENTS_CLASS() {
 		EVENTS.ZOOM_POS[0] = mouse_x - EVENTS.mini_rect_data.w / 2;
 		EVENTS.ZOOM_POS[1] = mouse_y - EVENTS.mini_rect_data.h / 2;
 		if (EVENTS.ZOOM_POS[0] < 0)
+			EVENTS.ZOOM_POS[0] = 0;
+		if (EVENTS.ZOOM_POS[1] < 0)
 			EVENTS.ZOOM_POS[1] = 0;
-		if (EVENTS.ZOOM_Y < 0)
-			EVENTS.ZOOM_Y = 0;
 
 		GUI.zoom(undefined, true);
 		return true;
@@ -624,11 +639,18 @@ function EVENTS_CLASS() {
 		popup = document.getElementById('popup');
 		popup.style.top = 150 + 'px';
 		popup.style.left = Math.round(dim[0] / 2) + 'px';
+		
+		document.querySelector('#sidebar_left').classList.remove("active");
+		document.querySelector('#sidebar_right').classList.remove("active");
 	};
 }
 
 function call_menu(class_name, function_name) {
-	$('#main_menu').find('.selected').click(); //close menu
+	//close menu
+	var menu = document.querySelector('#main_menu .selected');
+	if(menu != undefined){
+		menu.click(); 
+	}
 	GUI.last_menu = function_name;
 
 	//exec
@@ -654,6 +676,7 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 		var ctx = document.getElementById(canvas_id).getContext("2d");
 	}
 	var ctrl_pressed = false;
+	var command_pressed = false;
 	var reading_dom = false;
 	var text_top = 15;
 	var pasteCatcher;
@@ -757,10 +780,15 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 	};
 	//on kaybord release
 	this.on_keyboardup_action = function (event) {
-		k = event.keyCode;
 		//ctrl
-		if (k == 17 || event.metaKey || event.ctrlKey || event.key == 'Meta')
+		if (event.ctrlKey == false && ctrl_pressed == true) {
 			ctrl_pressed = false;
+		}
+		//command
+		else if(event.metaKey == false && command_pressed == true){
+			command_pressed = false;
+			ctrl_pressed = false;
+		}
 	};
 	//draw image
 	this.paste_createImage = function (source) {

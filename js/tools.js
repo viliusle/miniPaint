@@ -1,4 +1,4 @@
-/* global POP, MAIN, SIFT, LAYER, IMAGE, EVENTS, HELPER, EDIT, GUI */
+/* global POP, MAIN, SIFT, LAYER, IMAGE, EVENTS, HELPER, EDIT, GUI, EL */
 /* global WIDTH, HEIGHT, COLOR, canvas_active */
 
 var TOOLS = new TOOLS_CLASS();
@@ -237,6 +237,6 @@ function TOOLS_CLASS() {
 	this.add_borders = function (context, W, H, color, size) {
 		context.strokeStyle = color;
 		context.lineWidth = size;
-		HELPER.roundRect(context, 0 + 0.5, 0 + 0.5, W - 1, H - 1, 0, false, true);
+		EL.rectangle(context, 0, 0, W-1, H-1, false, true);
 	};
 }
