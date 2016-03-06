@@ -319,8 +319,24 @@ function GUI_CLASS() {
 
 				document.getElementById(k).value = object.value;
 			}
-			if (this.action_data().on_update != undefined)
+			if (this.action_data().on_update != undefined){
 				DRAW[this.action_data().on_update](object.value);
+			}
+		}
+		
+		//custom
+		if(DRAW.active_tool == 'erase'){
+			var strict = this.action_data().attributes.strict;
+			var is_circle = GUI.action_data().attributes.circle;
+			
+			if(is_circle == false){
+				//hide strict controlls
+				document.getElementById('strict').style.display = 'none';
+			}
+			else{
+				//show strict controlls
+				document.getElementById('strict').style.display = 'block';
+			}
 		}
 	};
 	

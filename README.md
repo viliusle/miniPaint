@@ -1,4 +1,4 @@
-##miniPaint
+# miniPaint
 
 Online graphics editing tool use HTML5 technologies like Canvas, Offline support,
 Drag and Drop. Key features: layers, transparency, filters, no-flash, open source. 
@@ -7,9 +7,13 @@ Drag and Drop. Key features: layers, transparency, filters, no-flash, open sourc
 
 **License**: GPL
 
-**Browser Support**: Firefox, Chrome. Safari and IE-11 has issues with some HTML5 features.
+## Browser Support
+- **Firefox**: Yes
+- **Chrome**: Yes
 
-##Features:
+**IE and Safari**: No - missing full HTML 5 support.
+
+## Features
 
 - Open images, drag and drop images.
 - Save images as PNG, JPG, XML (layers data), (plus BMP and WEBP on some browsers).
@@ -71,7 +75,11 @@ Drag and Drop. Key features: layers, transparency, filters, no-flash, open sourc
   - Vignette.
   - Vintage.
 
-##Libraries used:
+## Support
+
+Please use the GitHub issues for support requests, or use mail www.viliusl@gmail.com for contacts.
+
+## Libraries used
 
 - Harmony - http://ricardocabello.com/blog/post/689
 - glfx.js - http://evanw.github.io/glfx.js/

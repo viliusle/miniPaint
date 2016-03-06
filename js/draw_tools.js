@@ -235,6 +235,18 @@ function DRAW_TOOLS_CLASS() {
 		var strict = GUI.action_data().attributes.strict;
 		var size = GUI.action_data().attributes.size;
 		var is_circle = GUI.action_data().attributes.circle;
+		
+		var strict_element = document.getElementById('strict');
+		if(is_circle == false){
+			//hide strict controlls
+			if(strict_element != undefined)
+				strict_element.style.display = 'none';
+		}
+		else{
+			//show strict controlls
+			if(strict_element != undefined)
+				strict_element.style.display = 'block';
+		}
 
 		if (type == 'click') {
 			EDIT.save_state();
@@ -1209,19 +1221,20 @@ function DRAW_TOOLS_CLASS() {
 	this.crop_tool = function (type, mouse, event) {
 		if (mouse.click_valid == false)
 			return true;
+		
 		if (type == 'drag') {
 			if (mouse.x < 0)
 				mouse.x = 0;
 			if (mouse.y < 0)
 				mouse.y = 0;
 			if (mouse.x >= WIDTH)
-				mouse.x = WIDTH - 1;
+				mouse.x = WIDTH;
 			if (mouse.y >= HEIGHT)
-				mouse.y = HEIGHT - 1;
+				mouse.y = HEIGHT;
 			if (mouse.click_x >= WIDTH)
-				mouse.click_x = WIDTH - 1;
+				mouse.click_x = WIDTH;
 			if (mouse.click_y >= HEIGHT)
-				mouse.click_y = HEIGHT - 1;
+				mouse.click_y = HEIGHT;
 			if (this.select_square_action == '') {
 				document.body.style.cursor = "crosshair";
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1251,13 +1264,13 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse.y < 0)
 				mouse.y = 0;
 			if (mouse.x >= WIDTH)
-				mouse.x = WIDTH - 1;
+				mouse.x = WIDTH;
 			if (mouse.y >= HEIGHT)
-				mouse.y = HEIGHT - 1;
+				mouse.y = HEIGHT;
 			if (mouse.click_x >= WIDTH)
-				mouse.click_x = WIDTH - 1;
+				mouse.click_x = WIDTH;
 			if (mouse.click_y >= HEIGHT)
-				mouse.click_y = HEIGHT - 1;
+				mouse.click_y = HEIGHT;
 
 			if (this.select_square_action == '') {
 				if (mouse.x != mouse.click_x && mouse.y != mouse.click_y) {
@@ -1353,13 +1366,13 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse.y < 0)
 				mouse.y = 0;
 			if (mouse.x >= WIDTH)
-				mouse.x = WIDTH - 1;
+				mouse.x = WIDTH;
 			if (mouse.y >= HEIGHT)
-				mouse.y = HEIGHT - 1;
+				mouse.y = HEIGHT;
 			if (mouse.click_x >= WIDTH)
-				mouse.click_x = WIDTH - 1;
+				mouse.click_x = WIDTH;
 			if (mouse.click_y >= HEIGHT)
-				mouse.click_y = HEIGHT - 1;
+				mouse.click_y = HEIGHT;
 			if (this.select_square_action == '') {
 				document.body.style.cursor = "crosshair";
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1501,13 +1514,13 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse.y < 0)
 				mouse.y = 0;
 			if (mouse.x >= WIDTH)
-				mouse.x = WIDTH - 1;
+				mouse.x = WIDTH;
 			if (mouse.y >= HEIGHT)
-				mouse.y = HEIGHT - 1;
+				mouse.y = HEIGHT;
 			if (mouse.click_x >= WIDTH)
-				mouse.click_x = WIDTH - 1;
+				mouse.click_x = WIDTH;
 			if (mouse.click_y >= HEIGHT)
-				mouse.click_y = HEIGHT - 1;
+				mouse.click_y = HEIGHT;
 
 			if (this.select_square_action == '') {
 				if (mouse.x != mouse.click_x && mouse.y != mouse.click_y) {
