@@ -121,7 +121,7 @@ function EVENTS_CLASS() {
 				//dialog active
 				return true;
 			}
-			if (document.activeElement.type == 'text'){
+			if (document.activeElement.type == 'text' || document.activeElement.type == 'number'){
 				//text input selected
 				return true;
 			}

@@ -169,8 +169,20 @@ input[type="button"]{
 	text-align:right;
 }
 #main_colour_rgb input{
-	width:35px;
+	width:55px;
 }
+#main_colour_rgb span{
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border-radius: 7px;
+	color: transparent;
+	margin-right: 5px;
+}
+#main_colour_rgb span.red{ background-color:#ff0000; }
+#main_colour_rgb span.green{ background-color:#00ff00; }
+#main_colour_rgb span.blue{ background-color:#0000ff; }
+#main_colour_rgb span.alpha{ background-color:#999999; }
 #preview{
 	width:150px;
 	height:150px;

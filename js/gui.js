@@ -448,7 +448,7 @@ function GUI_CLASS() {
 			object.value = COLOR;
 	};
 	
-	this.set_color_rgb = function (object, c) {
+	this.set_color_rgb = function (object, c) {	console.log('111');
 		var colours = HELPER.hex2rgb(COLOR);
 		if (object.value.length > 3) {
 			object.value = colours[c];

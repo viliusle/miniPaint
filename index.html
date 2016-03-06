@@ -30,10 +30,10 @@
 		<div class="block">
 			<input type="text" id="color_hex" value="#000000" /><br />
 			<div id="main_colour_rgb">
-				Red:   <input id="rgb_r" onKeyUp="GUI.set_color_rgb(this, 'r')" type="text" value="255" /><br />
-				Green: <input id="rgb_g" onKeyUp="GUI.set_color_rgb(this, 'g')" type="text" value="255" /><br />
-				Blue:  <input id="rgb_b" onKeyUp="GUI.set_color_rgb(this, 'b')" type="text" value="255" /><br />
-				Alpha:  <input id="rgb_a" onKeyUp="GUI.set_color_rgb(this, 'a')" type="text" value="255" />
+				<span class="red">Red</span>   <input id="rgb_r" onKeyUp="GUI.set_color_rgb(this, 'r')" onchange="GUI.set_color_rgb(this, 'r')" type="number" value="255" /><br />
+				<span class="green">Green</span> <input id="rgb_g" onKeyUp="GUI.set_color_rgb(this, 'g')" onchange="GUI.set_color_rgb(this, 'g')" type="number" value="255" /><br />
+				<span class="blue">Blue</span>  <input id="rgb_b" onKeyUp="GUI.set_color_rgb(this, 'b')" onchange="GUI.set_color_rgb(this, 'b')" type="number" value="255" /><br />
+				<span class="alpha">Alpha</span> <input id="rgb_a" onKeyUp="GUI.set_color_rgb(this, 'a')" onchange="GUI.set_color_rgb(this, 'a')" type="number" value="255" />
 			</div>
 		</div>
 		<div class="block" id="info"></div>
