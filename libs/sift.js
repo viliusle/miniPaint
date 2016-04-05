@@ -135,7 +135,7 @@ function SIFT_CLASS() {
 		//show points?
 		if (show_points === true) {
 			var time = HELPER.timer('', true);
-			log('key points: ' + points.length + ", " + time);
+			console.log('key points: ' + points.length + ", " + time);
 			LAYER.layer_add();
 
 			var size = 3;
