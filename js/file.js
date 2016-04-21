@@ -280,6 +280,7 @@ function FILE_CLASS() {
 		//push data to user
 		window.URL = window.webkitURL || window.URL;
 		var a = document.createElement('a');
+		var _this = this;
 		if (typeof a.download != "undefined") {
 			//a.download is supported
 			a.setAttribute("id", "save_data");
@@ -290,7 +291,7 @@ function FILE_CLASS() {
 
 			//release memory
 			a.onclick = function (e) {
-				this.save_cleanup(this);
+				_this.save_cleanup(this);
 			};
 			//force click
 			document.querySelector('#save_data').click();
