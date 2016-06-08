@@ -14,6 +14,7 @@ function MAIN_CLASS() {
 	this.init = function (first_load) {
 		if (first_load === true) {
 			GUI.draw_helpers();
+			GUI.autodetect_dimensions();
 			POP.height_mini = Math.round(POP.width_mini * HEIGHT / WIDTH);
 		}
 		EVENTS.autosize = true;

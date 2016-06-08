@@ -8,15 +8,18 @@ Drag and Drop. Key features: layers, transparency, filters, no-flash, open sourc
 **License**: GPL
 
 ## Browser Support
-- **Firefox**: Yes
-- **Chrome**: Yes
+- Firefox
+- Chrome
+- Opera
+- IE 10+
+- Edge
 
 **IE and Safari**: No - missing full HTML 5 support.
 
 ## Features
 
 - Open images, drag and drop images.
-- Save images as PNG, JPG, XML (layers data), (plus BMP and WEBP on some browsers).
+- Save images as PNG, JPG, JSON (layers data), (plus BMP and WEBP on some browsers).
 - Print support.
 - 3 levels undo.
 - Transparency support.

@@ -26,8 +26,8 @@ function IMAGE_CLASS() {
 
 	//size
 	this.image_size = function () {
-		POP.add({name: "width", title: "Width:", value: WIDTH});
-		POP.add({name: "height", title: "Height:", value: HEIGHT});
+		POP.add({name: "width", title: "Width:", value: WIDTH, placeholder: WIDTH});
+		POP.add({name: "height", title: "Height:", value: HEIGHT, placeholder: HEIGHT});
 		POP.show('Attributes', [IMAGE, 'resize_custom']);
 	};
 

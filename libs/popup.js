@@ -111,7 +111,7 @@ function popup() {
 		html += '<table style="width:99%;">';
 		for (var i in parameters) {
 			var parameter = parameters[i];
-			html += '<tr>';
+			html += '<tr id="popup-tr-'+parameters[i].name+'">';
 			if (title != 'Error')
 				html += '<td style="font-weight:bold;padding-right:3px;width:130px;">' + parameter.title + '</td>';
 			if (parameter.name != undefined) {
@@ -187,7 +187,7 @@ function popup() {
 						}
 						else{
 							var input_type="text";
-							if(parameter.placeholder != undefined && typeof parameter.placeholder == 'number')
+							if(parameter.placeholder != undefined && parameter.placeholder != '' && !isNaN(parameter.placeholder))
 								input_type = 'number';
 							if(parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
@@ -199,10 +199,11 @@ function popup() {
 			}
 			else if (parameter.function != undefined) {
 				//custom function
+				var result;
 				if (typeof parameter.function == 'string')
-					var result = window[parameter.function]();
+					result = window[parameter.function]();
 				else
-					var result = parameter.function();
+					result = parameter.function();
 				html += '<td colspan="3">' + result + '</td>';
 			}
 			else if (parameter.html != undefined) {

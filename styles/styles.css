@@ -414,11 +414,11 @@ input[type="button"]{
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
-	max-width:380px;
+	max-width:390px;
 	height:30px;
 }
 .ddsmoothmenu ul li{
-	position: relative;		
+	position: relative;	
 	display: inline;
 	float: left;
 	color: #2d2b2b;
@@ -581,9 +581,16 @@ input[type="button"]{
 	.left_mobile_menu{
 		display:block;
 	}
+	.ddsmoothmenu{
+		padding-left:0;
+	}
 	.ddsmoothmenu ul{
 		width: calc(100% - 100px);
 		margin-left:50px;
+		max-width:auto;
+	}
+	.ddsmoothmenu ul li{
+		width:calc(100% / 7 - 1px);
 	}
 }
 @media screen and (max-width:400px){

@@ -41,7 +41,7 @@ function HELP_CLASS() {
 		POP.add({title: "Arrow keys", value: 'Move active layer by 10px'});
 		POP.add({title: "CTRL + Arrow keys", value: 'Move active layer by 50px'});
 		POP.add({title: "SHIFT + Arrow keys", value: 'Move active layer by 1px'});
-		POP.add({title: "Drag & Drop", value: 'Imports images/xml data'});
+		POP.add({title: "Drag & Drop", value: 'Imports images'});
 		POP.show('Keyboard Shortcuts', '');
 	};
 	//credits

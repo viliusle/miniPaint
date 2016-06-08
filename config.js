@@ -13,8 +13,8 @@ var canvas_preview = document.getElementById("canvas_preview").getContext("2d");
 
 //global settings
 var VERSION = '3';
-var WIDTH = 800;					//default canvas midth
-var HEIGHT = 600;					//default canvas height
+var WIDTH;						//canvas midth
+var HEIGHT;						//canvas height
 var COLOR = '#0000ff';				//active color
 var ALPHA = 255;					//active color alpha
 

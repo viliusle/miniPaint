@@ -41,6 +41,17 @@ function GUI_CLASS() {
 	this.ZOOM = 100;
 	
 	/**
+	 * common image dimensions
+	 */
+	this.common_dimensions = [
+			[640,480], //480p
+			[800,600], //SVGA
+			[1024,768],
+			[1280,720], //hdtv, 720p
+			[1600,1200], //UXGA
+		];
+	
+	/**
 	 * last color copy
 	 */
 	var COLOR_copy;
@@ -66,7 +77,7 @@ function GUI_CLASS() {
 			['#00ff00', '#008000', '#7fff00', '#00ff7f', '#8ac273'], //green
 			['#0000ff', '#007fff', '#37629c', '#000080', '#8000ff'], //blue
 			['#ffff00', '#ffff80', '#ddd06a', '#808000', '#bcb88a'], //yellow
-			['#ffffff', '#c0c0c0', '#808080', '#404040', '#000000']	//grey
+			['#ffffff', '#c0c0c0', '#808080', '#404040', '#000000'], //grey
 		];
 		for (var i in colors_data) {
 			for (var j in colors_data[i]) {
@@ -75,6 +86,27 @@ function GUI_CLASS() {
 			html += '<div style="clear:both;"></div>' + "\n";
 		}
 		document.getElementById("all_colors").innerHTML = html;
+	};
+	
+	this.autodetect_dimensions = function(){
+		var page_w = canvas_wrapper.clientWidth;
+		var page_h = canvas_wrapper.clientHeight;
+		for(var i = this.common_dimensions.length-1; i >= 0; i--){
+			if(this.common_dimensions[i][0] >page_w || this.common_dimensions[i][1] > page_h){
+				//browser size is too small
+				continue;
+			}
+			WIDTH = this.common_dimensions[i][0];
+			HEIGHT = this.common_dimensions[i][1];
+			return;
+		}
+		
+		//screen size to so small, even 400x300 too large?
+		WIDTH = page_w - 5;
+		HEIGHT = page_h - 10;
+		if(page_w < 585){
+			HEIGHT = HEIGHT - 15;
+		}
 	};
 	
 	this.draw_background = function (canvas, W, H, gap, force) {
@@ -448,7 +480,7 @@ function GUI_CLASS() {
 			object.value = COLOR;
 	};
 	
-	this.set_color_rgb = function (object, c) {	console.log('111');
+	this.set_color_rgb = function (object, c) {
 		var colours = HELPER.hex2rgb(COLOR);
 		if (object.value.length > 3) {
 			object.value = colours[c];
@@ -607,10 +639,10 @@ function GUI_CLASS() {
 		square(x + w / 2, y, 0, 0);
 		square(x, y + h / 2, 0, 0);
 		square(x + w / 2, y + h, 0, -1);
-		square(x + w, y + h / 2, -1, 0);
-
-		function square(x, y, mx, my) {
-			var sr_size = Math.ceil(EVENTS.sr_size / this.ZOOM * 100);
+		square(x + w, y + h / 2, -1, 0);		
+		
+		function square(x, y, mx, my) {	
+			var sr_size = Math.ceil(EVENTS.sr_size / GUI.ZOOM * 100);
 			x = Math.round(x);
 			y = Math.round(y);
 			canvas_front.beginPath();

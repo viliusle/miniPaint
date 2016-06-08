@@ -19,6 +19,17 @@ document.oncontextmenu = function (e) { return EVENTS.mouse_right_click(e); };	/
 document.getElementById('color_hex').onkeyup = function (e) { GUI.set_color_manual(e); };	//on main color type
 document.getElementById('color_hex').onpaste = function (e) { GUI.set_color_manual(e); }; // on paste in main color input
 
+//windows touch
+document.addEventListener('MSPointerDown', EVENTS.mouse_click, false);
+document.addEventListener('MSPointerMove', EVENTS.mouse_move, false);
+document.addEventListener('MSPointerUp', EVENTS.mouse_release, false);
+
+//touch and drag
+document.addEventListener("touchstart", EVENTS.mouse_click, false);
+document.addEventListener("touchend", EVENTS.mouse_release, false);
+document.addEventListener("touchmove", EVENTS.mouse_move, false);
+//document.addEventListener("touchcancel", handleCancel, false);
+
 /**
  * all events handling
  * 
@@ -102,7 +113,7 @@ function EVENTS_CLASS() {
 	var last_pop_click = [0, 0];
 	
 	/**
-	 * popup position for drgable ability
+	 * popup position for dragable ability
 	 */
 	var popup_pos = [0, 0];
 	
@@ -173,7 +184,7 @@ function EVENTS_CLASS() {
 		else if (k == 27) {
 			if (POP != undefined && POP.active == true)
 				POP.hide();
-			DRAW.last_line = [false, false];
+			DRAW.last_line = [];
 			
 			DRAW.curve_points = [];
 			if (DRAW.select_data != false) {
@@ -294,44 +305,44 @@ function EVENTS_CLASS() {
 	};
 	// mouse_x, mouse_y, event.pageX, event.pageY
 	this.get_mouse_position = function (event) {
+		if(event.changedTouches){
+			//using touch events
+			event = event.changedTouches[0];
+		}
 		var valid = true;
-		if (event.offsetX) {
-			mouse_rel_x = event.offsetX;
-			mouse_rel_y = event.offsetY;
-		}
-		else if (event.layerX) {
-			mouse_rel_x = event.layerX;
-			mouse_rel_y = event.layerY;
-		}
-		else
-			return false;
-		mouse_x = event.pageX;
-		mouse_y = event.pageY;
 		var abs_x = event.pageX;
 		var abs_y = event.pageY;
-
-		if (event.target.id == "canvas_front") {
-			//in canvas area - relative pos
-			mouse_x = mouse_rel_x;
-			mouse_y = mouse_rel_y;
-			if (GUI.ZOOM != 100) {
-				mouse_x = Math.floor(mouse_x / GUI.ZOOM * 100);
-				mouse_y = Math.floor(mouse_y / GUI.ZOOM * 100);
-			}
-		}
-		else {
-			//outside canvas - absolute pos - canvas offset
-			mouse_x = mouse_x - 109;
-			mouse_y = mouse_y - 34;
+		
+		var bodyRect = document.body.getBoundingClientRect();
+		var canvas_el = document.getElementById('canvas_front').getBoundingClientRect();
+		var canvas_offset_x = canvas_el.left - bodyRect.left;
+		var canvas_offset_y = canvas_el.top - bodyRect.top;
+	    
+		var mouse_x = event.pageX - canvas_offset_x;
+		var mouse_y = event.pageY - canvas_offset_y;
+	    
+		if (event.target.id != "canvas_front") {
+			//outside canvas
 			valid = false;
 		}
+		
 		if (event.target.id == "canvas_preview") {
 			//in preview area - relative pos
-			mouse_x = mouse_rel_x;
-			mouse_y = mouse_rel_y;
+			var canvas_preview_el = document.getElementById('canvas_preview').getBoundingClientRect();
+			var canvas_preview_el_x = canvas_preview_el.left - bodyRect.left;
+			var canvas_preview_el_y = canvas_preview_el.top - bodyRect.top;
+			
+			mouse_x = event.pageX - canvas_preview_el_x;
+			mouse_y = event.pageY - canvas_preview_el_y;
+		}
+		
+		if (event.target.id != "canvas_preview" && GUI.ZOOM != 100) {
+			//we are in zoom mode - recalculate
+			mouse_x = Math.floor(mouse_x / GUI.ZOOM * 100);
+			mouse_y = Math.floor(mouse_y / GUI.ZOOM * 100);
 		}
 
-		//save - other place will use it too
+		//save
 		EVENTS.mouse = {
 			x: mouse_x,
 			y: mouse_y,
@@ -342,14 +353,23 @@ function EVENTS_CLASS() {
 			valid: valid,
 			click_valid: mouse_click_valid,
 			abs_x: abs_x,
-			abs_y: abs_y
+			abs_y: abs_y,
 		};
 	};
 	//mouse right click
 	this.mouse_right_click = function (event) {
 		if (POP != undefined && POP.active == true)
 			return true;
+
 		EVENTS.get_mouse_position(event);
+		
+		if(EVENTS.mouse.x != EVENTS.mouse.click_x && EVENTS.mouse.y != EVENTS.mouse.click_y){
+			//disable long click on mobile
+			event.preventDefault();
+			event.stopPropagation();
+			return false;
+		}
+		
 		mouse_click_pos[0] = EVENTS.mouse.x;
 		mouse_click_pos[1] = EVENTS.mouse.y;
 
@@ -377,16 +397,17 @@ function EVENTS_CLASS() {
 				popup_dragable = false;
 			return true;
 		}
-		if (event.which == 3)
-			return true;
+
 		EVENTS.get_mouse_position(event);
 		mouse_click_pos[0] = EVENTS.mouse.x;
 		mouse_click_pos[1] = EVENTS.mouse.y;
+		if (event.which == 3){
+			return true;
+		}
 		if (EVENTS.mouse.valid == false)
 			mouse_click_valid = false;
 		else
 			mouse_click_valid = true;
-
 
 		//check tools functions
 		for (var i in DRAW) {
@@ -493,9 +514,10 @@ function EVENTS_CLASS() {
 		EVENTS.isDrag = false;
 		if (POP != undefined && POP.active == true)
 			return true;
-		var mouse = EVENTS.get_mouse_position(event);
+		EVENTS.get_mouse_position(event);
 		mouse_move_last[0] = false;
 		mouse_move_last[1] = false;
+		
 		if (DRAW.select_square_action == '' && EVENTS.mouse.valid == true)
 			DRAW.select_data = false;
 
@@ -520,7 +542,7 @@ function EVENTS_CLASS() {
 			else if (resize_all == "h")
 				HEIGHT = EVENTS.mouse.y;
 			else if (resize_all == "wh") {
-				WIDTH = mouse_x;
+				WIDTH = EVENTS.mouse.x;
 				HEIGHT = EVENTS.mouse.y;
 			}
 			LAYER.set_canvas_size();
@@ -536,7 +558,7 @@ function EVENTS_CLASS() {
 		var n_valid = 0;
 		for (var i = 0, f; i < e.dataTransfer.files.length; i++) {
 			f = e.dataTransfer.files[i];
-			if (!f.type.match('image.*') && f.type != 'text/xml')
+			if (!f.type.match('image.*') && !f.name.match('.json'))
 				continue;
 			n_valid++;
 
@@ -547,21 +569,21 @@ function EVENTS_CLASS() {
 				FILE.SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
 
 			FR.onload = function (event) {
-				if (this.file.type != 'text/xml') {
+				if (this.file.type.match('image.*')) {
 					//image
 					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
 					EXIF.getData(this.file, FILE.save_EXIF);
 				}
 				else {
-					//xml
-					var responce = FILE.load_xml(event.target.result);
+					//json
+					var responce = FILE.load_json( event.target.result );
 					if (responce === true)
 						return false;
 				}
 			};
 			if (f.type == "text/plain")
 				FR.readAsText(f);
-			else if (f.type == "text/xml")
+			else if (f.name.match('.json'))
 				FR.readAsText(f);
 			else
 				FR.readAsDataURL(f);
