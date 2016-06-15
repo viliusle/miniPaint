@@ -182,7 +182,7 @@ function ELEMENTS_CLASS() {
 		canvas.closePath();
 	};
 	
-	this.image_round = function (canvas, mouse_x, mouse_y, size, img_data, canvas_tmp, anti_alias) {
+	this.image_round = function (canvas, mouse_x, mouse_y, size, img_data, canvas_tmp, anti_aliasing) {
 		var size_half = Math.round(size / 2);
 		var ctx_tmp = canvas_tmp.getContext("2d");
 		var xx = mouse_x - size_half;
@@ -210,7 +210,7 @@ function ELEMENTS_CLASS() {
 
 		//create form
 		ctx_tmp.fillStyle = '#ffffff';
-		if (anti_alias == true) {
+		if (anti_aliasing == true) {
 			var gradient = ctx_tmp.createRadialGradient(mouse_x, mouse_y, 0, mouse_x, mouse_y, size_half);
 			gradient.addColorStop(0, '#ffffff');
 			gradient.addColorStop(0.8, '#ffffff');

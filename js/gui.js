@@ -1,4 +1,4 @@
-/* global EVENTS, HELPER, POP, DRAW, LAYER, EL */
+/* global EVENTS, HELPER, POP, DRAW, LAYER, EL, HELP, LANG */
 /* global WIDTH, HEIGHT, canvas_front, DRAW_TOOLS_CONFIG, canvas_grid, canvas_preview */
 
 var GUI = new GUI_CLASS();
@@ -63,7 +63,9 @@ function GUI_CLASS() {
 			html += '<a title="' + DRAW_TOOLS_CONFIG[i].title + '"';
 			html += ' style="background: #989898 url(\'img/' + DRAW_TOOLS_CONFIG[i].icon[0] + '\') no-repeat ' + DRAW_TOOLS_CONFIG[i].icon[1] + 'px ' + DRAW_TOOLS_CONFIG[i].icon[2] + 'px;"';
 			if (DRAW_TOOLS_CONFIG[i].name == DRAW.active_tool)
-				html += ' class="active"';
+				html += ' class="active trn"';
+			else
+				html += ' class="trn"';
 			html += ' onclick="return GUI.action(\'' + DRAW_TOOLS_CONFIG[i].name + '\');"';
 			html += ' id="' + DRAW_TOOLS_CONFIG[i].name + '"';
 			html += ' href="#"></a>' + "\n";
@@ -89,6 +91,7 @@ function GUI_CLASS() {
 	};
 	
 	this.autodetect_dimensions = function(){
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
 		var page_w = canvas_wrapper.clientWidth;
 		var page_h = canvas_wrapper.clientHeight;
 		for(var i = this.common_dimensions.length-1; i >= 0; i--){
@@ -296,8 +299,12 @@ function GUI_CLASS() {
 			}
 			else if (typeof this.action_data().attributes[k] == 'object') {
 				//select
+				
+				var selected = object.options[object.selectedIndex];
+				var value = selected.getAttribute('data-value');
+				
 				var key = k.replace("_values", "");
-				this.action_data().attributes[key] = object.value;
+				this.action_data().attributes[key] = value;
 			}
 			else if (this.action_data().attributes[k][0] == '#') {
 				//color
@@ -381,7 +388,7 @@ function GUI_CLASS() {
 		if (DRAW.active_tool != '')
 			document.getElementById(DRAW.active_tool).className = "";
 		DRAW.active_tool = key;
-		document.getElementById(key).className = "active";
+		document.getElementById(key).className = "active trn";
 		this.show_action_attributes();
 
 		return false;
@@ -394,6 +401,10 @@ function GUI_CLASS() {
 		}
 	};
 	
+	/**
+	 * used strings: 
+	 * "Fill", "Square", "Circle", "Radial", "Anti aliasing", "Circle", "Strict", "Burn"
+	 */
 	this.show_action_attributes = function () {
 		html = '';
 		var step = 10;
@@ -405,9 +416,9 @@ function GUI_CLASS() {
 			if (this.action_data().attributes[k] === true || this.action_data().attributes[k] === false) {
 				//true / false
 				if (this.action_data().attributes[k] == true)
-					html += '<div onclick="GUI.update_attribute(this, 1)" style="background-color:#5680c1;" class="attribute-area" id="' + k + '">' + title + '</div>';
+					html += '<div onclick="GUI.update_attribute(this, 1)" style="background-color:#5680c1;" class="attribute-area trn" id="' + k + '">' + title + '</div>';
 				else
-					html += '<div onclick="GUI.update_attribute(this, 0)" class="attribute-area" id="' + k + '">' + title + '</div>';
+					html += '<div onclick="GUI.update_attribute(this, 0)" class="attribute-area trn" id="' + k + '">' + title + '</div>';
 			}
 			else if (typeof GUI.action_data().attributes[k] == 'object') {
 				//drop down select
@@ -417,7 +428,7 @@ function GUI_CLASS() {
 					var key = k.replace("_values", "");
 					if (GUI.action_data().attributes[key] == GUI.action_data().attributes[k][j])
 						sel = 'selected="selected"';
-					html += '<option ' + sel + ' name="' + GUI.action_data().attributes[k][j] + '">' + GUI.action_data().attributes[k][j] + '</option>';
+					html += '<option class="trn" ' + sel + ' name="' + GUI.action_data().attributes[k][j] + '" data-value="'+GUI.action_data().attributes[k][j]+'">' + GUI.action_data().attributes[k][j] + '</option>';
 				}
 				html += '</select>';
 			}
@@ -435,7 +446,7 @@ function GUI_CLASS() {
 				html += '<div id="' + k + '_container">';
 				html += '<table style="width:100%;">';	//table for 100% width
 				html += '<tr>';
-				html += '<td style="font-weight:bold;padding-right:2px;white-space:nowrap;">' + title + ':</td>';
+				html += '<td style="font-weight:bold;padding-right:2px;white-space:nowrap;" class="trn">' + title + ':</td>';
 				html += '<td><input onKeyUp="GUI.update_attribute(this);" type="number" id="' + k + '" value="' + GUI.action_data().attributes[k] + '" /></td>';
 				html += '</tr>';
 				html += '</table>';
@@ -445,25 +456,28 @@ function GUI_CLASS() {
 			}
 		}
 		document.getElementById("action_attributes").innerHTML = html;
+		
+		//retranslate
+		HELP.help_translate(LANG);
 	};
 	
 	this.set_color = function (object) {
-		if (HELPER.chech_input_color_support('main_colour') == true && object.id == 'main_colour')
+		if (HELPER.chech_input_color_support('main_color') == true && object.id == 'main_color')
 			COLOR = object.value;
 		else
 			COLOR = HELPER.rgb2hex_all(object.style.backgroundColor);
 		COLOR_copy = COLOR;
 
-		if (HELPER.chech_input_color_support('main_colour') == true)
-			document.getElementById("main_colour").value = COLOR; //supported
+		if (HELPER.chech_input_color_support('main_color') == true)
+			document.getElementById("main_color").value = COLOR; //supported
 		else
-			document.getElementById("main_colour_alt").style.backgroundColor = COLOR; //not supported
+			document.getElementById("main_color_alt").style.backgroundColor = COLOR; //not supported
 
 		document.getElementById("color_hex").value = COLOR;
-		var colours = HELPER.hex2rgb(COLOR);
-		document.getElementById("rgb_r").value = colours.r;
-		document.getElementById("rgb_g").value = colours.g;
-		document.getElementById("rgb_b").value = colours.b;
+		var colors = HELPER.hex2rgb(COLOR);
+		document.getElementById("rgb_r").value = colors.r;
+		document.getElementById("rgb_g").value = colors.g;
+		document.getElementById("rgb_b").value = colors.b;
 	};
 	
 	this.set_color_manual = function (event) {
@@ -481,15 +495,15 @@ function GUI_CLASS() {
 	};
 	
 	this.set_color_rgb = function (object, c) {
-		var colours = HELPER.hex2rgb(COLOR);
+		var colors = HELPER.hex2rgb(COLOR);
 		if (object.value.length > 3) {
-			object.value = colours[c];
+			object.value = colors[c];
 		}
 		else if (object.value.length > 0) {
 			value = object.value;
 			value = parseInt(value);
 			if (isNaN(value) || value != object.value || value > 255 || value < 0) {
-				object.value = colours[c];
+				object.value = colors[c];
 				return false;
 			}
 			COLOR = "#" + ("000000" + HELPER.rgbToHex(document.getElementById("rgb_r").value, document.getElementById("rgb_g").value, document.getElementById("rgb_b").value)).slice(-6);
@@ -502,27 +516,27 @@ function GUI_CLASS() {
 	this.sync_colors = function () {
 		document.getElementById("color_hex").value = COLOR;
 
-		if (HELPER.chech_input_color_support('main_colour') == true)
-			document.getElementById("main_colour").value = COLOR; //supported
+		if (HELPER.chech_input_color_support('main_color') == true)
+			document.getElementById("main_color").value = COLOR; //supported
 		else
-			document.getElementById("main_colour_alt").style.backgroundColor = COLOR; //not supported
+			document.getElementById("main_color_alt").style.backgroundColor = COLOR; //not supported
 
-		var colours = HELPER.hex2rgb(COLOR);
-		document.getElementById("rgb_r").value = colours.r;
-		document.getElementById("rgb_g").value = colours.g;
-		document.getElementById("rgb_b").value = colours.b;
+		var colors = HELPER.hex2rgb(COLOR);
+		document.getElementById("rgb_r").value = colors.r;
+		document.getElementById("rgb_g").value = colors.g;
+		document.getElementById("rgb_b").value = colors.b;
 	};
 	
 	this.toggle_color_select = function () {
 		if (POP.active == false) {
 			POP.add({
-				title: 'Colour:', 
+				title: 'Color:', 
 				function: function () {
 					COLOR_copy = COLOR;
 					var html = '<canvas style="position:relative;margin-bottom:5px;" id="c_all" width="300" height="300"></canvas>';
 					html += '<table>';
 					html += '<tr>';
-					html += '	<td><b>Lum:</b></td>';
+					html += '	<td><b>Luminosity:</b></td>';
 					html += '	<td><input id="lum_ranger" oninput="GUI.change_lum(this.value);document.getElementById(\'lum_preview\').innerHTML=this.value;" type="range" value="0" min="-255" max="255" step="1"></td>';
 					html += '	<td style="padding-left:10px;width:30px;" id="lum_preview">0</td>';
 					html += '</tr>';

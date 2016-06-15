@@ -41,7 +41,14 @@ function EFFECTS_CLASS() {
 		{title: 'Vintage',		name: 'effects_vintage' },
 		];
 		
-	var fx_filter = fx.canvas();
+	var fx_filter = false;
+
+	this.load_fx = function (){
+		//load FX lib
+		if(fx_filter == false){
+			fx_filter = fx.canvas();
+		}		
+	};
 
 	this.effects_bw = function () {
 		var default_level = this.thresholding('otsu', canvas_active(), WIDTH, HEIGHT, true);
@@ -157,6 +164,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_zoomblur = function () {
+		this.load_fx();
+		
 		POP.add({name: "param1", title: "Strength:", value: "0.3", range: [0, 1], step: 0.01});
 		POP.add({name: "param2", title: "Center x:", value: Math.round(WIDTH / 2), range: [0, WIDTH]});
 		POP.add({name: "param3", title: "Center y:", value: Math.round(HEIGHT / 2), range: [0, HEIGHT]});
@@ -199,6 +208,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_bulge_pinch = function () {
+		this.load_fx();
+		
 		POP.add({name: "param1", title: "Strength:", value: 1, range: [-1, 1], step: 0.1});
 		var default_value = Math.min(WIDTH, HEIGHT);
 		default_value = Math.round(default_value / 2);
@@ -272,6 +283,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_denoise = function () {
+		this.load_fx();
+		
 		POP.add({name: "param1", title: "Exponent:", value: "20", range: [0, 50]});
 		POP.effects = true;
 		POP.show('Denoise',
@@ -336,6 +349,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_dot_screen = function () {
+		this.load_fx();
+		
 		POP.add({name: "param2", title: "Size:", value: "3", range: [1, 20]});
 		POP.effects = true;
 		POP.show('Dot Screen',
@@ -580,6 +595,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_perspective = function () {
+		this.load_fx();
+		
 		POP.add({name: "param1", title: "X1:", value: WIDTH / 4, range: [0, WIDTH]});
 		POP.add({name: "param2", title: "Y1:", value: HEIGHT / 4, range: [0, HEIGHT]});
 		POP.add({name: "param3", title: "X2:", value: WIDTH * 3 / 4, range: [0, WIDTH]});
@@ -719,6 +736,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_tilt_shift = function () {
+		this.load_fx();
+		
 		//extra
 		POP.add({name: "param7", title: "Saturation:", value: "3", range: [0, 100]});
 		POP.add({name: "param8", title: "Sharpen:", value: "1", range: [1, 10]});
@@ -804,6 +823,8 @@ function EFFECTS_CLASS() {
 	};
 
 	this.effects_vignette = function () {
+		this.load_fx();
+		
 		POP.add({name: "param1", title: "Size:", value: "0.5", range: [0, 1], step: 0.01});
 		POP.add({name: "param2", title: "Amount:", value: "0.5", range: [0, 1], step: 0.01});
 		POP.effects = true;
@@ -958,7 +979,7 @@ function EFFECTS_CLASS() {
 		context.putImageData(img, 0, 0);
 	};
 
-	//converts greyscale images to coloured
+	//converts greyscale images to colored
 	this.colorize = function (context, W, H, rand_power, max_gap, dither, manual_colors) {
 		if (manual_colors == undefined || manual_colors === true) {
 			var colors = [];

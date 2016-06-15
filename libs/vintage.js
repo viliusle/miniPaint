@@ -26,7 +26,7 @@ var VINTAGE = new VINTAGE_CLASS();
  *  - glfx.js url: http://evanw.github.com/glfx.js/
  */
 function VINTAGE_CLASS() {
-	var fx_filter = fx.canvas();
+	var fx_filter = false;
 
 	//increasing red color
 	this.adjust_color = function (context, W, H, level_red) {	//level = [0, 200], default 70
@@ -144,6 +144,11 @@ function VINTAGE_CLASS() {
 	
 	//adding vignette effect - blured dark borders
 	this.optics = function (context, W, H, param1, param2) {	//param1 [0, 0.5], param2 [0, 0.7], default 0.3, 0.5
+		//make sure FX lib loaded
+		if(fx_filter == false){
+			fx_filter = fx.canvas();
+		}
+		
 		var texture = fx_filter.texture(context.getImageData(0, 0, W, H));
 		fx_filter.draw(texture).vignette(param1, param2).update();
 		context.drawImage(fx_filter, 0, 0);

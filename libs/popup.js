@@ -10,7 +10,7 @@ var POP = new popup();
  * 
  * Usage:
  * var POP = new popup();
- * POP.add({name: "param1", title: "Value1:" });
+ * POP.add({name: "param1", title: "value1:" });
  * POP.add(...);
  * POP.show('title', main_handler, preview_handler, onload_handler);
  * 
@@ -18,16 +18,16 @@ var POP = new popup();
  * - name		type			example
  * - ---------------------------------------------------------------
  * - name		string		'parameter1'
- * - title		string		'Enter value:'
+ * - title		string		'enter value:'
  * - type		string		'select', 'textarea', 'color'
  * - value		string		'314'
- * - values		array fo strings	['One', 'Two', 'Three']
+ * - values		array fo strings	['one', 'two', 'three']
  * - range		numbers interval	[0, 255]
  * - step		int/float		1	
- * - placeholder	text			'Enter number here'
+ * - placeholder	text			'enter number here'
  * - html		html text		'<b>bold</b>'
  * - function	function		'cutom_function'
- * - onchange	function		'CLASS.onchange_function'
+ * - onchange	function		'class.onchange_function()'
  */
 function popup() {
 	this.active = false;
@@ -47,7 +47,16 @@ function popup() {
 	this.add = function (object) {
 		parameters.push(object);
 	};
-	//show popup window
+	
+	/**
+	 * show popup window.
+	 * used strings: "Ok", "Cancel", "Preview"
+	 * 
+	 * @param string title
+	 * @param function handler
+	 * @param function preview_handler
+	 * @param function onload_handler
+	 */
 	this.show = function (title, handler, preview_handler, onload_handler) {
 		POP.id = HELPER.getRandomInt(0, 999999999);
 		if (this.active == true) {
@@ -86,7 +95,7 @@ function popup() {
 			html += '<span style="float:right;">';
 			html += '<input id="previous_filter" type="button" value="&lt;"> ';
 			html += '<select id="effect_browser">';
-			html += '<option value="">--- Select effect ---</option>';
+			html += '<option class="trn" value="">--- Select effect ---</option>';
 			for (var i = 0; i < EFFECTS.FILTERS_LIST.length; i++) {
 				var selected = '';
 				if (EFFECTS.FILTERS_LIST[i].name == GUI.last_menu)
@@ -97,7 +106,7 @@ function popup() {
 			html += ' <input id="next_filter" onclick="" type="button" value="&gt;"> ';
 			html += '</span>';
 		}
-		html += '<h2 id="popup_drag">' + title + '</h2>';
+		html += '<h2 id="popup_drag" class="trn">' + title + '</h2>';
 
 		//preview area
 		if (this.preview !== false && this.preview_in_main == false) {
@@ -113,7 +122,7 @@ function popup() {
 			var parameter = parameters[i];
 			html += '<tr id="popup-tr-'+parameters[i].name+'">';
 			if (title != 'Error')
-				html += '<td style="font-weight:bold;padding-right:3px;width:130px;">' + parameter.title + '</td>';
+				html += '<td style="font-weight:bold;padding-right:3px;width:130px;" class="trn">' + parameter.title + '</td>';
 			if (parameter.name != undefined) {
 				if (parameter.values != undefined) {
 					var onchange = '';
@@ -151,7 +160,7 @@ function popup() {
 							if (onchange == '' && preview_handler != undefined)
 								onchange = ' onchange="POP.view();" ';
 							html += '<input type="radio" ' + onchange + ' ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label style="margin-right:20px;" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + parameter.values[j] + '</label>';
+							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + parameter.values[j] + '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;
@@ -216,7 +225,7 @@ function popup() {
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><input style="color:#393939;" disabled="disabled" type="text" id="pop_data_' + id_tmp + '" value="' + parameter.value + '" /></td>';
+					html += '<td colspan="2"><div class="trn" style="padding: 2px 0px;">' + parameter.value + '</div></td>';
 				else
 					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
 			}
@@ -226,10 +235,10 @@ function popup() {
 
 		//action buttons
 		html += '<div style="text-align:center;margin-top:20px;margin-bottom:15px;">';
-		html += '<input type="button" onclick="POP.save();" class="button" value="OK" />';
-		html += '<input type="button" onclick="POP.hide();" class="button" value="Cancel" />';
+		html += '<button onclick="POP.save();" class="button trn">Ok</button>';
+		html += '<button onclick="POP.hide();" class="button trn">Cancel</button>';
 		if (this.preview_in_main !== false)
-			html += '<input type="button" onclick="POP.view();" class="button" value="Preview" />';
+			html += '<button onclick="POP.view();" class="button trn">Preview</button>';
 		html += '</div>';
 
 		document.getElementById("popup").innerHTML = html;
@@ -303,6 +312,9 @@ function popup() {
 			layer_active_small_ctx.drawImage(document.getElementById(LAYER.layers[LAYER.layer_active].name), 0, 0, POP.width_mini, POP.height_mini);
 			POP.view();
 		}
+		
+		//call translation again to translate popup
+		HELP.help_translate(LANG);
 	};
 	
 	//hide popup
@@ -417,7 +429,7 @@ function popup() {
 			else if (typeof this.handler == "function")
 				this.handler(response);
 			else
-				console.log('Error: wrong function type: ' + this.handler);
+				console.log('error: wrong function type: ' + this.handler);
 		}
 		this.handler = '';
 	};

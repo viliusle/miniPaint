@@ -357,7 +357,7 @@ function IMAGE_CLASS() {
 		POP.add({name: "height_percent", title: "Height (%):", value: '', placeholder: 100});
 		POP.add({name: "mode", title: "Mode:", value: "Resample - Hermite", values: ["Resize", "Resample - Hermite"]});
 		POP.add({name: "preblur", title: "Pre-Blur:", values: ["Yes", "No"], value: "No"});
-		POP.add({name: "sharpen", title: "Apply sharpen:", values: ["Yes", "No"], value: "No"});
+		POP.add({name: "sharpen", title: "Sharpen:", values: ["Yes", "No"], value: "No"});
 		POP.show('Resize', [IMAGE, "resize_layer"]);
 	};
 

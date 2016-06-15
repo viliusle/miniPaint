@@ -12,7 +12,7 @@ function TOOLS_CLASS() {
 
 	//sprites
 	this.tools_sprites = function () {
-		POP.add({name: "param1", title: "Offset:", value: "50", values: ["0", "10", "50", "100"]});
+		POP.add({name: "param1", title: "Gap:", value: "50", values: ["0", "10", "50", "100"]});
 		POP.show('Sprites', function (response) {
 			EDIT.save_state();
 			var param1 = parseInt(response.param1);

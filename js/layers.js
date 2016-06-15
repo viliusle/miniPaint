@@ -324,9 +324,12 @@ function LAYER_CLASS() {
 		document.getElementById('canvas_more').appendChild(new_canvas);
 		new_canvas.width = WIDTH;
 		new_canvas.height = HEIGHT;
+		
 		new_canvas.getContext("2d").mozImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").webkitImageSmoothingEnabled = false;
-		new_canvas.getContext("2d").ImageSmoothingEnabled = false;
+		new_canvas.getContext("2d").msImageSmoothingEnabled = false;
+		new_canvas.getContext("2d").imageSmoothingEnabled = false;
+		
 		//sync zoom
 		new_canvas.style.width = Math.round(WIDTH * GUI.ZOOM / 100) + "px";
 		new_canvas.style.height = Math.round(HEIGHT * GUI.ZOOM / 100) + "px";
@@ -483,21 +486,30 @@ function LAYER_CLASS() {
 		}
 	};
 	this.update_info_block = function () {
-		var html = '';
-		html += '<span style="font-weight:bold;min-width:45px;display:block;float:left;">Size:</span> ' + WIDTH + "x" + HEIGHT + "<br />";
+		//show size
+		document.getElementById('mouse_info_size').innerHTML = WIDTH + "x" + HEIGHT;
+		
+		//show mouse position
 		var x = 0;
 		var y = 0;
 		if (EVENTS.mouse != undefined) {
 			x = EVENTS.mouse.x;
 			y = EVENTS.mouse.y;
 		}
-		html += '<span style="font-weight:bold;min-width:45px;display:block;float:left;">Mouse:</span> ' + x + ", " + y + "<br />";
+		document.getElementById('mouse_info_mouse').innerHTML = x + ", " + y;
+		
+		//show selected area info
 		if (DRAW.select_data != false) {
-			html += '<span style="font-weight:bold;min-width:45px;display:block;float:left;">XY:</span> ' + DRAW.select_data.x + ", " + DRAW.select_data.y + "<br />";
-			html += '<span style="font-weight:bold;min-width:45px;display:block;float:left;">Area:</span> ' + DRAW.select_data.w + ", " + DRAW.select_data.h + "<br />";
+			document.getElementById('mouse_info_xy').innerHTML = DRAW.select_data.x + ", " + DRAW.select_data.y;
+			document.getElementById('mouse_info_area').innerHTML = DRAW.select_data.w + ", " + DRAW.select_data.h;
+			
+			document.getElementById('mouse_info_selected').style.display = 'block';
 		}
-
-		document.getElementById('info').innerHTML = html;
+		else{
+			document.getElementById('mouse_info_xy').innerHTML = '';
+			document.getElementById('mouse_info_area').innerHTML = '';
+			document.getElementById('mouse_info_selected').style.display = 'none';
+		}
 	};
 	this.set_canvas_size = function (repaint) {
 		var ratio = WIDTH/HEIGHT;

@@ -10,7 +10,6 @@ document.onload = MAIN.init(true);
  * @author ViliusL
  */
 function MAIN_CLASS() {
-
 	this.init = function (first_load) {
 		if (first_load === true) {
 			GUI.draw_helpers();
@@ -38,14 +37,20 @@ function MAIN_CLASS() {
 		GUI.redraw_preview();
 		
 		//detect color support
-		if (HELPER.chech_input_color_support('main_colour') == true)
-			document.getElementById("main_colour").value = COLOR; //supported
+		if (HELPER.chech_input_color_support('main_color') == true)
+			document.getElementById("main_color").value = COLOR; //supported
 		else {
 			//not supported
-			document.getElementById("main_colour").style.display = 'none';
-			document.getElementById("main_colour_alt").style.display = '';
-			document.getElementById("main_colour_alt").style.backgroundColor = COLOR;
+			document.getElementById("main_color").style.display = 'none';
+			document.getElementById("main_color_alt").style.display = '';
+			document.getElementById("main_color_alt").style.backgroundColor = COLOR;
 		}
 		canvas_grid.globalAlpha = 0.8;
+		
+		//init translation
+		var lang_cookie = HELPER.getCookie('language');
+		if(lang_cookie != '')
+			LANG = lang_cookie.replace(/([^a-z]+)/gi, '');
+		HELP.help_translate(LANG);
 	};
 }

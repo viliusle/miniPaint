@@ -127,7 +127,7 @@ function FILE_CLASS() {
 		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100]});
 		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected']});
 		POP.add({name: "trim", title: "Trim:", values: ['No', 'Yes']});
-		POP.show('Save as ...', [FILE, 'save']);
+		POP.show('Save as', [FILE, 'save']);
 		document.getElementById("pop_data_name").select();
 		if (e != undefined)
 			e.preventDefault();
@@ -303,7 +303,7 @@ function FILE_CLASS() {
 			var actualType = data.replace(/^data:([^;]*).*/, '$1');
 			if (data_header != actualType && data_header != "text/plain") {
 				//error - no support
-				POP.add({title: "Error:", value: "Your browser do not support " + user_response.type});
+				POP.add({title: "Error:", value: '<span class="trn">Your browser do not support</span> ' + user_response.type});
 				POP.show('Sorry', '');
 				return false;
 			}

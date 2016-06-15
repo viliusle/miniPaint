@@ -204,8 +204,9 @@ function EVENTS_CLASS() {
 			IMAGE.trim();
 		}
 		//o - open
-		else if (k == 79)
+		else if (k == 79){
 			FILE.open();
+		}
 		//s - save
 		else if (k == 83) {
 			if (POP != undefined)
@@ -665,7 +666,7 @@ function EVENTS_CLASS() {
 	};
 }
 
-function call_menu(class_name, function_name) {
+function call_menu(class_name, function_name, parameter) {
 	//close menu
 	var menu = document.querySelector('#main_menu .selected');
 	if(menu != undefined){
@@ -674,7 +675,7 @@ function call_menu(class_name, function_name) {
 	GUI.last_menu = function_name;
 
 	//exec
-	class_name[function_name]();
+	class_name[function_name](parameter);
 
 	GUI.zoom();
 }

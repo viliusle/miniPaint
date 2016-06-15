@@ -17,7 +17,7 @@ function HELP_CLASS() {
 		{title: 'Brush styles',		name: 'Harmony',		link: 'http://ricardocabello.com/blog/post/689' },
 		{title: 'Effects library',	name: 'glfx.js',		link: 'http://evanw.github.io/glfx.js/' },
 		{title: 'EXIF',			name: 'exif.js',		link: 'https://github.com/jseidelin/exif-js' },
-		{title: 'Image filters',	name: 'ImageFilters.js',link: 'https://github.com/arahaya/ImageFilters.js' },
+		{title: 'Image filters',	name: 'imageFilters.js',link: 'https://github.com/arahaya/ImageFilters.js' },
 		{title: 'KD-tree',		name: 'kdtree.js',	link: 'http://jsdo.it/peko/wKvk' },
 		];
 
@@ -44,24 +44,36 @@ function HELP_CLASS() {
 		POP.add({title: "Drag & Drop", value: 'Imports images'});
 		POP.show('Keyboard Shortcuts', '');
 	};
-	//credits
-	this.help_credits = function () {
-		for (var i in CREDITS) {
-			if (CREDITS[i].link != undefined)
-				POP.add({title: CREDITS[i].title, html: '<a href="' + CREDITS[i].link + '">' + CREDITS[i].name + '</a>'});
-			else
-				POP.add({title: CREDITS[i].title, html: CREDITS[i].name});
-		}
-		POP.show('Credits', '');
-	};
 	//about
 	this.help_about = function () {
 		var email = 'www.viliusl@gmail.com';
 		POP.add({title: "Name:", value: "miniPaint " + VERSION});
-		POP.add({title: "Description:", value: 'online image editor'});
+		POP.add({title: "Description:", value: 'Online image editor'});
 		POP.add({title: "Author:", value: 'ViliusL'});
 		POP.add({title: "Email:", html: '<a href="mailto:' + email + '">' + email + '</a>'});
 		POP.add({title: "Source:", html: '<a href="https://github.com/viliusle/miniPaint">github.com/viliusle/miniPaint</a>'});
 		POP.show('About', '');
+	};
+	
+	//change language
+	this.help_translate = function (lang_code) {
+		
+		//default English emty translator
+		var dict_en = {};
+		
+		//save cookie
+		if(lang_code != undefined && lang_code != LANG){
+			HELPER.setCookie('language', lang_code, 30);
+		}
+		
+		var dictionary_data = "dict_"+lang_code;
+		if(window[dictionary_data] != undefined || lang_code == 'en'){
+			//translate
+			$('body').translate({lang: lang_code, t: window[dictionary_data]});
+			LANG = lang_code;	
+		}
+		else{
+			console.log('Translate error, can not find dictionary: '+dictionary_data);
+		}
 	};
 }

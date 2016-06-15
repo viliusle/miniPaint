@@ -22,14 +22,14 @@
 			</noscript>
 		</div>
 		<div style="clear:both;"></div>
-		<div id="main_colour_container">
-			<input type="color" id="main_colour" value="" onchange="GUI.set_color(this);" />
-			<div style="display:none;" id="main_colour_alt" onclick="GUI.toggle_color_select();"></div>
+		<div id="main_color_container">
+			<input type="color" id="main_color" value="#0000ff" onchange="GUI.set_color(this);" />
+			<div style="display:none;" id="main_color_alt" onclick="GUI.toggle_color_select();"></div>
 		</div>
 		<div class="block" id="all_colors"></div>
 		<div class="block">
 			<input type="text" id="color_hex" value="#000000" /><br />
-			<div id="main_colour_rgb">
+			<div id="main_color_rgb">
 				<a class="red" href="#" title="Red" onclick="return false;">Red</a>
 				<input id="rgb_r" onKeyUp="GUI.set_color_rgb(this, 'r')" onchange="GUI.set_color_rgb(this, 'r')" type="number" value="255" />
 				<br />				
@@ -41,13 +41,29 @@
 				<br />
 				<a class="alpha" href="#" title="Alpha" onclick="return false;">Alpha</a>
 				<input id="rgb_a" onKeyUp="GUI.set_color_rgb(this, 'a')" onchange="GUI.set_color_rgb(this, 'a')" type="number" value="255" />
+				<br />
 			</div>
 		</div>
-		<div class="block" id="info"></div>
+		<div class="block" id="mouse_info">
+			<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Size:</span>
+			<span id="mouse_info_size"></span><br />
+			
+			<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Mouse:</span>
+			<span id="mouse_info_mouse"></span><br />
+			
+			<div style="display:none;" id="mouse_info_selected">
+				<br />
+				<span style="font-weight:bold;min-width:45px;display:block;float:left;">XY:</span>
+				<span id="mouse_info_xy"></span><br />
+
+				<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Area:</span>
+				<span id="mouse_info_area"></span><br />
+			</div>
+		</div>
 		<div class="block" id="action_attributes"></div>
 	</div>
 	<div id="canvas_wrapper">
-		<canvas id="canvas_back"><div class="error">Your browser doesn't support canvas.</div></canvas>
+		<canvas id="canvas_back"><div class="trn" class="error">Your browser doesn't support canvas.</div></canvas>
 		<canvas id="Background"></canvas>
 		<div id="canvas_more"></div>
 		<canvas id="canvas_front"></canvas>
@@ -63,16 +79,16 @@
 			<div style="margin-top:105px;padding-left:5px;">
 				<input onclick="GUI.zoom(-1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="-" />
 				<input onclick="GUI.zoom(+1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="+" />
-				<b>Zoom: </b><span id="zoom_nr">100</span>%
-				<br />
+				<div style="display: inline-block;margin: 5px 0px;">
+					<b class="trn">Zoom</b>: <span id="zoom_nr">100</span>%
+				</div>
 				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value);EVENTS.scroll_window();" /> 
 			</div>
 		</div>
 		<div id="layers_base">
-			<b>Layers</b> <a title="Add new layer" class="layer_add" onclick="LAYER.layer_add();return false;" href="#">+</a>
+			<b class="trn">Layers</b> <a title="Add new layer" class="layer_add" onclick="LAYER.layer_add();return false;" href="#">+</a>
 			<a title="Move down" onclick="LAYER.move_layer('down');return false;" class="layers_arrow" href="#">&darr;</a>
 			<a title="Move up" onclick="LAYER.move_layer('up');return false;" class="layers_arrow" href="#">&uarr;</a>
-			<a title="Set opacity" onclick="LAYER.set_alpha();return false;" class="layers_arrow" href="#">A</a>
 			<div style="margin-top:5px;" id="layers"></div>
 		</div>
 	</div>
@@ -84,147 +100,154 @@
 <div id="main_menu" class="ddsmoothmenu">
 	<ul>
 	<li>
-		<a class="icon file" href="#">File</a>
+		<a class="icon file trn" href="#">File</a>
 		<ul>
-			<li><a onclick="call_menu(FILE, 'file_new');" href="#">New</a></li>
-			<li><a onclick="call_menu(FILE, 'file_open');" href="#">Open...</a></li>
-			<li><a onclick="call_menu(FILE, 'file_save');" href="#">Save as...</a></li>
-			<li><a onclick="call_menu(FILE, 'file_print');" href="#">Print...</a></li>
+			<li><a class="trn" onclick="call_menu(FILE, 'file_new');" href="#">New</a></li>
+			<li><a class="trn dots" onclick="call_menu(FILE, 'file_open');" href="#">Open</a></li>
+			<li><a class="trn dots" onclick="call_menu(FILE, 'file_save');" href="#">Save as</a></li>
+			<li><a class="trn dots" onclick="call_menu(FILE, 'file_print');" href="#">Print</a></li>
 		</ul>
 	</li>
 	<li>
-		<a class="icon edit" href="#">Edit</a>
+		<a class="icon edit trn" href="#">Edit</a>
 		<ul>
-			<li><a onclick="call_menu(EDIT, 'edit_undo');" href="#">Undo</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_undo');" href="#">Undo</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(EDIT, 'edit_cut');" href="#">Cut selection</a></li>
-			<li><a onclick="call_menu(EDIT, 'edit_copy');" href="#">Copy selection</a></li>
-			<li><a onclick="call_menu(EDIT, 'edit_paste');" href="#">Paste selection</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_cut');" href="#">Cut selection</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_copy');" href="#">Copy selection</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_paste');" href="#">Paste selection</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(EDIT, 'edit_select');" href="#">Select All</a></li>
-			<li><a onclick="call_menu(EDIT, 'edit_clear');" href="#">Clear selection</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_select');" href="#">Select all</a></li>
+			<li><a class="trn" onclick="call_menu(EDIT, 'edit_clear');" href="#">Clear selection</a></li>
 		</ul>
 	</li>
 	<li>
-		<a class="icon image" href="#">Image</a>
+		<a class="icon image trn" href="#">Image</a>
 		<ul>
-			<li><a onclick="call_menu(IMAGE, 'image_information');" href="#">Information...</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_size');" href="#">Size...</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_trim');" href="#">Trim</a>
-			<li><a onclick="call_menu(IMAGE, 'image_crop');" href="#">Crop Selection</a>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_information');" href="#">Information</a></li>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_size');" href="#">Size</a></li>
+			<li><a class="trn" onclick="call_menu(IMAGE, 'image_trim');" href="#">Trim</a>
+			<li><a class="trn" onclick="call_menu(IMAGE, 'image_crop');" href="#">Crop Selection</a>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(IMAGE, 'image_resize');" href="#">Resize...</a></li>
-			<li>
-				<a href="#">Rotate</a>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_resize');" href="#">Resize</a></li>
+			<li class="more">
+				<a class="trn" href="#">Rotate</a>
 				<ul>
-				<li><a onclick="call_menu(IMAGE, 'image_rotate_left');" href="#">Left</a></li>
-				<li><a onclick="call_menu(IMAGE, 'image_rotate_right');" href="#">Right</a></li>
-				<li><a onclick="call_menu(IMAGE, 'image_rotate');" href="#">Rotation...</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_left');" href="#">Left</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_right');" href="#">Right</a></li>
+				<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_rotate');" href="#">Rotation</a></li>
 				</ul>
 			</li>
-			<li>
-				<a href="#">Flip</a>
+			<li class="more">
+				<a class="trn" href="#">Flip</a>
 				<ul>
-				<li><a onclick="call_menu(IMAGE, 'image_vflip');" href="#">Vertical</a></li>
-				<li><a onclick="call_menu(IMAGE, 'image_hflip');" href="#">Horizontal</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'image_vflip');" href="#">Vertical</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'image_hflip');" href="#">Horizontal</a></li>
 				</ul>
 			</li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(IMAGE, 'image_colors');" href="#">Color corrections...</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_auto_adjust');" href="#">Auto adjust colors</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_GrayScale');" href="#">GrayScale</a>
-			<li><a onclick="call_menu(IMAGE, 'image_decrease_colors');" href="#">Decrease color depth...</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_negative');" href="#">Negative</a></li>
-			<li><a onclick="call_menu(IMAGE, 'image_grid');" href="#">Grid...</a></li>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_colors');" href="#">Color corrections</a></li>
+			<li><a class="trn" onclick="call_menu(IMAGE, 'image_auto_adjust');" href="#">Auto adjust colors</a></li>
+			<li><a class="trn" onclick="call_menu(IMAGE, 'image_GrayScale');" href="#">GrayScale</a>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_decrease_colors');" href="#">Decrease color depth</a></li>
+			<li><a class="trn" onclick="call_menu(IMAGE, 'image_negative');" href="#">Negative</a></li>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_grid');" href="#">Grid</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(IMAGE, 'image_histogram');" href="#">Histogram...</a></li>
+			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_histogram');" href="#">Histogram</a></li>
 		</ul>
 	</li>
 	<li>
-		<a class="icon layer" href="#">Layer</a>
+		<a class="icon layer trn" href="#">Layer</a>
 		<ul>
-			<li><a onclick="call_menu(LAYER, 'layer_new');" href="#">New</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_dublicate');" href="#">Dublicate</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_show_hide');" href="#">Show / Hide</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_crop');" href="#">Crop Selection</a>
-			<li><a onclick="call_menu(LAYER, 'layer_delete');" href="#">Delete</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_new');" href="#">New</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_dublicate');" href="#">Dublicate</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_show_hide');" href="#">Show / Hide</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_crop');" href="#">Crop Selection</a>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_delete');" href="#">Delete</a></li>
 			<li><div class="mid-line"></div></li>
-			<li>
-				<a href="#">Move</a>
+			<li class="more">
+				<a class="trn" href="#">Move</a>
 				<ul>
-				<li><a onclick="call_menu(LAYER, 'layer_move_up');" href="#">Up</a></li>
-				<li><a onclick="call_menu(LAYER, 'layer_move_down');" href="#">Down</a></li>
+				<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_up');" href="#">Up</a></li>
+				<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_down');" href="#">Down</a></li>
 				</ul>
 			</li>
-			<li><a onclick="call_menu(LAYER, 'layer_opacity');" href="#">Opacity...</a></li>
+			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_opacity');" href="#">Opacity</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(LAYER, 'layer_trim');" href="#">Trim</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_resize');" href="#">Resize...</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_clear');" href="#">Clear</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_trim');" href="#">Trim</a></li>
+			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_resize');" href="#">Resize</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_clear');" href="#">Clear</a></li>
 			<li><div class="mid-line"></div></li>
-			<li><a onclick="call_menu(LAYER, 'layer_differences');" href="#">Differences Down</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_merge_down');" href="#">Merge Down...</a></li>
-			<li><a onclick="call_menu(LAYER, 'layer_flatten');" href="#">Flatten Image</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_differences');" href="#">Differences Down</a></li>
+			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_merge_down');" href="#">Merge Down</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_flatten');" href="#">Flatten Image</a></li>
 		</ul>
 	</li>
 	<li>
-		<a class="icon effects" href="#">Effects</a>
+		<a class="icon effects trn" href="#">Effects</a>
 		<ul id="effects_list">
-			<li><a onclick="call_menu(EFFECTS, 'effects_bw');" href="#">Black and White...</a>
-			<li>
-				<a href="#">Blur</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_bw');" href="#">Black and White</a>
+			<li class="more">
+				<a class="trn" href="#">Blur</a>
 				<ul>
-				<li><a onclick="call_menu(EFFECTS, 'effects_BoxBlur');" href="#">Blur-Box...</a>
-				<li><a onclick="call_menu(EFFECTS, 'effects_GaussianBlur');" href="#">Blur-Gaussian...</a>
-				<li><a onclick="call_menu(EFFECTS, 'effects_StackBlur');" href="#">Blur-Stack...</a>
-				<li><a onclick="call_menu(EFFECTS, 'effects_zoomblur');" href="#">Blur-Zoom...</a>
+				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_BoxBlur');" href="#">Blur-Box</a>
+				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_GaussianBlur');" href="#">Blur-Gaussian</a>
+				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_StackBlur');" href="#">Blur-Stack</a>
+				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_zoomblur');" href="#">Blur-Zoom</a>
 				</ul>
 			</li>
-			<li><a onclick="call_menu(EFFECTS, 'effects_bulge_pinch');" href="#">Bulge/Pinch...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_colorize');" href="#">Colorize...</a></li>
-			<li><a onclick="call_menu(EFFECTS, 'effects_denoise');" href="#">Denoise...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Desaturate');" href="#">Desaturate...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Dither');" href="#">Dither...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_dot_screen');" href="#">Dot Screen...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Edge');" href="#">Edge...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Emboss');" href="#">Emboss...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Enrich');" href="#">Enrich...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Gamma');" href="#">Gamma...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Grains');" href="#">Grains...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_heatmap');" href="#">Heatmap...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_HSLAdjustment');" href="#">HSL Adjustment...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_jpg_vintage');" href="#">JPG Compression...</a></li>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Mosaic');" href="#">Mosaic...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Oil');" href="#">Oil...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_perspective');" href="#">Perspective...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Posterize');" href="#">Posterize...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Sepia');" href="#">Sepia...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Sharpen');" href="#">Sharpen...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_Solarize');" href="#">Solarize...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_tilt_shift');" href="#">Tilt Shift...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_vignette');" href="#">Vignette...</a>
-			<li><a onclick="call_menu(EFFECTS, 'effects_vintage');" href="#">Vintage...</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_bulge_pinch');" href="#">Bulge/Pinch</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_colorize');" href="#">Colorize</a></li>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_denoise');" href="#">Denoise</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Desaturate');" href="#">Desaturate</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Dither');" href="#">Dither</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_dot_screen');" href="#">Dot Screen</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Edge');" href="#">Edge</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Emboss');" href="#">Emboss</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Enrich');" href="#">Enrich</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Gamma');" href="#">Gamma</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Grains');" href="#">Grains</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_heatmap');" href="#">Heatmap</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_HSLAdjustment');" href="#">HSL Adjustment</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_jpg_vintage');" href="#">JPG Compression</a></li>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Mosaic');" href="#">Mosaic</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Oil');" href="#">Oil</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_perspective');" href="#">Perspective</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Posterize');" href="#">Posterize</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Sepia');" href="#">Sepia</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Sharpen');" href="#">Sharpen</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Solarize');" href="#">Solarize</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_tilt_shift');" href="#">Tilt Shift</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_vignette');" href="#">Vignette</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_vintage');" href="#">Vintage</a>
 		</ul>
 	</li>
 	<li>
-		<a class="icon tools" href="#">Tools</a>
+		<a class="icon tools trn" href="#">Tools</a>
 		<ul>
-			<li><a onclick="call_menu(TOOLS, 'tools_borders');" href="#">Borders...</a></li>
-			<li><a onclick="call_menu(TOOLS, 'tools_sprites');" href="#">Sprites...</a></li>
-			<li><a onclick="call_menu(TOOLS, 'tools_keypoints');" href="#">Key-points</a></li>
-			<li><a onclick="call_menu(TOOLS, 'tools_color2alpha');" href="#">Color to Alpha...</a></li>
-			<li><a onclick="call_menu(TOOLS, 'tools_color_zoom');" href="#">Color Zoom...</a></li>
-			<li><a onclick="call_menu(TOOLS, 'tools_restore_alpha');" href="#">Restore alpha...</a></li>
+			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_borders');" href="#">Borders</a></li>
+			<li><a class="trn" onclick="call_menu(TOOLS, 'tools_sprites');" href="#">Sprites</a></li>
+			<li><a class="trn" onclick="call_menu(TOOLS, 'tools_keypoints');" href="#">Key-points</a></li>
+			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_color2alpha');" href="#">Color to Alpha</a></li>
+			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_color_zoom');" href="#">Color Zoom</a></li>
+			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_restore_alpha');" href="#">Restore alpha</a></li>
 
 		</ul>
 	</li>
 	<li>
-		<a class="icon help" href="#">Help</a>
+		<a class="icon help trn" href="#">Help</a>
 		<ul>
-			<li><a onclick="call_menu(HELP, 'help_shortcuts');" href="#">Keyboard Shortcuts...</a></li>
-			<li><a onclick="window.location='http://viliusle.github.io/miniPaint/';" href="http://viliusle.github.io/miniPaint/">Website</a></li>
-			<li><a onclick="call_menu(HELP, 'help_credits');" href="#">Credits...</a></li>
-			<li><a onclick="call_menu(HELP, 'help_about');" href="#">About...</a></li>
+			<li><a class="trn dots" onclick="call_menu(HELP, 'help_shortcuts');" href="#">Keyboard Shortcuts</a></li>
+			<li><a class="trn" onclick="window.location='http://viliusle.github.io/miniPaint/';" href="http://viliusle.github.io/miniPaint/">Website</a></li>
+			<li class="more">
+				<a class="trn" href="#">Language</a>
+				<ul>
+				<li><a onclick="call_menu(HELP, 'help_translate', 'en');" href="#">English</a>
+				<li><a onclick="call_menu(HELP, 'help_translate', 'lt');" href="#">Lietuvių</a>
+				</ul>
+			</li>
+			<li><div class="mid-line"></div></li>
+			<li><a class="trn dots" onclick="call_menu(HELP, 'help_about');" href="#">About</a></li>
 		</ul>
 	</li>
 	</ul>
@@ -244,6 +267,9 @@
 <script src="js/elements.js"></script>
 <script src="js/helpers.js"></script>
 <script src="libs/popup.js"></script>
+<script src="libs/jquery.translate.js"></script>
+
+<script src="languages/lt.js"></script>
 
 <script src="js/events.js"></script>
 <script src="js/file.js"></script>
