@@ -179,9 +179,16 @@ function DRAW_TOOLS_CLASS() {
 			return true;
 		if (event != undefined && event.target.id == "canvas_preview")
 			return true;
+		var active_layer_obj = document.getElementById(LAYER.layers[LAYER.layer_active].name);
 		
 		if (type == 'drag') {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			
+			if(active_layer_obj.style.visibility != 'hidden'){
+				//hide active layer
+				active_layer_obj.style.visibility = 'hidden';
+			}
+			
 			if(EVENTS.ctrl_pressed == true){
 				//ctrl is pressed
 				var xx = mouse.x;
@@ -197,6 +204,9 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'release') {
+			//show active layer
+			active_layer_obj.style.visibility = 'visible';
+			
 			if (mouse.valid == false || mouse.click_x === false){
 				return false;
 			}
@@ -1374,12 +1384,14 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse.click_y >= HEIGHT)
 				mouse.click_y = HEIGHT;
 			if (this.select_square_action == '') {
+				//user still selecting area
 				document.body.style.cursor = "crosshair";
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				canvas_front.fillStyle = "rgba(0, 255, 0, 0.3)";
 				canvas_front.fillRect(mouse.click_x, mouse.click_y, mouse.x - mouse.click_x, mouse.y - mouse.click_y);
 			}
 			else {
+				//drag
 				if (this.select_square_action == 'move') {
 					//move
 					try {

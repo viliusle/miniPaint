@@ -62,7 +62,7 @@ function LAYER_CLASS() {
 
 	//show / hide
 	this.layer_show_hide = function () {
-		LAYER.layer_visibility(LAYER.layer_active);
+		LAYER.layer_visibility(LAYER.layer_active);	console.log('aaaa');
 	};
 
 	//crop
