@@ -319,7 +319,7 @@ var dict_lt = {
 	"Y end:": {"lt": "Y pabaiga:"},
 	"Y start:": {"lt": "Y pradžia:"},
 	"Yes": {"lt": "Taip"},
-	"Your browser do not support": {"lt": "Jūsų naršyklė nepalaiko"},
+	"Your browser do not support this format.": {"lt": "Jūsų naršyklė nepalaiko šito formato."},
 	"Your browser doesn't support canvas.": {"lt": "Jūsų naršyklė nepalaiko naujausių technologijų."},
 	"Zoom": {"lt": "Padidinti"},
 	"Zoom in": {"lt": "Priartinti"},
