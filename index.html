@@ -242,8 +242,10 @@
 			<li class="more">
 				<a class="trn" href="#">Language</a>
 				<ul>
+				<li><a onclick="call_menu(HELP, 'help_translate', 'zh');" href="#">简体中文）</a>
 				<li><a onclick="call_menu(HELP, 'help_translate', 'en');" href="#">English</a>
 				<li><a onclick="call_menu(HELP, 'help_translate', 'lt');" href="#">Lietuvių</a>
+				<li><a onclick="call_menu(HELP, 'help_translate', 'es');" href="#">Español</a>
 				</ul>
 			</li>
 			<li><div class="mid-line"></div></li>
@@ -267,9 +269,13 @@
 <script src="js/elements.js"></script>
 <script src="js/helpers.js"></script>
 <script src="libs/popup.js"></script>
+<script src="libs/canvas-toBlob.js"></script>
+<script src="libs/FileSaver.min.js"></script>
 <script src="libs/jquery.translate.js"></script>
 
+<script src="languages/es.js"></script>
 <script src="languages/lt.js"></script>
+<script src="languages/zh.js"></script>
 
 <script src="js/events.js"></script>
 <script src="js/file.js"></script>

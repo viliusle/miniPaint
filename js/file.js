@@ -194,146 +194,112 @@ function FILE_CLASS() {
 			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
 		}
 
-		//prepare data
-		var data;
 		if (user_response.type == 'PNG') {
 			//png - default format
-			var data_header = "image/png";
 			if (HELPER.strpos(fname, '.png') == false)
 				fname = fname + ".png";
-			if(save_mode_for_ie == false)
-				data = tempCanvas.toDataURL("image/png");
+			
+			tempCanvas.toBlob(function(blob) {
+			    saveAs(blob, fname);
+			});
 		}
 		else if (user_response.type == 'JPG') {
 			//jpg
+			if (HELPER.strpos(fname, '.jpg') == false)
+				fname = fname + ".jpg";
+			
 			var quality = parseInt(user_response.quality);
 			if (quality > 100 || quality < 1 || isNaN(quality) == true)
 				quality = 90;
 			quality = quality / 100;
-			var data_header = "image/jpeg";
-			if (HELPER.strpos(fname, '.jpg') == false)
-				fname = fname + ".jpg";
-			if(save_mode_for_ie == false)
-				data = tempCanvas.toDataURL('image/jpeg', quality);
-		}
-		else if (user_response.type == 'BMP') {
-			//bmp - lets hope user really needs this - chrome do not support it
-			var data_header = "image/bmp";
-			if (HELPER.strpos(fname, '.bmp') == false)
-				fname = fname + ".bmp";
-			if(save_mode_for_ie == false)
-				data = tempCanvas.toDataURL("image/bmp");
+			
+			tempCanvas.toBlob(function (blob) {
+			    saveAs(blob, fname);
+			}, "image/jpeg", quality);
 		}
 		else if (user_response.type == 'WEBP') {
 			//WEBP - new format for chrome only
 			if (HELPER.strpos(fname, '.webp') == false)
 				fname = fname + ".webp";
 			var data_header = "image/webp";
-			if(save_mode_for_ie == false)
-				data = tempCanvas.toDataURL("image/webp");
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header) == false)
+				return false;		
+			
+			tempCanvas.toBlob(function (blob) {
+			    saveAs(blob, fname);
+			}, data_header);
+		}
+		else if (user_response.type == 'BMP') {
+			//bmp
+			if (HELPER.strpos(fname, '.webp') == false)
+				fname = fname + ".webp";
+			var data_header = "image/bmp";
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header) == false)
+				return false;
+			
+			tempCanvas.toBlob(function (blob) {
+			    saveAs(blob, fname);
+			}, data_header);
 		}
 		else if (user_response.type == 'JSON') {
 			//json - full data with layers
-			if(save_mode_for_ie == false){
-				if (HELPER.strpos(fname, '.json') == false)
-					fname = fname + ".json";
-				var data_header = "text/plain";
+			if (HELPER.strpos(fname, '.json') == false)
+				fname = fname + ".json";
+			
+			var export_data = {};
 
-				var export_data = {};
+			//basic info
+			export_data.info = {
+				width: WIDTH,
+				height: HEIGHT,
+			};
 
-				//basic info
-				export_data.info = {
-					width: WIDTH,
-					height: HEIGHT,
+			//layers
+			export_data.layers = [];
+			for (var i in LAYER.layers) {
+				var layer = {
+					name:LAYER.layers[i].name, 
+					visible: 1,
+					opacity: LAYER.layers[i].opacity,
 				};
-
-				//layers
-				export_data.layers = [];
-				for (var i in LAYER.layers) {
-					var layer = {
-						name:LAYER.layers[i].name, 
-						visible: 1,
-						opacity: LAYER.layers[i].opacity,
-					};
-					if (LAYER.layers[i].visible == false)
-						layer.visible = 0;
-					export_data.layers.push(layer);
-				}
-
-				//image data
-				export_data.image_data = [];
-				for (var i in LAYER.layers) {
-					var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
-					export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
-				}
-
-				var data_json = JSON.stringify(export_data, null, 6);
-				delete export_data;
-
-				var bb = new Blob([data_json], {type: data_header});
-				var data = window.URL.createObjectURL(bb);
+				if (LAYER.layers[i].visible == false)
+					layer.visible = 0;
+				export_data.layers.push(layer);
 			}
+
+			//image data
+			export_data.image_data = [];
+			for (var i in LAYER.layers) {
+				var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
+				export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
+			}
+
+			var data_json = JSON.stringify(export_data, null, 6);
+			delete export_data;
+
+			var blob = new Blob([data_json], {type: "text/plain"});
+			//var data = window.URL.createObjectURL(blob); //html5
+			saveAs(blob, fname);
 		}
-		else{
+	};
+	
+	this.check_format_support = function(canvas, data_header){
+		var data = canvas.toDataURL(data_header);
+		var actualType = data.replace(/^data:([^;]*).*/, '$1');
+		
+		if (data_header != actualType && data_header != "text/plain") {
+			//error - no support
+			POP.add({title: "Error:", value: 'Your browser do not support this format.'});
+			POP.show('Sorry', '');
+			delete data;
 			return false;
 		}
-		
-		//download
-		if(save_mode_for_ie == true){
-			//IE10+ and Edge - but only as PNG
-			if (user_response.type == 'PNG') {
-				window.navigator.msSaveBlob(tempCanvas.msToBlob(), fname);
-			}
-			else if (user_response.type == 'JPG') {
-				var image = tempCanvas.toDataURL("image/jpeg");
-				image = HELPER.b64toBlob(image.replace("data:image/jpeg;base64,",""),"image/jpeg");
-				return navigator.msSaveBlob(image, fname);
-			}
-			else{
-				//error - no support
-				POP.add({title: "Error:", value: "Format " + user_response.type+" is not supported in this browser"});
-				POP.show('Sorry', '');
-				return false;
-			}
-		}
-		else{
-			//download for firefox, chrome, chrome
-			
-			//check file format support
-			var actualType = data.replace(/^data:([^;]*).*/, '$1');
-			if (data_header != actualType && data_header != "text/plain") {
-				//error - no support
-				POP.add({title: "Error:", value: '<span class="trn">Your browser do not support</span> ' + user_response.type});
-				POP.show('Sorry', '');
-				return false;
-			}
-			
-			window.URL = window.webkitURL || window.URL;
-			var a = document.createElement('a');
-			var _this = this;
-			if (typeof a.download != "undefined") {
-				//a.download is supported
-				a.setAttribute("id", "save_data");
-				a.download = fname;
-				a.href = data;
-				a.textContent = 'Downloading...';
-				document.getElementById("tmp").appendChild(a);
-
-				//release memory
-				a.onclick = function (e) {
-					_this.save_cleanup(this);
-				};
-				//force click
-				document.querySelector('#save_data').click();
-			}
-			else {
-				//no support for a[download] attribute ...
-				if (user_response.type == 'PNG')
-					window.open(data);
-				else if (user_response.type == 'JPG')
-					window.open(data, quality);
-			}
-		}
+		delete data;
+		return true;
 	};
 	
 	this.save_cleanup = function (a) {
