@@ -10,17 +10,6 @@ var HELP = new HELP_CLASS();
  */
 function HELP_CLASS() {
 	
-	/**
-	 * credits list config
-	 */
-	var CREDITS = [
-		{title: 'Brush styles',		name: 'Harmony',		link: 'http://ricardocabello.com/blog/post/689' },
-		{title: 'Effects library',	name: 'glfx.js',		link: 'http://evanw.github.io/glfx.js/' },
-		{title: 'EXIF',			name: 'exif.js',		link: 'https://github.com/jseidelin/exif-js' },
-		{title: 'Image filters',	name: 'imageFilters.js',link: 'https://github.com/arahaya/ImageFilters.js' },
-		{title: 'KD-tree',		name: 'kdtree.js',	link: 'http://jsdo.it/peko/wKvk' },
-		];
-
 	//shortcuts
 	this.help_shortcuts = function () {
 		POP.add({title: "D", value: 'Dublicate'});

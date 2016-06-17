@@ -655,13 +655,13 @@ input[type="button"]{
 	position:fixed;
 	border:1px solid #000000;
 	background-color: #bbb;
-	width:400px;
+	width:500px;
 	max-height:550px;
 	overflow-y:scroll;
 	margin:0px auto 0px auto;
 	top:150px;
 	left: 50%;
-	margin-left:-200px;	
+	margin-left:-250px;	
 	display:none;
 	padding:10px;
 	font-size:12px;

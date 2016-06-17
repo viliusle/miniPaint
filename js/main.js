@@ -17,7 +17,10 @@ function MAIN_CLASS() {
 			POP.height_mini = Math.round(POP.width_mini * HEIGHT / WIDTH);
 		}
 		EVENTS.autosize = true;
-		FILE.EXIF = false;
+		FILE.file_info = {
+			general: [],
+			exif: [],
+		};
 		DRAW.select_data = false;
 		
 		for (i = 1; i < LAYER.layers.length; i++)

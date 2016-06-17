@@ -18,9 +18,23 @@ function IMAGE_CLASS() {
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
 		POP.add({title: "Unique colors:", value: colors});
-		//exif
-		for (var i in TOOLS.EXIF)
-			POP.add({title: i + ":", value: TOOLS.EXIF[i]});
+		
+		//show general data
+		for (var i in FILE.file_info.general){
+			POP.add({title: i + ":", value: FILE.file_info.general[i]});
+		}
+		
+		//show exif data
+		var n = 0;
+		for (var i in FILE.file_info.exif){
+			if(i == 'undefined')
+				continue;
+			if(n == 0)
+				POP.add({title: "==== EXIF ====", value: ''});
+			POP.add({title: i + ":", value: FILE.file_info.exif[i]});
+			n++;
+		}
+		
 		POP.show('Information', '');
 	};
 

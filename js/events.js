@@ -573,7 +573,7 @@ function EVENTS_CLASS() {
 				if (this.file.type.match('image.*')) {
 					//image
 					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
-					EXIF.getData(this.file, FILE.save_EXIF);
+					FILE.save_file_info(this.file);
 				}
 				else {
 					//json

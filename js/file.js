@@ -11,9 +11,12 @@ var FILE = new FILE_CLASS();
 function FILE_CLASS() {
 
 	/**
-	 * exif data
+	 * file info: exif, general data 
 	 */
-	this.EXIF = false;
+	this.file_info = {
+		general: [],
+		exif: [],
+	};
 	
 	/**
 	 * default name used for saving file
@@ -98,7 +101,8 @@ function FILE_CLASS() {
 				if (this.file.type.match('image.*')) {
 					//image
 					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
-					EXIF.getData(this.file, this.save_EXIF);
+					EXIF.getData(this.file, FILE.save_EXIF);
+					FILE.save_file_info(this.file);
 				}
 				else {
 					//json
@@ -311,15 +315,25 @@ function FILE_CLASS() {
 		}, 1500);
 	};
 	
-	this.save_EXIF = function () {
-		this.EXIF = this.exifdata;
-		//check length
-		var n = 0;
-		for (var i in this.EXIF){
-			n++;
-		}
-		if (n == 0)
-			this.EXIF = false;
+	this.save_file_info = function (object) {
+		this.file_info = {
+			general: [],
+			exif: [],
+		};
+		//exif data
+		EXIF.getData(object, function() {
+			FILE.file_info.exif = this.exifdata;
+		});
+		
+		//general
+		if(object.name != undefined)
+			FILE.file_info.general.Name = object.name;
+		if(object.size != undefined)
+			FILE.file_info.general.Size = HELPER.number_format(object.size/1000, 2)+' KB';
+		if(object.type != undefined)
+			FILE.file_info.general.Type = object.type;
+		if(object.lastModifiedDate != undefined)
+			FILE.file_info.general['Last modified'] = object.lastModifiedDate;
 	};
 	
 	this.load_json = function (data) {

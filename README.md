@@ -13,7 +13,7 @@ Drag and Drop. Key features: layers, transparency, filters, no-flash, open sourc
 - Opera
 - IE 10+
 - Edge
-- Safari ?
+- Safari
 
 ## Features
 
