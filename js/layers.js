@@ -44,6 +44,7 @@ function LAYER_CLASS() {
 			LAYER.layer_renew();
 		}
 		else {
+			layer_max_index++;
 			//copy all layer
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
@@ -51,7 +52,7 @@ function LAYER_CLASS() {
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			//create
-			var new_name = 'Layer #' + (this.layers.length + 1);
+			var new_name = 'Layer #' + (layer_max_index + 1);
 			LAYER.create_canvas(new_name);
 			this.layers.push({name: new_name, visible: true});
 			LAYER.layer_active = this.layers.length - 1;
@@ -62,7 +63,7 @@ function LAYER_CLASS() {
 
 	//show / hide
 	this.layer_show_hide = function () {
-		LAYER.layer_visibility(LAYER.layer_active);	console.log('aaaa');
+		LAYER.layer_visibility(LAYER.layer_active);
 	};
 
 	//crop

@@ -463,7 +463,7 @@ function IMAGE_CLASS() {
 			GUI.zoom();
 		}
 		
-		console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
+		//console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
 
 		//sharpen after?
 		if (sharpen == 'Yes') {
