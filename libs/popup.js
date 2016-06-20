@@ -120,6 +120,7 @@ function popup() {
 		html += '<table style="width:99%;">';
 		for (var i in parameters) {
 			var parameter = parameters[i];
+			
 			html += '<tr id="popup-tr-'+parameters[i].name+'">';
 			if (title != 'Error')
 				html += '<td style="font-weight:bold;padding-right:3px;width:130px;" class="trn">' + parameter.title + '</td>';
@@ -220,12 +221,12 @@ function popup() {
 				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">' + parameter.html + '</td>';
 			}
 			else {
-				//locked fields
+				//locked fields without name
 				str = "" + parameter.value;
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><div class="trn" style="padding: 2px 0px;">' + parameter.value + '</div></td>';
+					html += '<td colspan="2"><div class="trn" id="pop_data_'+id_tmp+'" style="padding: 2px 0px;">' + parameter.value + '</div></td>';
 				else
 					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
 			}

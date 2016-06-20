@@ -966,9 +966,7 @@ function IMAGE_CLASS() {
 		POP.add({title: "Average:", value: ""});
 		POP.show(
 			'Histogram',
-			function (user_response) {
-				var param1 = parseInt(user_response.param1);
-			},
+			undefined,
 			undefined,
 			this.histogram_onload
 		);
@@ -1040,13 +1038,12 @@ function IMAGE_CLASS() {
 			c.lineTo(i + 0.5, 100 - Math.round(hist_data[i] * 255 * 100 / total / 6) + 0.5);
 			c.stroke();
 		}
-
-		document.getElementById("pop_data_totalpixel").value = HELPER.number_format(total, 0);
+		document.getElementById("pop_data_totalpixel").innerHTML = HELPER.number_format(total, 0);
 		if (total > 0)
 			average = Math.round(sum * 10 / total / 3) / 10;
 		else
 			average = '-';
-		document.getElementById("pop_data_average").value = average;
+		document.getElementById("pop_data_average").innerHTML = average;
 	};
 	
 	this.unique_colors_count = function (canvas) {
