@@ -801,6 +801,7 @@ function IMAGE_CLASS() {
 		var target_white = 1; 	//how much % white colors should take
 		var target_black = 0.5;	//how much % black colors should take
 		var modify = 1.1;	//color modify strength
+		var cycles_count = 10; //how much iteration to change colors
 
 		document.body.style.cursor = "wait";
 		var img = context.getImageData(0, 0, W, H);
@@ -819,7 +820,7 @@ function IMAGE_CLASS() {
 		target = target_white;
 		var n_fix_white = 0;
 		var done = false;
-		for (var j = 0; j < 30; j++) {
+		for (var j = 0; j < cycles_count; j++) {
 			if (n_valid * 100 / n >= target)
 				done = true;
 			if (done == true)
@@ -863,7 +864,7 @@ function IMAGE_CLASS() {
 		target = target_black;
 		var n_fix_black = 0;
 		var done = false;
-		for (var j = 0; j < 30; j++) {
+		for (var j = 0; j < cycles_count; j++) {
 			if (n_valid * 100 / n >= target)
 				done = true;
 			if (done == true)

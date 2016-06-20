@@ -291,12 +291,12 @@ input[type="button"]{
 	}
 	.ddsmoothmenu > ul > li{
 		width: calc(100% / 7);
-		overflow: hidden;
 	}
 	.ddsmoothmenu > ul > li > a{
 		width:100%;
 		padding-left: 3px !important;
 		padding-right: 3px !important;
+		overflow: hidden;
 	}
 	.left_mobile_menu{
 		display:block;

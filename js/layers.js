@@ -269,16 +269,14 @@ function LAYER_CLASS() {
 			var _this = this;
 			img.onload = function () {
 				//check size
-				var size_increased = false;
 				if (img.width > WIDTH || img.height > HEIGHT) {
 					if (img.width > WIDTH)
 						WIDTH = img.width;
 					if (img.height > HEIGHT)
 						HEIGHT = img.height;
 					LAYER.set_canvas_size();
-					size_increased = true;
 				}
-				if (_this.layers.length == 1 && EVENTS.autosize == true && size_increased == false) {
+				if (_this.layers.length == 1 && EVENTS.autosize == true) {
 					var trim_info = IMAGE.trim_info(document.getElementById("Background"));
 					if (trim_info.left == WIDTH) {
 						WIDTH = img.width;
