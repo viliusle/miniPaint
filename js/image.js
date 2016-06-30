@@ -429,8 +429,8 @@ function IMAGE_CLASS() {
 		var time1 = Date.now();
 		var resize_type;
 		
-		//Hermite - good and fast
 		if (user_response.mode == "Resample - Hermite") {
+			//Hermite resample - max quality
 			resize_type = 'Hermite';
 			this.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
 			if (GUI.last_menu != 'layer_resize') {
@@ -444,10 +444,9 @@ function IMAGE_CLASS() {
 			}
 			GUI.zoom();
 		}
-		//simple resize	
-		if (user_response.mode == "Resize") {
+		else {
+			//simple resize - max speed
 			resize_type = 'Default';
-			//simple resize - FAST
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
 			tmp_data.height = HEIGHT;
@@ -464,7 +463,7 @@ function IMAGE_CLASS() {
 		}
 		
 		//console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
-
+		
 		//sharpen after?
 		if (sharpen == 'Yes') {
 			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
