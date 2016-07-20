@@ -1632,4 +1632,20 @@ function DRAW_TOOLS_CLASS() {
 				return true;
 		return false;
 	};
+
+	this.move_tool = function (type, mouse, event) {
+		if(type !== 'drag')
+			return true;
+
+		var width = canvas_active(true).width;
+		var height = canvas_active(true).height;
+		var tempCanvas = document.createElement("canvas");
+		var tempCtx = tempCanvas.getContext("2d");
+		tempCanvas.width = width;
+		tempCanvas.height = height;
+		tempCtx.drawImage(canvas_active(true), event.movementX, event.movementY);
+
+		canvas_active().clearRect(0, 0, width, height);
+		canvas_active().drawImage(tempCanvas, 0, 0);
+	};
 }

@@ -39,4 +39,5 @@ var DRAW_TOOLS_CONFIG = [
 	{name: 'clone_tool', 	title: 'Clone tool',		icon: ['sprites.png', -350+4, -50+3],	attributes: {size: 30, anti_aliasing: true}	},
 	{name: 'gradient_tool', title: 'Gradient',		icon: ['sprites.png', -400+3, -50+4],	attributes: {radial: false, power: 50}	},
 	{name: 'crop_tool',	title: 'Crop',			icon: ['sprites.png', -450+2, -50+2],	attributes: {	} },
+	{name: 'move_tool',	title: 'Move',			icon: ['sprites.png', -450+1, -100-1],	attributes: { } },
 ];
