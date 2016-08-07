@@ -35,11 +35,11 @@ function LAYER_CLASS() {
 		EDIT.save_state();
 		if (DRAW.select_data != false) {
 			//selection
-			this.copy_to_clipboard();
+			EDIT.copy_to_clipboard();
 			DRAW.select_data = false;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			var tmp = LAYER.layer_active;
-			this.paste('menu');
+			EDIT.paste('menu');
 			LAYER.layer_active = tmp;
 			LAYER.layer_renew();
 		}
@@ -54,7 +54,7 @@ function LAYER_CLASS() {
 			//create
 			var new_name = 'Layer #' + (layer_max_index + 1);
 			LAYER.create_canvas(new_name);
-			this.layers.push({name: new_name, visible: true});
+			this.layers.push({name: new_name, title: new_name, visible: true});
 			LAYER.layer_active = this.layers.length - 1;
 			canvas_active().drawImage(tmp_data, 0, 0);
 			LAYER.layer_renew();
@@ -106,6 +106,21 @@ function LAYER_CLASS() {
 	//opacity
 	this.layer_opacity = function () {
 		LAYER.set_alpha();
+	};
+	
+	//rename
+	this.layer_rename = function () {
+		var _this = this;
+		POP.add({name: "param1", title: "Name:", value: this.layers[LAYER.layer_active].title});
+		POP.show('Rename layer',
+			function (user_response) {
+				EDIT.save_state();
+				var param1 = user_response.param1;
+
+				_this.layers[LAYER.layer_active].title = param1;
+				LAYER.layer_renew();
+			}
+		);
 	};
 
 	//trim
@@ -255,6 +270,7 @@ function LAYER_CLASS() {
 				name = 'Layer #' + (layer_max_index + 1);
 			}
 			tmp.name = name;
+			tmp.title = name;
 			tmp.visible = true;
 			tmp.opacity = 1;
 			if (this.layers.length == 0)
@@ -278,7 +294,7 @@ function LAYER_CLASS() {
 					LAYER.set_canvas_size();
 				}
 				if (_this.layers.length == 1 && EVENTS.autosize == true) {
-					var trim_info = IMAGE.trim_info(document.getElementById("Background"));
+					var trim_info = IMAGE.trim_info(document.getElementById(_this.layers[0].name));
 					if (trim_info.left == WIDTH) {
 						WIDTH = img.width;
 						HEIGHT = img.height;
@@ -294,6 +310,7 @@ function LAYER_CLASS() {
 				LAYER.create_canvas(name);
 				_this.layers.push({
 					name: name,
+					title: name,
 					visible: true,
 					opacity: 1
 				});
@@ -441,8 +458,8 @@ function LAYER_CLASS() {
 				html += '<div class="layer active">';
 			else
 				html += '<div class="layer">';
-			var title = this.layers[i].name;
-			html += '<span class="layer_title" onclick="LAYER.select_layer(\'' + i + '\')">' + title + '</span>';
+			var title = this.layers[i].title;
+			html += '<span class="layer_title" ondblclick="LAYER.layer_rename();" onclick="LAYER.select_layer(\'' + i + '\')">' + HELPER.escapeHtml(title) + '</span>';
 			if (this.layers[i].primary != 1) {
 				html += '<a class="layer_visible" onclick="LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
 			}

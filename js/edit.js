@@ -94,7 +94,7 @@ function EDIT_CLASS() {
 		tmp = new Array();
 		var new_name = 'Layer #' + (LAYER.layers.length + 1);
 		LAYER.create_canvas(new_name);
-		LAYER.layers.push({name: new_name, visible: true});
+		LAYER.layers.push({name: new_name, title: new_name, visible: true});
 		LAYER.layer_active = LAYER.layers.length - 1;
 		canvas_active().drawImage(PASTE_DATA, 0, 0);
 		LAYER.layer_renew();

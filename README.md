@@ -48,6 +48,7 @@ Key features: layers, drag & drop, transparency, filters, no-flash, open source.
 - Zoom.
 - Keyboard shortcuts.
 - Effect browser.
+- Translations (Menu > Help > Languages).
 - **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, HSL Adjustment, JPG Compression, Mosaic, Oil, Perspective, Posterize, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vintage,
 - Print support.
 

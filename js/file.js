@@ -266,7 +266,8 @@ function FILE_CLASS() {
 			export_data.layers = [];
 			for (var i in LAYER.layers) {
 				var layer = {
-					name:LAYER.layers[i].name, 
+					name:LAYER.layers[i].name,
+					title:LAYER.layers[i].name, 
 					visible: 1,
 					opacity: LAYER.layers[i].opacity,
 				};
