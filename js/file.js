@@ -51,7 +51,7 @@ function FILE_CLASS() {
 				var height = parseInt(response.height);
 				var resolution = response.resolution;
 				
-				if(HELPER.isNumeric(resolution[0])){
+				if(resolution != 'Custom'){
 					var dim = resolution.split("x");
 					width = dim[0];
 					height = dim[1];

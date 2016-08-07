@@ -186,7 +186,10 @@ function popup() {
 					}
 					else if (parameter.type == 'color') {
 						//color
-						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" /></td>';
+						var preview_code = '';
+						if (this.preview !== false)
+							preview_code = 'POP.view();';
+						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" onchange="'+preview_code+'" /></td>';
 					}
 					else {
 						//input or textarea
