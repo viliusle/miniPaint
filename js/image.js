@@ -217,7 +217,7 @@ function IMAGE_CLASS() {
 
 	//enchance colors
 	this.image_decrease_colors = function () {
-		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 100]});
+		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 256]});
 		POP.add({name: "param2", title: "Dithering:", values: ["No", "Yes"], });
 		POP.add({name: "param3", title: "Greyscale:", values: ["No", "Yes"], });
 		POP.show(
@@ -369,7 +369,7 @@ function IMAGE_CLASS() {
 		POP.add({name: "height", title: "Height (pixels):", value: '', placeholder: HEIGHT});
 		POP.add({name: "width_percent", title: "Width (%):", value: '', placeholder: 100});
 		POP.add({name: "height_percent", title: "Height (%):", value: '', placeholder: 100});
-		POP.add({name: "mode", title: "Mode:", value: "Resample - Hermite", values: ["Basic", "Resample - Hermite"]});
+		POP.add({name: "mode", title: "Mode:", values: ["Resample - Hermite", "Basic", "HQX"]});
 		POP.add({name: "preblur", title: "Pre-Blur:", values: ["Yes", "No"], value: "No"});
 		POP.add({name: "sharpen", title: "Sharpen:", values: ["Yes", "No"], value: "No"});
 		POP.show('Resize', [IMAGE, "resize_layer"]);
@@ -407,10 +407,6 @@ function IMAGE_CLASS() {
 				height = Math.round(width / ratio);
 		}
 
-		//if increasing size - use simple way - its good enough
-		if (width > WIDTH || height > HEIGHT)
-			user_response.mode = "Resize";
-
 		//anti-artifacting?
 		if (preblur == 'Yes') {
 			var ratio_w = WIDTH / width;
@@ -423,8 +419,16 @@ function IMAGE_CLASS() {
 				canvas_active().putImageData(filtered, 0, 0);
 			}
 		}
-		if (width > WIDTH || height > HEIGHT)
+		
+		//validate
+		if (user_response.mode == "Resample - Hermite" && (width > WIDTH || height > HEIGHT)){
+			//scalling up - Hermite not supported
 			user_response.mode = "Resize";
+		}
+		if (user_response.mode == "HQX" && (width < WIDTH && height < HEIGHT)){
+			//scalling down - HQX not supported
+			user_response.mode = "Resample - Hermite";
+		}
 		
 		var time1 = Date.now();
 		var resize_type;
@@ -444,6 +448,27 @@ function IMAGE_CLASS() {
 			}
 			GUI.zoom();
 		}
+		else if(user_response.mode == "HQX") {
+			//HQX - 2, 3, 4 scale only, but amazing quality if there are only few colors
+			resize_type = 'HQX';
+			
+			//find correct dimensions
+			var multiply = Math.max(width/WIDTH, height/HEIGHT);
+			multiply = Math.round(multiply);
+			if(multiply < 2)
+				multiply = 2;
+			if(multiply > 4)
+				multiply = 4;
+			
+			var image_data_resized = hqx(canvas_active(true), multiply);
+			
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			WIDTH = WIDTH * multiply;
+			HEIGHT = HEIGHT * multiply;
+			LAYER.set_canvas_size();
+			canvas_active().putImageData(image_data_resized, 0, 0 );
+			GUI.zoom();
+		}
 		else {
 			//simple resize - max speed
 			resize_type = 'Default';
@@ -457,8 +482,6 @@ function IMAGE_CLASS() {
 			HEIGHT = height;
 			LAYER.set_canvas_size();
 			canvas_active().drawImage(tmp_data, 0, 0, width, height);
-			if (GUI.last_menu != 'layer_resize')
-				this.trim();
 			GUI.zoom();
 		}
 		

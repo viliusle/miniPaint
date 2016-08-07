@@ -1,5 +1,5 @@
 /**
- * SIFT: scale-invariant-feature-transform, keypoints, panorama
+ * SIFT: scale-invariant-feature-transform, keypoints
  * 
  * @author ViliusL
  */

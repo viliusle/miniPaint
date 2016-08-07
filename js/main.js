@@ -23,8 +23,9 @@ function MAIN_CLASS() {
 		};
 		DRAW.select_data = false;
 		
-		for (i = 1; i < LAYER.layers.length; i++)
+		for (var i = LAYER.layers.length-1; i>0; i--) {
 			LAYER.layer_remove(i);
+		}
 		LAYER.layers = [];
 		canvas_main.clearRect(0, 0, WIDTH, HEIGHT);
 		LAYER.layer_add("Background");
