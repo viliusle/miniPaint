@@ -206,4 +206,7 @@ function HELPER_CLASS() {
 			.replace(/"/g, "&quot;")
 			.replace(/'/g, "&#039;");
 	};
+	this.isNumeric = function(n){
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
 }

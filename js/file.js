@@ -35,15 +35,27 @@ function FILE_CLASS() {
 		];
 	//new
 	this.file_new = function () {
+		var resolutions = ['Custom'];
+		for(var i in GUI.common_dimensions){
+			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]);
+		}
+		
 		POP.add({name: "width", title: "Width:", value: WIDTH});
 		POP.add({name: "height", title: "Height:", value: HEIGHT});
 		POP.add({name: "transparency", title: "Transparent:", values: ['Yes', 'No']});
+		POP.add({name: "resolution", title: "Resolution:", values: resolutions});
 		POP.show(
 			'New file...', 
 			function (response) {
 				var width = parseInt(response.width);
 				var height = parseInt(response.height);
-
+				var resolution = response.resolution;
+				
+				if(HELPER.isNumeric(resolution[0])){
+					var dim = resolution.split("x");
+					width = dim[0];
+					height = dim[1];
+				}
 				if (response.transparency == 'Yes')
 					GUI.TRANSPARENCY = true;
 				else
