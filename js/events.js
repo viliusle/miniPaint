@@ -153,6 +153,7 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(0, -1);
+				GUI.zoom();
 				return false;
 			}
 		}
@@ -161,6 +162,7 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(0, 1);
+				GUI.zoom();
 				return false;
 			}
 		}
@@ -169,6 +171,7 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(1, 0);
+				GUI.zoom();
 				return false;
 			}
 		}
@@ -177,6 +180,7 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(-1, 0);
+				GUI.zoom();
 				return false;
 			}
 		}
