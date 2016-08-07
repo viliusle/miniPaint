@@ -1084,4 +1084,26 @@ function IMAGE_CLASS() {
 		}
 		return n;
 	};
+	this.zoom_in = function() {
+		GUI.zoom(+1, true);
+	};
+	this.zoom_out = function() {
+		GUI.zoom(-1, true);
+	};
+	this.zoom_original = function() {
+		GUI.zoom(100, true);
+	};
+	this.zoom_auto = function(only_increase) {
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
+		var page_w = canvas_wrapper.clientWidth;
+		var page_h = canvas_wrapper.clientHeight;
+		
+		var best_width = page_w / WIDTH  * 100;
+		var best_height = page_h / HEIGHT * 100;
+		var best_zoom = Math.floor(Math.min(best_width, best_height));
+		if(only_increase != undefined && best_zoom > 100){
+			return false;
+		}
+		GUI.zoom(Math.min(best_width, best_height), true);
+	};
 }

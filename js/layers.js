@@ -319,7 +319,7 @@ function LAYER_CLASS() {
 				document.getElementById(name).getContext("2d").globalAlpha = 1;
 				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
-				GUI.zoom();
+				IMAGE.zoom_auto(true);
 			};
 			img.onerror = function (ex) {
 				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});

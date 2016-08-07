@@ -77,12 +77,12 @@
 		<div id="preview">
 			<canvas id="canvas_preview"></canvas>
 			<div style="margin-top:105px;padding-left:5px;">
-				<input onclick="GUI.zoom(-1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="-" />
-				<input onclick="GUI.zoom(+1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="+" />
+				<input onclick="GUI.zoom(+1, true);" style="width:30px;" class="layer_add" type="button" value="+" />
+				<input onclick="GUI.zoom(-1, true);" style="width:30px;" class="layer_add" type="button" value="-" />
 				<div style="display: inline-block;margin: 5px 0px;">
 					<b class="trn">Zoom</b>: <span id="zoom_nr">100</span>%
 				</div>
-				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value);EVENTS.scroll_window();" /> 
+				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value, true);" /> 
 			</div>
 		</div>
 		<div id="layers_base">
@@ -128,6 +128,16 @@
 			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_size');" href="#">Size</a></li>
 			<li><a class="trn" onclick="call_menu(IMAGE, 'image_trim');" href="#">Trim</a>
 			<li><a class="trn" onclick="call_menu(IMAGE, 'image_crop');" href="#">Crop Selection</a>
+			<li class="more">
+				<a class="trn" href="#">Zoom</a>
+				<ul>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_in');" href="#">Zoom In</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_out');" href="#">Zoom Out</a></li>
+				<li><div class="mid-line"></div></li>
+				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_original');" href="#">Original size</a></li>
+				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_auto');" href="#">Fit window</a></li>
+				</ul>
+			</li>
 			<li><div class="mid-line"></div></li>
 			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_resize');" href="#">Resize</a></li>
 			<li class="more">
