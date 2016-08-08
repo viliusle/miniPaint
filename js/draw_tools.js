@@ -496,6 +496,7 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'release') {
+			document.body.style.cursor = "auto";
 			if (mouse.x - mouse.click_x == 0 && mouse.y - mouse.click_y == 0 && attribute_type != 'Multi-line')
 				return false;
 

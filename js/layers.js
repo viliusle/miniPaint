@@ -320,6 +320,7 @@ function LAYER_CLASS() {
 				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
 				IMAGE.zoom_auto(true);
+				GUI.redraw_preview();
 			};
 			img.onerror = function (ex) {
 				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});
@@ -553,7 +554,7 @@ function LAYER_CLASS() {
 		document.getElementById('resize-wh').style.marginTop = H + "px";
 
 		this.update_info_block();
-		EVENTS.calc_preview_auto();
+		GUI.redraw_preview();
 		GUI.zoom();
 	};
 	this.resize_canvas = function (canvas_name, repaint) {
