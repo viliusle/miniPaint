@@ -279,7 +279,7 @@ function EVENTS_CLASS() {
 		}
 		//n - new layer
 		else if (k == 78)
-			LAYER.add_layer();
+			LAYER.layer_add();
 		
 		GUI.zoom();
 		return true;

@@ -135,7 +135,7 @@ function TOOLS_CLASS() {
 		tmp.height = HEIGHT;
 		var W = WIDTH;
 		var H = HEIGHT;
-		for (var i in LAYER.layers) {
+		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (i == LAYER.layer_active)
 				continue;	//end
 			if (LAYER.layers[i].visible == false)

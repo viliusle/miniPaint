@@ -27,7 +27,132 @@ function LAYER_CLASS() {
 
 	//new layer
 	this.layer_new = function () {
-		this.add_layer();
+		this.layer_add();
+	};
+	
+	//removes all layers
+	this.remove_all_layers = function(){
+		//delete old layers
+		for (var i = LAYER.layers.length-1; i >= 0; i--) {
+			LAYER.layer_remove(i, true);
+		}
+		layer_max_index = 0;
+		this.layer_renew();
+	};
+	
+	//create layer
+	this.layer_add = function (name, data) {
+		layer_max_index++;
+		
+		//save selected area
+		var copy = false;
+		var last_layer = LAYER.layer_active;
+		if (DRAW.select_data != false && data == undefined) {
+			copy = document.createElement("canvas");
+			copy.width = DRAW.select_data.w;
+			copy.height = DRAW.select_data.h;
+			copy.getContext("2d").drawImage(canvas_active(true), DRAW.select_data.x, DRAW.select_data.y, DRAW.select_data.w, DRAW.select_data.h, 0, 0, DRAW.select_data.w, DRAW.select_data.h);
+		}
+		
+		if (data == undefined) {
+			//empty layer
+			if (name == undefined) {
+				name = 'Layer #' + (layer_max_index);
+			}
+			var new_layer = [];
+			new_layer.name = name;
+			new_layer.title = name;
+			new_layer.visible = true;
+			new_layer.opacity = 1;
+			LAYER.create_canvas(name);
+			this.layers.unshift(new_layer);
+			
+			//add selected data
+			if (DRAW.select_data != false) {
+				//copy user selected data to new layer
+				canvas_active().drawImage(copy, 0, 0);
+
+				//clear selection
+				DRAW.select_data = false;
+				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+
+				//switch back to old layer
+				LAYER.layer_active = last_layer;
+			}
+		}
+		else {
+			var img = new Image();
+			if (data.substring(0, 4) == 'http')
+				img.crossOrigin = "Anonymous";	//data from other domain - turn on CORS
+			var _this = this;
+			
+			img.onload = function () {
+				//check size
+				if (img.width > WIDTH || img.height > HEIGHT) {
+					if (img.width > WIDTH)
+						WIDTH = img.width;
+					if (img.height > HEIGHT)
+						HEIGHT = img.height;
+					LAYER.set_canvas_size();
+				}
+				if (_this.layers.length == 1 && EVENTS.autosize == true) {
+					var trim_info = IMAGE.trim_info(document.getElementById(_this.layers[0].name));
+					if (trim_info.left == WIDTH) {
+						_this.layer_remove(0, true);
+						WIDTH = img.width;
+						HEIGHT = img.height;
+						LAYER.set_canvas_size(false);
+					}
+				}
+
+				for (var i in _this.layers) {
+					if (_this.layers[i].name == name) {
+						name = 'Layer #' + (layer_max_index);
+					}
+				}
+				LAYER.create_canvas(name);
+				_this.layers.unshift({
+					name: name,
+					title: name,
+					visible: true,
+					opacity: 1
+				});
+				LAYER.layer_active = 0;
+
+				document.getElementById(name).getContext("2d").globalAlpha = 1;
+				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
+				LAYER.layer_renew();
+				IMAGE.zoom_auto(true);
+				GUI.redraw_preview();
+			};
+			img.onerror = function (ex) {
+				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});
+				if (data.substring(0, 4) == 'http')
+					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.'});
+				POP.show('Error', '.');
+			};
+			img.src = data;
+		}
+		LAYER.layer_active = 0;
+		document.getElementById(this.layers[LAYER.layer_active].name).getContext("2d").globalAlpha = 1;
+		this.layer_renew();
+	};
+	
+	this.layer_remove = function (i, force) {
+		if (this.layers.length == 1 && force == undefined){
+			//only 1 layer left
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			return false;
+		}
+		element = document.getElementById(this.layers[i].name);
+		element.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
+		element.parentNode.removeChild(element);
+
+		this.layers.splice(i, 1);
+		if (LAYER.layer_active == i)
+			LAYER.layer_active = Math.max(0, LAYER.layer_active-1);
+		this.layer_renew();
+		GUI.redraw_preview();
 	};
 
 	//dublicate
@@ -38,9 +163,8 @@ function LAYER_CLASS() {
 			EDIT.copy_to_clipboard();
 			DRAW.select_data = false;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-			var tmp = LAYER.layer_active;
 			EDIT.paste('menu');
-			LAYER.layer_active = tmp;
+			LAYER.layer_active = 0;
 			LAYER.layer_renew();
 		}
 		else {
@@ -52,10 +176,10 @@ function LAYER_CLASS() {
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			//create
-			var new_name = 'Layer #' + (layer_max_index + 1);
+			var new_name = 'Layer #' + (layer_max_index);
 			LAYER.create_canvas(new_name);
-			this.layers.push({name: new_name, title: new_name, visible: true});
-			LAYER.layer_active = this.layers.length - 1;
+			this.layers.unshift({name: new_name, title: new_name, visible: true});
+			LAYER.layer_active = 0;
 			canvas_active().drawImage(tmp_data, 0, 0);
 			LAYER.layer_renew();
 		}
@@ -172,7 +296,7 @@ function LAYER_CLASS() {
 			"color-dodge", "color-burn", "hard-light", "soft-light", "difference",
 			"exclusion", "hue", "saturation", "color", "luminosity"];
 
-		if (parseInt(LAYER.layer_active) + 1 >= this.layers.length) {
+		if (LAYER.layer_active + 1 >= this.layers.length) {
 			POP.add({html: 'This can not be last layer.'});
 			POP.show('Error', '');
 			return false;
@@ -188,16 +312,18 @@ function LAYER_CLASS() {
 				var param3 = response.param3;
 
 				EDIT.save_state();
+				
 				//copy
-				LAYER.layer_active++;
 				var tmp_data = document.createElement("canvas");
 				tmp_data.width = WIDTH;
 				tmp_data.height = HEIGHT;
 				tmp_data.getContext("2d").drawImage(LAYER.canvas_active(true), 0, 0);
 
 				//paste
-				LAYER.layer_active--;
 				LAYER.canvas_active().save();
+				LAYER.canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+				LAYER.canvas_active().drawImage(document.getElementById(LAYER.layers[LAYER.layer_active + 1].name), 0, 0);
+				
 				if (param3 == "Composite")
 					LAYER.canvas_active().globalCompositeOperation = param1;
 				else
@@ -214,21 +340,18 @@ function LAYER_CLASS() {
 				var param2 = response.param2;
 				var param3 = response.param3;
 
-				//copy
-				LAYER.layer_active++;
-				var tmp_data = document.createElement("canvas");
-				tmp_data.width = w;
-				tmp_data.height = h;
-				tmp_data.getContext("2d").drawImage(LAYER.canvas_active(true), 0, 0, WIDTH, HEIGHT, 0, 0, w, h);
-
 				//paste
-				LAYER.layer_active--;
 				canvas_preview.save();
+				canvas_preview.clearRect(0, 0, w, h);
+				LAYER.layer_active++;
+				canvas_preview.drawImage(LAYER.canvas_active(true), 0, 0, WIDTH, HEIGHT, 0, 0, w, h);
+				LAYER.layer_active--;
+				
 				if (param3 == "Composite")
 					canvas_preview.globalCompositeOperation = param1;
 				else
 					canvas_preview.globalCompositeOperation = param2;
-				canvas_preview.drawImage(tmp_data, 0, 0);
+				canvas_preview.drawImage(LAYER.canvas_active(true), 0, 0, WIDTH, HEIGHT, 0, 0, w, h);
 				canvas_preview.restore();
 			}
 		);
@@ -239,101 +362,29 @@ function LAYER_CLASS() {
 		EDIT.save_state();
 		if (this.layers.length == 1)
 			return false;
+		LAYER.layer_active = 0;
 		tmp_data = document.createElement("canvas");
 		tmp_data.width = WIDTH;
 		tmp_data.height = HEIGHT;
-		for (var i = 1; i < this.layers.length; i++) {
+		for (var i = this.layers.length-2; i >= 0; i--) {
 			//copy
 			LAYER.layer_active = i;
 			tmp_data.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			//paste
-			LAYER.layer_active = 0;
+			LAYER.layer_active = this.layers.length-1;
 			canvas_active().drawImage(tmp_data, 0, 0);
 		}
-		for (var i = this.layers.length - 1; i > 0; i--) {
-			//delete layer
+		
+		//delete layers
+		for (var i = this.layers.length-2; i >= 0; i--) {
 			LAYER.layer_active = i;
 			LAYER.layer_remove(LAYER.layer_active);
 		}
 		LAYER.layer_renew();
 	};
-
-	//create layer
-	this.layer_add = function (name, data, type) {
-		tmp = new Array();
-		layer_max_index++;
-		if (data == undefined) {
-			//empty layer
-			if (name == undefined) {
-				name = 'Layer #' + (layer_max_index + 1);
-			}
-			tmp.name = name;
-			tmp.title = name;
-			tmp.visible = true;
-			tmp.opacity = 1;
-			if (this.layers.length == 0)
-				tmp.primary = 1;
-			else
-				LAYER.create_canvas(name);
-			this.layers.push(tmp);
-		}
-		else {
-			var img = new Image();
-			if (data.substring(0, 4) == 'http')
-				img.crossOrigin = "Anonymous";	//data from other domain - turn on CORS
-			var _this = this;
-			img.onload = function () {
-				//check size
-				if (img.width > WIDTH || img.height > HEIGHT) {
-					if (img.width > WIDTH)
-						WIDTH = img.width;
-					if (img.height > HEIGHT)
-						HEIGHT = img.height;
-					LAYER.set_canvas_size();
-				}
-				if (_this.layers.length == 1 && EVENTS.autosize == true) {
-					var trim_info = IMAGE.trim_info(document.getElementById(_this.layers[0].name));
-					if (trim_info.left == WIDTH) {
-						WIDTH = img.width;
-						HEIGHT = img.height;
-						LAYER.set_canvas_size(false);
-					}
-				}
-
-				for (var i in _this.layers) {
-					if (_this.layers[i].name == name) {
-						name = 'Layer #' + (layer_max_index + 1);
-					}
-				}
-				LAYER.create_canvas(name);
-				_this.layers.push({
-					name: name,
-					title: name,
-					visible: true,
-					opacity: 1
-				});
-				LAYER.layer_active = _this.layers.length - 1;
-
-				document.getElementById(name).getContext("2d").globalAlpha = 1;
-				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
-				LAYER.layer_renew();
-				IMAGE.zoom_auto(true);
-				GUI.redraw_preview();
-			};
-			img.onerror = function (ex) {
-				POP.add({html: '<b>The image could not be loaded.<br /><br /></b>'});
-				if (data.substring(0, 4) == 'http')
-					POP.add({title: "Reason:", value: 'Cross-origin resource sharing (CORS) not supported. Try to save image first.'});
-				POP.show('Error', '.');
-			};
-			img.src = data;
-		}
-		LAYER.layer_active = this.layers.length - 1;
-		document.getElementById(this.layers[LAYER.layer_active].name).getContext("2d").globalAlpha = 1;
-		this.layer_renew();
-	};
+	
 	this.create_canvas = function (canvas_id) {
 		var new_canvas = document.createElement('canvas');
 		new_canvas.setAttribute('id', canvas_id);
@@ -354,51 +405,39 @@ function LAYER_CLASS() {
 	this.move_layer = function (direction) {
 		if (this.layers.length < 2)
 			return false;
-		if (this.layers[LAYER.layer_active].primary == 1)
-			return false;
-		LAYER.layer_active = parseInt(LAYER.layer_active);
 
-		var layer_from = this.layers[LAYER.layer_active];
-		var content = document.getElementById(this.layers[LAYER.layer_active].name);
-		var parent = content.parentNode;
-
+		var layer_from = this.layers[this.layer_active];
+		var parent = document.getElementById('canvas_more');
+		var content = document.getElementById(this.layers[this.layer_active].name);
 
 		if (direction == 'up') {
-			if (this.layers[LAYER.layer_active - 1] == undefined)
+			if (this.layer_active == 0)
 				return false;
-			if (this.layers[LAYER.layer_active - 1].primary == 1)
-				return false;
-			var layer_to = this.layers[LAYER.layer_active - 1];
-			parent.insertBefore(content, parent.firstChild);
+			var layer_to = this.layers[this.layer_active - 1];
+			
+			if(this.layer_active != 1)
+				parent.insertBefore(content, document.getElementById(this.layers[this.layer_active-2].name));
+			else
+				parent.insertBefore(content, null);
+
+			this.layer_active--;
 		}
-		else {
-			if (this.layers[LAYER.layer_active + 1] == undefined)
+		else if(direction == 'down') {
+			if (this.layer_active == this.layers.length-1)
 				return false;
-			var layer_to = this.layers[LAYER.layer_active + 1];
-			var content = document.getElementById(this.layers[LAYER.layer_active + 1].name);
-			parent.insertBefore(content, parent.firstChild);
+			
+			parent.insertBefore(content, document.getElementById(this.layers[this.layer_active+1].name));
+
+			this.layer_active++;
+		}
+		//switch attribures
+		var layer_to = this.layers[this.layer_active];
+		for(var i in layer_to){
+			var tmp = layer_to[i];
+			layer_to[i] = layer_from[i];
+			layer_from[i] = tmp;
 		}
 
-		//switch name
-		var tmp = layer_to.name;
-		layer_to.name = layer_from.name;
-		layer_from.name = tmp;
-		//switch visible
-		var tmp = layer_to.visible;
-		layer_to.visible = layer_from.visible;
-		layer_from.visible = tmp;
-		//switch opacity
-		var tmp = layer_to.opacity;
-		layer_to.opacity = layer_from.opacity;
-		layer_from.opacity = tmp;
-
-		LAYER.layer_active = this.layers.length - 1;
-		for (var i in this.layers) {
-			if (this.layers[i].name == layer_to.name) {
-				LAYER.layer_active = i;
-				break;
-			}
-		}
 		this.layer_renew();
 		GUI.zoom();
 		return true;
@@ -417,19 +456,7 @@ function LAYER_CLASS() {
 		this.layer_renew();
 		GUI.redraw_preview();
 	};
-	this.layer_remove = function (i) {
-		if (this.layers[i].primary == 1)
-			return false;
-		element = document.getElementById(this.layers[i].name);
-		element.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
-		element.parentNode.removeChild(element);
 
-		this.layers.splice(i, 1);
-		if (LAYER.layer_active >= this.layers.length)
-			LAYER.layer_active = this.layers.length - 1;
-		this.layer_renew();
-		GUI.redraw_preview();
-	};
 	this.layer_move_active = function (x, y) {
 		var distance = 10;
 		if (EVENTS.ctrl_pressed == true)
@@ -446,7 +473,7 @@ function LAYER_CLASS() {
 	};
 	this.select_layer = function (i) {
 		if (LAYER.layer_active != i) {
-			LAYER.layer_active = i;	//select
+			LAYER.layer_active = parseInt(i);	//select
 			this.layer_renew();
 		}
 		LAYER.shake(i);
@@ -461,11 +488,7 @@ function LAYER_CLASS() {
 				html += '<div class="layer">';
 			var title = this.layers[i].title;
 			html += '<span class="layer_title" ondblclick="LAYER.layer_rename();" onclick="LAYER.select_layer(\'' + i + '\')">' + HELPER.escapeHtml(title) + '</span>';
-			if (this.layers[i].primary != 1) {
-				html += '<a class="layer_visible" onclick="LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
-			}
-			else
-				html += '<a style="visibility:hidden;" class="layer_visible" href="#"></a>';
+			html += '<a class="layer_visible" onclick="LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
 			//hide
 			if (this.layers[i].visible == true)
 				html += '<a class="layer_delete" id="layer_' + i + '" onclick="LAYER.layer_visibility(\'' + i + '\');return false;" title="hide" href="#"></a>';
@@ -614,44 +637,10 @@ function LAYER_CLASS() {
 		);
 	};
 	this.canvas_active = function (base) {
-		for (var i in this.layers) {
-			if (LAYER.layer_active == i) {
-				if (base == undefined)
-					return document.getElementById(this.layers[i].name).getContext("2d");
-				else
-					return document.getElementById(this.layers[i].name);
-			}
-		}
-	};
-
-	this.add_layer = function () {
-		EDIT.save_state();
-
-		var tmp = false;
-		var last_layer = LAYER.layer_active;
-		if (DRAW.select_data != false) {
-			tmp = document.createElement("canvas");
-			tmp.width = DRAW.select_data.w;
-			tmp.height = DRAW.select_data.h;
-			tmp.getContext("2d").drawImage(canvas_active(true), DRAW.select_data.x, DRAW.select_data.y, DRAW.select_data.w, DRAW.select_data.h, 0, 0, DRAW.select_data.w, DRAW.select_data.h);
-		}
-
-		//crete layer
-		LAYER.layer_add();
-
-		if (DRAW.select_data != false) {
-			//copy user selected data to new layer
-			canvas_active().drawImage(tmp, 0, 0);
-			LAYER.layer_renew();
-
-			//clear selection
-			DRAW.select_data = false;
-			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-
-			//switch back to old layer
-			LAYER.layer_active = last_layer;
-			LAYER.layer_renew();
-		}
+		if (base == undefined)
+			return document.getElementById(LAYER.layers[LAYER.layer_active].name).getContext("2d");
+		else
+			return document.getElementById(LAYER.layers[LAYER.layer_active].name);
 	};
 	
 	this.calc_differences = function (sensitivity, canvas_preview, w, h) {
@@ -714,13 +703,5 @@ function LAYER_CLASS() {
 }
 
 function canvas_active(base) {
-	for (var i in LAYER.layers) {
-		if (LAYER.layer_active == i) {
-			if (base == undefined)
-				return document.getElementById(LAYER.layers[i].name).getContext("2d");
-			else
-				return document.getElementById(LAYER.layers[i].name);
-		}
-	}
-	console.log('Error, can not find active layer.');
+	return LAYER.canvas_active(base);
 }

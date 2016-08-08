@@ -210,7 +210,7 @@ function GUI_CLASS() {
 		//redraw preview area
 		canvas_preview.save();
 		canvas_preview.scale(GUI.PREVIEW_SIZE.w / WIDTH, GUI.PREVIEW_SIZE.h / HEIGHT);
-		for (var i in LAYER.layers) {
+		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (LAYER.layers[i].visible == false)
 				continue;
 			canvas_preview.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);

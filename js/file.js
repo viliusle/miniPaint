@@ -192,7 +192,7 @@ function FILE_CLASS() {
 		}
 
 		//take data
-		for (var i in LAYER.layers) {
+		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (LAYER.layers[i].visible == false)
 				continue;
 			if (user_response.layers == 'Selected' && user_response.type != 'JSON' && i != LAYER.layer_active)
@@ -276,10 +276,10 @@ function FILE_CLASS() {
 
 			//layers
 			export_data.layers = [];
-			for (var i in LAYER.layers) {
+			for(var i = LAYER.layers.length-1; i >=0; i--){
 				var layer = {
 					name:LAYER.layers[i].name,
-					title:LAYER.layers[i].name, 
+					title:LAYER.layers[i].title, 
 					visible: 1,
 					opacity: LAYER.layers[i].opacity,
 				};
@@ -290,7 +290,7 @@ function FILE_CLASS() {
 
 			//image data
 			export_data.image_data = [];
-			for (var i in LAYER.layers) {
+			for(var i = LAYER.layers.length-1; i >=0; i--){
 				var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
 				export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
 			}
@@ -351,14 +351,12 @@ function FILE_CLASS() {
 	
 	this.load_json = function (data) {
 		var json = JSON.parse(data);
-		
-		//delete old layers
-		for (var i in LAYER.layers)
-			LAYER.layer_remove(i);
 
 		//init new file
 		GUI.ZOOM = 100;
 		MAIN.init();
+		
+		LAYER.remove_all_layers();
 
 		//set attributes
 		WIDTH = parseInt(json.info.width);
@@ -369,17 +367,16 @@ function FILE_CLASS() {
 		for(var i in json.layers){
 			var layer = json.layers[i];
 			var name = layer.name.replace(/[^0-9a-zA-Z-_\. ]/g, "");
+			var title = layer.title;
 			var visible = parseInt(layer.visible);
 			var opacity = parseInt(layer.opacity);
 
-			if (i > 0) {	//first layer exists by default - Background
-				LAYER.layer_add(name);
-				//update attributes
-				LAYER.layers[LAYER.layer_active].name = name;
-				if (visible == 0)
-					LAYER.layer_visibility(LAYER.layer_active);
-				LAYER.layers[LAYER.layer_active].opacity = opacity;
-			}
+			LAYER.layer_add(name);
+			//update attributes
+			LAYER.layers[LAYER.layer_active].title = title;
+			if (visible == 0)
+				LAYER.layer_visibility(LAYER.layer_active);
+			LAYER.layers[LAYER.layer_active].opacity = opacity;
 		}
 		LAYER.layer_renew();
 	

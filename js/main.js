@@ -1,5 +1,5 @@
 /* global HELPER, EVENTS, LAYER, POP, FILE, GUI, DRAW */
-/* global WIDTH, HEIGHT, canvas_main, canvas_back, canvas_grid, COLOR, ALPHA  */
+/* global WIDTH, HEIGHT, canvas_back, canvas_grid, COLOR, ALPHA  */
 
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);
@@ -23,12 +23,9 @@ function MAIN_CLASS() {
 		};
 		DRAW.select_data = false;
 		
-		for (var i = LAYER.layers.length-1; i>0; i--) {
-			LAYER.layer_remove(i);
-		}
+		LAYER.remove_all_layers();
 		LAYER.layers = [];
-		canvas_main.clearRect(0, 0, WIDTH, HEIGHT);
-		LAYER.layer_add("Background");
+		LAYER.layer_add();
 		LAYER.set_canvas_size();
 		GUI.draw_background(canvas_back, WIDTH, HEIGHT);
 		document.getElementById("canvas_preview").width = GUI.PREVIEW_SIZE.w;
