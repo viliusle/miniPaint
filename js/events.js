@@ -40,7 +40,7 @@ function EVENTS_CLASS() {
 	/**
 	 * mouse data, like positions, clicks
 	 */
-	this.mouse;
+	this.mouse = {};
 	
 	/**
 	 * if user is holding ctrl
@@ -56,16 +56,6 @@ function EVENTS_CLASS() {
 	 * if use is holding shift
 	 */
 	this.shift_pressed = false; //16
-	
-	/**
-	 * active area start position in preview canvas in right sidebar
-	 */
-	this.ZOOM_POS = [0, 0];
-	
-	/**
-	 * active area dimensions in preview canvas in right sidebar
-	 */
-	this.mini_rect_data = {w: 0, h: 0};
 	
 	/**
 	 * if use is draging
@@ -153,6 +143,7 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(0, -1);
+				GUI.zoom();
 				return false;
 			}
 		}
@@ -161,22 +152,25 @@ function EVENTS_CLASS() {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(0, 1);
-				return false;
-			}
-		}
-		//left
-		else if (k == 39) {
-			if (DRAW.active_tool == 'select_tool') {
-				EDIT.save_state();
-				LAYER.layer_move_active(1, 0);
+				GUI.zoom();
 				return false;
 			}
 		}
 		//right
+		else if (k == 39) {
+			if (DRAW.active_tool == 'select_tool') {
+				EDIT.save_state();
+				LAYER.layer_move_active(1, 0);
+				GUI.zoom();
+				return false;
+			}
+		}
+		//left
 		else if (k == 37) {
 			if (DRAW.active_tool == 'select_tool') {
 				EDIT.save_state();
 				LAYER.layer_move_active(-1, 0);
+				GUI.zoom();
 				return false;
 			}
 		}
@@ -275,15 +269,17 @@ function EVENTS_CLASS() {
 		else if (k == 72) {
 			IMAGE.histogram();
 		}
-		//-
-		else if (k == 109)
+		//minus
+		else if (k == 109){
 			GUI.zoom(-1);
-		//+
-		else if (k == 107)
+		}
+		//plus
+		else if (k == 107){
 			GUI.zoom(+1);
+		}
 		//n - new layer
 		else if (k == 78)
-			LAYER.add_layer();
+			LAYER.layer_add();
 		
 		GUI.zoom();
 		return true;
@@ -591,69 +587,52 @@ function EVENTS_CLASS() {
 		}
 	};
 	this.mouse_wheel_handler = function (e) {	//return true;
-		var step = 100;
 		e.preventDefault();
 		//zoom
 		if (EVENTS.ctrl_pressed == true) {
 			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-			if (GUI.ZOOM <= 100 && delta < 0)
-				step = 10;
-			if (GUI.ZOOM < 100 && delta > 0)
-				step = 10;
-			delta = delta * step;
-			if (GUI.ZOOM + delta > 0) {
-				GUI.ZOOM = GUI.ZOOM + delta;
-				EVENTS.calc_preview_auto();
-				GUI.zoom();
-			}
-			if (GUI.action_data().name == 'zoom') {
-				GUI.action_data().attributes.zoom = GUI.ZOOM;
-				show_action_attributes();
-			}
-			EVENTS.scroll_window();
-
-			//disable page scroll if ctrl pressed
-			e.preventDefault();
+			if(delta > 0)
+				GUI.zoom(+1, true);
+			else
+				GUI.zoom(-1, true);
+			
 			return false;
 		}
 	};
-	this.scroll_window = function () {
-		var total_w = (WIDTH * GUI.ZOOM / 100);
-		var total_h = (HEIGHT * GUI.ZOOM / 100);
-
-		xx = total_w * EVENTS.ZOOM_POS[0] / (GUI.PREVIEW_SIZE.w);
-		yy = total_h * EVENTS.ZOOM_POS[1] / (GUI.PREVIEW_SIZE.h);
-
+	this.scroll_window = function() {
 		var canvas_wrapper = document.querySelector('#canvas_wrapper');
-		canvas_wrapper.scrollTop = yy;
+		var visible_w = canvas_wrapper.clientWidth / GUI.ZOOM * 100;
+		var visible_h = canvas_wrapper.clientHeight / GUI.ZOOM * 100;
+		
+		if(this.mouse.valid == true){
+			GUI.zoom_center = [this.mouse.x/WIDTH*100, this.mouse.y/HEIGHT*100];
+		}
+		
+		//scroll to - convert center % coordinates to top/left px, and translate to current zoom
+		if(this.mouse.valid == true){
+			//using exact position
+			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w * GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
+			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h * GUI.zoom_center[1]/100) * GUI.ZOOM / 100;
+		}
+		else{
+			//using center
+			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w / 2) * GUI.ZOOM / 100;
+			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h / 2) * GUI.ZOOM / 100;
+		}
+		
 		canvas_wrapper.scrollLeft = xx;
+		canvas_wrapper.scrollTop = yy;
+
 	};
 	this.calc_preview_by_mouse = function (mouse_x, mouse_y) {
-		EVENTS.ZOOM_POS[0] = mouse_x - EVENTS.mini_rect_data.w / 2;
-		EVENTS.ZOOM_POS[1] = mouse_y - EVENTS.mini_rect_data.h / 2;
-		if (EVENTS.ZOOM_POS[0] < 0)
-			EVENTS.ZOOM_POS[0] = 0;
-		if (EVENTS.ZOOM_POS[1] < 0)
-			EVENTS.ZOOM_POS[1] = 0;
-
+		GUI.zoom_center[0] = mouse_x / GUI.PREVIEW_SIZE.w * 100;
+		GUI.zoom_center[1] = mouse_y / GUI.PREVIEW_SIZE.h * 100;
+		
 		GUI.zoom(undefined, true);
 		return true;
 	};
-	this.calc_preview_auto = function () {
-		var canvas_wrapper = document.querySelector('#canvas_wrapper');
-		var page_w = canvas_wrapper.clientWidth;	
-		var page_h = canvas_wrapper.clientHeight;
-		
-		var total_w = (WIDTH * GUI.ZOOM / 100);
-		var total_h = (HEIGHT * GUI.ZOOM / 100);
-		
-		EVENTS.mini_rect_data.w = Math.round(page_w * GUI.PREVIEW_SIZE.w / total_w);
-		EVENTS.mini_rect_data.h = Math.round(page_h * GUI.PREVIEW_SIZE.h / total_h);
-
-		GUI.redraw_preview();
-	};
 	this.on_resize = function(){
-		EVENTS.calc_preview_auto();
+		GUI.redraw_preview();
 		
 		//recalc popup position
 		var dim = HELPER.get_dimensions();

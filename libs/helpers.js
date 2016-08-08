@@ -198,4 +198,15 @@ function HELPER_CLASS() {
 		var blob = new Blob(byteArrays, {type: contentType});
 		return blob;
 	};
+	this.escapeHtml = function(text){
+		return text
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	};
+	this.isNumeric = function(n){
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
 }

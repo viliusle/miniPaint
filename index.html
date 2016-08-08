@@ -63,8 +63,7 @@
 		<div class="block" id="action_attributes"></div>
 	</div>
 	<div id="canvas_wrapper">
-		<canvas id="canvas_back"><div class="trn" class="error">Your browser doesn't support canvas.</div></canvas>
-		<canvas id="Background"></canvas>
+		<canvas id="canvas_back"><div class="trn error">Your browser doesn't support canvas.</div></canvas>
 		<div id="canvas_more"></div>
 		<canvas id="canvas_front"></canvas>
 		<canvas id="canvas_grid"></canvas>
@@ -77,12 +76,12 @@
 		<div id="preview">
 			<canvas id="canvas_preview"></canvas>
 			<div style="margin-top:105px;padding-left:5px;">
-				<input onclick="GUI.zoom(-1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="-" />
-				<input onclick="GUI.zoom(+1);EVENTS.scroll_window();" style="width:30px;" class="layer_add" type="button" value="+" />
+				<input onclick="GUI.zoom(+1, true);" style="width:30px;" class="layer_add" type="button" value="+" />
+				<input onclick="GUI.zoom(-1, true);" style="width:30px;" class="layer_add" type="button" value="-" />
 				<div style="display: inline-block;margin: 5px 0px;">
 					<b class="trn">Zoom</b>: <span id="zoom_nr">100</span>%
 				</div>
-				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value);EVENTS.scroll_window();" /> 
+				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value, true);" /> 
 			</div>
 		</div>
 		<div id="layers_base">
@@ -128,6 +127,16 @@
 			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_size');" href="#">Size</a></li>
 			<li><a class="trn" onclick="call_menu(IMAGE, 'image_trim');" href="#">Trim</a>
 			<li><a class="trn" onclick="call_menu(IMAGE, 'image_crop');" href="#">Crop Selection</a>
+			<li class="more">
+				<a class="trn" href="#">Zoom</a>
+				<ul>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_in');" href="#">Zoom In</a></li>
+				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_out');" href="#">Zoom Out</a></li>
+				<li><div class="mid-line"></div></li>
+				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_original');" href="#">Original size</a></li>
+				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_auto');" href="#">Fit window</a></li>
+				</ul>
+			</li>
 			<li><div class="mid-line"></div></li>
 			<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_resize');" href="#">Resize</a></li>
 			<li class="more">
@@ -173,6 +182,7 @@
 				</ul>
 			</li>
 			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_opacity');" href="#">Opacity</a></li>
+			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_rename');" href="#">Rename</a></li>
 			<li><div class="mid-line"></div></li>
 			<li><a class="trn" onclick="call_menu(LAYER, 'layer_trim');" href="#">Trim</a></li>
 			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_resize');" href="#">Resize</a></li>
@@ -258,21 +268,22 @@
 <div style="display:none;" id="tmp"></div>
 <div id="popup"></div>
 
-<script src="libs/jquery.js"></script>
-<script src="libs/menu.js"></script>
-<script src="libs/imagefilters/imagefilters.min.js"></script>
-<script src="libs/glfx.js"></script>
-<script src="libs/exif/exif.min.js"></script>
-<script src="libs/harmony.js"></script>
+<script src="vendor/jquery/jquery.js"></script>
+<script src="vendor/jquery/jquery-migrate.js"></script>
+<script src="vendor/menu/menu.min.js"></script>
+<script src="vendor/imagefilters/imagefilters.min.js"></script>
+<script src="vendor/glfx.js"></script>
+<script src="vendor/exif/exif.min.js"></script>
+<script src="vendor/harmony.js"></script>
 <script src="libs/vintage.js"></script>
-<script src="libs/kdtree.js"></script>
 <script src="libs/sift.js"></script>
 <script src="js/elements.js"></script>
-<script src="js/helpers.js"></script>
+<script src="libs/helpers.js"></script>
 <script src="libs/popup.js"></script>
-<script src="libs/file-saver/canvas-toBlob.js"></script>
-<script src="libs/file-saver/FileSaver.min.js"></script>
-<script src="libs/jquery.translate.js"></script>
+<script src="vendor/file-saver/canvas-toBlob.js"></script>
+<script src="vendor/file-saver/FileSaver.min.js"></script>
+<script src="vendor/hqx/hqx.min.js"></script>
+<script src="vendor/jquery.translate.js"></script>
 
 <script src="languages/es.js"></script>
 <script src="languages/it.js"></script>

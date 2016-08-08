@@ -41,14 +41,22 @@ function GUI_CLASS() {
 	this.ZOOM = 100;
 	
 	/**
+	 * visible part center coordinates, when zoomed in
+	 */
+	this.zoom_center = [50, 50];
+	
+	/**
 	 * common image dimensions
 	 */
 	this.common_dimensions = [
 			[640,480], //480p
 			[800,600], //SVGA
-			[1024,768],
+			[1024,768], //XGA 
 			[1280,720], //hdtv, 720p
 			[1600,1200], //UXGA
+			[1920,1080], //Full HD, 1080p
+			[3840,2160], //4K UHD
+			[7680,4320], //8K UHD
 		];
 	
 	/**
@@ -202,7 +210,7 @@ function GUI_CLASS() {
 		//redraw preview area
 		canvas_preview.save();
 		canvas_preview.scale(GUI.PREVIEW_SIZE.w / WIDTH, GUI.PREVIEW_SIZE.h / HEIGHT);
-		for (var i in LAYER.layers) {
+		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (LAYER.layers[i].visible == false)
 				continue;
 			canvas_preview.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
@@ -210,19 +218,46 @@ function GUI_CLASS() {
 		canvas_preview.restore();
 
 		//active zone
-		z_x = EVENTS.ZOOM_POS[0];
-		z_y = EVENTS.ZOOM_POS[1];
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
+		var visible_w = canvas_wrapper.clientWidth / GUI.ZOOM * 100;
+		var visible_h = canvas_wrapper.clientHeight / GUI.ZOOM * 100;
 		
-		if (z_x > GUI.PREVIEW_SIZE.w - EVENTS.mini_rect_data.w - 1)
-			z_x = GUI.PREVIEW_SIZE.w - EVENTS.mini_rect_data.w - 1;
-		if (z_y > GUI.PREVIEW_SIZE.h - EVENTS.mini_rect_data.h - 1)
-			z_y = GUI.PREVIEW_SIZE.h - EVENTS.mini_rect_data.h - 1;
+		var mini_rect_w = GUI.PREVIEW_SIZE.w * visible_w / WIDTH;
+		var mini_rect_h = GUI.PREVIEW_SIZE.h * visible_h / HEIGHT;
 
+		//xx = (GUI.zoom_center[0] * WIDTH / 100 - visible_w*GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
+		if(EVENTS.mouse.valid == true){
+			//using exact position
+			mini_rect_x = GUI.zoom_center[0] * GUI.PREVIEW_SIZE.w / 100 - mini_rect_w * GUI.zoom_center[0] / 100;
+			mini_rect_y = GUI.zoom_center[1] * GUI.PREVIEW_SIZE.h / 100 - mini_rect_h * GUI.zoom_center[1] / 100;
+		}
+		else{
+			//using center
+			mini_rect_x = GUI.zoom_center[0] * GUI.PREVIEW_SIZE.w / 100 - mini_rect_w / 2;
+			mini_rect_y = GUI.zoom_center[1] * GUI.PREVIEW_SIZE.h / 100 - mini_rect_h / 2;
+		}
+
+		//validate
+		mini_rect_x = Math.max(0, mini_rect_x);
+		mini_rect_y = Math.max(0, mini_rect_y);
+		mini_rect_w = Math.min(GUI.PREVIEW_SIZE.w-1, mini_rect_w);
+		mini_rect_h = Math.min(GUI.PREVIEW_SIZE.h-1, mini_rect_h);
+		if (mini_rect_x + mini_rect_w > GUI.PREVIEW_SIZE.w)
+			mini_rect_x = GUI.PREVIEW_SIZE.w - mini_rect_w ;
+		if (mini_rect_y + mini_rect_h > GUI.PREVIEW_SIZE.h)
+			mini_rect_y = GUI.PREVIEW_SIZE.h - mini_rect_h;
+
+		if(mini_rect_x == 0 && mini_rect_y == 0 && mini_rect_w == GUI.PREVIEW_SIZE.w -1 && mini_rect_h == GUI.PREVIEW_SIZE.h -1){
+			//everything is visible
+			return false;
+		}
+
+		//draw selected area in preview canvas
 		canvas_preview.lineWidth = 1;
 		canvas_preview.beginPath();
-		canvas_preview.rect(Math.round(z_x) + 0.5, Math.round(z_y) + 0.5, EVENTS.mini_rect_data.w, EVENTS.mini_rect_data.h);
-		canvas_preview.fillStyle = "rgba(0, 0, 0, 0.2)";
-		canvas_preview.strokeStyle = "#393939";
+		canvas_preview.rect(Math.round(mini_rect_x) + 0.5, Math.round(mini_rect_y) + 0.5, mini_rect_w, mini_rect_h);
+		canvas_preview.fillStyle = "rgba(0, 255, 0, 0.3)";
+		canvas_preview.strokeStyle = "#00ff00";
 		canvas_preview.fill();
 		canvas_preview.stroke();
 		return true;
@@ -232,20 +267,23 @@ function GUI_CLASS() {
 			//zoom-in or zoom-out
 			if (recalc == 1 || recalc == -1) {
 				var step = 100;
-				if (this.ZOOM <= 100 && recalc < 0)
+				if (this.ZOOM <= 110 && recalc < 0){
 					step = 10;
-				if (this.ZOOM < 100 && recalc > 0)
+				}
+				if (this.ZOOM <= 90 && recalc > 0){
 					step = 10;
-				if (recalc * step + this.ZOOM > 0) {
-					this.ZOOM = this.ZOOM + recalc * step;
-					if (this.ZOOM > 100 && this.ZOOM < 200)
-						this.ZOOM = 100;
+				}
+				this.ZOOM = this.ZOOM + recalc * step;
+				if (this.ZOOM > 100 && this.ZOOM < 200){
+					this.ZOOM = 100;
 				}
 			}
-			//zoom using exact value
-			else
+			else {
+				//zoom using exact value
 				this.ZOOM = parseInt(recalc);
-			EVENTS.calc_preview_auto();
+			}
+			this.ZOOM = Math.max(this.ZOOM, 10);
+			GUI.redraw_preview();
 		}
 		document.getElementById("zoom_nr").innerHTML = this.ZOOM;
 		document.getElementById("zoom_range").value = this.ZOOM;
@@ -275,8 +313,9 @@ function GUI_CLASS() {
 			document.getElementById('resize-wh').style.display = "block";
 		}
 
-		if (scroll != undefined)
+		if (scroll != undefined){
 			EVENTS.scroll_window();
+		}
 		this.redraw_preview();
 		return true;
 	};

@@ -100,11 +100,13 @@ function IMAGE_CLASS() {
 	//rotate
 	this.image_rotate = function () {
 		POP.add({name: "angle", title: "Enter angle (0-360):", value: 0, range: [0, 360]});
+		POP.add({name: "mode", title: "Area:", values: ['All', 'Visible']});
 		POP.show(
 			'Rotate', 
 			function (response) {
 				EDIT.save_state();
-				IMAGE.rotate_resize_doc(response.angle, WIDTH, HEIGHT);
+				if(response.mode == 'All')
+					IMAGE.rotate_resize_doc(response.angle, WIDTH, HEIGHT);
 				IMAGE.rotate_layer(response, canvas_active(), WIDTH, HEIGHT);
 			},
 			function (response, canvas_preview, w, h) {
@@ -217,7 +219,7 @@ function IMAGE_CLASS() {
 
 	//enchance colors
 	this.image_decrease_colors = function () {
-		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 100]});
+		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 256]});
 		POP.add({name: "param2", title: "Dithering:", values: ["No", "Yes"], });
 		POP.add({name: "param3", title: "Greyscale:", values: ["No", "Yes"], });
 		POP.show(
@@ -332,13 +334,9 @@ function IMAGE_CLASS() {
 			}
 			LAYER.set_canvas_size();
 
-			for (var i in LAYER.layers) {
-				var layer = document.getElementById(LAYER.layers[i].name).getContext("2d");
-
-				var tmp = layer.getImageData(0, 0, WIDTH, HEIGHT);
-				layer.clearRect(0, 0, WIDTH, HEIGHT);
-				layer.putImageData(tmp, dx, dy);
-			}
+			var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().putImageData(tmp, dx, dy);
 		}
 	};
 
@@ -346,22 +344,75 @@ function IMAGE_CLASS() {
 	this.rotate_layer = function (user_response, canvas, w, h) {
 		var TO_RADIANS = Math.PI / 180;
 		angle = user_response.angle;
+		mode = user_response.mode;
+		
+		var area_x = 0;
+		var area_y = 0;
+		var area_w = w;
+		var area_h = h;
+		
+		var dx = 0;
+		var dy = 0;
+		
+		if(mode == 'Visible'){
+			//rotate only visible part
+			
+			var trim_info = this.trim_info(canvas.canvas);
+			area_x = trim_info.left;
+			area_y = trim_info.top;
+			area_w = w - trim_info.left - trim_info.right;
+			area_h = h - trim_info.top - trim_info.bottom;
+			
+			//calc how much dimensions will increase
+			var o = angle * Math.PI / 180;
+			var new_x = area_w * Math.abs(Math.cos(o)) + area_h * Math.abs(Math.sin(o));
+			var new_y = area_w * Math.abs(Math.sin(o)) + area_h * Math.abs(Math.cos(o));
+			new_x = Math.ceil(Math.round(new_x * 1000) / 1000);
+			new_y = Math.ceil(Math.round(new_y * 1000) / 1000);
+			if(new_x > area_w || new_y > area_h){
+				if (new_x > area_w) {
+					dx = Math.ceil(new_x - area_w) / 2;
+					if(area_x > dx)
+						dx = 0;
+				}
+				if (new_y > area_h) {
+					dy = Math.ceil(new_y - area_h) / 2;
+					if(area_y > dy)
+						dy = 0;
+				}
+				if (w == WIDTH && h == HEIGHT){
+					var tmp = canvas.getImageData(0, 0, w, h);
+					canvas.clearRect(0, 0, w, h);
+					canvas.putImageData(tmp, dx, dy);
+				}
+			}
+			
+			//recalc
+			var trim_info = this.trim_info(canvas.canvas);
+			area_x = trim_info.left;
+			area_y = trim_info.top;
+			area_w = w - trim_info.left - trim_info.right;
+			area_h = h - trim_info.top - trim_info.bottom;
+		}
+		
 		var tempCanvas = document.createElement("canvas");
 		var tempCtx = tempCanvas.getContext("2d");
-		tempCanvas.width = w;
-		tempCanvas.height = h;
-		var imageData = canvas.getImageData(0, 0, w, h);
+		tempCanvas.width = area_w;
+		tempCanvas.height = area_h;
+		var imageData = canvas.getImageData(area_x, area_y, area_w, area_h);
 		tempCtx.putImageData(imageData, 0, 0);
 
 		//rotate
-		canvas.clearRect(0, 0, w, h);
+		canvas.clearRect(area_x, area_y, area_w, area_h);
 		canvas.save();
-		canvas.translate(Math.round(w / 2), Math.round(h / 2));
+		canvas.translate(area_x + Math.round(area_w / 2), area_y + Math.round(area_h / 2));
 		canvas.rotate(angle * TO_RADIANS);
-		canvas.drawImage(tempCanvas, -Math.round(w / 2), -Math.round(h / 2));
+		canvas.drawImage(tempCanvas, -Math.round(area_w / 2), -Math.round(area_h / 2));
 		canvas.restore();
-		if (w == WIDTH)	//if main canvas
+		if (w == WIDTH && h == HEIGHT){	
+			//if main canvas
 			GUI.zoom();
+		}
 	};
 
 	this.resize_box = function () {
@@ -369,7 +420,7 @@ function IMAGE_CLASS() {
 		POP.add({name: "height", title: "Height (pixels):", value: '', placeholder: HEIGHT});
 		POP.add({name: "width_percent", title: "Width (%):", value: '', placeholder: 100});
 		POP.add({name: "height_percent", title: "Height (%):", value: '', placeholder: 100});
-		POP.add({name: "mode", title: "Mode:", value: "Resample - Hermite", values: ["Basic", "Resample - Hermite"]});
+		POP.add({name: "mode", title: "Mode:", values: ["Resample - Hermite", "Basic", "HQX"]});
 		POP.add({name: "preblur", title: "Pre-Blur:", values: ["Yes", "No"], value: "No"});
 		POP.add({name: "sharpen", title: "Sharpen:", values: ["Yes", "No"], value: "No"});
 		POP.show('Resize', [IMAGE, "resize_layer"]);
@@ -407,10 +458,6 @@ function IMAGE_CLASS() {
 				height = Math.round(width / ratio);
 		}
 
-		//if increasing size - use simple way - its good enough
-		if (width > WIDTH || height > HEIGHT)
-			user_response.mode = "Resize";
-
 		//anti-artifacting?
 		if (preblur == 'Yes') {
 			var ratio_w = WIDTH / width;
@@ -423,14 +470,22 @@ function IMAGE_CLASS() {
 				canvas_active().putImageData(filtered, 0, 0);
 			}
 		}
-		if (width > WIDTH || height > HEIGHT)
+		
+		//validate
+		if (user_response.mode == "Resample - Hermite" && (width > WIDTH || height > HEIGHT)){
+			//scalling up - Hermite not supported
 			user_response.mode = "Resize";
+		}
+		if (user_response.mode == "HQX" && (width < WIDTH && height < HEIGHT)){
+			//scalling down - HQX not supported
+			user_response.mode = "Resample - Hermite";
+		}
 		
 		var time1 = Date.now();
 		var resize_type;
 		
-		//Hermite - good and fast
 		if (user_response.mode == "Resample - Hermite") {
+			//Hermite resample - max quality
 			resize_type = 'Hermite';
 			this.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
 			if (GUI.last_menu != 'layer_resize') {
@@ -444,10 +499,30 @@ function IMAGE_CLASS() {
 			}
 			GUI.zoom();
 		}
-		//simple resize	
-		if (user_response.mode == "Resize") {
+		else if(user_response.mode == "HQX") {
+			//HQX - 2, 3, 4 scale only, but amazing quality if there are only few colors
+			resize_type = 'HQX';
+			
+			//find correct dimensions
+			var multiply = Math.max(width/WIDTH, height/HEIGHT);
+			multiply = Math.round(multiply);
+			if(multiply < 2)
+				multiply = 2;
+			if(multiply > 4)
+				multiply = 4;
+			
+			var image_data_resized = hqx(canvas_active(true), multiply);
+			
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			WIDTH = WIDTH * multiply;
+			HEIGHT = HEIGHT * multiply;
+			LAYER.set_canvas_size();
+			canvas_active().putImageData(image_data_resized, 0, 0 );
+			GUI.zoom();
+		}
+		else {
+			//simple resize - max speed
 			resize_type = 'Default';
-			//simple resize - FAST
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
 			tmp_data.height = HEIGHT;
@@ -458,13 +533,11 @@ function IMAGE_CLASS() {
 			HEIGHT = height;
 			LAYER.set_canvas_size();
 			canvas_active().drawImage(tmp_data, 0, 0, width, height);
-			if (GUI.last_menu != 'layer_resize')
-				this.trim();
 			GUI.zoom();
 		}
 		
 		//console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
-
+		
 		//sharpen after?
 		if (sharpen == 'Yes') {
 			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
@@ -473,6 +546,13 @@ function IMAGE_CLASS() {
 		}
 	};
 
+	/**
+	 * get canvas painted are coords
+	 * 
+	 * @param {HtmlElement} canvas
+	 * @param {boolean} trim_white
+	 * @param {boolean} include_white
+	 */
 	this.trim_info = function (canvas, trim_white, include_white) {
 		var top = 0;
 		var left = 0;
@@ -1061,5 +1141,27 @@ function IMAGE_CLASS() {
 			}
 		}
 		return n;
+	};
+	this.zoom_in = function() {
+		GUI.zoom(+1, true);
+	};
+	this.zoom_out = function() {
+		GUI.zoom(-1, true);
+	};
+	this.zoom_original = function() {
+		GUI.zoom(100, true);
+	};
+	this.zoom_auto = function(only_increase) {
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
+		var page_w = canvas_wrapper.clientWidth;
+		var page_h = canvas_wrapper.clientHeight;
+		
+		var best_width = page_w / WIDTH  * 100;
+		var best_height = page_h / HEIGHT * 100;
+		var best_zoom = Math.floor(Math.min(best_width, best_height));
+		if(only_increase != undefined && best_zoom > 100){
+			return false;
+		}
+		GUI.zoom(Math.min(best_width, best_height), true);
 	};
 }
