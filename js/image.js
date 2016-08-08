@@ -100,11 +100,13 @@ function IMAGE_CLASS() {
 	//rotate
 	this.image_rotate = function () {
 		POP.add({name: "angle", title: "Enter angle (0-360):", value: 0, range: [0, 360]});
+		POP.add({name: "mode", title: "Area:", values: ['All', 'Visible']});
 		POP.show(
 			'Rotate', 
 			function (response) {
 				EDIT.save_state();
-				IMAGE.rotate_resize_doc(response.angle, WIDTH, HEIGHT);
+				if(response.mode == 'All')
+					IMAGE.rotate_resize_doc(response.angle, WIDTH, HEIGHT);
 				IMAGE.rotate_layer(response, canvas_active(), WIDTH, HEIGHT);
 			},
 			function (response, canvas_preview, w, h) {
@@ -332,13 +334,9 @@ function IMAGE_CLASS() {
 			}
 			LAYER.set_canvas_size();
 
-			for (var i in LAYER.layers) {
-				var layer = document.getElementById(LAYER.layers[i].name).getContext("2d");
-
-				var tmp = layer.getImageData(0, 0, WIDTH, HEIGHT);
-				layer.clearRect(0, 0, WIDTH, HEIGHT);
-				layer.putImageData(tmp, dx, dy);
-			}
+			var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().putImageData(tmp, dx, dy);
 		}
 	};
 
@@ -346,22 +344,75 @@ function IMAGE_CLASS() {
 	this.rotate_layer = function (user_response, canvas, w, h) {
 		var TO_RADIANS = Math.PI / 180;
 		angle = user_response.angle;
+		mode = user_response.mode;
+		
+		var area_x = 0;
+		var area_y = 0;
+		var area_w = w;
+		var area_h = h;
+		
+		var dx = 0;
+		var dy = 0;
+		
+		if(mode == 'Visible'){
+			//rotate only visible part
+			
+			var trim_info = this.trim_info(canvas.canvas);
+			area_x = trim_info.left;
+			area_y = trim_info.top;
+			area_w = w - trim_info.left - trim_info.right;
+			area_h = h - trim_info.top - trim_info.bottom;
+			
+			//calc how much dimensions will increase
+			var o = angle * Math.PI / 180;
+			var new_x = area_w * Math.abs(Math.cos(o)) + area_h * Math.abs(Math.sin(o));
+			var new_y = area_w * Math.abs(Math.sin(o)) + area_h * Math.abs(Math.cos(o));
+			new_x = Math.ceil(Math.round(new_x * 1000) / 1000);
+			new_y = Math.ceil(Math.round(new_y * 1000) / 1000);
+			if(new_x > area_w || new_y > area_h){
+				if (new_x > area_w) {
+					dx = Math.ceil(new_x - area_w) / 2;
+					if(area_x > dx)
+						dx = 0;
+				}
+				if (new_y > area_h) {
+					dy = Math.ceil(new_y - area_h) / 2;
+					if(area_y > dy)
+						dy = 0;
+				}
+				if (w == WIDTH && h == HEIGHT){
+					var tmp = canvas.getImageData(0, 0, w, h);
+					canvas.clearRect(0, 0, w, h);
+					canvas.putImageData(tmp, dx, dy);
+				}
+			}
+			
+			//recalc
+			var trim_info = this.trim_info(canvas.canvas);
+			area_x = trim_info.left;
+			area_y = trim_info.top;
+			area_w = w - trim_info.left - trim_info.right;
+			area_h = h - trim_info.top - trim_info.bottom;
+		}
+		
 		var tempCanvas = document.createElement("canvas");
 		var tempCtx = tempCanvas.getContext("2d");
-		tempCanvas.width = w;
-		tempCanvas.height = h;
-		var imageData = canvas.getImageData(0, 0, w, h);
+		tempCanvas.width = area_w;
+		tempCanvas.height = area_h;
+		var imageData = canvas.getImageData(area_x, area_y, area_w, area_h);
 		tempCtx.putImageData(imageData, 0, 0);
 
 		//rotate
-		canvas.clearRect(0, 0, w, h);
+		canvas.clearRect(area_x, area_y, area_w, area_h);
 		canvas.save();
-		canvas.translate(Math.round(w / 2), Math.round(h / 2));
+		canvas.translate(area_x + Math.round(area_w / 2), area_y + Math.round(area_h / 2));
 		canvas.rotate(angle * TO_RADIANS);
-		canvas.drawImage(tempCanvas, -Math.round(w / 2), -Math.round(h / 2));
+		canvas.drawImage(tempCanvas, -Math.round(area_w / 2), -Math.round(area_h / 2));
 		canvas.restore();
-		if (w == WIDTH)	//if main canvas
+		if (w == WIDTH && h == HEIGHT){	
+			//if main canvas
 			GUI.zoom();
+		}
 	};
 
 	this.resize_box = function () {
@@ -495,6 +546,13 @@ function IMAGE_CLASS() {
 		}
 	};
 
+	/**
+	 * get canvas painted are coords
+	 * 
+	 * @param {HtmlElement} canvas
+	 * @param {boolean} trim_white
+	 * @param {boolean} include_white
+	 */
 	this.trim_info = function (canvas, trim_white, include_white) {
 		var top = 0;
 		var left = 0;
