@@ -51,7 +51,7 @@ function EDIT_CLASS() {
 	//paste
 	this.edit_paste = function () {
 		this.save_state();
-		this.paste('menu');
+		this.paste('menu');		
 	};
 
 	//select all
@@ -98,6 +98,7 @@ function EDIT_CLASS() {
 		LAYER.layer_active = 0;
 		canvas_active().drawImage(PASTE_DATA, 0, 0);
 		LAYER.layer_renew();
+		EDIT.edit_clear();
 	};
 	
 	this.save_state = function () {
