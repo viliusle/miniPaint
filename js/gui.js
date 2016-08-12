@@ -102,6 +102,8 @@ function GUI_CLASS() {
 		var canvas_wrapper = document.querySelector('#canvas_wrapper');
 		var page_w = canvas_wrapper.clientWidth;
 		var page_h = canvas_wrapper.clientHeight;
+		var auto_size = false;
+		
 		for(var i = this.common_dimensions.length-1; i >= 0; i--){
 			if(this.common_dimensions[i][0] >page_w || this.common_dimensions[i][1] > page_h){
 				//browser size is too small
@@ -109,14 +111,17 @@ function GUI_CLASS() {
 			}
 			WIDTH = this.common_dimensions[i][0];
 			HEIGHT = this.common_dimensions[i][1];
-			return;
+			auto_size = true;
+			break;
 		}
 		
-		//screen size to so small, even 400x300 too large?
-		WIDTH = page_w - 5;
-		HEIGHT = page_h - 10;
-		if(page_w < 585){
-			HEIGHT = HEIGHT - 15;
+		if(auto_size == false) {
+			//screen size is smaller then 400x300
+			WIDTH = page_w - 5;
+			HEIGHT = page_h - 10;
+			if(page_w < 585){
+				HEIGHT = HEIGHT - 15;
+			}
 		}
 	};
 	
