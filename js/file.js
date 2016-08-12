@@ -85,13 +85,17 @@ function FILE_CLASS() {
 	};
 
 	this.open = function () {
+		var self = this;
+		
 		document.getElementById("tmp").innerHTML = '';
 		var a = document.createElement('input');
 		a.setAttribute("id", "file_open");
 		a.type = 'file';
 		a.multiple = 'multiple ';
 		document.getElementById("tmp").appendChild(a);
-		document.getElementById('file_open').addEventListener('change', this.open_handler, false);
+		document.getElementById('file_open').addEventListener('change', function (e) {
+			self.open_handler(e);
+		}, false);
 
 		//force click
 		document.querySelector('#file_open').click();
@@ -99,33 +103,40 @@ function FILE_CLASS() {
 	
 	this.open_handler = function (e) {
 		var files = e.target.files;
+		var self = this;
+		if(files == undefined){
+			//drag and drop
+			files = e.dataTransfer.files;
+		}
+		
 		for (var i = 0, f; i < files.length; i++) {
 			f = files[i];
-			if (!f.type.match('image.*') && f.type != 'text/json')
+			if (!f.type.match('image.*') && !f.name.match('.json')){
+				console.log('Wrong file type, must be image or json.');
 				continue;
+			}
 			if (files.length == 1)
 				this.SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
 
 			var FR = new FileReader();
-			FR.file = e.target.files[i];
+			FR.file = files[i];
 
 			FR.onload = function (event) {
 				if (this.file.type.match('image.*')) {
 					//image
 					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
-					EXIF.getData(this.file, FILE.save_EXIF);
-					FILE.save_file_info(this.file);
+					self.save_file_info(this.file);
 				}
 				else {
 					//json
-					var responce = FILE.load_json(event.target.result);
+					var responce = self.load_json(event.target.result);
 					if (responce === true)
 						return false;
 				}
 			};
 			if (f.type == "text/plain")
 				FR.readAsText(f);
-			else if (f.type == "text/json")
+			else if (f.name.match('.json'))
 				FR.readAsText(f);
 			else
 				FR.readAsDataURL(f);

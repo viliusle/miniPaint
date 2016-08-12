@@ -551,40 +551,8 @@ function EVENTS_CLASS() {
 	//upload drop zone
 	this.upload_drop = function (e) {
 		e.preventDefault();
-		EDIT.save_state();
-		var n_valid = 0;
-		for (var i = 0, f; i < e.dataTransfer.files.length; i++) {
-			f = e.dataTransfer.files[i];
-			if (!f.type.match('image.*') && !f.name.match('.json'))
-				continue;
-			n_valid++;
-
-			var FR = new FileReader();
-			FR.file = e.dataTransfer.files[i];
-
-			if (e.dataTransfer.files.length == 1)
-				FILE.SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
-
-			FR.onload = function (event) {
-				if (this.file.type.match('image.*')) {
-					//image
-					LAYER.layer_add(this.file.name, event.target.result, this.file.type);
-					FILE.save_file_info(this.file);
-				}
-				else {
-					//json
-					var responce = FILE.load_json( event.target.result );
-					if (responce === true)
-						return false;
-				}
-			};
-			if (f.type == "text/plain")
-				FR.readAsText(f);
-			else if (f.name.match('.json'))
-				FR.readAsText(f);
-			else
-				FR.readAsDataURL(f);
-		}
+		
+		FILE.open_handler(e);
 	};
 	this.mouse_wheel_handler = function (e) {	//return true;
 		e.preventDefault();
