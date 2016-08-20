@@ -325,6 +325,20 @@ function GUI_CLASS() {
 		return true;
 	};
 	
+	this.zoom_auto = function(only_increase){
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
+		var page_w = canvas_wrapper.clientWidth;
+		var page_h = canvas_wrapper.clientHeight;
+		
+		var best_width = page_w / WIDTH  * 100;
+		var best_height = page_h / HEIGHT * 100;
+		var best_zoom = Math.floor(Math.min(best_width, best_height));
+		if(only_increase != undefined && best_zoom > 100){
+			return false;
+		}
+		this.zoom(Math.min(best_width, best_height), true);
+	};
+	
 	this.update_attribute = function (object, next_value) {
 		var max_value = 500;
 		for (var k in this.action_data().attributes) {
