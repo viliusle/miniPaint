@@ -1,4 +1,4 @@
-/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, EL, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
+/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, IMAGE, EL, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
 /* global WIDTH, HEIGHT, COLOR, canvas_active, canvas_front */
 
 var DRAW = new DRAW_TOOLS_CLASS();
@@ -565,6 +565,10 @@ function DRAW_TOOLS_CLASS() {
 				'Text', 
 				function (user_response) {
 					EDIT.save_state();
+					var trim_details = IMAGE.trim_info(canvas_active(true));
+					if (trim_details.empty == false) {
+						LAYER.layer_add();
+					}
 					text = user_response.text.split("\n");
 					for (var i in text) {
 						user_response.text = text[i];
@@ -636,24 +640,10 @@ function DRAW_TOOLS_CLASS() {
 		//3d
 		if (dpth > 0) {
 			canvas.fillStyle = HELPER.darkenColor(COLOR, -30);
-			alpha_tmp = ALPHA;
-			if (alpha_tmp < 255)
-				alpha_tmp /= 10;
-
-			color_rgb.r -= 50;
-			color_rgb.g -= 50;
-			color_rgb.b -= 50;
-			if (color_rgb.r < 0)
-				color_rgb.r *= -1;
-			if (color_rgb.g < 0)
-				color_rgb.g *= -1;
-			if (color_rgb.b < 0)
-				color_rgb.b *= -1;
-
-			canvas.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + alpha_tmp / 255 + ")";
+			//canvas.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 			for (cnt = 0; cnt < dpth; cnt++)
 				canvas.fillText(text, xx + dx * cnt, yy + letters_height + dy * cnt);
-			color_rgb = HELPER.hex2rgb(COLOR);
+			//color_rgb = HELPER.hex2rgb(COLOR);
 		}
 
 		//main text

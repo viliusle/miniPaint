@@ -95,9 +95,10 @@ function LAYER_CLASS() {
 						HEIGHT = img.height;
 					LAYER.set_canvas_size();
 				}
+				//remove initial empty layer
 				if (_this.layers.length == 1 && EVENTS.autosize == true) {
 					var trim_info = IMAGE.trim_info(document.getElementById(_this.layers[0].name));
-					if (trim_info.left == WIDTH) {
+					if (trim_info.empty == true) {
 						_this.layer_remove(0, true);
 						WIDTH = img.width;
 						HEIGHT = img.height;

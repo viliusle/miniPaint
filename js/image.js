@@ -553,13 +553,16 @@ function IMAGE_CLASS() {
 	 * @param {boolean} trim_white
 	 * @param {boolean} include_white
 	 */
-	this.trim_info = function (canvas, trim_white, include_white) {
+	this.trim_info = function (canvas, trim_white) {
 		var top = 0;
 		var left = 0;
 		var bottom = 0;
 		var right = 0;
 		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
 		var imgData = img.data;
+		var empty = false;
+		if(trim_white == undefined)
+			trim_white = true;
 		//check top
 		main1:
 			for (var y = 0; y < img.height; y++) {
@@ -567,7 +570,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main1;
 			}
@@ -580,7 +583,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main2;
 			}
@@ -593,7 +596,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main3;
 			}
@@ -606,17 +609,24 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main4;
 			}
 			right++;
 		}
+		
+		if(top == canvas.height && left == canvas.width){
+			//canvas is empty
+			empty = true;
+		}
+		
 		return {
 			top: top,
 			left: left,
 			bottom: bottom,
-			right: right
+			right: right,
+			empty: empty,
 		};
 	};
 
