@@ -40,6 +40,14 @@ function LAYER_CLASS() {
 		this.layer_renew();
 	};
 	
+	//generate name for new layer
+	this.generate_layer_name = function(prefix){
+		if(prefix == undefined)
+			prefix = 'Layer';
+			
+		return prefix + ' #' + (layer_max_index);
+	};
+	
 	//create layer
 	this.layer_add = function (name, data) {
 		layer_max_index++;
@@ -57,7 +65,7 @@ function LAYER_CLASS() {
 		if (data == undefined) {
 			//empty layer
 			if (name == undefined) {
-				name = 'Layer #' + (layer_max_index);
+				name = this.generate_layer_name();
 			}
 			var new_layer = [];
 			new_layer.name = name;
@@ -108,7 +116,7 @@ function LAYER_CLASS() {
 
 				for (var i in _this.layers) {
 					if (_this.layers[i].name == name) {
-						name = 'Layer #' + (layer_max_index);
+						name = _this.generate_layer_name(name);
 					}
 				}
 				LAYER.create_canvas(name);
@@ -177,10 +185,10 @@ function LAYER_CLASS() {
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			//create
-			var new_name = 'Layer #' + (layer_max_index);
+			var new_name = this.generate_layer_name();
 			LAYER.create_canvas(new_name);
 			this.layers.unshift({name: new_name, title: new_name, visible: true});
-			LAYER.layer_active = 0;
+			this.layer_active = 0;
 			canvas_active().drawImage(tmp_data, 0, 0);
 			LAYER.layer_renew();
 		}

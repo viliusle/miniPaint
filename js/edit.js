@@ -92,7 +92,7 @@ function EDIT_CLASS() {
 		}
 
 		tmp = new Array();
-		var new_name = 'Layer #' + (LAYER.layers.length + 1);
+		var new_name = LAYER.generate_layer_name();
 		LAYER.create_canvas(new_name);
 		LAYER.layers.unshift({name: new_name, title: new_name, visible: true});
 		LAYER.layer_active = 0;
