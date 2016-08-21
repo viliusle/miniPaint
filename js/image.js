@@ -220,37 +220,28 @@ function IMAGE_CLASS() {
 	//enchance colors
 	this.image_decrease_colors = function () {
 		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 256]});
-		POP.add({name: "param2", title: "Dithering:", values: ["No", "Yes"], });
 		POP.add({name: "param3", title: "Greyscale:", values: ["No", "Yes"], });
 		POP.show(
 			'Decrease colors', 
 			function (user_response) {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
-				if (user_response.param2 == 'Yes')
-					param2 = true;
-				else
-					param2 = false;
 				if (user_response.param3 == 'Yes')
 					param3 = true;
 				else
 					param3 = false;
 
-				IMAGE.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param2, param3);
+				IMAGE.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param3);
 				GUI.zoom();
 			},
 			function (user_response, canvas_preview, w, h) {
 				var param1 = parseInt(user_response.param1);
-				if (user_response.param2 == 'Yes')
-					param2 = true;
-				else
-					param2 = false;
 				if (user_response.param3 == 'Yes')
 					param3 = true;
 				else
 					param3 = false;
 
-				IMAGE.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param2, param3);
+				IMAGE.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param3);
 			}
 		);
 	};
@@ -744,7 +735,7 @@ function IMAGE_CLASS() {
 		LAYER.update_info_block();
 	};
 
-	this.decrease_colors = function (canvas_source, canvas_destination, W, H, colors, dithering, greyscale) {
+	this.decrease_colors = function (canvas_source, canvas_destination, W, H, colors, greyscale) {
 		var context = canvas_destination.getContext("2d");
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
@@ -828,49 +819,9 @@ function IMAGE_CLASS() {
 					}
 				}
 
-				if (dithering == false) {
-					imgData[k] = palette[index1][0];
-					imgData[k + 1] = palette[index1][1];
-					imgData[k + 2] = palette[index1][2];
-				}
-				else {
-					//dithering
-					if (diff1 >= 10) {
-						//find second close color
-						var index2;
-						var min2 = 256 * 3;
-						var diff2;
-						for (var m = 0; m < p_n; m++) {
-							if (m == index1)
-								continue; //we already have this
-							if (palette[index1][3] < grey && palette[m][3] < grey)
-								continue;
-							if (palette[index1][3] > grey && palette[m][3] > grey)
-								continue;
-							var diff = Math.abs(palette[m][0] - imgData[k]) + Math.abs(palette[m][1] - imgData[k + 1]) + Math.abs(palette[m][2] - imgData[k + 2]);
-							if (diff < min2) {
-								min2 = diff;
-								index2 = m;
-								diff2 = diff;
-							}
-						}
-					}
-
-					var c;
-					if (index2 == undefined)
-						c = palette[index1]; //only 1 match
-					else {
-						//randomize
-						var rand = HELPER.getRandomInt(-diff1, diff2);
-						if (rand < 0)
-							c = palette[index2];
-						else
-							c = palette[index1];
-					}
-					imgData[k] = c[0];
-					imgData[k + 1] = c[1];
-					imgData[k + 2] = c[2];
-				}
+				imgData[k] = palette[index1][0];
+				imgData[k + 1] = palette[index1][1];
+				imgData[k + 2] = palette[index1][2];
 
 				if (greyscale == true) {
 					var mid = Math.round(0.2126 * imgData[k] + 0.7152 * imgData[k + 1] + 0.0722 * imgData[k + 2]);

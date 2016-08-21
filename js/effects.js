@@ -247,7 +247,6 @@ function EFFECTS_CLASS() {
 
 		POP.add({name: "param1", title: "Power:", value: "3", range: [1, 10]});
 		POP.add({name: "param2", title: "Limit:", value: "30", range: [10, 200]});
-		POP.add({name: "param3", title: "Dithering:", values: ["Yes", "No"]});
 		POP.preview_in_main = true;
 		POP.effects = true;
 		POP.show('Auto colorize',
@@ -255,13 +254,8 @@ function EFFECTS_CLASS() {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
 				var param2 = parseInt(user_response.param2);
-				if (user_response.param3 == 'Yes')
-					param3 = true;
-			
-				else
-					param3 = false;
 
-				_this.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+				_this.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, colorize_data);
 				GUI.zoom();
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			},
@@ -269,15 +263,11 @@ function EFFECTS_CLASS() {
 				POP.preview_in_main = true;
 				var param1 = parseInt(user_response.param1);
 				var param2 = parseInt(user_response.param2);
-				if (user_response.param3 == 'Yes')
-					param3 = true;
-				else
-					param3 = false;
 
-				colorize_data = _this.colorize(false, WIDTH, HEIGHT, param1, param2, param3, true);
+				colorize_data = _this.colorize(false, WIDTH, HEIGHT, param1, param2, true);
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				canvas_front.drawImage(canvas_active(true), 0, 0);
-				_this.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+				_this.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, colorize_data);
 			}
 		);
 	};
@@ -980,7 +970,7 @@ function EFFECTS_CLASS() {
 	};
 
 	//converts greyscale images to colored
-	this.colorize = function (context, W, H, rand_power, max_gap, dither, manual_colors) {
+	this.colorize = function (context, W, H, rand_power, max_gap, manual_colors) {
 		if (manual_colors == undefined || manual_colors === true) {
 			var colors = [];
 			for (var x = 0; x < 3; x++) {
@@ -1011,23 +1001,9 @@ function EFFECTS_CLASS() {
 		for (var i = 0; i < imgData.length; i += 4) {
 			if (imgData[i + 3] == 0)
 				continue;	//transparent
-			if (dither == true) {
-				var diff = Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]);
-				diff = diff / 3;
-			}
 			for (var c = 0; c < 3; c++) {
 				var x = i + c;
-				if (dither == false)
-					imgData[x] += colors[c][imgData[x]];
-				else {
-					if (diff < rand_power * 6)
-						imgData[x] += colors[c][imgData[x]];
-					else {
-						//big difference here - randomize
-						var rand = HELPER.getRandomInt(Math.min(0, colors[c][imgData[x]]), Math.max(0, colors[c][imgData[x]]));
-						imgData[x] += rand;
-					}
-				}
+				imgData[x] += colors[c][imgData[x]];
 				if (imgData[x] > 255)
 					imgData[x] = 255;
 				if (imgData[x] < 0)
