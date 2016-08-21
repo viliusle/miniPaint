@@ -137,7 +137,17 @@ function EVENTS_CLASS() {
 			EVENTS.command_pressed = true;
 			EVENTS.ctrl_pressed = true;
 		}
-
+		
+		//F9
+		if (k == 120) {
+			FILE.file_quicksave();
+		}
+		
+		//F10
+		if (k == 121) {
+			FILE.file_quickload();
+		}
+		
 		//up
 		if (k == 38) {
 			if (DRAW.active_tool == 'select_tool') {
@@ -196,10 +206,6 @@ function EVENTS_CLASS() {
 		else if (k == 84) {
 			EDIT.save_state();
 			IMAGE.trim();
-		}
-		//o - open
-		else if (k == 79){
-			FILE.open();
 		}
 		//s - save
 		else if (k == 83) {

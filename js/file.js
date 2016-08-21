@@ -185,9 +185,6 @@ function FILE_CLASS() {
 		fname = user_response.name;
 		var tempCanvas = document.createElement("canvas");
 		var tempCtx = tempCanvas.getContext("2d");
-		var save_mode_for_ie = false;
-		if(window.Blob && window.navigator.msSaveOrOpenBlob && window.FileReader)
-			save_mode_for_ie = true;
 		tempCanvas.width = WIDTH;
 		tempCanvas.height = HEIGHT;
 
@@ -298,38 +295,8 @@ function FILE_CLASS() {
 			if (HELPER.strpos(fname, '.json') == false)
 				fname = fname + ".json";
 			
-			var export_data = {};
-
-			//basic info
-			export_data.info = {
-				width: WIDTH,
-				height: HEIGHT,
-			};
-
-			//layers
-			export_data.layers = [];
-			for(var i = LAYER.layers.length-1; i >=0; i--){
-				var layer = {
-					name:LAYER.layers[i].name,
-					title:LAYER.layers[i].title, 
-					visible: 1,
-					opacity: LAYER.layers[i].opacity,
-				};
-				if (LAYER.layers[i].visible == false)
-					layer.visible = 0;
-				export_data.layers.push(layer);
-			}
-
-			//image data
-			export_data.image_data = [];
-			for(var i = LAYER.layers.length-1; i >=0; i--){
-				var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
-				export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
-			}
-
-			var data_json = JSON.stringify(export_data, null, 6);
-			delete export_data;
-
+			var data_json = this.export_as_json();
+			
 			var blob = new Blob([data_json], {type: "text/plain"});
 			//var data = window.URL.createObjectURL(blob); //html5
 			saveAs(blob, fname);
@@ -381,6 +348,42 @@ function FILE_CLASS() {
 			FILE.file_info.general['Last modified'] = object.lastModifiedDate;
 	};
 	
+	this.export_as_json = function(){
+		var export_data = {};
+
+		//basic info
+		export_data.info = {
+			width: WIDTH,
+			height: HEIGHT,
+		};
+
+		//layers
+		export_data.layers = [];
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			var layer = {
+				name:LAYER.layers[i].name,
+				title:LAYER.layers[i].title, 
+				visible: 1,
+				opacity: LAYER.layers[i].opacity,
+			};
+			if (LAYER.layers[i].visible == false)
+				layer.visible = 0;
+			export_data.layers.push(layer);
+		}
+
+		//image data
+		export_data.image_data = [];
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
+			export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
+		}
+
+		var data_json = JSON.stringify(export_data, null, 6);
+		delete export_data;
+
+		return data_json;	
+	};
+	
 	this.load_json = function (data) {
 		var json = JSON.parse(data);
 
@@ -428,6 +431,19 @@ function FILE_CLASS() {
 			})(name, img);
 			img.src = data;
 		}
+	};
+	
+	this.file_quicksave = function(){
+		var data_json = this.export_as_json();
+		localStorage.setItem('quicksave_data', data_json);
+	};
+	
+	this.file_quickload = function(){
+		var json = localStorage.getItem('quicksave_data');
+		if(json == '' || json == null){
+			return false;
+		}
+		this.load_json(json);
 	};
 
 }

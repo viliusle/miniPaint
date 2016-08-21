@@ -12,25 +12,23 @@ function HELP_CLASS() {
 	
 	//shortcuts
 	this.help_shortcuts = function () {
-		POP.add({title: "D", value: 'Dublicate'});
+		POP.add({title: "F9", value: 'Quck save'});
+		POP.add({title: "F10", value: 'Quick load'});
+		POP.add({title: "S", value: 'Save'});
+		POP.add({title: "T", value: 'Trim'});
+		POP.add({title: "D", value: 'Dublicate layer'});
 		POP.add({title: "Del", value: 'Delete selection'});
 		POP.add({title: "F", value: 'Auto adjust colors'});
 		POP.add({title: "G", value: 'Grid on/off'});
 		POP.add({title: "L", value: 'Rotate left'});
 		POP.add({title: "N", value: 'New layer'});
-		POP.add({title: "O", value: 'Open file(s)'});
 		POP.add({title: "R", value: 'Resize'});
-		POP.add({title: "S", value: 'Save'});
-		POP.add({title: "T", value: 'Trim'});
 		POP.add({title: "-", value: 'Zoom out'});
 		POP.add({title: "+", value: 'Zoom in'});
 		POP.add({title: "CTRL + Z", value: 'Undo'});
 		POP.add({title: "CTRL + A", value: 'Select all'});
 		POP.add({title: "CTRL + V", value: 'Paste'});
-		POP.add({title: "Arrow keys", value: 'Move active layer by 10px'});
-		POP.add({title: "CTRL + Arrow keys", value: 'Move active layer by 50px'});
-		POP.add({title: "SHIFT + Arrow keys", value: 'Move active layer by 1px'});
-		POP.add({title: "Drag & Drop", value: 'Imports images'});
+		POP.add({title: "Arrow keys", value: 'Move active layer'});
 		POP.show('Keyboard Shortcuts', '');
 	};
 	//about
@@ -40,7 +38,7 @@ function HELP_CLASS() {
 		POP.add({title: "Description:", value: 'Online image editor'});
 		POP.add({title: "Author:", value: 'ViliusL'});
 		POP.add({title: "Email:", html: '<a href="mailto:' + email + '">' + email + '</a>'});
-		POP.add({title: "Source:", html: '<a href="https://github.com/viliusle/miniPaint">github.com/viliusle/miniPaint</a>'});
+		POP.add({title: "GitHub:", html: '<a href="https://github.com/viliusle/miniPaint">github.com/viliusle/miniPaint</a>'});
 		POP.show('About', '');
 	};
 	
