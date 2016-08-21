@@ -13,10 +13,12 @@ function TOOLS_CLASS() {
 	//sprites
 	this.tools_sprites = function () {
 		POP.add({name: "param1", title: "Gap:", value: "50", values: ["0", "10", "50", "100"]});
+		POP.add({name: "param2", title: "Width:", value: WIDTH});
 		POP.show('Sprites', function (response) {
 			EDIT.save_state();
 			var param1 = parseInt(response.param1);
-			TOOLS.generate_sprites(param1);
+			var sprite_width = parseInt(response.param2);
+			TOOLS.generate_sprites(param1, sprite_width);
 		});
 	};
 
@@ -121,7 +123,7 @@ function TOOLS_CLASS() {
 		);
 	};
 	
-	this.generate_sprites = function (gap) {
+	this.generate_sprites = function (gap, sprite_width) {
 		if (LAYER.layers.length == 1)
 			return false;
 		EDIT.save_state();
@@ -131,10 +133,15 @@ function TOOLS_CLASS() {
 		var max_height = 0;
 		var tmp = document.createElement("canvas");
 		tmp.setAttribute('id', "tmp_canvas");
-		tmp.width = WIDTH;
+		tmp.width = sprite_width;
 		tmp.height = HEIGHT;
-		var W = WIDTH;
+		var W = sprite_width;
 		var H = HEIGHT;
+		
+		//prepare width
+		WIDTH = sprite_width;
+		LAYER.set_canvas_size();
+		
 		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (i == LAYER.layer_active)
 				continue;	//end
@@ -150,7 +157,7 @@ function TOOLS_CLASS() {
 			var width = W - trim_details.left - trim_details.right;
 			var height = H - trim_details.top - trim_details.bottom;
 
-			if (xx + width > WIDTH) {
+			if (xx + width > sprite_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
@@ -170,12 +177,20 @@ function TOOLS_CLASS() {
 
 			if (height > max_height)
 				max_height = height;
-			if (xx > WIDTH) {
+			if (xx > sprite_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
 			}
 		}
+		
+		//remove other layers
+		for(var i = LAYER.layers.length-1; i >= 0; i--) {
+			if (i == LAYER.layer_active)
+				continue;
+			LAYER.layer_remove(i, true);
+		}
+		LAYER.layer_renew();
 	};
 	
 	this.convert_color_to_alpha = function (context, W, H, color) {
