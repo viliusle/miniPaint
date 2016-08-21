@@ -1,4 +1,4 @@
-/* global MAIN, EVENTS, LAYER, POP, HELPER, TOOLS, DRAW, GUI, EDIT */
+/* global MAIN, EVENTS, LAYER, POP, HELPER, TOOLS, DRAW, GUI, EDIT, FILE */
 /* global canvas_active, ImageFilters, WIDTH, HEIGHT, canvas_active, canvas_front */
 
 var IMAGE = new IMAGE_CLASS();
@@ -14,7 +14,7 @@ function IMAGE_CLASS() {
 	this.image_information = function () {
 		var colors = this.unique_colors_count(canvas_active(true));
 		colors = HELPER.number_format(colors, 0);
-
+		
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
 		POP.add({title: "Unique colors:", value: colors});
@@ -542,7 +542,6 @@ function IMAGE_CLASS() {
 	 * 
 	 * @param {HtmlElement} canvas
 	 * @param {boolean} trim_white
-	 * @param {boolean} include_white
 	 */
 	this.trim_info = function (canvas, trim_white) {
 		var top = 0;
@@ -796,6 +795,7 @@ function IMAGE_CLASS() {
 				}
 			}
 		}
+		palette = palette.slice(0, colors);
 
 		//change
 		var p_n = palette.length;
@@ -804,8 +804,7 @@ function IMAGE_CLASS() {
 				var k = ((j * (W * 4)) + (i * 4));
 				if (imgData[k + 3] == 0)
 					continue;	//transparent
-				var grey = Math.round(0.2126 * imgData_p[k] + 0.7152 * imgData_p[k + 1] + 0.0722 * imgData_p[k + 2]);
-
+				
 				//find closest color
 				var index1 = 0;
 				var min = 999999;

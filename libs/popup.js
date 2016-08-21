@@ -1,5 +1,5 @@
-/* global MAIN, HELPER, POP, LAYER, EFFECTS, GUI */
-/* global canvas_front, WIDTH, HEIGHT */
+/* global MAIN, HELPER, POP, LAYER, EFFECTS, GUI, HELP */
+/* global canvas_front, WIDTH, HEIGHT, LANG */
 
 var POP = new popup();
 
@@ -52,10 +52,10 @@ function popup() {
 	 * show popup window.
 	 * used strings: "Ok", "Cancel", "Preview"
 	 * 
-	 * @param string title
-	 * @param function handler
-	 * @param function preview_handler
-	 * @param function onload_handler
+	 * @param {string} title
+	 * @param {function} handler
+	 * @param {function} preview_handler
+	 * @param {function} onload_handler
 	 */
 	this.show = function (title, handler, preview_handler, onload_handler) {
 		POP.id = HELPER.getRandomInt(0, 999999999);

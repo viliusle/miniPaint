@@ -1,4 +1,4 @@
-/* global POP */
+/* global POP, HELPER */
 /* global VERSION */
 
 var HELP = new HELP_CLASS();
