@@ -35,21 +35,35 @@ function FILE_CLASS() {
 		];
 	//new
 	this.file_new = function () {
+		var w = WIDTH;
+		var h = HEIGHT;
 		var resolutions = ['Custom'];
 		for(var i in GUI.common_dimensions){
 			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]);
 		}
 		
-		POP.add({name: "width", title: "Width:", value: WIDTH});
-		POP.add({name: "height", title: "Height:", value: HEIGHT});
-		POP.add({name: "transparency", title: "Transparent:", values: ['Yes', 'No']});
+		var save_resolution_cookie = HELPER.getCookie('save_resolution');
+		if(save_resolution_cookie == '')
+			save_resolution = 'No';
+		else{
+			save_resolution = 'Yes';
+			var last_resolution = JSON.parse(save_resolution_cookie);	console.log(last_resolution, 'load');
+			w = parseInt(last_resolution[0]);
+			h = parseInt(last_resolution[1]);
+		}
+		
+		POP.add({name: "width", title: "Width:", value: w});
+		POP.add({name: "height", title: "Height:", value: h});
 		POP.add({name: "resolution", title: "Resolution:", values: resolutions});
+		POP.add({name: "transparency", title: "Transparent:", values: ['Yes', 'No']});
+		POP.add({name: "save_resolution", title: "Save resolution:", value: save_resolution, values: ['Yes', 'No']});
 		POP.show(
 			'New file...', 
 			function (response) {
 				var width = parseInt(response.width);
 				var height = parseInt(response.height);
 				var resolution = response.resolution;
+				var save_resolution = response.save_resolution;
 				
 				if(resolution != 'Custom'){
 					var dim = resolution.split("x");
@@ -65,6 +79,13 @@ function FILE_CLASS() {
 				WIDTH = width;
 				HEIGHT = height;
 				MAIN.init();
+				
+				if(save_resolution == 'No')
+					save_resolution = '';
+				else {
+					save_resolution = JSON.stringify([WIDTH, HEIGHT]);
+				}				
+				HELPER.setCookie('save_resolution', save_resolution);
 			}
 		);
 	};
@@ -175,9 +196,9 @@ function FILE_CLASS() {
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
 		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
-			HELPER.setCookie('save_default', 'png', 30);
+			HELPER.setCookie('save_default', 'png');
 		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
-			HELPER.setCookie('save_default', 'jpg', 30);
+			HELPER.setCookie('save_default', 'jpg');
 
 		//detect type
 		var parts = user_response.type.split(" ");

@@ -52,7 +52,7 @@ function HELP_CLASS() {
 		
 		//save cookie
 		if(lang_code != undefined && lang_code != LANG){
-			HELPER.setCookie('language', lang_code, 30);
+			HELPER.setCookie('language', lang_code);
 		}
 		
 		var dictionary_data = "dict_"+lang_code;

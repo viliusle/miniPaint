@@ -42,6 +42,8 @@ function HELPER_CLASS() {
 	};
 	
 	this.setCookie = function (NameOfCookie, value, expiredays) {
+		if(expiredays == undefined)
+			expiredays = 180;
 		var ExpireDate = new Date();
 		ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
 		document.cookie = NameOfCookie + "=" + escape(value) +
