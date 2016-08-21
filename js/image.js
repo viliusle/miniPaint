@@ -1012,72 +1012,79 @@ function IMAGE_CLASS() {
 		);
 	};
 	
-	this.histogram_onload = function (user_response) {
+	this.histogram_onload = function () {
 		var img = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 		var imgData = img.data;
 		var channel_grey = document.getElementById("pop_data_param1_poptmp0");
 		var channel_r = document.getElementById("pop_data_param1_poptmp1");
 		var channel_g = document.getElementById("pop_data_param1_poptmp2");
 		var channel_b = document.getElementById("pop_data_param1_poptmp3");
-
+		
 		if (channel_grey.checked == true)
-			channel = channel_grey.value;
+			channel = 0;
 		else if (channel_r.checked == true)
-			channel = channel_r.value;
+			channel = 1;
 		else if (channel_g.checked == true)
-			channel = channel_g.value;
+			channel = 2;
 		else if (channel_b.checked == true)
-			channel = channel_b.value;
+			channel = 3;
 
-		//collect data
-		var hist_data = [];
-		for (var i = 0; i <= 255; i++)
-			hist_data[i] = 0;
+		var hist_data = [ [], [], [], [] ]; //grey, red, green, blue
 		var total = imgData.length / 4;
 		var sum = 0;
 		var grey;
 
-		if (channel == 'Gray') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				grey = Math.round((imgData[i] + imgData[i + 1] + imgData[i + 2]) / 3);
-				hist_data[grey]++;
-				sum = sum + imgData[i] + imgData[i + 1] + imgData[i + 2];
+		for (var i = 0; i < imgData.length; i += 4) {
+			//collect grey
+			grey = Math.round((imgData[i] + imgData[i + 1] + imgData[i + 2]) / 3);
+			sum = sum + imgData[i] + imgData[i + 1] + imgData[i + 2];
+			if(hist_data[0][grey] == undefined)
+				hist_data[0][grey] = 1;
+			else
+				hist_data[0][grey]++;
+			
+			//collect colors
+			for(var c = 0; c < 3; c++) {
+				if(c+1 != channel)
+					continue;
+				if(hist_data[c+1][imgData[i+c]] == undefined)
+					hist_data[c+1][imgData[i+c]] = 1;
+				else
+					hist_data[c+1][imgData[i+c]]++;
 			}
 		}
-		else if (channel == 'Red') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i]]++;
-				sum = sum + imgData[i] * 3;
-			}
-		}
-		else if (channel == 'Green') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i + 1]]++;
-				sum = sum + imgData[i + 1] * 3;
-			}
-		}
-		else if (channel == 'Blue') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i + 2]]++;
-				sum = sum + imgData[i + 2] * 3;
-			}
-		}
-
-		//draw histogram
+		
 		var c = document.getElementById("c_h").getContext("2d");
-		c.rect(0, 0, 255, 100);
+		c.rect(0, 0, 256, 100);
 		c.fillStyle = "#ffffff";
 		c.fill();
-		for (var i = 0; i <= 255; i++) {
-			if (hist_data[i] == 0)
-				continue;
-			c.beginPath();
-			c.strokeStyle = "#000000";
-			c.lineWidth = 1;
-			c.moveTo(i + 0.5, 100 + 0.5);
-			c.lineTo(i + 0.5, 100 - Math.round(hist_data[i] * 255 * 100 / total / 6) + 0.5);
-			c.stroke();
+		var opacity = 1;
+		
+		//draw histogram
+		for(var h in hist_data) {
+			for (var i = 0; i <= 255; i++) {
+				if(h != channel)
+					continue;
+				if (hist_data[h][i] == 0)
+					continue;
+				c.beginPath();
+				
+				if(h == 0)
+					c.strokeStyle = "rgba(64, 64, 64, "+opacity*2+")";
+				else if(h == 1)
+					c.strokeStyle = "rgba(255, 0, 0, "+opacity+")";
+				else if(h == 2)
+					c.strokeStyle = "rgba(0, 255, 0, "+opacity+")";
+				else if(h == 3)
+					c.strokeStyle = "rgba(0, 0, 255, "+opacity+")";
+				
+				c.lineWidth = 1;
+				c.moveTo(i + 0.5, 100 + 0.5);
+				c.lineTo(i + 0.5, 100 - Math.round(hist_data[h][i] * 255 * 100 / total / 6) + 0.5);
+				c.stroke();
+			}
 		}
+		
 		document.getElementById("pop_data_totalpixel").innerHTML = HELPER.number_format(total, 0);
 		if (total > 0)
 			average = Math.round(sum * 10 / total / 3) / 10;
