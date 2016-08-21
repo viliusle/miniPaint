@@ -11,7 +11,7 @@ var canvas_grid = document.getElementById("canvas_grid").getContext("2d");		//gr
 var canvas_preview = document.getElementById("canvas_preview").getContext("2d");	//mini preview
 
 //global settings
-var VERSION = '3.1.1';
+var VERSION = '3.2';
 var WIDTH;						//canvas midth
 var HEIGHT;						//canvas height
 var COLOR = '#0000ff';				//active color
