@@ -151,15 +151,17 @@ function IMAGE_CLASS() {
 	this.image_colors = function () {
 		POP.add({name: "param1", title: "Brightness:", value: "0", range: [-100, 100]});
 		POP.add({name: "param2", title: "Contrast:", value: "0", range: [-100, 100]});
+		POP.add({});
 		POP.add({name: "param_red", title: "Red channel:", value: "0", range: [-255, 255]});
 		POP.add({name: "param_green", title: "Green channel:", value: "0", range: [-255, 255]});
 		POP.add({name: "param_blue", title: "Blue channel:", value: "0", range: [-255, 255]});
+		POP.add({});
 		POP.add({name: "param_h", title: "Hue:", value: "0", range: [-180, 180]});
 		POP.add({name: "param_s", title: "Saturation:", value: "0", range: [-100, 100]});
 		POP.add({name: "param_l", title: "Luminance:", value: "0", range: [-100, 100]});
 
 		POP.show(
-			'Brightness Contrast', 
+			'Color corrections', 
 			function (user_response) {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
@@ -219,7 +221,7 @@ function IMAGE_CLASS() {
 
 	//enchance colors
 	this.image_decrease_colors = function () {
-		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 256]});
+		POP.add({name: "param1", title: "Colors:", value: "10", range: [1, 256]});
 		POP.add({name: "param3", title: "Greyscale:", values: ["No", "Yes"], });
 		POP.show(
 			'Decrease colors', 

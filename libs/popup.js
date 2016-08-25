@@ -122,7 +122,7 @@ function popup() {
 			var parameter = parameters[i];
 			
 			html += '<tr id="popup-tr-'+parameters[i].name+'">';
-			if (title != 'Error')
+			if (title != 'Error' && parameter.title != undefined)
 				html += '<td style="font-weight:bold;padding-right:3px;width:130px;" class="trn">' + parameter.title + '</td>';
 			if (parameter.name != undefined) {
 				if (parameter.values != undefined) {
@@ -222,6 +222,10 @@ function popup() {
 			else if (parameter.html != undefined) {
 				//html
 				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">' + parameter.html + '</td>';
+			}
+			else if (parameter.title == undefined) {
+				//gap
+				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2"></td>';
 			}
 			else {
 				//locked fields without name
