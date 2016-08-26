@@ -50,7 +50,7 @@ Key features: layers, drag & drop, transparency, filters, no-flash, open source.
 - Keyboard shortcuts.
 - Effect browser.
 - Translations (Menu > Help > Languages).
-- **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Perspective, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vintage,
+- **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Perspective, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vibrance, Vintage,
 - Print support.
 
 ## Support

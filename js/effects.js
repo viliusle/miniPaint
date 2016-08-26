@@ -35,6 +35,7 @@ function EFFECTS_CLASS() {
 		{title: 'Solarize',		name: 'effects_Solarize' },
 		{title: 'Tilt Shift',		name: 'effects_tilt_shift' },
 		{title: 'Vignette',		name: 'effects_vignette' },
+		{title: 'Vibrance',		name: 'effects_vibrance' },
 		{title: 'Vintage',		name: 'effects_vintage' },
 		];
 		
@@ -760,6 +761,31 @@ function EFFECTS_CLASS() {
 
 				var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
 				fx_filter.draw(texture).vignette(param1, param2).update();	//effect
+				canvas_preview.drawImage(fx_filter, 0, 0);
+			}
+		);
+	};
+	this.effects_vibrance = function () {
+		this.load_fx();
+		
+		POP.add({name: "level", title: "Level:", value: "0.5", range: [-1, 1], step: 0.01});
+		POP.effects = true;
+		POP.show('Vignette',
+			function (user_response) {
+				EDIT.save_state();
+				var level = parseFloat(user_response.level);
+
+				var texture = fx_filter.texture(canvas_active(true));
+				fx_filter.draw(texture).vibrance(level).update();	//effect
+				canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_active().drawImage(fx_filter, 0, 0);
+				GUI.zoom();
+			},
+			function (user_response, canvas_preview, w, h) {
+				var level = parseFloat(user_response.level);
+
+				var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+				fx_filter.draw(texture).vibrance(level).update();	//effect
 				canvas_preview.drawImage(fx_filter, 0, 0);
 			}
 		);
