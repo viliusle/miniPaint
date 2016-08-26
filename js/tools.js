@@ -284,6 +284,7 @@ function TOOLS_CLASS() {
 		POP.add({name: "repalcement", title: "Replacement:", value: '#ff0000', type: 'color'});
 		POP.add({name: "power", title: "Power:", value: "20", range: [0, 255]});
 		POP.add({name: "alpha", title: "Alpha:", value: "255", range: [0, 255]});
+		POP.add({name: "mode", title: "Mode:", values: ['Advanced', 'Simple']});
 		POP.show(
 			'Replace color',
 			function (user_response) {
@@ -292,8 +293,11 @@ function TOOLS_CLASS() {
 				var repalcement = user_response.repalcement;
 				var power = user_response.power;
 				var alpha = user_response.alpha;
+				var advanced_mode = true;
+				if(user_response.mode == 'Simple')
+					advanced_mode = false;
 				
-				TOOLS.replace_color_process(canvas_active(), WIDTH, HEIGHT, target, repalcement, power, alpha);
+				TOOLS.replace_color_process(canvas_active(), WIDTH, HEIGHT, target, repalcement, power, alpha, advanced_mode);
 				GUI.zoom();
 			},
 			function (user_response, canvas_preview, w, h) {
@@ -301,31 +305,61 @@ function TOOLS_CLASS() {
 				var repalcement = user_response.repalcement;
 				var power = user_response.power;
 				var alpha = user_response.alpha;
+				var advanced_mode = true;
+				if(user_response.mode == 'Simple')
+					advanced_mode = false;
 				
-				TOOLS.replace_color_process(canvas_preview, w, h, target, repalcement, power, alpha);
+				TOOLS.replace_color_process(canvas_preview, w, h, target, repalcement, power, alpha, advanced_mode);
 			}
 		);
 	};
 	
-	this.replace_color_process = function(context, W, H, target, repalcement, power, alpha){
+	this.replace_color_process = function(context, W, H, target, replacement, power, alpha, advanced_mode){
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
-		var target_color = HELPER.hex2rgb(target);
-		var repalcement_color = HELPER.hex2rgb(repalcement);
-
+		var target_rgb = HELPER.hex2rgb(target);
+		var target_hsl = HELPER.rgbToHsl(target_rgb.r, target_rgb.g, target_rgb.b);
+		var target_normalized = HELPER.hslToRgb(target_hsl[0], target_hsl[1], 0.5);
+		
+		var replacement_rgb = HELPER.hex2rgb(replacement);
+		var replacement_hsl = HELPER.rgbToHsl(replacement_rgb.r, replacement_rgb.g, replacement_rgb.b);
+		
 		for (var i = 0; i < imgData.length; i += 4) {
 			if (imgData[i + 3] == 0)
 				continue;	//transparent
 
-			//calculate difference from requested color, and change alpha
-			var diff = (Math.abs(imgData[i] - target_color.r) + Math.abs(imgData[i + 1] - target_color.g) + Math.abs(imgData[i + 2] - target_color.b) ) / 3;
-			if(diff > power)
-				continue;
-
-			imgData[i] = repalcement_color.r;
-			imgData[i + 1] = repalcement_color.g;
-			imgData[i + 2] = repalcement_color.b;
-			imgData[i + 3] = alpha;
+			if(advanced_mode == false){
+				//simple replace
+				
+				//calculate difference from requested color, and change alpha
+				var diff = (Math.abs(imgData[i] - target_rgb.r) + Math.abs(imgData[i + 1] - target_rgb.g) + Math.abs(imgData[i + 2] - target_rgb.b) ) / 3;
+				if(diff > power)
+					continue;
+				
+				imgData[i] = replacement_rgb.r;
+				imgData[i + 1] = replacement_rgb.g;
+				imgData[i + 2] = replacement_rgb.b;
+				if(alpha < 255)
+					imgData[i + 3] = alpha;
+			}
+			else{
+				//advanced replace using HSL
+				
+				var hsl = HELPER.rgbToHsl(imgData[i], imgData[i+1], imgData[i+2]);
+				var normalized = HELPER.hslToRgb(hsl[0], hsl[1], 0.5);
+				var diff = (Math.abs(normalized[0] - target_normalized[0]) + Math.abs(normalized[1] - target_normalized[1]) + Math.abs(normalized[2] - target_normalized[2]) ) / 3;
+				if(diff > power)
+					continue;
+				
+				//change to new color with exiting luminance
+				var replacement_normalized = HELPER.hslToRgb(replacement_hsl[0], replacement_hsl[1], hsl[2] * (replacement_hsl[2]*255) / 120);
+				
+				imgData[i] = replacement_normalized[0];
+				imgData[i + 1] = replacement_normalized[1];
+				imgData[i + 2] = replacement_normalized[2];
+				if(alpha < 255)
+					imgData[i + 3] = alpha;
+			}
 		}
 		context.putImageData(img, 0, 0);
 	};

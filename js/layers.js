@@ -96,12 +96,14 @@ function LAYER_CLASS() {
 			
 			img.onload = function () {
 				//check size
+				var need_resize = false;
 				if (img.width > WIDTH || img.height > HEIGHT) {
 					if (img.width > WIDTH)
 						WIDTH = img.width;
 					if (img.height > HEIGHT)
 						HEIGHT = img.height;
 					LAYER.set_canvas_size();
+					need_resize = true;
 				}
 				//remove initial empty layer
 				if (_this.layers.length == 1 && EVENTS.autosize == true) {
@@ -131,7 +133,9 @@ function LAYER_CLASS() {
 				document.getElementById(name).getContext("2d").globalAlpha = 1;
 				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
-				GUI.zoom_auto(true);
+				if(_this.layers.length == 1 || need_resize == true) {
+					GUI.zoom_auto(true);
+				}
 				GUI.redraw_preview();
 			};
 			img.onerror = function (ex) {

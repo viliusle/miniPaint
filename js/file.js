@@ -444,6 +444,7 @@ function FILE_CLASS() {
 			return false;
 		}
 		this.load_json(json);
+		GUI.zoom_auto(true);
 	};
 
 }
