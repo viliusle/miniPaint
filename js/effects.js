@@ -25,14 +25,11 @@ function EFFECTS_CLASS() {
 		{title: 'Edge',			name: 'effects_Edge' },
 		{title: 'Emboss',			name: 'effects_Emboss' },
 		{title: 'Enrich',			name: 'effects_Enrich' },
-		{title: 'Gamma',			name: 'effects_Gamma' },
 		{title: 'Grains',			name: 'effects_Grains' },
 		{title: 'Heatmap',		name: 'effects_heatmap' },
-		{title: 'HSL Adjustment',	name: 'effects_HSLAdjustment' },
 		{title: 'JPG Compression',	name: 'effects_jpg_vintage' },
 		{title: 'Mosaic',			name: 'effects_Mosaic' },
 		{title: 'Oil',			name: 'effects_Oil' },
-		{title: 'Posterize',		name: 'effects_Posterize' },
 		{title: 'Sepia',			name: 'effects_Sepia' },
 		{title: 'Sharpen',		name: 'effects_Sharpen' },
 		{title: 'Solarize',		name: 'effects_Solarize' },
@@ -418,29 +415,6 @@ function EFFECTS_CLASS() {
 		);
 	};
 
-	this.effects_Gamma = function () {
-		POP.add({name: "param1", title: "Gamma:", value: "1", range: [0, 3], step: 0.1});
-		POP.effects = true;
-		POP.show('Gamma',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseFloat(user_response.param1);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseFloat(user_response.param1);
-
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
-			}
-		);
-	};
-
 	this.effects_Grains = function () {
 		var _this = this;
 		POP.effects = true;
@@ -468,34 +442,6 @@ function EFFECTS_CLASS() {
 			},
 			function (user_response, canvas_preview, w, h) {
 				_this.heatmap_effect(canvas_preview, w, h);
-			}
-		);
-	};
-
-	this.effects_HSLAdjustment = function () {
-		POP.add({name: "param1", title: "Hue:", value: "0", range: [-180, 180]});
-		POP.add({name: "param2", title: "Saturation:", value: "0", range: [-100, 100]});
-		POP.add({name: "param3", title: "Luminance:", value: "0", range: [-100, 100]});
-		POP.effects = true;
-		POP.show('HSL Adjustment',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseInt(user_response.param1);
-				var param2 = parseInt(user_response.param2);
-				var param3 = parseInt(user_response.param3);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.HSLAdjustment(imageData, param1, param2, param3);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseInt(user_response.param1);
-				var param2 = parseInt(user_response.param2);
-				var param3 = parseInt(user_response.param3);
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.HSLAdjustment(imageData, param1, param2, param3);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
 			}
 		);
 	};
@@ -646,28 +592,6 @@ function EFFECTS_CLASS() {
 			canvas_front.fillStyle = "#0000c8";
 			canvas_front.fill();
 		}
-	};
-
-	this.effects_Posterize = function () {
-		POP.add({name: "param1", title: "Levels:", value: "8", range: [2, 32]});
-		POP.effects = true;
-		POP.show('Posterize',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseInt(user_response.param1);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.Posterize(imageData, param1);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseInt(user_response.param1);
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.Posterize(imageData, param1);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
-			}
-		);
 	};
 
 	this.effects_Sepia = function () {
