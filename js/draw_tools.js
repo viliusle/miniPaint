@@ -39,6 +39,8 @@ function DRAW_TOOLS_CLASS() {
 	 * image data for cloning tool
 	 */
 	var clone_data = false;
+	
+	var fx_filter = false;
 
 	//credits to Victor Haydin
 	this.toolFiller = function (context, W, H, x, y, color_to, sensitivity, anti_aliasing) {
@@ -1622,5 +1624,43 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse_y > y - Math.round(size) && mouse_y < y + Math.round(size))
 				return true;
 		return false;
+	};
+	
+	this.bulge_pinch_tool = function (type, mouse, event) {
+		if (mouse.valid == false)
+			return true;
+		
+		//make sure FX lib loaded
+		if(fx_filter == false){
+			fx_filter = fx.canvas();
+		}
+		
+		var strength = GUI.action_data().attributes.size / 100;
+		if(strength > 1)
+			strength = 1;
+		var radius = GUI.action_data().attributes.radius;
+		var bulge = GUI.action_data().attributes.bulge;
+		if(bulge == false)
+			strength = -1 * strength;
+
+		if (type == 'click') {
+			EDIT.save_state();
+			
+			var texture = fx_filter.texture(canvas_active(true));
+			fx_filter.draw(texture).bulgePinch(mouse.x, mouse.y, radius, strength).update();	//effect
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().drawImage(fx_filter, 0, 0);
+			GUI.zoom();
+		}
+		if (type == 'move') {
+			//show size
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			EL.circle(canvas_front, mouse.x, mouse.y, size);
+			
+			var texture = fx_filter.texture(canvas_active(true));
+			fx_filter.draw(texture).bulgePinch(mouse.x, mouse.y, radius, strength).update();	//effect
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.drawImage(fx_filter, 0, 0);
+		}
 	};
 }

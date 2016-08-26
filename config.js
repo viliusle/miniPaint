@@ -35,6 +35,7 @@ var DRAW_TOOLS_CONFIG = [
 	{name: 'sharpen_tool', 	title: 'Sharpen tool',		icon: ['sprites.png', -300+5, -50+2],	attributes: {size: 30 }	},
 	{name: 'burn_dodge_tool',  title: 'Burn/Dodge tool',	icon: ['sprites.png', -500+3, -50+4],	attributes: {burn: true, size: 30, power: 50}	},
 	{name: 'desaturate_tool',  title: 'Desaturate',		icon: ['sprites.png', -550+3, -00+4],	attributes: {size: 50, anti_aliasing: true}	},
+	{name: 'bulge_pinch_tool',  title: 'Bulge/Pinch tool',icon: ['sprites.png', -450+3, -100+3],	attributes: {size: 50, radius: 80, bulge:true}	},
 	{name: 'clone_tool', 	title: 'Clone tool',		icon: ['sprites.png', -350+4, -50+3],	attributes: {size: 30, anti_aliasing: true}	},
 	{name: 'gradient_tool', title: 'Gradient',		icon: ['sprites.png', -400+3, -50+4],	attributes: {radial: false, power: 50}	},
 	{name: 'crop_tool',	title: 'Crop',			icon: ['sprites.png', -450+2, -50+2],	attributes: {	} },
