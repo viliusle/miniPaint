@@ -14,9 +14,12 @@ function IMAGE_CLASS() {
 	this.image_information = function () {
 		var colors = this.unique_colors_count(canvas_active(true));
 		colors = HELPER.number_format(colors, 0);
+		var pixels = WIDTH*HEIGHT;
+		pixels = HELPER.number_format(pixels, 0);
 		
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
+		POP.add({title: "Pixels:", value: pixels});
 		POP.add({title: "Unique colors:", value: colors});
 		
 		//show general data
