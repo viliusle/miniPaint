@@ -512,6 +512,8 @@ function LAYER_CLASS() {
 			//show
 			document.getElementById('layers').innerHTML = html;
 		}
+		if(this.layers.length == 0)
+			document.getElementById('layers').innerHTML = '';
 	};
 	this.shake = function (i, nr) {
 		var step = 3;
@@ -549,7 +551,13 @@ function LAYER_CLASS() {
 			x = EVENTS.mouse.x;
 			y = EVENTS.mouse.y;
 		}
-		document.getElementById('mouse_info_mouse').innerHTML = x + ", " + y;
+		if(EVENTS.mouse.valid == true){
+			document.getElementById('mouse_info_mouse').innerHTML = x + "x" + y;
+		}
+		else{
+			//mouse is not inside canvas
+			document.getElementById('mouse_info_mouse').innerHTML = '';
+		}
 		
 		//show selected area info
 		if (DRAW.select_data != false) {
