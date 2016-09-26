@@ -620,9 +620,7 @@ function GUI_CLASS() {
 			});
 			POP.show(
 				'Select color', 
-				function (user_response) {
-					var param1 = parseInt(user_response.param1);
-				},
+				undefined,
 				undefined,
 				this.toggle_color_select_onload
 			);

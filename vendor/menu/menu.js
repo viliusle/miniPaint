@@ -1,8 +1,8 @@
 //http://www.dynamicdrive.com/dynamicindex1/ddsmoothmenu.htm
 var ddsmoothmenu = {
     arrowimages: {
-        down: ["rightarrowclass", "img/right.gif", 0],
-        right: ["rightarrowclass", "img/right.gif", 0]
+        down: ["rightarrowclass", "img/right.png", 0],
+        right: ["rightarrowclass", "img/right.png", 0]
     },
     transition: {
         overtime: 0,
