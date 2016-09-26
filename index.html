@@ -89,9 +89,9 @@
 			</div>
 		</div>
 		<div id="layers_base">
-			<b class="trn">Layers</b> <a title="Add new layer" class="layer_add" onclick="LAYER.layer_add();return false;" href="#">+</a>
-			<a title="Move down" onclick="LAYER.move_layer('down');return false;" class="layers_arrow" href="#">&darr;</a>
-			<a title="Move up" onclick="LAYER.move_layer('up');return false;" class="layers_arrow" href="#">&uarr;</a>
+			<b class="trn">Layers</b> <a title="Add new layer" class="layer_add" onclick="EDIT.save_state();LAYER.layer_add();return false;" href="#">+</a>
+			<a title="Move down" onclick="EDIT.save_state();LAYER.move_layer('down');return false;" class="layers_arrow" href="#">&darr;</a>
+			<a title="Move up" onclick="EDIT.save_state();LAYER.move_layer('up');return false;" class="layers_arrow" href="#">&uarr;</a>
 			<div style="margin-top:5px;" id="layers"></div>
 		</div>
 	</div>

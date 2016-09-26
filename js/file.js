@@ -92,6 +92,7 @@ function FILE_CLASS() {
 
 	//open
 	this.file_open = function () {
+		EDIT.save_state();
 		this.open();
 	};
 
@@ -344,8 +345,8 @@ function FILE_CLASS() {
 			FILE.file_info.general.Size = HELPER.number_format(object.size/1000, 2)+' KB';
 		if(object.type != undefined)
 			FILE.file_info.general.Type = object.type;
-		if(object.lastModifiedDate != undefined)
-			FILE.file_info.general['Last modified'] = object.lastModifiedDate;
+		if(object.lastModified != undefined)
+			FILE.file_info.general['Last modified'] = '___'+new Date(object.lastModified);
 	};
 	
 	this.export_as_json = function(){
@@ -435,7 +436,12 @@ function FILE_CLASS() {
 	
 	this.file_quicksave = function(){
 		var data_json = this.export_as_json();
-		localStorage.setItem('quicksave_data', data_json);
+		if(data_json.length > 5000000){
+			POP.add({html: 'Sorry, image is too big, max 5 MB.'});
+			POP.show('Error', '');
+			return false;
+		}
+		localStorage.setItem('quicksave_data', data_json);	
 	};
 	
 	this.file_quickload = function(){
@@ -444,7 +450,7 @@ function FILE_CLASS() {
 			return false;
 		}
 		this.load_json(json);
-		GUI.zoom_auto(true);
+		GUI.zoom_auto(true);	
 	};
 
 }

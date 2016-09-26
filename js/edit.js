@@ -113,37 +113,75 @@ function EDIT_CLASS() {
 		layers_archive[j] = {};
 		layers_archive[j].width = WIDTH;
 		layers_archive[j].height = HEIGHT;
+		
+		//layers
+		layers_archive[j].layers = [];
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			var layer = {
+				name: LAYER.layers[i].name,
+				title: LAYER.layers[i].title, 
+				visible: 1,
+				opacity: LAYER.layers[i].opacity,
+			};
+			if (LAYER.layers[i].visible == false)
+				layer.visible = 0;
+			layers_archive[j].layers.push(layer);
+		}
+		
+		
 		layers_archive[j].data = {};
 		for (var i in LAYER.layers) {
 			layers_archive[j].data[LAYER.layers[i].name] = document.createElement('canvas');
 			layers_archive[j].data[LAYER.layers[i].name].width = WIDTH;
 			layers_archive[j].data[LAYER.layers[i].name].height = HEIGHT;
 			layers_archive[j].data[LAYER.layers[i].name].getContext('2d').drawImage(document.getElementById(LAYER.layers[i].name), 0, 0);
-		}
-		return true;
+		}								
 	};
 	//supports 3 levels undo system - more levels requires more memory
 	this.undo = function () {
-		if (layers_archive.length == 0)
+		if (layers_archive.length == 0){
+			//not saved yet
 			return false;
+		}
 		j = undo_level;
 		undo_level++;
-		if (layers_archive[j] == undefined || layers_archive[j].width == undefined)
+		if (layers_archive[j] == undefined || layers_archive[j].width == undefined){
+			//no such data
 			return false;
+		}
+		
+		LAYER.remove_all_layers();
+		
 		if (WIDTH != layers_archive[j].width || HEIGHT != layers_archive[j].height) {
 			WIDTH = layers_archive[j].width;
 			HEIGHT = layers_archive[j].height;
 			LAYER.set_canvas_size(true);
 		}
+		
+		//add layers
+		for(var i in layers_archive[j].layers){
+			var layer = layers_archive[j].layers[i];
+			var name = layer.name;
+			var title = layer.title;
+			var visible = parseInt(layer.visible);
+			var opacity = parseInt(layer.opacity);
+
+			LAYER.layer_add(name);
+			//update attributes
+			LAYER.layers[LAYER.layer_active].title = title;
+			if (visible == 0)
+				LAYER.layer_visibility(LAYER.layer_active);
+			LAYER.layers[LAYER.layer_active].opacity = opacity;
+		}
+		LAYER.layer_renew();
 
 		//undo
-		for (var i in LAYER.layers) {
-			if (layers_archive[j].data[LAYER.layers[i].name] != undefined) {
-				document.getElementById(LAYER.layers[i].name).getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
-				document.getElementById(LAYER.layers[i].name).getContext("2d").drawImage(layers_archive[j].data[LAYER.layers[i].name], 0, 0);
-			}
+		for (var i = LAYER.layers.length-1; i >= 0; i--) {
+			//restore data
+			document.getElementById(LAYER.layers[i].name).getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
+			document.getElementById(LAYER.layers[i].name).getContext("2d").drawImage(layers_archive[j].data[LAYER.layers[i].name], 0, 0);
 		}
+		
 		GUI.zoom();
-		return true;
 	};
 }

@@ -284,8 +284,10 @@ function EVENTS_CLASS() {
 			GUI.zoom(+1);
 		}
 		//n - new layer
-		else if (k == 78)
+		else if (k == 78){
+			EDIT.save_state();
 			LAYER.layer_add();
+		}
 		
 		GUI.zoom();
 		return true;
@@ -558,6 +560,7 @@ function EVENTS_CLASS() {
 	this.upload_drop = function (e) {
 		e.preventDefault();
 		
+		EDIT.save_state();
 		FILE.open_handler(e);
 	};
 	this.mouse_wheel_handler = function (e) {	//return true;

@@ -27,6 +27,7 @@ function LAYER_CLASS() {
 
 	//new layer
 	this.layer_new = function () {
+		EDIT.save_state();
 		this.layer_add();
 	};
 	
@@ -501,7 +502,7 @@ function LAYER_CLASS() {
 				html += '<div class="layer">';
 			var title = this.layers[i].title;
 			html += '<span class="layer_title" ondblclick="LAYER.layer_rename();" onclick="LAYER.select_layer(\'' + i + '\')">' + HELPER.escapeHtml(title) + '</span>';
-			html += '<a class="layer_visible" onclick="LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
+			html += '<a class="layer_visible" onclick="EDIT.save_state();LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
 			//hide
 			if (this.layers[i].visible == true)
 				html += '<a class="layer_delete" id="layer_' + i + '" onclick="LAYER.layer_visibility(\'' + i + '\');return false;" title="hide" href="#"></a>';

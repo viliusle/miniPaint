@@ -1,4 +1,4 @@
-/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, IMAGE, EL, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
+/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, IMAGE, EL, fx, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
 /* global WIDTH, HEIGHT, COLOR, canvas_active, canvas_front */
 
 var DRAW = new DRAW_TOOLS_CLASS();
@@ -1154,6 +1154,7 @@ function DRAW_TOOLS_CLASS() {
 		var size = GUI.action_data().attributes.size;
 		var power = GUI.action_data().attributes.power * 2.5;
 
+		canvas_active().save();
 		if (type == 'click') {
 			EDIT.save_state();
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1192,12 +1193,11 @@ function DRAW_TOOLS_CLASS() {
 		}
 		else if (type == 'release') {
 			canvas_active().globalCompositeOperation = "soft-light";
-			canvas_active().shadowBlur = 5;
 			canvas_active().drawImage(document.getElementById("canvas_front"), 0, 0);
 			canvas_active().globalCompositeOperation = "source-over";
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			EVENTS.clear_front_on_release = true;
-
+			
 			//if mouse was not moved
 			if (mouse.click_x == mouse.x && mouse.click_y == mouse.y) {
 				canvas_active().globalCompositeOperation = "soft-light";
@@ -1209,11 +1209,9 @@ function DRAW_TOOLS_CLASS() {
 				else {
 					canvas_active().fillStyle = "rgba(255, 255, 255, " + power / 255 + ")";
 				}
-				canvas_active().shadowBlur = 5;
 				canvas_active().fill();
 				canvas_active().globalCompositeOperation = "source-over";
 			}
-			canvas_active().shadowBlur = 0;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.restore();
 		}
@@ -1221,6 +1219,7 @@ function DRAW_TOOLS_CLASS() {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			EL.circle(canvas_front, mouse.x, mouse.y, size);
 		}
+		canvas_active().restore();
 	};
 	this.crop_tool = function (type, mouse, event) {
 		if (mouse.click_valid == false)
@@ -1653,10 +1652,6 @@ function DRAW_TOOLS_CLASS() {
 			GUI.zoom();
 		}
 		if (type == 'move') {
-			//show size
-			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-			EL.circle(canvas_front, mouse.x, mouse.y, size);
-			
 			var texture = fx_filter.texture(canvas_active(true));
 			fx_filter.draw(texture).bulgePinch(mouse.x, mouse.y, radius, strength).update();	//effect
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
