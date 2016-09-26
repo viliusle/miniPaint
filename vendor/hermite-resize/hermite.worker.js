@@ -1,0 +1,5 @@
+//Hermite resize - fast image resize/resample using Hermite filter.
+//Author: ViliusL
+//https://github.com/viliusle/Hermite-resize
+//http://viliusle.github.io/miniPaint/
+onmessage=function(a){for(var b=a.data.core,c=a.data.cores,d=a.data.width_source,e=a.data.height_source,f=a.data.width,g=a.data.height,h=d/f,i=e/g,j=Math.ceil(h/2),k=Math.ceil(i/2),l=new Uint8ClampedArray(a.data.source),m=l.length/d/4,n=f*Math.ceil(g/c)*4,o=new ArrayBuffer(n),p=new Uint8ClampedArray(o,0,n),q=Math.ceil(e/c)*b,r=Math.ceil(g/c)*b,s=0;s<Math.ceil(g/c);s++)for(var t=0;t<f;t++){for(var u=4*(t+s*f),v=0,w=0,x=0,y=0,z=0,A=0,B=0,C=(r+s+.5)*i-q,D=Math.floor(s*i),E=Math.ceil((r+s+1)*i-q),F=Math.floor(t*h),G=Math.ceil((t+1)*h),H=D;H<E;H++)if(!(H>=m||H<0))for(var I=Math.abs(C-(H+.5))/k,J=(t+.5)*h,K=I*I,L=F;L<G;L++){var M=Math.abs(J-(L+.5))/j,N=Math.sqrt(K+M*M);if(!(N>=1)){v=2*N*N*N-3*N*N+1;var O=4*(L+H*d);B+=v*l[O+3],x+=v,l[O+3]<255&&(v=v*l[O+3]/250),y+=v*l[O],z+=v*l[O+1],A+=v*l[O+2],w+=v}}p[u]=y/w,p[u+1]=z/w,p[u+2]=A/w,p[u+3]=B/x}var P={core:b,target:p};postMessage(P,[p.buffer])};
