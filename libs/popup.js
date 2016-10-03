@@ -160,8 +160,15 @@ function popup() {
 								ch = 'checked="checked"';
 							if (onchange == '' && preview_handler != undefined)
 								onchange = ' onchange="POP.view();" ';
+							
+							var title = parameter.values[j];
+							var parts = parameter.values[j].split(" - ");
+							if(parts.length > 1){
+								title = parts[0] + ' - <span class="trn">'+parts[1]+'</span>';
+							}
+							
 							html += '<input type="radio" ' + onchange + ' ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + parameter.values[j] + '</label>';
+							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;

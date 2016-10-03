@@ -691,6 +691,9 @@ input[type="button"]{
 #popup input[type="text"], #popup input[type="number"], #popup textarea{
 	width:100%;
 }
+label span{
+	color:#777777;
+}
 @media screen and (max-width:400px){
 	#popup{
 		top: 100px !important;

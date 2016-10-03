@@ -1,4 +1,4 @@
-/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI */
+/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT */
 /* global SAVE_TYPES */
 
 var FILE = new FILE_CLASS();
@@ -39,7 +39,7 @@ function FILE_CLASS() {
 		var h = HEIGHT;
 		var resolutions = ['Custom'];
 		for(var i in GUI.common_dimensions){
-			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]);
+			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]+' - '+GUI.common_dimensions[i][2]);
 		}
 		
 		var save_resolution_cookie = HELPER.getCookie('save_resolution');
@@ -66,7 +66,8 @@ function FILE_CLASS() {
 				var save_resolution = response.save_resolution;
 				
 				if(resolution != 'Custom'){
-					var dim = resolution.split("x");
+					var dim = resolution.split(" ");	console.log(dim);
+					dim = dim[0].split("x");	console.log(dim);
 					width = dim[0];
 					height = dim[1];
 				}
