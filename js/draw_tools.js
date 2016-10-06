@@ -1000,16 +1000,11 @@ function DRAW_TOOLS_CLASS() {
 			if (GUI.action_data().attributes.radial == false) {
 				//linear
 				canvas_front.rect(0, 0, WIDTH, HEIGHT);
-				if (mouse.x > mouse.click_x) {
-					var grd = canvas_front.createLinearGradient(
-						mouse.click_x, mouse.click_y,
-						mouse.x, mouse.y);
-				}
-				else {
-					var grd = canvas_front.createLinearGradient(
-						mouse.x, mouse.y,
-						mouse.click_x, mouse.click_y);
-				}
+				
+				var grd = canvas_front.createLinearGradient(
+					mouse.click_x, mouse.click_y,
+					mouse.x, mouse.y);
+				
 				grd.addColorStop(0, "rgba(" + color1.r + ", " + color1.g + ", " + color1.b + ", " + color1.a / 255 + ")");
 				grd.addColorStop(1, "rgba(" + color2.r + ", " + color2.g + ", " + color2.b + ", " + color2.a / 255 + ")");
 				canvas_front.fillStyle = grd;
@@ -1044,16 +1039,10 @@ function DRAW_TOOLS_CLASS() {
 			if (GUI.action_data().attributes.radial == false) {
 				//linear
 				canvas_active().rect(0, 0, WIDTH, HEIGHT);
-				if (mouse.x > mouse.click_x) {
-					var grd = canvas_active().createLinearGradient(
-						mouse.click_x, mouse.click_y,
-						mouse.x, mouse.y);
-				}
-				else {
-					var grd = canvas_active().createLinearGradient(
-						mouse.x, mouse.y,
-						mouse.click_x, mouse.click_y);
-				}
+				var grd = canvas_active().createLinearGradient(
+					mouse.click_x, mouse.click_y,
+					mouse.x, mouse.y);
+				
 				grd.addColorStop(0, "rgba(" + color1.r + ", " + color1.g + ", " + color1.b + ", " + color1.a / 255 + ")");
 				grd.addColorStop(1, "rgba(" + color2.r + ", " + color2.g + ", " + color2.b + ", " + color2.a / 255 + ")");
 				canvas_active().fillStyle = grd;
