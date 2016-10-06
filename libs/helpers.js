@@ -189,7 +189,7 @@ function HELPER_CLASS() {
 
 			var byteNumbers = new Array(slice.length);
 			for (var i = 0; i < slice.length; i++) {
-			  byteNumbers[i] = slice.charCodeAt(i);
+				byteNumbers[i] = slice.charCodeAt(i);
 			}
 
 			var byteArray = new Uint8Array(byteNumbers);
@@ -217,10 +217,10 @@ function HELPER_CLASS() {
 	 * Assumes h, s, and l are contained in the set [0, 1] and
 	 * returns r, g, and b in the set [0, 255].
 	 *
-	 * @param   {number}  h       The hue
-	 * @param   {number}  s       The saturation
-	 * @param   {number}  l       The lightness
-	 * @return  {Array}           The RGB representation
+	 * @param {number} h The hue
+	 * @param {number} s The saturation
+	 * @param {number} l The lightness
+	 * @return {Array} The RGB representation
 	 */
 	this.hslToRgb = function (h, s, l) {
 		var r, g, b;
@@ -241,7 +241,7 @@ function HELPER_CLASS() {
 				if (t < 2 / 3)
 					return p + (q - p) * (2 / 3 - t) * 6;
 				return p;
-			}
+			};
 
 			var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
 			var p = 2 * l - q;
@@ -252,16 +252,17 @@ function HELPER_CLASS() {
 
 		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 	};
+	
 	/**
 	 * Converts an RGB color value to HSL. Conversion formula
 	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
 	 * Assumes r, g, and b are contained in the set [0, 255] and
 	 * returns h, s, and l in the set [0, 1].
 	 * 
-	 * @param   {number}  r       The red color value
-	 * @param   {number}  g       The green color value
-	 * @param   {number}  b       The blue color value
-	 * @return  {Array}           The HSL representation
+	 * @param {number} r red color value
+	 * @param {number} g green color value
+	 * @param {number} b blue color value
+	 * @return {Array} The HSL representation
 	 */
 	this.rgbToHsl = function (r, g, b) {
 		r /= 255, g /= 255, b /= 255;
@@ -288,6 +289,6 @@ function HELPER_CLASS() {
 			h /= 6;
 		}
 
-	    return [h, s, l];
+		return [h, s, l];
 	};
 }

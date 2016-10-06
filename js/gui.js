@@ -341,7 +341,7 @@ function GUI_CLASS() {
 		var page_w = canvas_wrapper.clientWidth;
 		var page_h = canvas_wrapper.clientHeight;
 		
-		var best_width = page_w / WIDTH  * 100;
+		var best_width = page_w / WIDTH * 100;
 		var best_height = page_h / HEIGHT * 100;
 		var best_zoom = Math.floor(Math.min(best_width, best_height));
 		if(only_increase != undefined && best_zoom > 100){

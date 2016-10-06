@@ -247,7 +247,7 @@ function FILE_CLASS() {
 				fname = fname + ".png";
 			
 			tempCanvas.toBlob(function(blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			});
 		}
 		else if (user_response.type == 'JPG') {
@@ -261,7 +261,7 @@ function FILE_CLASS() {
 			quality = quality / 100;
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, "image/jpeg", quality);
 		}
 		else if (user_response.type == 'WEBP') {
@@ -275,7 +275,7 @@ function FILE_CLASS() {
 				return false;		
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, data_header);
 		}
 		else if (user_response.type == 'BMP') {
@@ -289,7 +289,7 @@ function FILE_CLASS() {
 				return false;
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, data_header);
 		}
 		else if (user_response.type == 'JSON') {

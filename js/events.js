@@ -322,10 +322,10 @@ function EVENTS_CLASS() {
 		var canvas_el = document.getElementById('canvas_front').getBoundingClientRect();
 		var canvas_offset_x = canvas_el.left - bodyRect.left;
 		var canvas_offset_y = canvas_el.top - bodyRect.top;
-	    
+		
 		var mouse_x = event.pageX - canvas_offset_x;
 		var mouse_y = event.pageY - canvas_offset_y;
-	    
+		
 		if (event.target.id != "canvas_front") {
 			//outside canvas
 			valid = false;
@@ -588,12 +588,12 @@ function EVENTS_CLASS() {
 		//scroll to - convert center % coordinates to top/left px, and translate to current zoom
 		if(this.mouse.valid == true){
 			//using exact position
-			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w * GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
+			xx = (GUI.zoom_center[0] * WIDTH / 100 - visible_w * GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
 			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h * GUI.zoom_center[1]/100) * GUI.ZOOM / 100;
 		}
 		else{
 			//using center
-			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w / 2) * GUI.ZOOM / 100;
+			xx = (GUI.zoom_center[0] * WIDTH / 100 - visible_w / 2) * GUI.ZOOM / 100;
 			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h / 2) * GUI.ZOOM / 100;
 		}
 		

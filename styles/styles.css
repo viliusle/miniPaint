@@ -35,15 +35,14 @@ canvas{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
-
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 	/* disable antialiasing */
-	image-rendering: optimizeSpeed;             /* Older versions of FF          */
-	image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
-	image-rendering: -webkit-optimize-contrast; /* Safari                        */
-	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-	image-rendering: pixelated;                 /* Awesome future-browsers       */
-	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+	image-rendering: optimizeSpeed;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: -o-crisp-edges;
+	image-rendering: pixelated;
+	-ms-interpolation-mode: nearest-neighbor;
 }
 img{
 	border: none;
@@ -251,7 +250,7 @@ input[type="button"]{
 	left: calc(100% + 1px) !important;
 }
 .ddsmoothmenu .dots::after{
-    content: "...";
+	content: "...";
 }
 @media screen and (max-width:700px){
 	#mobile_menu{

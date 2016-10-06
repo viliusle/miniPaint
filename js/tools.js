@@ -103,7 +103,7 @@ function TOOLS_CLASS() {
 			function (user_response) {
 				EDIT.save_state();
 				var color = user_response.color;
-				var size = Math.round(WIDTH /  100 * user_response.size);
+				var size = Math.round(WIDTH / 100 * user_response.size);
 				var shadow = false;
 				if(user_response.shadow == 'Yes')
 					shadow = true;
@@ -113,7 +113,7 @@ function TOOLS_CLASS() {
 			},
 			function (user_response, canvas_preview, w, h) {
 				var color = user_response.color;
-				var size = Math.round(w /  100 * user_response.size);
+				var size = Math.round(w / 100 * user_response.size);
 				var shadow = false;
 				if(user_response.shadow == 'Yes')
 					shadow = true;
