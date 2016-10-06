@@ -1536,15 +1536,25 @@ function DRAW_TOOLS_CLASS() {
 				EDIT.save_state();
 				
 				if (this.select_square_action == 'move') {
+					//move selected area
 					if (this.select_data != false) {
-						select_data_tmp = canvas_active().getImageData(this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h);
+						canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+						canvas_front.drawImage(canvas_active(true), 0, 0);
 						canvas_active().clearRect(this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h);
-						canvas_active().putImageData(select_data_tmp, mouse.x - mouse.click_x + this.select_data.x, mouse.y - mouse.click_y + this.select_data.y);
+						canvas_active().drawImage(
+							document.getElementById("canvas_front"),
+							this.select_data.x, this.select_data.y,
+							this.select_data.w, this.select_data.h,
+							mouse.x - mouse.click_x + this.select_data.x, mouse.y - mouse.click_y + this.select_data.y,
+							this.select_data.w, this.select_data.h);
+							
+						canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					}
 					this.select_data.x += mouse.x - mouse.click_x;
 					this.select_data.y += mouse.y - mouse.click_y;
 				}
 				else {
+					//resize selected area
 					var s_x = this.select_data.x;
 					var s_y = this.select_data.y;
 					var d_x = this.select_data.w;
