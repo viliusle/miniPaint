@@ -262,7 +262,18 @@ function DRAW_TOOLS_CLASS() {
 
 		if (type == 'click') {
 			EDIT.save_state();
+			
+			canvas_active().beginPath();
+			canvas_active().lineWidth = size;
+			canvas_active().lineCap = 'round';
+			canvas_active().lineJoin = 'round';
+			if (ALPHA < 255)
+				canvas_active().strokeStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
+			else
+				canvas_active().strokeStyle = "rgba(255, 255, 255, 1)";
+			
 			if (is_circle == false) {
+				//rectangle
 				canvas_active().save();
 				canvas_active().globalCompositeOperation = 'destination-out';
 				canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 + ")";
@@ -270,12 +281,13 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().restore();
 			}
 			else {
+				//circle
 				if (strict == false) {
 					var radgrad = canvas_active().createRadialGradient(
 						mouse.x, mouse.y, size / 8,
 						mouse.x, mouse.y, size / 2);
 					radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 + ")");
-					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+					radgrad.addColorStop(1, "rgb(255, 255, 255)");
 				}
 
 				//set Composite
@@ -291,44 +303,16 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().restore();
 			}
 		}
-		else if (type == 'drag') {
-			if (is_circle == false) {
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
-				if (ALPHA < 255)
-					canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
-				else
-					canvas_active().fillStyle = COLOR;
-				canvas_active().fillRect(mouse.x - Math.ceil(size / 2) + 1, mouse.y - Math.ceil(size / 2) + 1, size, size);
-				canvas_active().restore();
-			}
-			else {
-				if (strict == false) {
-					var radgrad = canvas_active().createRadialGradient(
-						mouse.x, mouse.y, size / 10,
-						mouse.x, mouse.y, size / 2);
-					if (ALPHA < 255)
-						radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")");
-					else
-						radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
-					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
-				}
-				//set Composite
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
-				if (strict == true) {
-					if (ALPHA < 255)
-						canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
-					else
-						canvas_active().fillStyle = COLOR;
-				}
-				else
-					canvas_active().fillStyle = radgrad;
-				canvas_active().beginPath();
-				canvas_active().arc(mouse.x, mouse.y, size / 2, 0, Math.PI * 2, true);
-				canvas_active().fill();
-				canvas_active().restore();
-			}
+		else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
+			canvas_active().save();
+			canvas_active().globalCompositeOperation = 'destination-out';
+
+			canvas_active().beginPath();
+			canvas_active().moveTo(mouse.last_x, mouse.last_y);
+			canvas_active().lineTo(mouse.x, mouse.y);
+			canvas_active().stroke();
+
+			canvas_active().restore();
 			
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
