@@ -44,8 +44,6 @@ function DRAW_TOOLS_CLASS() {
 	 * fx library object
 	 */
 	var fx_filter = false;
-	
-	var brush_average_speed = 0;
 
 	//credits to Victor Haydin
 	this.toolFiller = function (context, W, H, x, y, color_to, sensitivity, anti_aliasing) {
@@ -804,24 +802,10 @@ function DRAW_TOOLS_CLASS() {
 			else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
 				
 				//detect line size
-				var max_delta = 20;
-				var power = 0.6; //max 1, how much speed reduce size, 1 means reduce to 0
+				var max_speed = 20;
+				var power = 0.7; //max 1, how much speed reduce size, 1 means reduce to 0
 				
-				var dx = Math.abs(mouse.x - mouse.last_x);
-				var dy = Math.abs(mouse.y - mouse.last_y);
-				var delta = Math.sqrt(dx*dx + dy*dy);
-				
-				//calc avg speed - average usage creeate fance effect
-				if(delta > 10)
-					brush_average_speed += 2;
-				else
-					brush_average_speed -= 2;
-				brush_average_speed = Math.max(0, brush_average_speed); //min 0
-				brush_average_speed = Math.min(max_delta, brush_average_speed); //max 30
-				
-				var current_speed = Math.min(brush_average_speed, max_delta);
-				
-				var new_size = original_size - original_size / max_delta * current_speed * power;
+				var new_size = original_size - original_size / max_speed * mouse.speed_average * power;
 				new_size = Math.max(new_size, original_size/4);
 				new_size = Math.round(new_size);
 				canvas_front.lineWidth = new_size;		

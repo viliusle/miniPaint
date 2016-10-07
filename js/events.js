@@ -111,6 +111,8 @@ function EVENTS_CLASS() {
 	 * if popup is dragged
 	 */
 	var popup_dragable = false;
+	
+	var mouse_average_speed = 0;
 
 	//keyboard actions
 	this.on_keyboard_action = function (event) {
@@ -346,7 +348,7 @@ function EVENTS_CLASS() {
 			mouse_x = Math.floor(mouse_x / GUI.ZOOM * 100);
 			mouse_y = Math.floor(mouse_y / GUI.ZOOM * 100);
 		}
-
+		
 		//save
 		EVENTS.mouse = {
 			x: mouse_x,
@@ -402,6 +404,9 @@ function EVENTS_CLASS() {
 				popup_dragable = false;
 			return true;
 		}
+		
+		//reset avg speed
+		mouse_average_speed = 0;
 
 		EVENTS.get_mouse_position(event);
 		mouse_click_pos[0] = EVENTS.mouse.x;
@@ -486,6 +491,22 @@ function EVENTS_CLASS() {
 				return false;
 			}
 		}
+		
+		//calc average speed
+		var avg_speed_max = 20;
+		var avg_speed_changing_power = 2;
+		
+		var dx = Math.abs(EVENTS.mouse.x - EVENTS.mouse.last_x);
+		var dy = Math.abs(EVENTS.mouse.y - EVENTS.mouse.last_y);
+		var delta = Math.sqrt(dx*dx + dy*dy);
+		if(delta > avg_speed_max/2)
+			mouse_average_speed += avg_speed_changing_power;
+		else
+			mouse_average_speed -= avg_speed_changing_power;
+		mouse_average_speed = Math.max(0, mouse_average_speed); //min 0
+		mouse_average_speed = Math.min(avg_speed_max, mouse_average_speed); //max 30
+		EVENTS.mouse.speed_average = mouse_average_speed;
+		
 		//check tools functions
 		if (EVENTS.isDrag === false) {
 			for (i in DRAW) {
@@ -495,7 +516,6 @@ function EVENTS_CLASS() {
 				}
 			}
 		}
-
 
 		if (EVENTS.isDrag === false)
 			return false;	//only drag now
