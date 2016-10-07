@@ -266,7 +266,7 @@ function DRAW_TOOLS_CLASS() {
 			canvas_active().beginPath();
 			canvas_active().lineWidth = size;
 			canvas_active().lineCap = 'round';
-			canvas_active().lineJoin = 'round';
+			canvas_active().lineJoin = 'round';		
 			if (ALPHA < 255)
 				canvas_active().strokeStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
 			else
@@ -282,17 +282,18 @@ function DRAW_TOOLS_CLASS() {
 			}
 			else {
 				//circle
+				canvas_active().save();
+				
 				if (strict == false) {
 					var radgrad = canvas_active().createRadialGradient(
 						mouse.x, mouse.y, size / 8,
 						mouse.x, mouse.y, size / 2);
 					radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 + ")");
-					radgrad.addColorStop(1, "rgb(255, 255, 255)");
+					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
 				}
 
 				//set Composite
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
+					canvas_active().globalCompositeOperation = 'destination-out';
 				if (strict == true)
 					canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 + ")";
 				else
@@ -304,6 +305,20 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
+			canvas_active().save();
+			
+			if (strict == false && is_circle == true) {
+				var radgrad = canvas_active().createRadialGradient(
+					mouse.x, mouse.y, size / 10,
+					mouse.x, mouse.y, size / 2);
+				if (ALPHA < 255)
+					radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")");
+				else
+					radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+				canvas_active().strokeStyle = radgrad;
+			}
+			
 			canvas_active().save();
 			canvas_active().globalCompositeOperation = 'destination-out';
 
