@@ -1,4 +1,4 @@
-/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT */
+/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW */
 /* global SAVE_TYPES */
 
 var FILE = new FILE_CLASS();
@@ -436,22 +436,54 @@ function FILE_CLASS() {
 	};
 	
 	this.file_quicksave = function(){
+		//save image data
 		var data_json = this.export_as_json();
 		if(data_json.length > 5000000){
 			POP.add({html: 'Sorry, image is too big, max 5 MB.'});
 			POP.show('Error', '');
 			return false;
 		}
-		localStorage.setItem('quicksave_data', data_json);	
+		localStorage.setItem('quicksave_data', data_json);
+		
+		//save settings
+		settings = {
+			color: COLOR,
+			active_tool: DRAW.active_tool,
+			zoom: GUI.ZOOM,
+		};
+		settings = JSON.stringify(settings);
+		localStorage.setItem('quicksave_settings', settings);
 	};
 	
 	this.file_quickload = function(){
+		//load image data
 		var json = localStorage.getItem('quicksave_data');
 		if(json == '' || json == null){
+			//nothing was found
 			return false;
 		}
 		this.load_json(json);
-		GUI.zoom_auto(true);	
+		GUI.zoom_auto(true);
+		
+		//load settings
+		var settings = localStorage.getItem('quicksave_settings');
+		if(settings == '' || settings == null){
+			//nothing was found
+			return false;
+		}
+		settings = JSON.parse(settings);
+		
+		//load color
+		COLOR = settings.color;
+		GUI.sync_colors();
+		
+		//load active tool
+		document.getElementById(DRAW.active_tool).className = "";
+		DRAW.active_tool = settings.active_tool;
+		document.getElementById(DRAW.active_tool).className = "active trn";
+		
+		//load zoom
+		GUI.zoom(settings.zoom, false);
 	};
 
 }
