@@ -478,9 +478,7 @@ function FILE_CLASS() {
 		GUI.sync_colors();
 		
 		//load active tool
-		document.getElementById(DRAW.active_tool).className = "";
-		DRAW.active_tool = settings.active_tool;
-		document.getElementById(DRAW.active_tool).className = "active trn";
+		GUI.action(settings.active_tool);
 		
 		//load zoom
 		GUI.zoom(settings.zoom, false);
