@@ -40,7 +40,12 @@ function DRAW_TOOLS_CLASS() {
 	 */
 	var clone_data = false;
 	
+	/**
+	 * fx library object
+	 */
 	var fx_filter = false;
+	
+	var brush_average_speed = 0;
 
 	//credits to Victor Haydin
 	this.toolFiller = function (context, W, H, x, y, color_to, sensitivity, anti_aliasing) {
@@ -761,6 +766,7 @@ function DRAW_TOOLS_CLASS() {
 		var brush_type = GUI.action_data().attributes.type;
 		var color_rgb = HELPER.hex2rgb(COLOR);
 		var size = GUI.action_data().attributes.size;
+		var original_size = GUI.action_data().attributes.size;
 
 		if (type == 'click')
 			EDIT.save_state();
@@ -783,10 +789,10 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.lineJoin = 'round';
 				}
 				
-				canvas_front.beginPath();
+				/*canvas_front.beginPath();
 				canvas_front.arc(mouse.x, mouse.y, GUI.action_data().attributes.size / 2, 0, 2 * Math.PI, false);
 				canvas_front.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-				canvas_front.fill();
+				canvas_front.fill();*/
 
 				//blur
 				canvas_active().shadowBlur = 0;
@@ -796,6 +802,31 @@ function DRAW_TOOLS_CLASS() {
 				}
 			}
 			else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
+				
+				//detect line size
+				var max_delta = 20;
+				var power = 0.6; //max 1, how much speed reduce size, 1 means reduce to 0
+				
+				var dx = Math.abs(mouse.x - mouse.last_x);
+				var dy = Math.abs(mouse.y - mouse.last_y);
+				var delta = Math.sqrt(dx*dx + dy*dy);
+				
+				//calc avg speed - average usage creeate fance effect
+				if(delta > 10)
+					brush_average_speed += 2;
+				else
+					brush_average_speed -= 2;
+				brush_average_speed = Math.max(0, brush_average_speed); //min 0
+				brush_average_speed = Math.min(max_delta, brush_average_speed); //max 30
+				
+				var current_speed = Math.min(brush_average_speed, max_delta);
+				
+				var new_size = original_size - original_size / max_delta * current_speed * power;
+				new_size = Math.max(new_size, original_size/4);
+				new_size = Math.round(new_size);
+				canvas_front.lineWidth = new_size;		
+				canvas_active().lineWidth = new_size;
+				
 				if (ALPHA == 255)
 					canvas_active().beginPath();
 				canvas_active().moveTo(mouse.last_x, mouse.last_y);
