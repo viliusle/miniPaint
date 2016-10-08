@@ -27,6 +27,7 @@ function LAYER_CLASS() {
 
 	//new layer
 	this.layer_new = function () {
+		EDIT.save_state();
 		this.layer_add();
 	};
 	
@@ -38,6 +39,14 @@ function LAYER_CLASS() {
 		}
 		layer_max_index = 0;
 		this.layer_renew();
+	};
+	
+	//generate name for new layer
+	this.generate_layer_name = function(prefix){
+		if(prefix == undefined)
+			prefix = 'Layer';
+			
+		return prefix + ' #' + (layer_max_index);
 	};
 	
 	//create layer
@@ -57,7 +66,7 @@ function LAYER_CLASS() {
 		if (data == undefined) {
 			//empty layer
 			if (name == undefined) {
-				name = 'Layer #' + (layer_max_index);
+				name = this.generate_layer_name();
 			}
 			var new_layer = [];
 			new_layer.name = name;
@@ -88,16 +97,19 @@ function LAYER_CLASS() {
 			
 			img.onload = function () {
 				//check size
+				var need_resize = false;
 				if (img.width > WIDTH || img.height > HEIGHT) {
 					if (img.width > WIDTH)
 						WIDTH = img.width;
 					if (img.height > HEIGHT)
 						HEIGHT = img.height;
 					LAYER.set_canvas_size();
+					need_resize = true;
 				}
+				//remove initial empty layer
 				if (_this.layers.length == 1 && EVENTS.autosize == true) {
 					var trim_info = IMAGE.trim_info(document.getElementById(_this.layers[0].name));
-					if (trim_info.left == WIDTH) {
+					if (trim_info.empty == true) {
 						_this.layer_remove(0, true);
 						WIDTH = img.width;
 						HEIGHT = img.height;
@@ -107,7 +119,7 @@ function LAYER_CLASS() {
 
 				for (var i in _this.layers) {
 					if (_this.layers[i].name == name) {
-						name = 'Layer #' + (layer_max_index);
+						name = _this.generate_layer_name(name);
 					}
 				}
 				LAYER.create_canvas(name);
@@ -122,7 +134,9 @@ function LAYER_CLASS() {
 				document.getElementById(name).getContext("2d").globalAlpha = 1;
 				document.getElementById(name).getContext('2d').drawImage(img, 0, 0);
 				LAYER.layer_renew();
-				IMAGE.zoom_auto(true);
+				if(_this.layers.length == 1 || need_resize == true) {
+					GUI.zoom_auto(true);
+				}
 				GUI.redraw_preview();
 			};
 			img.onerror = function (ex) {
@@ -155,8 +169,8 @@ function LAYER_CLASS() {
 		GUI.redraw_preview();
 	};
 
-	//dublicate
-	this.layer_dublicate = function () {
+	//duplicate
+	this.layer_duplicate = function () {
 		EDIT.save_state();
 		if (DRAW.select_data != false) {
 			//selection
@@ -176,10 +190,10 @@ function LAYER_CLASS() {
 			tmp_data.getContext("2d").drawImage(canvas_active(true), 0, 0);
 
 			//create
-			var new_name = 'Layer #' + (layer_max_index);
+			var new_name = this.generate_layer_name();
 			LAYER.create_canvas(new_name);
 			this.layers.unshift({name: new_name, title: new_name, visible: true});
-			LAYER.layer_active = 0;
+			this.layer_active = 0;
 			canvas_active().drawImage(tmp_data, 0, 0);
 			LAYER.layer_renew();
 		}
@@ -488,7 +502,7 @@ function LAYER_CLASS() {
 				html += '<div class="layer">';
 			var title = this.layers[i].title;
 			html += '<span class="layer_title" ondblclick="LAYER.layer_rename();" onclick="LAYER.select_layer(\'' + i + '\')">' + HELPER.escapeHtml(title) + '</span>';
-			html += '<a class="layer_visible" onclick="LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
+			html += '<a class="layer_visible" onclick="EDIT.save_state();LAYER.layer_remove(\'' + i + '\');return false;" title="delete" href="#"></a>';
 			//hide
 			if (this.layers[i].visible == true)
 				html += '<a class="layer_delete" id="layer_' + i + '" onclick="LAYER.layer_visibility(\'' + i + '\');return false;" title="hide" href="#"></a>';
@@ -499,6 +513,8 @@ function LAYER_CLASS() {
 			//show
 			document.getElementById('layers').innerHTML = html;
 		}
+		if(this.layers.length == 0)
+			document.getElementById('layers').innerHTML = '';
 	};
 	this.shake = function (i, nr) {
 		var step = 3;
@@ -536,7 +552,13 @@ function LAYER_CLASS() {
 			x = EVENTS.mouse.x;
 			y = EVENTS.mouse.y;
 		}
-		document.getElementById('mouse_info_mouse').innerHTML = x + ", " + y;
+		if(EVENTS.mouse.valid == true){
+			document.getElementById('mouse_info_mouse').innerHTML = x + "x" + y;
+		}
+		else{
+			//mouse is not inside canvas
+			document.getElementById('mouse_info_mouse').innerHTML = '';
+		}
 		
 		//show selected area info
 		if (DRAW.select_data != false) {

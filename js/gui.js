@@ -49,14 +49,14 @@ function GUI_CLASS() {
 	 * common image dimensions
 	 */
 	this.common_dimensions = [
-			[640,480], //480p
-			[800,600], //SVGA
-			[1024,768], //XGA 
-			[1280,720], //hdtv, 720p
-			[1600,1200], //UXGA
-			[1920,1080], //Full HD, 1080p
-			[3840,2160], //4K UHD
-			[7680,4320], //8K UHD
+			[640,480, '480p'],
+			[800,600, 'SVGA'],
+			[1024,768, 'XGA'], 
+			[1280,720, 'hdtv, 720p'],
+			[1600,1200, 'UXGA'],
+			[1920,1080, 'Full HD, 1080p'],
+			[3840,2160, '4K UHD'],
+			[7680,4320, '8K UHD'],
 		];
 	
 	/**
@@ -104,23 +104,34 @@ function GUI_CLASS() {
 		var page_h = canvas_wrapper.clientHeight;
 		var auto_size = false;
 		
-		for(var i = this.common_dimensions.length-1; i >= 0; i--){
-			if(this.common_dimensions[i][0] >page_w || this.common_dimensions[i][1] > page_h){
-				//browser size is too small
-				continue;
-			}
-			WIDTH = this.common_dimensions[i][0];
-			HEIGHT = this.common_dimensions[i][1];
-			auto_size = true;
-			break;
+		var save_resolution_cookie = HELPER.getCookie('save_resolution');
+		if(save_resolution_cookie != ''){
+			//load last saved resolution
+			save_resolution = 'Yes';
+			var last_resolution = JSON.parse(save_resolution_cookie);
+			WIDTH = parseInt(last_resolution[0]);
+			HEIGHT = parseInt(last_resolution[1]);
 		}
-		
-		if(auto_size == false) {
-			//screen size is smaller then 400x300
-			WIDTH = page_w - 5;
-			HEIGHT = page_h - 10;
-			if(page_w < 585){
-				HEIGHT = HEIGHT - 15;
+		else{
+			//use largest possible
+			for(var i = this.common_dimensions.length-1; i >= 0; i--){
+				if(this.common_dimensions[i][0] >page_w || this.common_dimensions[i][1] > page_h){
+					//browser size is too small
+					continue;
+				}
+				WIDTH = this.common_dimensions[i][0];
+				HEIGHT = this.common_dimensions[i][1];
+				auto_size = true;
+				break;
+			}
+
+			if(auto_size == false) {
+				//screen size is smaller then 400x300
+				WIDTH = page_w - 5;
+				HEIGHT = page_h - 10;
+				if(page_w < 585){
+					HEIGHT = HEIGHT - 15;
+				}
 			}
 		}
 	};
@@ -290,7 +301,7 @@ function GUI_CLASS() {
 			this.ZOOM = Math.max(this.ZOOM, 10);
 			GUI.redraw_preview();
 		}
-		document.getElementById("zoom_nr").innerHTML = this.ZOOM;
+		document.getElementById("zoom_nr").value = this.ZOOM+'%';
 		document.getElementById("zoom_range").value = this.ZOOM;
 
 		//change scale and repaint
@@ -323,6 +334,20 @@ function GUI_CLASS() {
 		}
 		this.redraw_preview();
 		return true;
+	};
+	
+	this.zoom_auto = function(only_increase){
+		var canvas_wrapper = document.querySelector('#canvas_wrapper');
+		var page_w = canvas_wrapper.clientWidth;
+		var page_h = canvas_wrapper.clientHeight;
+		
+		var best_width = page_w / WIDTH * 100;
+		var best_height = page_h / HEIGHT * 100;
+		var best_zoom = Math.floor(Math.min(best_width, best_height));
+		if(only_increase != undefined && best_zoom > 100){
+			return false;
+		}
+		this.zoom(Math.min(best_width, best_height), true);
 	};
 	
 	this.update_attribute = function (object, next_value) {
@@ -595,9 +620,7 @@ function GUI_CLASS() {
 			});
 			POP.show(
 				'Select color', 
-				function (user_response) {
-					var param1 = parseInt(user_response.param1);
-				},
+				undefined,
 				undefined,
 				this.toggle_color_select_onload
 			);

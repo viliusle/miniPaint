@@ -25,19 +25,17 @@ function EFFECTS_CLASS() {
 		{title: 'Edge',			name: 'effects_Edge' },
 		{title: 'Emboss',			name: 'effects_Emboss' },
 		{title: 'Enrich',			name: 'effects_Enrich' },
-		{title: 'Gamma',			name: 'effects_Gamma' },
 		{title: 'Grains',			name: 'effects_Grains' },
 		{title: 'Heatmap',		name: 'effects_heatmap' },
-		{title: 'HSL Adjustment',	name: 'effects_HSLAdjustment' },
 		{title: 'JPG Compression',	name: 'effects_jpg_vintage' },
 		{title: 'Mosaic',			name: 'effects_Mosaic' },
 		{title: 'Oil',			name: 'effects_Oil' },
-		{title: 'Posterize',		name: 'effects_Posterize' },
 		{title: 'Sepia',			name: 'effects_Sepia' },
 		{title: 'Sharpen',		name: 'effects_Sharpen' },
 		{title: 'Solarize',		name: 'effects_Solarize' },
 		{title: 'Tilt Shift',		name: 'effects_tilt_shift' },
 		{title: 'Vignette',		name: 'effects_vignette' },
+		{title: 'Vibrance',		name: 'effects_vibrance' },
 		{title: 'Vintage',		name: 'effects_vintage' },
 		];
 		
@@ -247,7 +245,6 @@ function EFFECTS_CLASS() {
 
 		POP.add({name: "param1", title: "Power:", value: "3", range: [1, 10]});
 		POP.add({name: "param2", title: "Limit:", value: "30", range: [10, 200]});
-		POP.add({name: "param3", title: "Dithering:", values: ["Yes", "No"]});
 		POP.preview_in_main = true;
 		POP.effects = true;
 		POP.show('Auto colorize',
@@ -255,13 +252,8 @@ function EFFECTS_CLASS() {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
 				var param2 = parseInt(user_response.param2);
-				if (user_response.param3 == 'Yes')
-					param3 = true;
-			
-				else
-					param3 = false;
 
-				_this.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+				_this.colorize(canvas_active(), WIDTH, HEIGHT, param1, param2, colorize_data);
 				GUI.zoom();
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			},
@@ -269,15 +261,11 @@ function EFFECTS_CLASS() {
 				POP.preview_in_main = true;
 				var param1 = parseInt(user_response.param1);
 				var param2 = parseInt(user_response.param2);
-				if (user_response.param3 == 'Yes')
-					param3 = true;
-				else
-					param3 = false;
 
-				colorize_data = _this.colorize(false, WIDTH, HEIGHT, param1, param2, param3, true);
+				colorize_data = _this.colorize(false, WIDTH, HEIGHT, param1, param2, true);
 				canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				canvas_front.drawImage(canvas_active(true), 0, 0);
-				_this.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, param3, colorize_data);
+				_this.colorize(canvas_front, WIDTH, HEIGHT, param1, param2, colorize_data);
 			}
 		);
 	};
@@ -428,29 +416,6 @@ function EFFECTS_CLASS() {
 		);
 	};
 
-	this.effects_Gamma = function () {
-		POP.add({name: "param1", title: "Gamma:", value: "1", range: [0, 3], step: 0.1});
-		POP.effects = true;
-		POP.show('Gamma',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseFloat(user_response.param1);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseFloat(user_response.param1);
-
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.Gamma(imageData, param1);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
-			}
-		);
-	};
-
 	this.effects_Grains = function () {
 		var _this = this;
 		POP.effects = true;
@@ -478,34 +443,6 @@ function EFFECTS_CLASS() {
 			},
 			function (user_response, canvas_preview, w, h) {
 				_this.heatmap_effect(canvas_preview, w, h);
-			}
-		);
-	};
-
-	this.effects_HSLAdjustment = function () {
-		POP.add({name: "param1", title: "Hue:", value: "0", range: [-180, 180]});
-		POP.add({name: "param2", title: "Saturation:", value: "0", range: [-100, 100]});
-		POP.add({name: "param3", title: "Luminance:", value: "0", range: [-100, 100]});
-		POP.effects = true;
-		POP.show('HSL Adjustment',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseInt(user_response.param1);
-				var param2 = parseInt(user_response.param2);
-				var param3 = parseInt(user_response.param3);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.HSLAdjustment(imageData, param1, param2, param3);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseInt(user_response.param1);
-				var param2 = parseInt(user_response.param2);
-				var param3 = parseInt(user_response.param3);
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.HSLAdjustment(imageData, param1, param2, param3);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
 			}
 		);
 	};
@@ -656,28 +593,6 @@ function EFFECTS_CLASS() {
 			canvas_front.fillStyle = "#0000c8";
 			canvas_front.fill();
 		}
-	};
-
-	this.effects_Posterize = function () {
-		POP.add({name: "param1", title: "Levels:", value: "8", range: [2, 32]});
-		POP.effects = true;
-		POP.show('Posterize',
-			function (user_response) {
-				EDIT.save_state();
-				var param1 = parseInt(user_response.param1);
-
-				var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
-				var filtered = ImageFilters.Posterize(imageData, param1);	//add effect
-				canvas_active().putImageData(filtered, 0, 0);
-				GUI.zoom();
-			},
-			function (user_response, canvas_preview, w, h) {
-				var param1 = parseInt(user_response.param1);
-				var imageData = canvas_preview.getImageData(0, 0, w, h);
-				var filtered = ImageFilters.Posterize(imageData, param1);	//add effect
-				canvas_preview.putImageData(filtered, 0, 0);
-			}
-		);
 	};
 
 	this.effects_Sepia = function () {
@@ -850,6 +765,31 @@ function EFFECTS_CLASS() {
 			}
 		);
 	};
+	this.effects_vibrance = function () {
+		this.load_fx();
+		
+		POP.add({name: "level", title: "Level:", value: "0.5", range: [-1, 1], step: 0.01});
+		POP.effects = true;
+		POP.show('Vignette',
+			function (user_response) {
+				EDIT.save_state();
+				var level = parseFloat(user_response.level);
+
+				var texture = fx_filter.texture(canvas_active(true));
+				fx_filter.draw(texture).vibrance(level).update();	//effect
+				canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+				canvas_active().drawImage(fx_filter, 0, 0);
+				GUI.zoom();
+			},
+			function (user_response, canvas_preview, w, h) {
+				var level = parseFloat(user_response.level);
+
+				var texture = fx_filter.texture(canvas_preview.getImageData(0, 0, w, h));
+				fx_filter.draw(texture).vibrance(level).update();	//effect
+				canvas_preview.drawImage(fx_filter, 0, 0);
+			}
+		);
+	};
 
 	this.effects_vintage = function () {
 		POP.add({name: "red_offset", title: "Color adjust:", value: "70", range: [0, 200]});
@@ -980,7 +920,7 @@ function EFFECTS_CLASS() {
 	};
 
 	//converts greyscale images to colored
-	this.colorize = function (context, W, H, rand_power, max_gap, dither, manual_colors) {
+	this.colorize = function (context, W, H, rand_power, max_gap, manual_colors) {
 		if (manual_colors == undefined || manual_colors === true) {
 			var colors = [];
 			for (var x = 0; x < 3; x++) {
@@ -1011,23 +951,9 @@ function EFFECTS_CLASS() {
 		for (var i = 0; i < imgData.length; i += 4) {
 			if (imgData[i + 3] == 0)
 				continue;	//transparent
-			if (dither == true) {
-				var diff = Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]) + Math.abs(colors[0][imgData[x]]);
-				diff = diff / 3;
-			}
 			for (var c = 0; c < 3; c++) {
 				var x = i + c;
-				if (dither == false)
-					imgData[x] += colors[c][imgData[x]];
-				else {
-					if (diff < rand_power * 6)
-						imgData[x] += colors[c][imgData[x]];
-					else {
-						//big difference here - randomize
-						var rand = HELPER.getRandomInt(Math.min(0, colors[c][imgData[x]]), Math.max(0, colors[c][imgData[x]]));
-						imgData[x] += rand;
-					}
-				}
+				imgData[x] += colors[c][imgData[x]];
 				if (imgData[x] > 255)
 					imgData[x] = 255;
 				if (imgData[x] < 0)

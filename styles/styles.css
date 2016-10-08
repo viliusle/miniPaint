@@ -14,7 +14,7 @@ Table of Contents:
 *{
 	box-sizing: border-box;
 }
-body {
+body{
 	font-size: 75%; /* Resets to 12px */
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000000;
@@ -35,15 +35,14 @@ canvas{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
-
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 	/* disable antialiasing */
-	image-rendering: optimizeSpeed;             /* Older versions of FF          */
-	image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
-	image-rendering: -webkit-optimize-contrast; /* Safari                        */
-	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-	image-rendering: pixelated;                 /* Awesome future-browsers       */
-	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+	image-rendering: optimizeSpeed;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: -o-crisp-edges;
+	image-rendering: pixelated;
+	-ms-interpolation-mode: nearest-neighbor;
 }
 img{
 	border: none;
@@ -68,7 +67,7 @@ input[type="range"]{
 	margin-left:0px;
 	width:100%;
 }
-input[type="button"]:disabled {
+input[type="button"]:disabled{
 	visibility:hidden;
 }
 input[type="button"]{
@@ -92,17 +91,17 @@ input[type="button"]{
 #logo:hover{
 	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
-@keyframes shake {
-	10%, 90% {
+@keyframes shake{
+	10%, 90%{
 		background-position: 2px 0px;
 	}
-	20%, 80% {
+	20%, 80%{
 		background-position: 5px 0px;
 	}
-	30%, 50%, 70% {
+	30%, 50%, 70%{
 		background-position: 0px 0px;
 	}
-	40%, 60% {
+	40%, 60%{
 		background-position: 6px 0px;
 	}
 }
@@ -166,11 +165,11 @@ input[type="button"]{
 	text-align:center;
 	padding: 7px 10px 8px 10px !important;
 }
-.ddsmoothmenu ul li a.selected {
+.ddsmoothmenu ul li a.selected{
 	background-color: #FFFFFF !important;
 	color: #2d2b2b;
 }
-.ddsmoothmenu ul li ul li a.selected {
+.ddsmoothmenu ul li ul li a.selected{
 	background-color:#E4EBF8 !important;
 }
 .ddsmoothmenu ul li a:hover{
@@ -242,16 +241,16 @@ input[type="button"]{
 	font-size:0;
 	padding:0 8px 0 8px;
 }
-.ddsmoothmenu ul li ul li.more > a {
-	background-image: url('../img/right.gif');
+.ddsmoothmenu ul li ul li.more > a{
+	background-image: url('../img/right.png');
 	background-repeat: no-repeat;
 	background-position: 97% 30%;
 }
-.ddsmoothmenu ul li ul li ul {
+.ddsmoothmenu ul li ul li ul{
 	left: calc(100% + 1px) !important;
 }
-.ddsmoothmenu .dots::after {
-    content: "...";
+.ddsmoothmenu .dots::after{
+	content: "...";
 }
 @media screen and (max-width:700px){
 	#mobile_menu{
@@ -529,6 +528,12 @@ input[type="button"]{
 	-webkit-user-select:none;
 	-moz-user-select:none;
 }
+.mouse_info_title{
+	font-weight:bold;
+	min-width:38px;
+	display:block;
+	float:left;
+}
 @media screen and (max-width:700px){
 	#sidebar_right{
 		right: -160px;
@@ -690,6 +695,9 @@ input[type="button"]{
 }
 #popup input[type="text"], #popup input[type="number"], #popup textarea{
 	width:100%;
+}
+label span{
+	color:#777777;
 }
 @media screen and (max-width:400px){
 	#popup{

@@ -1,5 +1,5 @@
-/* global HELPER, EVENTS, LAYER, POP, FILE, GUI, DRAW */
-/* global WIDTH, HEIGHT, canvas_back, canvas_grid, COLOR, ALPHA  */
+/* global HELPER, EVENTS, LAYER, POP, FILE, GUI, HELP, DRAW */
+/* global WIDTH, HEIGHT, canvas_back, canvas_grid, COLOR, ALPHA */
 
 var MAIN = new MAIN_CLASS();
 document.onload = MAIN.init(true);

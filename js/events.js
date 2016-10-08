@@ -111,6 +111,8 @@ function EVENTS_CLASS() {
 	 * if popup is dragged
 	 */
 	var popup_dragable = false;
+	
+	var mouse_average_speed = 0;
 
 	//keyboard actions
 	this.on_keyboard_action = function (event) {
@@ -137,7 +139,17 @@ function EVENTS_CLASS() {
 			EVENTS.command_pressed = true;
 			EVENTS.ctrl_pressed = true;
 		}
-
+		
+		//F9
+		if (k == 120) {
+			FILE.file_quicksave();
+		}
+		
+		//F10
+		if (k == 121) {
+			FILE.file_quickload();
+		}
+		
 		//up
 		if (k == 38) {
 			if (DRAW.active_tool == 'select_tool') {
@@ -197,10 +209,6 @@ function EVENTS_CLASS() {
 			EDIT.save_state();
 			IMAGE.trim();
 		}
-		//o - open
-		else if (k == 79){
-			FILE.open();
-		}
 		//s - save
 		else if (k == 83) {
 			if (POP != undefined)
@@ -239,7 +247,7 @@ function EVENTS_CLASS() {
 		}
 		//d
 		else if (k == 68) {
-			call_menu(LAYER, 'layer_dublicate');
+			call_menu(LAYER, 'layer_duplicate');
 		}
 		//a
 		else if (k == 65) {	
@@ -278,8 +286,10 @@ function EVENTS_CLASS() {
 			GUI.zoom(+1);
 		}
 		//n - new layer
-		else if (k == 78)
+		else if (k == 78){
+			EDIT.save_state();
 			LAYER.layer_add();
+		}
 		
 		GUI.zoom();
 		return true;
@@ -314,10 +324,10 @@ function EVENTS_CLASS() {
 		var canvas_el = document.getElementById('canvas_front').getBoundingClientRect();
 		var canvas_offset_x = canvas_el.left - bodyRect.left;
 		var canvas_offset_y = canvas_el.top - bodyRect.top;
-	    
+		
 		var mouse_x = event.pageX - canvas_offset_x;
 		var mouse_y = event.pageY - canvas_offset_y;
-	    
+		
 		if (event.target.id != "canvas_front") {
 			//outside canvas
 			valid = false;
@@ -338,7 +348,7 @@ function EVENTS_CLASS() {
 			mouse_x = Math.floor(mouse_x / GUI.ZOOM * 100);
 			mouse_y = Math.floor(mouse_y / GUI.ZOOM * 100);
 		}
-
+		
 		//save
 		EVENTS.mouse = {
 			x: mouse_x,
@@ -394,6 +404,9 @@ function EVENTS_CLASS() {
 				popup_dragable = false;
 			return true;
 		}
+		
+		//reset avg speed
+		mouse_average_speed = 0;
 
 		EVENTS.get_mouse_position(event);
 		mouse_click_pos[0] = EVENTS.mouse.x;
@@ -478,6 +491,22 @@ function EVENTS_CLASS() {
 				return false;
 			}
 		}
+		
+		//calc average speed
+		var avg_speed_max = 20;
+		var avg_speed_changing_power = 2;
+		
+		var dx = Math.abs(EVENTS.mouse.x - EVENTS.mouse.last_x);
+		var dy = Math.abs(EVENTS.mouse.y - EVENTS.mouse.last_y);
+		var delta = Math.sqrt(dx*dx + dy*dy);
+		if(delta > avg_speed_max/2)
+			mouse_average_speed += avg_speed_changing_power;
+		else
+			mouse_average_speed -= avg_speed_changing_power;
+		mouse_average_speed = Math.max(0, mouse_average_speed); //min 0
+		mouse_average_speed = Math.min(avg_speed_max, mouse_average_speed); //max 30
+		EVENTS.mouse.speed_average = mouse_average_speed;
+		
 		//check tools functions
 		if (EVENTS.isDrag === false) {
 			for (i in DRAW) {
@@ -487,7 +516,6 @@ function EVENTS_CLASS() {
 				}
 			}
 		}
-
 
 		if (EVENTS.isDrag === false)
 			return false;	//only drag now
@@ -552,6 +580,7 @@ function EVENTS_CLASS() {
 	this.upload_drop = function (e) {
 		e.preventDefault();
 		
+		EDIT.save_state();
 		FILE.open_handler(e);
 	};
 	this.mouse_wheel_handler = function (e) {	//return true;
@@ -579,12 +608,12 @@ function EVENTS_CLASS() {
 		//scroll to - convert center % coordinates to top/left px, and translate to current zoom
 		if(this.mouse.valid == true){
 			//using exact position
-			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w * GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
+			xx = (GUI.zoom_center[0] * WIDTH / 100 - visible_w * GUI.zoom_center[0]/100) * GUI.ZOOM / 100;
 			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h * GUI.zoom_center[1]/100) * GUI.ZOOM / 100;
 		}
 		else{
 			//using center
-			xx = (GUI.zoom_center[0] * WIDTH  / 100 - visible_w / 2) * GUI.ZOOM / 100;
+			xx = (GUI.zoom_center[0] * WIDTH / 100 - visible_w / 2) * GUI.ZOOM / 100;
 			yy = (GUI.zoom_center[1] * HEIGHT / 100 - visible_h / 2) * GUI.ZOOM / 100;
 		}
 		

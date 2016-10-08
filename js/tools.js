@@ -13,10 +13,12 @@ function TOOLS_CLASS() {
 	//sprites
 	this.tools_sprites = function () {
 		POP.add({name: "param1", title: "Gap:", value: "50", values: ["0", "10", "50", "100"]});
+		POP.add({name: "param2", title: "Width:", value: WIDTH});
 		POP.show('Sprites', function (response) {
 			EDIT.save_state();
 			var param1 = parseInt(response.param1);
-			TOOLS.generate_sprites(param1);
+			var sprite_width = parseInt(response.param2);
+			TOOLS.generate_sprites(param1, sprite_width);
 		});
 	};
 
@@ -101,7 +103,7 @@ function TOOLS_CLASS() {
 			function (user_response) {
 				EDIT.save_state();
 				var color = user_response.color;
-				var size = Math.round(WIDTH /  100 * user_response.size);
+				var size = Math.round(WIDTH / 100 * user_response.size);
 				var shadow = false;
 				if(user_response.shadow == 'Yes')
 					shadow = true;
@@ -111,7 +113,7 @@ function TOOLS_CLASS() {
 			},
 			function (user_response, canvas_preview, w, h) {
 				var color = user_response.color;
-				var size = Math.round(w /  100 * user_response.size);
+				var size = Math.round(w / 100 * user_response.size);
 				var shadow = false;
 				if(user_response.shadow == 'Yes')
 					shadow = true;
@@ -121,7 +123,7 @@ function TOOLS_CLASS() {
 		);
 	};
 	
-	this.generate_sprites = function (gap) {
+	this.generate_sprites = function (gap, sprite_width) {
 		if (LAYER.layers.length == 1)
 			return false;
 		EDIT.save_state();
@@ -131,10 +133,15 @@ function TOOLS_CLASS() {
 		var max_height = 0;
 		var tmp = document.createElement("canvas");
 		tmp.setAttribute('id', "tmp_canvas");
-		tmp.width = WIDTH;
+		tmp.width = sprite_width;
 		tmp.height = HEIGHT;
-		var W = WIDTH;
+		var W = sprite_width;
 		var H = HEIGHT;
+		
+		//prepare width
+		WIDTH = sprite_width;
+		LAYER.set_canvas_size();
+		
 		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (i == LAYER.layer_active)
 				continue;	//end
@@ -150,7 +157,7 @@ function TOOLS_CLASS() {
 			var width = W - trim_details.left - trim_details.right;
 			var height = H - trim_details.top - trim_details.bottom;
 
-			if (xx + width > WIDTH) {
+			if (xx + width > sprite_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
@@ -170,12 +177,20 @@ function TOOLS_CLASS() {
 
 			if (height > max_height)
 				max_height = height;
-			if (xx > WIDTH) {
+			if (xx > sprite_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
 			}
 		}
+		
+		//remove other layers
+		for(var i = LAYER.layers.length-1; i >= 0; i--) {
+			if (i == LAYER.layer_active)
+				continue;
+			LAYER.layer_remove(i, true);
+		}
+		LAYER.layer_renew();
 	};
 	
 	this.convert_color_to_alpha = function (context, W, H, color) {
@@ -262,5 +277,90 @@ function TOOLS_CLASS() {
 			EL.rectangle(context, 0, 0, W-1, H-1, false, true);
 		}
 		context.restore();
+	};
+	
+	this.tools_replace_color = function(){
+		POP.add({name: "target", title: "Target:", value: COLOR, type: 'color'});
+		POP.add({name: "repalcement", title: "Replacement:", value: '#ff0000', type: 'color'});
+		POP.add({name: "power", title: "Power:", value: "20", range: [0, 255]});
+		POP.add({name: "alpha", title: "Alpha:", value: "255", range: [0, 255]});
+		POP.add({name: "mode", title: "Mode:", values: ['Advanced', 'Simple']});
+		POP.show(
+			'Replace color',
+			function (user_response) {
+				EDIT.save_state();
+				var target = user_response.target;
+				var repalcement = user_response.repalcement;
+				var power = user_response.power;
+				var alpha = user_response.alpha;
+				var advanced_mode = true;
+				if(user_response.mode == 'Simple')
+					advanced_mode = false;
+				
+				TOOLS.replace_color_process(canvas_active(), WIDTH, HEIGHT, target, repalcement, power, alpha, advanced_mode);
+				GUI.zoom();
+			},
+			function (user_response, canvas_preview, w, h) {
+				var target = user_response.target;
+				var repalcement = user_response.repalcement;
+				var power = user_response.power;
+				var alpha = user_response.alpha;
+				var advanced_mode = true;
+				if(user_response.mode == 'Simple')
+					advanced_mode = false;
+				
+				TOOLS.replace_color_process(canvas_preview, w, h, target, repalcement, power, alpha, advanced_mode);
+			}
+		);
+	};
+	
+	this.replace_color_process = function(context, W, H, target, replacement, power, alpha, advanced_mode){
+		var img = context.getImageData(0, 0, W, H);
+		var imgData = img.data;
+		var target_rgb = HELPER.hex2rgb(target);
+		var target_hsl = HELPER.rgbToHsl(target_rgb.r, target_rgb.g, target_rgb.b);
+		var target_normalized = HELPER.hslToRgb(target_hsl[0], target_hsl[1], 0.5);
+		
+		var replacement_rgb = HELPER.hex2rgb(replacement);
+		var replacement_hsl = HELPER.rgbToHsl(replacement_rgb.r, replacement_rgb.g, replacement_rgb.b);
+		
+		for (var i = 0; i < imgData.length; i += 4) {
+			if (imgData[i + 3] == 0)
+				continue;	//transparent
+
+			if(advanced_mode == false){
+				//simple replace
+				
+				//calculate difference from requested color, and change alpha
+				var diff = (Math.abs(imgData[i] - target_rgb.r) + Math.abs(imgData[i + 1] - target_rgb.g) + Math.abs(imgData[i + 2] - target_rgb.b) ) / 3;
+				if(diff > power)
+					continue;
+				
+				imgData[i] = replacement_rgb.r;
+				imgData[i + 1] = replacement_rgb.g;
+				imgData[i + 2] = replacement_rgb.b;
+				if(alpha < 255)
+					imgData[i + 3] = alpha;
+			}
+			else{
+				//advanced replace using HSL
+				
+				var hsl = HELPER.rgbToHsl(imgData[i], imgData[i+1], imgData[i+2]);
+				var normalized = HELPER.hslToRgb(hsl[0], hsl[1], 0.5);
+				var diff = (Math.abs(normalized[0] - target_normalized[0]) + Math.abs(normalized[1] - target_normalized[1]) + Math.abs(normalized[2] - target_normalized[2]) ) / 3;
+				if(diff > power)
+					continue;
+				
+				//change to new color with exiting luminance
+				var replacement_normalized = HELPER.hslToRgb(replacement_hsl[0], replacement_hsl[1], hsl[2] * (replacement_hsl[2]*255) / 120);
+				
+				imgData[i] = replacement_normalized[0];
+				imgData[i + 1] = replacement_normalized[1];
+				imgData[i + 2] = replacement_normalized[2];
+				if(alpha < 255)
+					imgData[i + 3] = alpha;
+			}
+		}
+		context.putImageData(img, 0, 0);
 	};
 }

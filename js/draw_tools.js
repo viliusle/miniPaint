@@ -1,4 +1,4 @@
-/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, EL, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
+/* global MAIN, HELPER, LAYER, EDIT, POP, GUI, EVENTS, IMAGE, EL, fx, ImageFilters, sketchy_brush, shaded_brush, chrome_brush, BezierCurveBrush */
 /* global WIDTH, HEIGHT, COLOR, canvas_active, canvas_front */
 
 var DRAW = new DRAW_TOOLS_CLASS();
@@ -39,6 +39,11 @@ function DRAW_TOOLS_CLASS() {
 	 * image data for cloning tool
 	 */
 	var clone_data = false;
+	
+	/**
+	 * fx library object
+	 */
+	var fx_filter = false;
 
 	//credits to Victor Haydin
 	this.toolFiller = function (context, W, H, x, y, color_to, sensitivity, anti_aliasing) {
@@ -260,7 +265,18 @@ function DRAW_TOOLS_CLASS() {
 
 		if (type == 'click') {
 			EDIT.save_state();
+			
+			canvas_active().beginPath();
+			canvas_active().lineWidth = size;
+			canvas_active().lineCap = 'round';
+			canvas_active().lineJoin = 'round';		
+			if (ALPHA < 255)
+				canvas_active().strokeStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
+			else
+				canvas_active().strokeStyle = "rgba(255, 255, 255, 1)";
+			
 			if (is_circle == false) {
+				//rectangle
 				canvas_active().save();
 				canvas_active().globalCompositeOperation = 'destination-out';
 				canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 + ")";
@@ -268,6 +284,9 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().restore();
 			}
 			else {
+				//circle
+				canvas_active().save();
+				
 				if (strict == false) {
 					var radgrad = canvas_active().createRadialGradient(
 						mouse.x, mouse.y, size / 8,
@@ -277,8 +296,7 @@ function DRAW_TOOLS_CLASS() {
 				}
 
 				//set Composite
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
+					canvas_active().globalCompositeOperation = 'destination-out';
 				if (strict == true)
 					canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 + ")";
 				else
@@ -289,44 +307,30 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().restore();
 			}
 		}
-		else if (type == 'drag') {
-			if (is_circle == false) {
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
+		else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
+			canvas_active().save();
+			
+			if (strict == false && is_circle == true) {
+				var radgrad = canvas_active().createRadialGradient(
+					mouse.x, mouse.y, size / 10,
+					mouse.x, mouse.y, size / 2);
 				if (ALPHA < 255)
-					canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
+					radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")");
 				else
-					canvas_active().fillStyle = COLOR;
-				canvas_active().fillRect(mouse.x - Math.ceil(size / 2) + 1, mouse.y - Math.ceil(size / 2) + 1, size, size);
-				canvas_active().restore();
+					radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
+				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+				canvas_active().strokeStyle = radgrad;
 			}
-			else {
-				if (strict == false) {
-					var radgrad = canvas_active().createRadialGradient(
-						mouse.x, mouse.y, size / 10,
-						mouse.x, mouse.y, size / 2);
-					if (ALPHA < 255)
-						radgrad.addColorStop(0, "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")");
-					else
-						radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
-					radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
-				}
-				//set Composite
-				canvas_active().save();
-				canvas_active().globalCompositeOperation = 'destination-out';
-				if (strict == true) {
-					if (ALPHA < 255)
-						canvas_active().fillStyle = "rgba(255, 255, 255, " + ALPHA / 255 / 10 + ")";
-					else
-						canvas_active().fillStyle = COLOR;
-				}
-				else
-					canvas_active().fillStyle = radgrad;
-				canvas_active().beginPath();
-				canvas_active().arc(mouse.x, mouse.y, size / 2, 0, Math.PI * 2, true);
-				canvas_active().fill();
-				canvas_active().restore();
-			}
+			
+			canvas_active().save();
+			canvas_active().globalCompositeOperation = 'destination-out';
+
+			canvas_active().beginPath();
+			canvas_active().moveTo(mouse.last_x, mouse.last_y);
+			canvas_active().lineTo(mouse.x, mouse.y);
+			canvas_active().stroke();
+
+			canvas_active().restore();
 			
 			//show size
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -565,6 +569,10 @@ function DRAW_TOOLS_CLASS() {
 				'Text', 
 				function (user_response) {
 					EDIT.save_state();
+					var trim_details = IMAGE.trim_info(canvas_active(true));
+					if (trim_details.empty == false) {
+						LAYER.layer_add();
+					}
 					text = user_response.text.split("\n");
 					for (var i in text) {
 						user_response.text = text[i];
@@ -636,24 +644,10 @@ function DRAW_TOOLS_CLASS() {
 		//3d
 		if (dpth > 0) {
 			canvas.fillStyle = HELPER.darkenColor(COLOR, -30);
-			alpha_tmp = ALPHA;
-			if (alpha_tmp < 255)
-				alpha_tmp /= 10;
-
-			color_rgb.r -= 50;
-			color_rgb.g -= 50;
-			color_rgb.b -= 50;
-			if (color_rgb.r < 0)
-				color_rgb.r *= -1;
-			if (color_rgb.g < 0)
-				color_rgb.g *= -1;
-			if (color_rgb.b < 0)
-				color_rgb.b *= -1;
-
-			canvas.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + alpha_tmp / 255 + ")";
+			//canvas.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 			for (cnt = 0; cnt < dpth; cnt++)
 				canvas.fillText(text, xx + dx * cnt, yy + letters_height + dy * cnt);
-			color_rgb = HELPER.hex2rgb(COLOR);
+			//color_rgb = HELPER.hex2rgb(COLOR);
 		}
 
 		//main text
@@ -770,6 +764,7 @@ function DRAW_TOOLS_CLASS() {
 		var brush_type = GUI.action_data().attributes.type;
 		var color_rgb = HELPER.hex2rgb(COLOR);
 		var size = GUI.action_data().attributes.size;
+		var original_size = GUI.action_data().attributes.size;
 
 		if (type == 'click')
 			EDIT.save_state();
@@ -792,10 +787,10 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.lineJoin = 'round';
 				}
 				
-				canvas_front.beginPath();
+				/*canvas_front.beginPath();
 				canvas_front.arc(mouse.x, mouse.y, GUI.action_data().attributes.size / 2, 0, 2 * Math.PI, false);
 				canvas_front.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-				canvas_front.fill();
+				canvas_front.fill();*/
 
 				//blur
 				canvas_active().shadowBlur = 0;
@@ -805,6 +800,17 @@ function DRAW_TOOLS_CLASS() {
 				}
 			}
 			else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
+				
+				//detect line size
+				var max_speed = 20;
+				var power = 0.7; //max 1, how much speed reduce size, 1 means reduce to 0
+				
+				var new_size = original_size - original_size / max_speed * mouse.speed_average * power;
+				new_size = Math.max(new_size, original_size/4);
+				new_size = Math.round(new_size);
+				canvas_front.lineWidth = new_size;		
+				canvas_active().lineWidth = new_size;
+				
 				if (ALPHA == 255)
 					canvas_active().beginPath();
 				canvas_active().moveTo(mouse.last_x, mouse.last_y);
@@ -1008,16 +1014,11 @@ function DRAW_TOOLS_CLASS() {
 			if (GUI.action_data().attributes.radial == false) {
 				//linear
 				canvas_front.rect(0, 0, WIDTH, HEIGHT);
-				if (mouse.x > mouse.click_x) {
-					var grd = canvas_front.createLinearGradient(
-						mouse.click_x, mouse.click_y,
-						mouse.x, mouse.y);
-				}
-				else {
-					var grd = canvas_front.createLinearGradient(
-						mouse.x, mouse.y,
-						mouse.click_x, mouse.click_y);
-				}
+				
+				var grd = canvas_front.createLinearGradient(
+					mouse.click_x, mouse.click_y,
+					mouse.x, mouse.y);
+				
 				grd.addColorStop(0, "rgba(" + color1.r + ", " + color1.g + ", " + color1.b + ", " + color1.a / 255 + ")");
 				grd.addColorStop(1, "rgba(" + color2.r + ", " + color2.g + ", " + color2.b + ", " + color2.a / 255 + ")");
 				canvas_front.fillStyle = grd;
@@ -1052,16 +1053,10 @@ function DRAW_TOOLS_CLASS() {
 			if (GUI.action_data().attributes.radial == false) {
 				//linear
 				canvas_active().rect(0, 0, WIDTH, HEIGHT);
-				if (mouse.x > mouse.click_x) {
-					var grd = canvas_active().createLinearGradient(
-						mouse.click_x, mouse.click_y,
-						mouse.x, mouse.y);
-				}
-				else {
-					var grd = canvas_active().createLinearGradient(
-						mouse.x, mouse.y,
-						mouse.click_x, mouse.click_y);
-				}
+				var grd = canvas_active().createLinearGradient(
+					mouse.click_x, mouse.click_y,
+					mouse.x, mouse.y);
+				
 				grd.addColorStop(0, "rgba(" + color1.r + ", " + color1.g + ", " + color1.b + ", " + color1.a / 255 + ")");
 				grd.addColorStop(1, "rgba(" + color2.r + ", " + color2.g + ", " + color2.b + ", " + color2.a / 255 + ")");
 				canvas_active().fillStyle = grd;
@@ -1162,6 +1157,7 @@ function DRAW_TOOLS_CLASS() {
 		var size = GUI.action_data().attributes.size;
 		var power = GUI.action_data().attributes.power * 2.5;
 
+		canvas_active().save();
 		if (type == 'click') {
 			EDIT.save_state();
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1200,12 +1196,11 @@ function DRAW_TOOLS_CLASS() {
 		}
 		else if (type == 'release') {
 			canvas_active().globalCompositeOperation = "soft-light";
-			canvas_active().shadowBlur = 5;
 			canvas_active().drawImage(document.getElementById("canvas_front"), 0, 0);
 			canvas_active().globalCompositeOperation = "source-over";
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			EVENTS.clear_front_on_release = true;
-
+			
 			//if mouse was not moved
 			if (mouse.click_x == mouse.x && mouse.click_y == mouse.y) {
 				canvas_active().globalCompositeOperation = "soft-light";
@@ -1217,11 +1212,9 @@ function DRAW_TOOLS_CLASS() {
 				else {
 					canvas_active().fillStyle = "rgba(255, 255, 255, " + power / 255 + ")";
 				}
-				canvas_active().shadowBlur = 5;
 				canvas_active().fill();
 				canvas_active().globalCompositeOperation = "source-over";
 			}
-			canvas_active().shadowBlur = 0;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.restore();
 		}
@@ -1229,6 +1222,7 @@ function DRAW_TOOLS_CLASS() {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			EL.circle(canvas_front, mouse.x, mouse.y, size);
 		}
+		canvas_active().restore();
 	};
 	this.crop_tool = function (type, mouse, event) {
 		if (mouse.click_valid == false)
@@ -1556,15 +1550,25 @@ function DRAW_TOOLS_CLASS() {
 				EDIT.save_state();
 				
 				if (this.select_square_action == 'move') {
+					//move selected area
 					if (this.select_data != false) {
-						select_data_tmp = canvas_active().getImageData(this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h);
+						canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+						canvas_front.drawImage(canvas_active(true), 0, 0);
 						canvas_active().clearRect(this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h);
-						canvas_active().putImageData(select_data_tmp, mouse.x - mouse.click_x + this.select_data.x, mouse.y - mouse.click_y + this.select_data.y);
+						canvas_active().drawImage(
+							document.getElementById("canvas_front"),
+							this.select_data.x, this.select_data.y,
+							this.select_data.w, this.select_data.h,
+							mouse.x - mouse.click_x + this.select_data.x, mouse.y - mouse.click_y + this.select_data.y,
+							this.select_data.w, this.select_data.h);
+							
+						canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					}
 					this.select_data.x += mouse.x - mouse.click_x;
 					this.select_data.y += mouse.y - mouse.click_y;
 				}
 				else {
+					//resize selected area
 					var s_x = this.select_data.x;
 					var s_y = this.select_data.y;
 					var d_x = this.select_data.w;
@@ -1632,5 +1636,39 @@ function DRAW_TOOLS_CLASS() {
 			if (mouse_y > y - Math.round(size) && mouse_y < y + Math.round(size))
 				return true;
 		return false;
+	};
+	
+	this.bulge_pinch_tool = function (type, mouse, event) {
+		if (mouse.valid == false)
+			return true;
+		
+		//make sure FX lib loaded
+		if(fx_filter == false){
+			fx_filter = fx.canvas();
+		}
+		
+		var strength = GUI.action_data().attributes.size / 100;
+		if(strength > 1)
+			strength = 1;
+		var radius = GUI.action_data().attributes.radius;
+		var bulge = GUI.action_data().attributes.bulge;
+		if(bulge == false)
+			strength = -1 * strength;
+
+		if (type == 'click') {
+			EDIT.save_state();
+			
+			var texture = fx_filter.texture(canvas_active(true));
+			fx_filter.draw(texture).bulgePinch(mouse.x, mouse.y, radius, strength).update();	//effect
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_active().drawImage(fx_filter, 0, 0);
+			GUI.zoom();
+		}
+		if (type == 'move') {
+			var texture = fx_filter.texture(canvas_active(true));
+			fx_filter.draw(texture).bulgePinch(mouse.x, mouse.y, radius, strength).update();	//effect
+			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.drawImage(fx_filter, 0, 0);
+		}
 	};
 }

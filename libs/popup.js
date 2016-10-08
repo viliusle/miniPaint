@@ -1,5 +1,5 @@
-/* global MAIN, HELPER, POP, LAYER, EFFECTS, GUI */
-/* global canvas_front, WIDTH, HEIGHT */
+/* global MAIN, HELPER, POP, LAYER, EFFECTS, GUI, HELP */
+/* global canvas_front, WIDTH, HEIGHT, LANG */
 
 var POP = new popup();
 
@@ -52,10 +52,10 @@ function popup() {
 	 * show popup window.
 	 * used strings: "Ok", "Cancel", "Preview"
 	 * 
-	 * @param string title
-	 * @param function handler
-	 * @param function preview_handler
-	 * @param function onload_handler
+	 * @param {string} title
+	 * @param {function} handler
+	 * @param {function} preview_handler
+	 * @param {function} onload_handler
 	 */
 	this.show = function (title, handler, preview_handler, onload_handler) {
 		POP.id = HELPER.getRandomInt(0, 999999999);
@@ -122,7 +122,7 @@ function popup() {
 			var parameter = parameters[i];
 			
 			html += '<tr id="popup-tr-'+parameters[i].name+'">';
-			if (title != 'Error')
+			if (title != 'Error' && parameter.title != undefined)
 				html += '<td style="font-weight:bold;padding-right:3px;width:130px;" class="trn">' + parameter.title + '</td>';
 			if (parameter.name != undefined) {
 				if (parameter.values != undefined) {
@@ -160,8 +160,15 @@ function popup() {
 								ch = 'checked="checked"';
 							if (onchange == '' && preview_handler != undefined)
 								onchange = ' onchange="POP.view();" ';
+							
+							var title = parameter.values[j];
+							var parts = parameter.values[j].split(" - ");
+							if(parts.length > 1){
+								title = parts[0] + ' - <span class="trn">'+parts[1]+'</span>';
+							}
+							
 							html += '<input type="radio" ' + onchange + ' ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + parameter.values[j] + '</label>';
+							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;
@@ -222,6 +229,10 @@ function popup() {
 			else if (parameter.html != undefined) {
 				//html
 				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">' + parameter.html + '</td>';
+			}
+			else if (parameter.title == undefined) {
+				//gap
+				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2"></td>';
 			}
 			else {
 				//locked fields without name

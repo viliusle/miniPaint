@@ -8,6 +8,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="styles/styles.css" />
 <link rel="shortcut icon" href="img/favicon.png" />
+<!-- Google -->
+<meta itemprop="name" content="miniPaint" />
+<meta itemprop="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+<meta itemprop="image" content="img/preview.jpg" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="miniPaint" />
+<meta name="twitter:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+<meta name="twitter:image" content="img/preview.jpg" />
+<meta name="twitter:image:alt" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+<!-- Facebook, Pinterest -->
+<meta property="og:title" content="miniPaint" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://viliusle.github.io/miniPaint/" />
+<meta property="og:image" content="img/preview.jpg" />
+<meta property="og:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+<meta property="og:site_name" content="miniPaint" />
 </head>
 <body>
 <div id="wrapper">
@@ -45,18 +62,18 @@
 			</div>
 		</div>
 		<div class="block" id="mouse_info">
-			<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Size:</span>
+			<span class="trn mouse_info_title">Size:</span>
 			<span id="mouse_info_size"></span><br />
 			
-			<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Mouse:</span>
+			<span class="trn mouse_info_title">Mouse:</span>
 			<span id="mouse_info_mouse"></span><br />
 			
 			<div style="display:none;" id="mouse_info_selected">
 				<br />
-				<span style="font-weight:bold;min-width:45px;display:block;float:left;">XY:</span>
+				<span class="mouse_info_title">XY:</span>
 				<span id="mouse_info_xy"></span><br />
 
-				<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Area:</span>
+				<span class="trn mouse_info_title">Area:</span>
 				<span id="mouse_info_area"></span><br />
 			</div>
 		</div>
@@ -76,18 +93,18 @@
 		<div id="preview">
 			<canvas id="canvas_preview"></canvas>
 			<div style="margin-top:105px;padding-left:5px;">
-				<input onclick="GUI.zoom(+1, true);" style="width:30px;" class="layer_add" type="button" value="+" />
-				<input onclick="GUI.zoom(-1, true);" style="width:30px;" class="layer_add" type="button" value="-" />
-				<div style="display: inline-block;margin: 5px 0px;">
-					<b class="trn">Zoom</b>: <span id="zoom_nr">100</span>%
-				</div>
-				<input style="width:95%;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value, true);" /> 
+				<input title="Zoom out" onclick="GUI.zoom(-1, true);" style="width:25px;" class="layer_add" type="button" value="-" />
+				<input title="Reset zoom level" onclick="GUI.zoom(100, true);" class="layer_add" id="zoom_nr" type="button" value="100%" />
+				<input title="Zoom in" onclick="GUI.zoom(+1, true);" style="width:25px;" class="layer_add" type="button" value="+" />
+				<input title="Fit" onclick="GUI.zoom_auto();" class="layer_add" type="button" value="Fit" />
+
+				<input style="width:95%;margin-top:5px;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value, true);" /> 
 			</div>
 		</div>
 		<div id="layers_base">
-			<b class="trn">Layers</b> <a title="Add new layer" class="layer_add" onclick="LAYER.layer_add();return false;" href="#">+</a>
-			<a title="Move down" onclick="LAYER.move_layer('down');return false;" class="layers_arrow" href="#">&darr;</a>
-			<a title="Move up" onclick="LAYER.move_layer('up');return false;" class="layers_arrow" href="#">&uarr;</a>
+			<b class="trn">Layers</b> <a title="Add new layer" class="layer_add" onclick="EDIT.save_state();LAYER.layer_add();return false;" href="#">+</a>
+			<a title="Move down" onclick="EDIT.save_state();LAYER.move_layer('down');return false;" class="layers_arrow" href="#">&darr;</a>
+			<a title="Move up" onclick="EDIT.save_state();LAYER.move_layer('up');return false;" class="layers_arrow" href="#">&uarr;</a>
 			<div style="margin-top:5px;" id="layers"></div>
 		</div>
 	</div>
@@ -105,6 +122,9 @@
 			<li><a class="trn dots" onclick="call_menu(FILE, 'file_open');" href="#">Open</a></li>
 			<li><a class="trn dots" onclick="call_menu(FILE, 'file_save');" href="#">Save as</a></li>
 			<li><a class="trn dots" onclick="call_menu(FILE, 'file_print');" href="#">Print</a></li>
+			<li><div class="mid-line"></div></li>
+			<li><a class="trn dots" onclick="call_menu(FILE, 'file_quicksave');" href="#">Quick save</a></li>
+			<li><a class="trn dots" onclick="call_menu(FILE, 'file_quickload');" href="#">Quick load</a></li>
 		</ul>
 	</li>
 	<li>
@@ -130,11 +150,11 @@
 			<li class="more">
 				<a class="trn" href="#">Zoom</a>
 				<ul>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_in');" href="#">Zoom In</a></li>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_out');" href="#">Zoom Out</a></li>
-				<li><div class="mid-line"></div></li>
-				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_original');" href="#">Original size</a></li>
-				<li><a class="trn dots" onclick="call_menu(IMAGE, 'zoom_auto');" href="#">Fit window</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_in');" href="#">Zoom In</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_out');" href="#">Zoom Out</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_original');" href="#">Original size</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'zoom_auto');" href="#">Fit window</a></li>
 				</ul>
 			</li>
 			<li><div class="mid-line"></div></li>
@@ -142,16 +162,16 @@
 			<li class="more">
 				<a class="trn" href="#">Rotate</a>
 				<ul>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_left');" href="#">Left</a></li>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_right');" href="#">Right</a></li>
-				<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_rotate');" href="#">Rotation</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_left');" href="#">Left</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'image_rotate_right');" href="#">Right</a></li>
+					<li><a class="trn dots" onclick="call_menu(IMAGE, 'image_rotate');" href="#">Rotation</a></li>
 				</ul>
 			</li>
 			<li class="more">
 				<a class="trn" href="#">Flip</a>
 				<ul>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'image_vflip');" href="#">Vertical</a></li>
-				<li><a class="trn" onclick="call_menu(IMAGE, 'image_hflip');" href="#">Horizontal</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'image_vflip');" href="#">Vertical</a></li>
+					<li><a class="trn" onclick="call_menu(IMAGE, 'image_hflip');" href="#">Horizontal</a></li>
 				</ul>
 			</li>
 			<li><div class="mid-line"></div></li>
@@ -169,7 +189,7 @@
 		<a class="icon layer trn" href="#">Layer</a>
 		<ul>
 			<li><a class="trn" onclick="call_menu(LAYER, 'layer_new');" href="#">New</a></li>
-			<li><a class="trn" onclick="call_menu(LAYER, 'layer_dublicate');" href="#">Dublicate</a></li>
+			<li><a class="trn" onclick="call_menu(LAYER, 'layer_duplicate');" href="#">Duplicate</a></li>
 			<li><a class="trn" onclick="call_menu(LAYER, 'layer_show_hide');" href="#">Show / Hide</a></li>
 			<li><a class="trn" onclick="call_menu(LAYER, 'layer_crop');" href="#">Crop Selection</a>
 			<li><a class="trn" onclick="call_menu(LAYER, 'layer_delete');" href="#">Delete</a></li>
@@ -177,8 +197,8 @@
 			<li class="more">
 				<a class="trn" href="#">Move</a>
 				<ul>
-				<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_up');" href="#">Up</a></li>
-				<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_down');" href="#">Down</a></li>
+					<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_up');" href="#">Up</a></li>
+					<li><a class="trn" onclick="call_menu(LAYER, 'layer_move_down');" href="#">Down</a></li>
 				</ul>
 			</li>
 			<li><a class="trn dots" onclick="call_menu(LAYER, 'layer_opacity');" href="#">Opacity</a></li>
@@ -200,10 +220,10 @@
 			<li class="more">
 				<a class="trn" href="#">Blur</a>
 				<ul>
-				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_BoxBlur');" href="#">Blur-Box</a>
-				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_GaussianBlur');" href="#">Blur-Gaussian</a>
-				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_StackBlur');" href="#">Blur-Stack</a>
-				<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_zoomblur');" href="#">Blur-Zoom</a>
+					<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_BoxBlur');" href="#">Blur-Box</a>
+					<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_GaussianBlur');" href="#">Blur-Gaussian</a>
+					<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_StackBlur');" href="#">Blur-Stack</a>
+					<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_zoomblur');" href="#">Blur-Zoom</a>
 				</ul>
 			</li>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_bulge_pinch');" href="#">Bulge/Pinch</a>
@@ -215,20 +235,18 @@
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Edge');" href="#">Edge</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Emboss');" href="#">Emboss</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Enrich');" href="#">Enrich</a>
-			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Gamma');" href="#">Gamma</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Grains');" href="#">Grains</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_heatmap');" href="#">Heatmap</a>
-			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_HSLAdjustment');" href="#">HSL Adjustment</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_jpg_vintage');" href="#">JPG Compression</a></li>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Mosaic');" href="#">Mosaic</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Oil');" href="#">Oil</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_perspective');" href="#">Perspective</a>
-			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Posterize');" href="#">Posterize</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Sepia');" href="#">Sepia</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Sharpen');" href="#">Sharpen</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_Solarize');" href="#">Solarize</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_tilt_shift');" href="#">Tilt Shift</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_vignette');" href="#">Vignette</a>
+			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_vibrance');" href="#">Vibrance</a>
 			<li><a class="trn dots" onclick="call_menu(EFFECTS, 'effects_vintage');" href="#">Vintage</a>
 		</ul>
 	</li>
@@ -240,6 +258,7 @@
 			<li><a class="trn" onclick="call_menu(TOOLS, 'tools_keypoints');" href="#">Key-points</a></li>
 			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_color2alpha');" href="#">Color to Alpha</a></li>
 			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_color_zoom');" href="#">Color Zoom</a></li>
+			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_replace_color');" href="#">Replace Color</a></li>
 			<li><a class="trn dots" onclick="call_menu(TOOLS, 'tools_restore_alpha');" href="#">Restore alpha</a></li>
 
 		</ul>
@@ -252,11 +271,19 @@
 			<li class="more">
 				<a class="trn" href="#">Language</a>
 				<ul>
-				<li><a onclick="call_menu(HELP, 'help_translate', 'zh');" href="#">简体中文）</a>
-				<li><a onclick="call_menu(HELP, 'help_translate', 'en');" href="#">English</a>
-				<li><a onclick="call_menu(HELP, 'help_translate', 'it');" href="#">Italiano</a>
-				<li><a onclick="call_menu(HELP, 'help_translate', 'lt');" href="#">Lietuvių</a>
-				<li><a onclick="call_menu(HELP, 'help_translate', 'es');" href="#">Español</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'en');" href="#">English</a>
+					<li><div class="mid-line"></div></li>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'zh');" href="#">简体中文）</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'es');" href="#">Español</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'fr');" href="#">French</a>	
+					<li><a onclick="call_menu(HELP, 'help_translate', 'de');" href="#">German</a>	
+					<li><a onclick="call_menu(HELP, 'help_translate', 'it');" href="#">Italiano</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'ja');" href="#">Japanese</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'ko');" href="#">Korean</a>		
+					<li><a onclick="call_menu(HELP, 'help_translate', 'lt');" href="#">Lietuvių</a>
+					<li><a onclick="call_menu(HELP, 'help_translate', 'pt');" href="#">Portuguese</a>	
+					<li><a onclick="call_menu(HELP, 'help_translate', 'ru');" href="#">Russian</a>	
+					<li><a onclick="call_menu(HELP, 'help_translate', 'tr');" href="#">Turkish</a>	
 				</ul>
 			</li>
 			<li><div class="mid-line"></div></li>
@@ -272,9 +299,9 @@
 <script src="vendor/jquery/jquery-migrate.js"></script>
 <script src="vendor/menu/menu.min.js"></script>
 <script src="vendor/imagefilters/imagefilters.min.js"></script>
-<script src="vendor/glfx.js"></script>
+<script src="vendor/glfx/glfx.js"></script>
 <script src="vendor/exif/exif.min.js"></script>
-<script src="vendor/harmony.js"></script>
+<script src="vendor/harmony/harmony.min.js"></script>
 <script src="libs/vintage.js"></script>
 <script src="libs/sift.js"></script>
 <script src="js/elements.js"></script>
@@ -283,11 +310,19 @@
 <script src="vendor/file-saver/canvas-toBlob.js"></script>
 <script src="vendor/file-saver/FileSaver.min.js"></script>
 <script src="vendor/hqx/hqx.min.js"></script>
-<script src="vendor/jquery.translate.js"></script>
+<script src="vendor/translate/jquery.translate.min.js"></script>
+<script src="vendor/hermite-resize/hermite.js"></script>
 
+<script src="languages/de.js"></script>
 <script src="languages/es.js"></script>
+<script src="languages/fr.js"></script>
 <script src="languages/it.js"></script>
+<script src="languages/ja.js"></script>
+<script src="languages/ko.js"></script>
 <script src="languages/lt.js"></script>
+<script src="languages/pt.js"></script>
+<script src="languages/ru.js"></script>
+<script src="languages/tr.js"></script>
 <script src="languages/zh.js"></script>
 
 <script src="js/events.js"></script>

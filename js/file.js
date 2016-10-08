@@ -1,4 +1,4 @@
-/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI */
+/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW */
 /* global SAVE_TYPES */
 
 var FILE = new FILE_CLASS();
@@ -35,24 +35,39 @@ function FILE_CLASS() {
 		];
 	//new
 	this.file_new = function () {
+		var w = WIDTH;
+		var h = HEIGHT;
 		var resolutions = ['Custom'];
 		for(var i in GUI.common_dimensions){
-			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]);
+			resolutions.push(GUI.common_dimensions[i][0]+'x'+GUI.common_dimensions[i][1]+' - '+GUI.common_dimensions[i][2]);
 		}
 		
-		POP.add({name: "width", title: "Width:", value: WIDTH});
-		POP.add({name: "height", title: "Height:", value: HEIGHT});
-		POP.add({name: "transparency", title: "Transparent:", values: ['Yes', 'No']});
+		var save_resolution_cookie = HELPER.getCookie('save_resolution');
+		if(save_resolution_cookie == '')
+			save_resolution = 'No';
+		else{
+			save_resolution = 'Yes';
+			var last_resolution = JSON.parse(save_resolution_cookie);
+			w = parseInt(last_resolution[0]);
+			h = parseInt(last_resolution[1]);
+		}
+		
+		POP.add({name: "width", title: "Width:", value: w});
+		POP.add({name: "height", title: "Height:", value: h});
 		POP.add({name: "resolution", title: "Resolution:", values: resolutions});
+		POP.add({name: "transparency", title: "Transparent:", values: ['Yes', 'No']});
+		POP.add({name: "save_resolution", title: "Save resolution:", value: save_resolution, values: ['Yes', 'No']});
 		POP.show(
 			'New file...', 
 			function (response) {
 				var width = parseInt(response.width);
 				var height = parseInt(response.height);
 				var resolution = response.resolution;
+				var save_resolution = response.save_resolution;
 				
 				if(resolution != 'Custom'){
-					var dim = resolution.split("x");
+					var dim = resolution.split(" ");
+					dim = dim[0].split("x");
 					width = dim[0];
 					height = dim[1];
 				}
@@ -65,12 +80,20 @@ function FILE_CLASS() {
 				WIDTH = width;
 				HEIGHT = height;
 				MAIN.init();
+				
+				if(save_resolution == 'No')
+					save_resolution = '';
+				else {
+					save_resolution = JSON.stringify([WIDTH, HEIGHT]);
+				}				
+				HELPER.setCookie('save_resolution', save_resolution);
 			}
 		);
 	};
 
 	//open
 	this.file_open = function () {
+		EDIT.save_state();
 		this.open();
 	};
 
@@ -164,9 +187,6 @@ function FILE_CLASS() {
 		fname = user_response.name;
 		var tempCanvas = document.createElement("canvas");
 		var tempCtx = tempCanvas.getContext("2d");
-		var save_mode_for_ie = false;
-		if(window.Blob && window.navigator.msSaveOrOpenBlob && window.FileReader)
-			save_mode_for_ie = true;
 		tempCanvas.width = WIDTH;
 		tempCanvas.height = HEIGHT;
 
@@ -175,9 +195,9 @@ function FILE_CLASS() {
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
 		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
-			HELPER.setCookie('save_default', 'png', 30);
+			HELPER.setCookie('save_default', 'png');
 		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
-			HELPER.setCookie('save_default', 'jpg', 30);
+			HELPER.setCookie('save_default', 'jpg');
 
 		//detect type
 		var parts = user_response.type.split(" ");
@@ -227,7 +247,7 @@ function FILE_CLASS() {
 				fname = fname + ".png";
 			
 			tempCanvas.toBlob(function(blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			});
 		}
 		else if (user_response.type == 'JPG') {
@@ -241,7 +261,7 @@ function FILE_CLASS() {
 			quality = quality / 100;
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, "image/jpeg", quality);
 		}
 		else if (user_response.type == 'WEBP') {
@@ -255,7 +275,7 @@ function FILE_CLASS() {
 				return false;		
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, data_header);
 		}
 		else if (user_response.type == 'BMP') {
@@ -269,7 +289,7 @@ function FILE_CLASS() {
 				return false;
 			
 			tempCanvas.toBlob(function (blob) {
-			    saveAs(blob, fname);
+				saveAs(blob, fname);
 			}, data_header);
 		}
 		else if (user_response.type == 'JSON') {
@@ -277,38 +297,8 @@ function FILE_CLASS() {
 			if (HELPER.strpos(fname, '.json') == false)
 				fname = fname + ".json";
 			
-			var export_data = {};
-
-			//basic info
-			export_data.info = {
-				width: WIDTH,
-				height: HEIGHT,
-			};
-
-			//layers
-			export_data.layers = [];
-			for(var i = LAYER.layers.length-1; i >=0; i--){
-				var layer = {
-					name:LAYER.layers[i].name,
-					title:LAYER.layers[i].title, 
-					visible: 1,
-					opacity: LAYER.layers[i].opacity,
-				};
-				if (LAYER.layers[i].visible == false)
-					layer.visible = 0;
-				export_data.layers.push(layer);
-			}
-
-			//image data
-			export_data.image_data = [];
-			for(var i = LAYER.layers.length-1; i >=0; i--){
-				var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
-				export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
-			}
-
-			var data_json = JSON.stringify(export_data, null, 6);
-			delete export_data;
-
+			var data_json = this.export_as_json();
+			
 			var blob = new Blob([data_json], {type: "text/plain"});
 			//var data = window.URL.createObjectURL(blob); //html5
 			saveAs(blob, fname);
@@ -321,7 +311,7 @@ function FILE_CLASS() {
 		
 		if (data_header != actualType && data_header != "text/plain") {
 			//error - no support
-			POP.add({title: "Error:", value: 'Your browser do not support this format.'});
+			POP.add({title: "Error:", value: 'Your browser does not support this format.'});
 			POP.show('Sorry', '');
 			delete data;
 			return false;
@@ -356,8 +346,44 @@ function FILE_CLASS() {
 			FILE.file_info.general.Size = HELPER.number_format(object.size/1000, 2)+' KB';
 		if(object.type != undefined)
 			FILE.file_info.general.Type = object.type;
-		if(object.lastModifiedDate != undefined)
-			FILE.file_info.general['Last modified'] = object.lastModifiedDate;
+		if(object.lastModified != undefined)
+			FILE.file_info.general['Last modified'] = '___'+new Date(object.lastModified);
+	};
+	
+	this.export_as_json = function(){
+		var export_data = {};
+
+		//basic info
+		export_data.info = {
+			width: WIDTH,
+			height: HEIGHT,
+		};
+
+		//layers
+		export_data.layers = [];
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			var layer = {
+				name:LAYER.layers[i].name,
+				title:LAYER.layers[i].title, 
+				visible: 1,
+				opacity: LAYER.layers[i].opacity,
+			};
+			if (LAYER.layers[i].visible == false)
+				layer.visible = 0;
+			export_data.layers.push(layer);
+		}
+
+		//image data
+		export_data.image_data = [];
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			var data_tmp = document.getElementById(LAYER.layers[i].name).toDataURL("image/png");
+			export_data.image_data.push({name: LAYER.layers[i].name, data: data_tmp});
+		}
+
+		var data_json = JSON.stringify(export_data, null, 6);
+		delete export_data;
+
+		return data_json;	
 	};
 	
 	this.load_json = function (data) {
@@ -407,6 +433,55 @@ function FILE_CLASS() {
 			})(name, img);
 			img.src = data;
 		}
+	};
+	
+	this.file_quicksave = function(){
+		//save image data
+		var data_json = this.export_as_json();
+		if(data_json.length > 5000000){
+			POP.add({html: 'Sorry, image is too big, max 5 MB.'});
+			POP.show('Error', '');
+			return false;
+		}
+		localStorage.setItem('quicksave_data', data_json);
+		
+		//save settings
+		settings = {
+			color: COLOR,
+			active_tool: DRAW.active_tool,
+			zoom: GUI.ZOOM,
+		};
+		settings = JSON.stringify(settings);
+		localStorage.setItem('quicksave_settings', settings);
+	};
+	
+	this.file_quickload = function(){
+		//load image data
+		var json = localStorage.getItem('quicksave_data');
+		if(json == '' || json == null){
+			//nothing was found
+			return false;
+		}
+		this.load_json(json);
+		GUI.zoom_auto(true);
+		
+		//load settings
+		var settings = localStorage.getItem('quicksave_settings');
+		if(settings == '' || settings == null){
+			//nothing was found
+			return false;
+		}
+		settings = JSON.parse(settings);
+		
+		//load color
+		COLOR = settings.color;
+		GUI.sync_colors();
+		
+		//load active tool
+		GUI.action(settings.active_tool);
+		
+		//load zoom
+		GUI.zoom(settings.zoom, false);
 	};
 
 }

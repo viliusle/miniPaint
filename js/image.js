@@ -1,4 +1,4 @@
-/* global MAIN, EVENTS, LAYER, POP, HELPER, TOOLS, DRAW, GUI, EDIT */
+/* global MAIN, EVENTS, LAYER, POP, HELPER, TOOLS, DRAW, GUI, EDIT, FILE */
 /* global canvas_active, ImageFilters, WIDTH, HEIGHT, canvas_active, canvas_front */
 
 var IMAGE = new IMAGE_CLASS();
@@ -14,9 +14,12 @@ function IMAGE_CLASS() {
 	this.image_information = function () {
 		var colors = this.unique_colors_count(canvas_active(true));
 		colors = HELPER.number_format(colors, 0);
-
+		var pixels = WIDTH*HEIGHT;
+		pixels = HELPER.number_format(pixels, 0);
+		
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
+		POP.add({title: "Pixels:", value: pixels});
 		POP.add({title: "Unique colors:", value: colors});
 		
 		//show general data
@@ -151,15 +154,17 @@ function IMAGE_CLASS() {
 	this.image_colors = function () {
 		POP.add({name: "param1", title: "Brightness:", value: "0", range: [-100, 100]});
 		POP.add({name: "param2", title: "Contrast:", value: "0", range: [-100, 100]});
+		POP.add({});
 		POP.add({name: "param_red", title: "Red channel:", value: "0", range: [-255, 255]});
 		POP.add({name: "param_green", title: "Green channel:", value: "0", range: [-255, 255]});
 		POP.add({name: "param_blue", title: "Blue channel:", value: "0", range: [-255, 255]});
+		POP.add({});
 		POP.add({name: "param_h", title: "Hue:", value: "0", range: [-180, 180]});
 		POP.add({name: "param_s", title: "Saturation:", value: "0", range: [-100, 100]});
 		POP.add({name: "param_l", title: "Luminance:", value: "0", range: [-100, 100]});
 
 		POP.show(
-			'Brightness Contrast', 
+			'Color corrections', 
 			function (user_response) {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
@@ -219,38 +224,29 @@ function IMAGE_CLASS() {
 
 	//enchance colors
 	this.image_decrease_colors = function () {
-		POP.add({name: "param1", title: "Colors:", value: "10", range: [2, 256]});
-		POP.add({name: "param2", title: "Dithering:", values: ["No", "Yes"], });
+		POP.add({name: "param1", title: "Colors:", value: "10", range: [1, 256]});
 		POP.add({name: "param3", title: "Greyscale:", values: ["No", "Yes"], });
 		POP.show(
 			'Decrease colors', 
 			function (user_response) {
 				EDIT.save_state();
 				var param1 = parseInt(user_response.param1);
-				if (user_response.param2 == 'Yes')
-					param2 = true;
-				else
-					param2 = false;
 				if (user_response.param3 == 'Yes')
 					param3 = true;
 				else
 					param3 = false;
 
-				IMAGE.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param2, param3);
+				IMAGE.decrease_colors(canvas_active(true), canvas_active(true), WIDTH, HEIGHT, param1, param3);
 				GUI.zoom();
 			},
 			function (user_response, canvas_preview, w, h) {
 				var param1 = parseInt(user_response.param1);
-				if (user_response.param2 == 'Yes')
-					param2 = true;
-				else
-					param2 = false;
 				if (user_response.param3 == 'Yes')
 					param3 = true;
 				else
 					param3 = false;
 
-				IMAGE.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param2, param3);
+				IMAGE.decrease_colors(canvas_active(true), document.getElementById("pop_post"), w, h, param1, param3);
 			}
 		);
 	};
@@ -480,14 +476,15 @@ function IMAGE_CLASS() {
 			//scalling down - HQX not supported
 			user_response.mode = "Resample - Hermite";
 		}
-		
-		var time1 = Date.now();
-		var resize_type;
-		
+
+		var resize_type;		
 		if (user_response.mode == "Resample - Hermite") {
 			//Hermite resample - max quality
 			resize_type = 'Hermite';
-			this.resample_hermite(canvas_active(true), WIDTH, HEIGHT, width, height);
+			
+			var HERMITE = new Hermite_class();
+			HERMITE.resample_single(canvas_active(true), width, height);
+			
 			if (GUI.last_menu != 'layer_resize') {
 				WIDTH = width;
 				HEIGHT = height;
@@ -536,8 +533,6 @@ function IMAGE_CLASS() {
 			GUI.zoom();
 		}
 		
-		//console.log(resize_type + " resize: " + (Math.round(Date.now() - time1) / 1000) + " s");
-		
 		//sharpen after?
 		if (sharpen == 'Yes') {
 			var imageData = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
@@ -551,15 +546,17 @@ function IMAGE_CLASS() {
 	 * 
 	 * @param {HtmlElement} canvas
 	 * @param {boolean} trim_white
-	 * @param {boolean} include_white
 	 */
-	this.trim_info = function (canvas, trim_white, include_white) {
+	this.trim_info = function (canvas, trim_white) {
 		var top = 0;
 		var left = 0;
 		var bottom = 0;
 		var right = 0;
 		var img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
 		var imgData = img.data;
+		var empty = false;
+		if(trim_white == undefined)
+			trim_white = true;
 		//check top
 		main1:
 			for (var y = 0; y < img.height; y++) {
@@ -567,7 +564,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main1;
 			}
@@ -580,7 +577,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main2;
 			}
@@ -593,7 +590,7 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main3;
 			}
@@ -606,17 +603,24 @@ function IMAGE_CLASS() {
 				var k = ((y * (img.width * 4)) + (x * 4));
 				if (imgData[k + 3] == 0)
 					continue; //transparent 
-				if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 					continue; //white
 				break main4;
 			}
 			right++;
 		}
+		
+		if(top == canvas.height && left == canvas.width){
+			//canvas is empty
+			empty = true;
+		}
+		
 		return {
 			top: top,
 			left: left,
 			bottom: bottom,
-			right: right
+			right: right,
+			empty: empty,
 		};
 	};
 
@@ -734,7 +738,7 @@ function IMAGE_CLASS() {
 		LAYER.update_info_block();
 	};
 
-	this.decrease_colors = function (canvas_source, canvas_destination, W, H, colors, dithering, greyscale) {
+	this.decrease_colors = function (canvas_source, canvas_destination, W, H, colors, greyscale) {
 		var context = canvas_destination.getContext("2d");
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
@@ -795,6 +799,7 @@ function IMAGE_CLASS() {
 				}
 			}
 		}
+		palette = palette.slice(0, colors);
 
 		//change
 		var p_n = palette.length;
@@ -803,8 +808,7 @@ function IMAGE_CLASS() {
 				var k = ((j * (W * 4)) + (i * 4));
 				if (imgData[k + 3] == 0)
 					continue;	//transparent
-				var grey = Math.round(0.2126 * imgData_p[k] + 0.7152 * imgData_p[k + 1] + 0.0722 * imgData_p[k + 2]);
-
+				
 				//find closest color
 				var index1 = 0;
 				var min = 999999;
@@ -818,49 +822,9 @@ function IMAGE_CLASS() {
 					}
 				}
 
-				if (dithering == false) {
-					imgData[k] = palette[index1][0];
-					imgData[k + 1] = palette[index1][1];
-					imgData[k + 2] = palette[index1][2];
-				}
-				else {
-					//dithering
-					if (diff1 >= 10) {
-						//find second close color
-						var index2;
-						var min2 = 256 * 3;
-						var diff2;
-						for (var m = 0; m < p_n; m++) {
-							if (m == index1)
-								continue; //we already have this
-							if (palette[index1][3] < grey && palette[m][3] < grey)
-								continue;
-							if (palette[index1][3] > grey && palette[m][3] > grey)
-								continue;
-							var diff = Math.abs(palette[m][0] - imgData[k]) + Math.abs(palette[m][1] - imgData[k + 1]) + Math.abs(palette[m][2] - imgData[k + 2]);
-							if (diff < min2) {
-								min2 = diff;
-								index2 = m;
-								diff2 = diff;
-							}
-						}
-					}
-
-					var c;
-					if (index2 == undefined)
-						c = palette[index1]; //only 1 match
-					else {
-						//randomize
-						var rand = HELPER.getRandomInt(-diff1, diff2);
-						if (rand < 0)
-							c = palette[index2];
-						else
-							c = palette[index1];
-					}
-					imgData[k] = c[0];
-					imgData[k + 1] = c[1];
-					imgData[k + 2] = c[2];
-				}
+				imgData[k] = palette[index1][0];
+				imgData[k + 1] = palette[index1][1];
+				imgData[k + 2] = palette[index1][2];
 
 				if (greyscale == true) {
 					var mid = Math.round(0.2126 * imgData[k] + 0.7152 * imgData[k + 1] + 0.0722 * imgData[k + 2]);
@@ -981,61 +945,6 @@ function IMAGE_CLASS() {
 		//log('Iterations: brighten='+n_fix_white+", darken="+n_fix_black);
 	};
 
-	//hermite resample
-	this.resample_hermite = function (canvas, W, H, W2, H2) {
-		var img = canvas.getContext("2d").getImageData(0, 0, W, H);
-		var img2 = canvas.getContext("2d").getImageData(0, 0, W2, H2);
-		var data = img.data;
-		var data2 = img2.data;
-		var ratio_w = W / W2;
-		var ratio_h = H / H2;
-		var ratio_w_half = Math.ceil(ratio_w / 2);
-		var ratio_h_half = Math.ceil(ratio_h / 2);
-
-		for (var j = 0; j < H2; j++) {
-			for (var i = 0; i < W2; i++) {
-				var x2 = (i + j * W2) * 4;
-				var weight = 0;
-				var weights = 0;
-				var weights_alpha = 0;
-				var gx_r = gx_g = gx_b = gx_a = 0;
-				var center_y = (j + 0.5) * ratio_h;
-				for (var yy = Math.floor(j * ratio_h); yy < (j + 1) * ratio_h; yy++) {
-					var dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
-					var center_x = (i + 0.5) * ratio_w;
-					var w0 = dy * dy; //pre-calc part of w
-					for (var xx = Math.floor(i * ratio_w); xx < (i + 1) * ratio_w; xx++) {
-						var dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
-						var w = Math.sqrt(w0 + dx * dx);
-						if (w >= -1 && w <= 1) {
-							//hermite filter
-							weight = 2 * w * w * w - 3 * w * w + 1;
-							if (weight > 0) {
-								dx = 4 * (xx + yy * W);
-								//alpha
-								gx_a += weight * data[dx + 3];
-								weights_alpha += weight;
-								//colors
-								if (data[dx + 3] < 255)
-									weight = weight * data[dx + 3] / 250;
-								gx_r += weight * data[dx];
-								gx_g += weight * data[dx + 1];
-								gx_b += weight * data[dx + 2];
-								weights += weight;
-							}
-						}
-					}
-				}
-				data2[x2] = gx_r / weights;
-				data2[x2 + 1] = gx_g / weights;
-				data2[x2 + 2] = gx_b / weights;
-				data2[x2 + 3] = gx_a / weights_alpha;
-			}
-		}
-		canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
-		canvas.getContext("2d").putImageData(img2, 0, 0);
-	};
-	
 	this.histogram = function () {
 		POP.add({name: "param1", title: "Channel:", values: ["Gray", "Red", "Green", "Blue"], onchange: "IMAGE.histogram_onload()"});
 		POP.add({title: 'Histogram:', function: function () {
@@ -1052,72 +961,79 @@ function IMAGE_CLASS() {
 		);
 	};
 	
-	this.histogram_onload = function (user_response) {
+	this.histogram_onload = function () {
 		var img = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
 		var imgData = img.data;
 		var channel_grey = document.getElementById("pop_data_param1_poptmp0");
 		var channel_r = document.getElementById("pop_data_param1_poptmp1");
 		var channel_g = document.getElementById("pop_data_param1_poptmp2");
 		var channel_b = document.getElementById("pop_data_param1_poptmp3");
-
+		
 		if (channel_grey.checked == true)
-			channel = channel_grey.value;
+			channel = 0;
 		else if (channel_r.checked == true)
-			channel = channel_r.value;
+			channel = 1;
 		else if (channel_g.checked == true)
-			channel = channel_g.value;
+			channel = 2;
 		else if (channel_b.checked == true)
-			channel = channel_b.value;
+			channel = 3;
 
-		//collect data
-		var hist_data = [];
-		for (var i = 0; i <= 255; i++)
-			hist_data[i] = 0;
+		var hist_data = [ [], [], [], [] ]; //grey, red, green, blue
 		var total = imgData.length / 4;
 		var sum = 0;
 		var grey;
 
-		if (channel == 'Gray') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				grey = Math.round((imgData[i] + imgData[i + 1] + imgData[i + 2]) / 3);
-				hist_data[grey]++;
-				sum = sum + imgData[i] + imgData[i + 1] + imgData[i + 2];
+		for (var i = 0; i < imgData.length; i += 4) {
+			//collect grey
+			grey = Math.round((imgData[i] + imgData[i + 1] + imgData[i + 2]) / 3);
+			sum = sum + imgData[i] + imgData[i + 1] + imgData[i + 2];
+			if(hist_data[0][grey] == undefined)
+				hist_data[0][grey] = 1;
+			else
+				hist_data[0][grey]++;
+			
+			//collect colors
+			for(var c = 0; c < 3; c++) {
+				if(c+1 != channel)
+					continue;
+				if(hist_data[c+1][imgData[i+c]] == undefined)
+					hist_data[c+1][imgData[i+c]] = 1;
+				else
+					hist_data[c+1][imgData[i+c]]++;
 			}
 		}
-		else if (channel == 'Red') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i]]++;
-				sum = sum + imgData[i] * 3;
-			}
-		}
-		else if (channel == 'Green') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i + 1]]++;
-				sum = sum + imgData[i + 1] * 3;
-			}
-		}
-		else if (channel == 'Blue') {
-			for (var i = 0; i < imgData.length; i += 4) {
-				hist_data[imgData[i + 2]]++;
-				sum = sum + imgData[i + 2] * 3;
-			}
-		}
-
-		//draw histogram
+		
 		var c = document.getElementById("c_h").getContext("2d");
-		c.rect(0, 0, 255, 100);
+		c.rect(0, 0, 256, 100);
 		c.fillStyle = "#ffffff";
 		c.fill();
-		for (var i = 0; i <= 255; i++) {
-			if (hist_data[i] == 0)
-				continue;
-			c.beginPath();
-			c.strokeStyle = "#000000";
-			c.lineWidth = 1;
-			c.moveTo(i + 0.5, 100 + 0.5);
-			c.lineTo(i + 0.5, 100 - Math.round(hist_data[i] * 255 * 100 / total / 6) + 0.5);
-			c.stroke();
+		var opacity = 1;
+		
+		//draw histogram
+		for(var h in hist_data) {
+			for (var i = 0; i <= 255; i++) {
+				if(h != channel)
+					continue;
+				if (hist_data[h][i] == 0)
+					continue;
+				c.beginPath();
+				
+				if(h == 0)
+					c.strokeStyle = "rgba(64, 64, 64, "+opacity*2+")";
+				else if(h == 1)
+					c.strokeStyle = "rgba(255, 0, 0, "+opacity+")";
+				else if(h == 2)
+					c.strokeStyle = "rgba(0, 255, 0, "+opacity+")";
+				else if(h == 3)
+					c.strokeStyle = "rgba(0, 0, 255, "+opacity+")";
+				
+				c.lineWidth = 1;
+				c.moveTo(i + 0.5, 100 + 0.5);
+				c.lineTo(i + 0.5, 100 - Math.round(hist_data[h][i] * 255 * 100 / total / 6) + 0.5);
+				c.stroke();
+			}
 		}
+		
 		document.getElementById("pop_data_totalpixel").innerHTML = HELPER.number_format(total, 0);
 		if (total > 0)
 			average = Math.round(sum * 10 / total / 3) / 10;
@@ -1151,17 +1067,7 @@ function IMAGE_CLASS() {
 	this.zoom_original = function() {
 		GUI.zoom(100, true);
 	};
-	this.zoom_auto = function(only_increase) {
-		var canvas_wrapper = document.querySelector('#canvas_wrapper');
-		var page_w = canvas_wrapper.clientWidth;
-		var page_h = canvas_wrapper.clientHeight;
-		
-		var best_width = page_w / WIDTH  * 100;
-		var best_height = page_h / HEIGHT * 100;
-		var best_zoom = Math.floor(Math.min(best_width, best_height));
-		if(only_increase != undefined && best_zoom > 100){
-			return false;
-		}
-		GUI.zoom(Math.min(best_width, best_height), true);
+	this.zoom_auto = function() {
+		GUI.zoom_auto();
 	};
 }

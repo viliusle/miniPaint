@@ -214,7 +214,7 @@ function ELEMENTS_CLASS() {
 			var gradient = ctx_tmp.createRadialGradient(mouse_x, mouse_y, 0, mouse_x, mouse_y, size_half);
 			gradient.addColorStop(0, '#ffffff');
 			gradient.addColorStop(0.8, '#ffffff');
-			gradient.addColorStop(1, 'rgba(25115,255,255,0');
+			gradient.addColorStop(1, 'rgba(255,255,255,0');
 			ctx_tmp.fillStyle = gradient;
 		}
 		ctx_tmp.beginPath();
