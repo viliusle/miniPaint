@@ -311,7 +311,7 @@ function FILE_CLASS() {
 		
 		if (data_header != actualType && data_header != "text/plain") {
 			//error - no support
-			POP.add({title: "Error:", value: 'Your browser do not support this format.'});
+			POP.add({title: "Error:", value: 'Your browser does not support this format.'});
 			POP.show('Sorry', '');
 			delete data;
 			return false;

@@ -169,8 +169,8 @@ function LAYER_CLASS() {
 		GUI.redraw_preview();
 	};
 
-	//dublicate
-	this.layer_dublicate = function () {
+	//duplicate
+	this.layer_duplicate = function () {
 		EDIT.save_state();
 		if (DRAW.select_data != false) {
 			//selection

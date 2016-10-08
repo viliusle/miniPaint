@@ -12,11 +12,11 @@ function HELP_CLASS() {
 	
 	//shortcuts
 	this.help_shortcuts = function () {
-		POP.add({title: "F9", value: 'Quck save'});
+		POP.add({title: "F9", value: 'Quick save'});
 		POP.add({title: "F10", value: 'Quick load'});
 		POP.add({title: "S", value: 'Save'});
 		POP.add({title: "T", value: 'Trim'});
-		POP.add({title: "D", value: 'Dublicate layer'});
+		POP.add({title: "D", value: 'Duplicate layer'});
 		POP.add({title: "Del", value: 'Delete selection'});
 		POP.add({title: "F", value: 'Auto adjust colors'});
 		POP.add({title: "G", value: 'Grid on/off'});

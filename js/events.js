@@ -247,7 +247,7 @@ function EVENTS_CLASS() {
 		}
 		//d
 		else if (k == 68) {
-			call_menu(LAYER, 'layer_dublicate');
+			call_menu(LAYER, 'layer_duplicate');
 		}
 		//a
 		else if (k == 65) {	

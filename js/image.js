@@ -483,7 +483,7 @@ function IMAGE_CLASS() {
 			resize_type = 'Hermite';
 			
 			var HERMITE = new Hermite_class();
-			HERMITE.resample(canvas_active(true), width, height);
+			HERMITE.resample_single(canvas_active(true), width, height);
 			
 			if (GUI.last_menu != 'layer_resize') {
 				WIDTH = width;
