@@ -301,7 +301,7 @@ function GUI_CLASS() {
 			this.ZOOM = Math.max(this.ZOOM, 10);
 			GUI.redraw_preview();
 		}
-		document.getElementById("zoom_nr").innerHTML = this.ZOOM;
+		document.getElementById("zoom_nr").value = this.ZOOM+'%';
 		document.getElementById("zoom_range").value = this.ZOOM;
 
 		//change scale and repaint

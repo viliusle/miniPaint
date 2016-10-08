@@ -62,18 +62,18 @@
 			</div>
 		</div>
 		<div class="block" id="mouse_info">
-			<span style="font-weight:bold;min-width:38px;display:block;float:left;" class="trn">Size:</span>
+			<span class="trn mouse_info_title">Size:</span>
 			<span id="mouse_info_size"></span><br />
 			
-			<span style="font-weight:bold;min-width:38px;display:block;float:left;font-size:10px;" class="trn">Mouse:</span>
+			<span class="trn mouse_info_title">Mouse:</span>
 			<span id="mouse_info_mouse"></span><br />
 			
 			<div style="display:none;" id="mouse_info_selected">
 				<br />
-				<span style="font-weight:bold;min-width:45px;display:block;float:left;">XY:</span>
+				<span class="mouse_info_title">XY:</span>
 				<span id="mouse_info_xy"></span><br />
 
-				<span style="font-weight:bold;min-width:45px;display:block;float:left;" class="trn">Area:</span>
+				<span class="trn mouse_info_title">Area:</span>
 				<span id="mouse_info_area"></span><br />
 			</div>
 		</div>
@@ -93,13 +93,9 @@
 		<div id="preview">
 			<canvas id="canvas_preview"></canvas>
 			<div style="margin-top:105px;padding-left:5px;">
-				<div style="margin: 5px 0px;">
-					<b class="trn">Zoom</b>: 
-					<span id="zoom_nr">100</span>%
-				</div>
-				<input onclick="GUI.zoom(-1, true);" style="width:25px;" class="layer_add" type="button" value="-" />
-				<input onclick="GUI.zoom(100, true);" class="layer_add" type="button" value="100%" />
-				<input onclick="GUI.zoom(+1, true);" style="width:25px;" class="layer_add" type="button" value="+" />
+				<input title="Zoom out" onclick="GUI.zoom(-1, true);" style="width:25px;" class="layer_add" type="button" value="-" />
+				<input title="Reset zoom level" onclick="GUI.zoom(100, true);" class="layer_add" id="zoom_nr" type="button" value="100%" />
+				<input title="Zoom in" onclick="GUI.zoom(+1, true);" style="width:25px;" class="layer_add" type="button" value="+" />
 				<input onclick="GUI.zoom_auto();" class="layer_add" type="button" value="Fit" />
 
 				<input style="width:95%;margin-top:5px;" id="zoom_range" type="range" value="100" min="50" max="1000" step="50" oninput="GUI.zoom(this.value, true);" /> 
