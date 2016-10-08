@@ -4,9 +4,13 @@ Online graphics editing tool lets create, edit images using HTML5 technologies.
 No need to buy, download, install or have obsolete flash.
 Key features: layers, drag & drop, transparency, filters, no-flash, open source. 
 
-**Demo**: http://viliusle.github.io/miniPaint/
+miniPaint operates directly in the browser. You can create images, paste from clipboard (ctrl+v) or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
 
-**License**: GPL
+**Start using**: **http://viliusle.github.io/miniPaint/**
+
+![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/img/preview.jpg)
+
+**Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
 
 ## Browser Support
 - Firefox
@@ -52,6 +56,9 @@ Key features: layers, drag & drop, transparency, filters, no-flash, open source.
 - Translations (Menu > Help > Languages).
 - **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Perspective, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vibrance, Vintage,
 - Print support.
+
+### License
+ GPL
 
 ## Support
 
