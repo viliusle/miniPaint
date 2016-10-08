@@ -47,7 +47,7 @@ function FILE_CLASS() {
 			save_resolution = 'No';
 		else{
 			save_resolution = 'Yes';
-			var last_resolution = JSON.parse(save_resolution_cookie);	console.log(last_resolution, 'load');
+			var last_resolution = JSON.parse(save_resolution_cookie);
 			w = parseInt(last_resolution[0]);
 			h = parseInt(last_resolution[1]);
 		}
@@ -66,8 +66,8 @@ function FILE_CLASS() {
 				var save_resolution = response.save_resolution;
 				
 				if(resolution != 'Custom'){
-					var dim = resolution.split(" ");	console.log(dim);
-					dim = dim[0].split("x");	console.log(dim);
+					var dim = resolution.split(" ");
+					dim = dim[0].split("x");
 					width = dim[0];
 					height = dim[1];
 				}
