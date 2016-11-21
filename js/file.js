@@ -280,8 +280,8 @@ function FILE_CLASS() {
 		}
 		else if (user_response.type == 'BMP') {
 			//bmp
-			if (HELPER.strpos(fname, '.webp') == false)
-				fname = fname + ".webp";
+			if (HELPER.strpos(fname, '.bmp') == false)
+				fname = fname + ".bmp";
 			var data_header = "image/bmp";
 			
 			//check support
