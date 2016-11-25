@@ -58,7 +58,7 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 - Print support.
 
 ### License
- GPL
+ GPL v3
 
 ## Support
 
