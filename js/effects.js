@@ -30,6 +30,7 @@ function EFFECTS_CLASS() {
 		{title: 'JPG Compression',	name: 'effects_jpg_vintage' },
 		{title: 'Mosaic',			name: 'effects_Mosaic' },
 		{title: 'Oil',			name: 'effects_Oil' },
+		{title: 'Perspective',		name: 'effects_perspective' },
 		{title: 'Sepia',			name: 'effects_Sepia' },
 		{title: 'Sharpen',		name: 'effects_Sharpen' },
 		{title: 'Solarize',		name: 'effects_Solarize' },
