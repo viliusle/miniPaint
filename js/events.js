@@ -674,8 +674,6 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 	}
 	var ctrl_pressed = false;
 	var command_pressed = false;
-	var reading_dom = false;
-	var text_top = 15;
 	var pasteCatcher;
 	var paste_mode;
 
@@ -729,9 +727,11 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 	}();
 	//default paste action
 	this.paste_auto = function (e) {
+		if (POP.active == true || e.target.type == 'text')
+			return true;
+		
 		paste_mode = '';
 		pasteCatcher.innerHTML = '';
-		var plain_text_used = false;
 		if (e.clipboardData) {
 			var items = e.clipboardData.items;
 			if (items) {

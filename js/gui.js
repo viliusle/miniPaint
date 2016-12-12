@@ -559,8 +559,9 @@ function GUI_CLASS() {
 			COLOR = object.value;
 			this.sync_colors();
 		}
-		else if (object.value.length > 7)
+		else if (object.value.length > 7) {
 			object.value = COLOR;
+		}
 	};
 	
 	this.set_color_rgb = function (object, c) {
