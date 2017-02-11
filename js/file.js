@@ -352,11 +352,24 @@ function FILE_CLASS() {
 	
 	this.export_as_json = function(){
 		var export_data = {};
+		
+		//get date
+		var today = new Date();
+		var yyyy = today.getFullYear();
+		var mm = today.getMonth()+1; //January is 0!
+		var dd = today.getDate();
+		if(dd < 10)
+			dd = '0'+dd;
+		if(mm < 10)
+			mm = '0'+mm;
+		var today = yyyy+'-'+mm+'-'+dd;
 
 		//basic info
 		export_data.info = {
 			width: WIDTH,
 			height: HEIGHT,
+			about: 'Image data with multi-layers. Can be opened using miniPaint, https://github.com/viliusle/miniPaint',
+			date: today,
 		};
 
 		//layers
