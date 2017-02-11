@@ -1449,10 +1449,9 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.save();
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					
-					canvas_front.mozImageSmoothingEnabled = false;
 					canvas_front.webkitImageSmoothingEnabled = false;
 					canvas_front.msImageSmoothingEnabled = false;
-					canvas_front.ImageSmoothingEnabled = false;
+					canvas_front.imageSmoothingEnabled = false;
 					
 					canvas_front.drawImage(canvas_active(true),
 						this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h,

@@ -380,7 +380,19 @@ function LAYER_CLASS() {
 		tmp_data = document.createElement("canvas");
 		tmp_data.width = WIDTH;
 		tmp_data.height = HEIGHT;
+		
+		//prepare first layer
+		LAYER.layer_active = this.layers.length-1;
+		if(this.layers[LAYER.layer_active].visible == 0){
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);			
+			LAYER.layer_visibility(LAYER.layer_active);
+		}
+		
 		for (var i = this.layers.length-2; i >= 0; i--) {
+			if(this.layers[i].visible == false){
+				continue;
+			}
+			
 			//copy
 			LAYER.layer_active = i;
 			tmp_data.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
@@ -407,7 +419,6 @@ function LAYER_CLASS() {
 		new_canvas.width = WIDTH;
 		new_canvas.height = HEIGHT;
 		
-		new_canvas.getContext("2d").mozImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").webkitImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").msImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").imageSmoothingEnabled = false;
