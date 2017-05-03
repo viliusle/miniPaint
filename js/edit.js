@@ -113,6 +113,7 @@ function EDIT_CLASS() {
 		layers_archive[j] = {};
 		layers_archive[j].width = WIDTH;
 		layers_archive[j].height = HEIGHT;
+		layers_archive[j].layer_active = LAYER.layer_active;
 		
 		//layers
 		layers_archive[j].layers = [];
@@ -127,7 +128,6 @@ function EDIT_CLASS() {
 				layer.visible = 0;
 			layers_archive[j].layers.push(layer);
 		}
-		
 		
 		layers_archive[j].data = {};
 		for (var i in LAYER.layers) {
@@ -173,6 +173,7 @@ function EDIT_CLASS() {
 				LAYER.layer_visibility(LAYER.layer_active);
 			LAYER.layers[LAYER.layer_active].opacity = opacity;
 		}
+		LAYER.layer_active = layers_archive[j].layer_active;
 		LAYER.layer_renew();
 
 		//undo
