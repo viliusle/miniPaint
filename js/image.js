@@ -624,7 +624,7 @@ function IMAGE_CLASS() {
 		};
 	};
 
-	this.trim = function (layer, no_resize, include_white) {
+	this.trim = function (layer, no_resize) {
 		var all_top = HEIGHT;
 		var all_left = WIDTH;
 		var all_bottom = HEIGHT;
@@ -646,8 +646,6 @@ function IMAGE_CLASS() {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
 						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
-						continue; //white
 					break main1;
 				}
 				top++;
@@ -659,8 +657,6 @@ function IMAGE_CLASS() {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
 						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
-						continue; //white
 					break main2;
 				}
 				left++;
@@ -672,8 +668,6 @@ function IMAGE_CLASS() {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
 						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
-						continue; //white
 					break main3;
 				}
 				bottom++;
@@ -685,8 +679,6 @@ function IMAGE_CLASS() {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
 						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
-						continue; //white
 					break main4;
 				}
 				right++;
