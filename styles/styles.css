@@ -434,6 +434,7 @@ input[type="button"]{
 #mouse_info{
 	padding:5px 3px 5px 2px;
 	font-size:11px;
+	overflow: hidden;
 }	
 #action_attributes input{
 	font-size:12px;
@@ -585,14 +586,14 @@ input[type="button"]{
 #wrapper{
 	margin: 5px;
 	position:relative;
-	min-height: 500px;
+	/*min-height: 500px;*/
 	overflow: hidden;
 }
 #canvas_wrapper{
 	position:relative;
 	margin: 0 157px 0 105px;
 	overflow: hidden;
-	height: calc(100vh - 35px);
+	height: calc(100vh - 40px);
 }
 #canvas_wrapper canvas{
 	border: 1px solid #393939;

@@ -28,7 +28,7 @@ function DRAW_TOOLS_CLASS() {
 	/**
 	 * currently used tool
 	 */
-	this.active_tool = 'select_tool';
+	this.active_tool = 'brush';
 	
 	/**
 	 * line points data for curved line
