@@ -212,7 +212,7 @@ function popup() {
 							if(parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 							
-							html += '<td colspan="2"><input type="'+input_type+'" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" onkeyup="POP.validate(this);" /></td>';
+							html += '<td colspan="2"><input type="'+input_type+'" id="pop_data_' + parameter.name + '" onkeyup="POP.onkeyup(event);" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" onkeyup="POP.validate(this);" /></td>';
 						}
 					}
 				}
@@ -465,6 +465,14 @@ function popup() {
 				else if (value > parameter.range[1])
 					field.value = parameter.range[1];	//more then max
 			}
+		}
+	};
+	
+	//on key press inside input text
+	this.onkeyup = function(event) {
+		if(event.keyCode == "13"){
+			//Enter was pressed
+			POP.save();
 		}
 	};
 }
