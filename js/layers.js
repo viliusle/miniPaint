@@ -31,6 +31,25 @@ function LAYER_CLASS() {
 		this.layer_add();
 	};
 	
+	//remaps layer at different position
+	this.layer_translate = function () {
+		POP.add({name: "x", title: "X position:", value: 0});
+		POP.add({name: "y", title: "Y position:", value: 0});
+		POP.show('Translate to', [LAYER, 'layer_translate_custom']);	
+	};
+	
+	//transalte handler for layer_translate()
+	this.layer_translate_custom = function(user_response){
+		EDIT.save_state();
+		var x = parseInt(user_response.x);
+		var y = parseInt(user_response.y);
+		
+		//move
+		var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+		canvas_active().putImageData(tmp, x, y);
+	};
+	
 	//removes all layers
 	this.remove_all_layers = function(){
 		//delete old layers
