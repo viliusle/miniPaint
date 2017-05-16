@@ -65,12 +65,17 @@ function GUI_CLASS() {
 	var COLOR_copy;
 	
 	this.draw_helpers = function () {
+		var active_tool = HELPER.getCookie('active_tool');
+		if(active_tool == '')
+			active_tool = DRAW.active_tool;
+		DRAW.active_tool = active_tool;
+		
 		//left menu
 		var html = '';
 		for (var i in DRAW_TOOLS_CONFIG) {
 			html += '<a title="' + DRAW_TOOLS_CONFIG[i].title + '"';
 			html += ' style="background: #989898 url(\'img/' + DRAW_TOOLS_CONFIG[i].icon[0] + '\') no-repeat ' + DRAW_TOOLS_CONFIG[i].icon[1] + 'px ' + DRAW_TOOLS_CONFIG[i].icon[2] + 'px;"';
-			if (DRAW_TOOLS_CONFIG[i].name == DRAW.active_tool)
+			if (DRAW_TOOLS_CONFIG[i].name == active_tool)
 				html += ' class="active trn"';
 			else
 				html += ' class="trn"';
@@ -459,6 +464,9 @@ function GUI_CLASS() {
 		DRAW.active_tool = key;
 		document.getElementById(key).className = "active trn";
 		this.show_action_attributes();
+		
+		//save for next session
+		HELPER.setCookie('active_tool', key);
 
 		return false;
 	};
