@@ -429,7 +429,19 @@ function DRAW_TOOLS_CLASS() {
 		var from_x = mouse.click_x;
 		var from_y = mouse.click_y;
 		var attribute_type = GUI.action_data().attributes.type;
-
+		if(attribute_type == undefined)
+			attribute_type = 'Simple';
+		
+		//set line endings
+		if(attribute_type == 'Simple'){
+			var lineCap = 'butt';
+		}
+		else{
+			var lineCap = 'round';
+		}
+		canvas_front.lineCap = lineCap;
+		canvas_active().lineCap = lineCap;
+			
 		if (type == 'move') {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
@@ -497,6 +509,10 @@ function DRAW_TOOLS_CLASS() {
 					canvas_active().stroke();
 					curve_points = [];
 				}
+			}
+			if (attribute_type != 'Multi-line'){
+				//reset last line position
+				DRAW.last_line = [];
 			}
 		}
 		else if (type == 'release') {
