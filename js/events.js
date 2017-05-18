@@ -630,12 +630,7 @@ function EVENTS_CLASS() {
 	};
 	this.on_resize = function(){
 		GUI.redraw_preview();
-		
-		//recalc popup position
-		var dim = HELPER.get_dimensions();
-		popup = document.getElementById('popup');
-		popup.style.top = 150 + 'px';
-		popup.style.left = Math.round(dim[0] / 2) + 'px';
+		POP.reset_position();
 		
 		document.querySelector('#sidebar_left').classList.remove("active");
 		document.querySelector('#sidebar_right').classList.remove("active");

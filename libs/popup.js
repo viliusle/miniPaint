@@ -34,8 +34,8 @@ function popup() {
 	this.handler = '';
 	this.preview = false;
 	this.onload = false;
-	this.width_mini = 184;
-	this.height_mini = 195;
+	this.width_mini = 230;
+	this.height_mini = 200;
 	this.preview_in_main = false;
 	this.effects = false;
 	this.id = 0;
@@ -46,6 +46,19 @@ function popup() {
 	//add parameter
 	this.add = function (object) {
 		parameters.push(object);
+	};
+	
+	/**
+	 * reset dialog position
+	 */
+	this.reset_position = function(){
+		popup = document.getElementById('popup');
+		var dim = HELPER.get_dimensions();
+		
+		popup.style.top = 150 + 'px';
+		var left = Math.round(dim[0] / 2 - 500/2);
+		left = Math.max(left, 0);
+		popup.style.left = left + 'px';
 	};
 	
 	/**
@@ -71,10 +84,7 @@ function popup() {
 			this.onload = onload_handler;
 		var html = '';
 
-		var dim = HELPER.get_dimensions();
-		popup = document.getElementById('popup');
-		popup.style.top = 150 + 'px';
-		popup.style.left = Math.round(dim[0] / 2) + 'px';
+		this.reset_position();
 
 		if (this.effects == true) {
 			var index;
@@ -111,8 +121,11 @@ function popup() {
 		//preview area
 		if (this.preview !== false && this.preview_in_main == false) {
 			html += '<div style="margin-top:15px;margin-bottom:15px;">';
-			html += '<canvas style="position:relative;float:left;margin-right:5px;border:1px solid #393939;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_pre"></canvas>';
-			html += '<canvas style="position:relative;border:1px solid #393939;background-color:#ffffff;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_post"></canvas>';
+			html += '<canvas style="position:relative;float:left;margin:0 5px 5px 0;border:1px solid #393939;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_pre"></canvas>';
+			html += '<div id="canvas_preview_container">';
+			html += '	<canvas style="position:absolute;border:1px solid #393939;background-color:#ffffff;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_post_back"></canvas>';
+			html += '	<canvas style="position:relative;border:1px solid #393939;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_post"></canvas>';
+			html += '</div>';
 			html += '</div>';
 		}
 
@@ -310,17 +323,18 @@ function popup() {
 			pop_pre.rect(0, 0, POP.width_mini, POP.height_mini);
 			pop_pre.fillStyle = "#ffffff";
 			pop_pre.fill();
-			GUI.draw_background(pop_pre, POP.width_mini, POP.height_mini, 5);
+			GUI.draw_background(pop_pre, POP.width_mini, POP.height_mini, 10);
 			pop_pre.drawImage(document.getElementById(LAYER.layers[LAYER.layer_active].name), 0, 0, POP.width_mini, POP.height_mini);
 
 			//copy
 			pop_post = document.getElementById("pop_post").getContext("2d");
 			pop_post.rect(0, 0, POP.width_mini, POP.height_mini);
-			pop_post.fillStyle = "#ffffff";
-			pop_post.fill();
-			GUI.draw_background(pop_post, POP.width_mini, POP.height_mini, 5);
 			pop_post.drawImage(document.getElementById(LAYER.layers[LAYER.layer_active].name), 0, 0, POP.width_mini, POP.height_mini);
-
+			
+			//copy back
+			pop_post_back = document.getElementById("pop_post_back").getContext("2d");
+			GUI.draw_background(pop_post_back, POP.width_mini, POP.height_mini, 10);
+			
 			//prepare temp canvas
 			layer_active_small.width = POP.width_mini;
 			layer_active_small.height = POP.height_mini;

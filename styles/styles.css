@@ -659,16 +659,16 @@ input[type="button"]{
 
 #popup{
 	position:fixed;
-	border:1px solid #000000;
+	display:none;
+	top: 150px;
+	left: calc(50% - 500px / 2);
 	background-color: #bbb;
+	border:1px solid #000000;
 	width:500px;
+	max-width: 100%;
 	max-height:550px;
 	overflow-y:scroll;
 	margin:0px auto 0px auto;
-	top:150px;
-	left: 50%;
-	margin-left:-250px;	
-	display:none;
 	padding:10px;
 	font-size:12px;
 	color: #333;
@@ -700,13 +700,14 @@ input[type="button"]{
 label span{
 	color:#777777;
 }
-@media screen and (max-width:400px){
+@media screen and (max-width:500px){
 	#popup{
 		top: 100px !important;
 		left: 0 !important;
 		right: 0 !important;
-		margin-left: 0;
-		width: auto;
+	}
+	#canvas_preview_container{
+		clear:both;
 	}
 }
 /* ========================================================================== */
