@@ -124,6 +124,18 @@ function FILE_CLASS() {
 		document.querySelector('#file_open').click();
 	};
 	
+	this.open_image = function(image_id) {
+		var img = document.getElementById(image_id);
+		
+		//set name
+		var name = img.src.replace(/^.*[\\\/]/, '');
+		LAYER.layer_add(name);
+		LAYER.layer_remove(1);
+		
+		//draw canvas
+		canvas_active().drawImage(img, 0, 0);
+	};
+	
 	this.open_handler = function (e) {
 		var files = e.target.files;
 		var self = this;
