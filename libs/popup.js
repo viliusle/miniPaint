@@ -34,7 +34,7 @@ function popup() {
 	this.handler = '';
 	this.preview = false;
 	this.onload = false;
-	this.width_mini = 230;
+	this.width_mini = 225;
 	this.height_mini = 200;
 	this.preview_in_main = false;
 	this.effects = false;
@@ -271,7 +271,7 @@ function popup() {
 
 		document.getElementById("popup").innerHTML = html;
 		document.getElementById("popup").style.display = "block";
-		if (parameters.length > 15)
+		if (parameters.length > 10)
 			document.getElementById("popup").style.overflowY = "scroll";
 		else
 			document.getElementById("popup").style.overflowY = 'hidden';

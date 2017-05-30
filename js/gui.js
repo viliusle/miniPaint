@@ -356,7 +356,8 @@ function GUI_CLASS() {
 	};
 	
 	this.update_attribute = function (object, next_value) {
-		var max_value = 500;
+		var max_value = 999;
+		
 		for (var k in this.action_data().attributes) {
 			if (k != object.id)
 				continue;
@@ -388,31 +389,32 @@ function GUI_CLASS() {
 			else {
 				//numbers
 				if (next_value != undefined) {
+					var old_value = parseInt(this.action_data().attributes[k]);
 					if (next_value > 0) {
-						if (parseInt(this.action_data().attributes[k]) == 0)
-							object.value = 1;
-						else if (parseInt(this.action_data().attributes[k]) == 1)
-							object.value = 5;
-						else if (parseInt(this.action_data().attributes[k]) == 5)
-							object.value = 10;
+						//increase
+						if (old_value >= 100)
+							object.value = old_value + 50;
+						else if (old_value >= 10)
+							object.value = old_value + 10;
+						else if (old_value >= 5)
+							object.value = old_value + 5;
 						else
-							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+							object.value = old_value + 1;
 					}
 					else if (next_value < 0) {
-						if (parseInt(this.action_data().attributes[k]) == 1)
-							object.value = 0;
-						else if (parseInt(this.action_data().attributes[k]) <= 5)
-							object.value = 1;
-						else if (parseInt(this.action_data().attributes[k]) <= 10)
-							object.value = 5;
-						else if (parseInt(this.action_data().attributes[k]) <= 20)
-							object.value = 10;
+						//decrease
+						if (old_value > 100)
+							object.value = old_value - 50;
+						else if (old_value > 10)
+							object.value = old_value - 10;
+						else if (old_value > 5)
+							object.value = old_value - 5;
 						else
-							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+							object.value = old_value - 1;
 					}
 
-					if (object.value < 0)
-						object.value = 0;
+					if (object.value < 1)
+						object.value = 1;
 					if (object.value > max_value)
 						object.value = max_value;
 				}
@@ -484,7 +486,6 @@ function GUI_CLASS() {
 	 */
 	this.show_action_attributes = function () {
 		html = '';
-		var step = 10;
 		for (var k in this.action_data().attributes) {
 			var title = k[0].toUpperCase() + k.slice(1);
 			title = title.replace("_", " ");
@@ -527,8 +528,8 @@ function GUI_CLASS() {
 				html += '<td><input onKeyUp="GUI.update_attribute(this);" type="number" id="' + k + '" value="' + GUI.action_data().attributes[k] + '" /></td>';
 				html += '</tr>';
 				html += '</table>';
-				html += '<div style="float:left;width:32px;" onclick="GUI.update_attribute(this, ' + (step) + ')" class="attribute-area" id="' + k + '">+</div>';
-				html += '<div style="margin-left:48px;margin-bottom:15px;" onclick="GUI.update_attribute(this, ' + (-step) + ')" class="attribute-area" id="' + k + '">-</div>';
+				html += '<div style="float:left;width:32px;" onclick="GUI.update_attribute(this, 1)" class="attribute-area" id="' + k + '">+</div>';
+				html += '<div style="margin-left:48px;margin-bottom:15px;" onclick="GUI.update_attribute(this, -1)" class="attribute-area" id="' + k + '">-</div>';
 				html += '</div>';
 			}
 		}
