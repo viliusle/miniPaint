@@ -1,5 +1,5 @@
-/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW */
-/* global SAVE_TYPES */
+/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW, EVENTS */
+/* global SAVE_TYPES, canvas_active */
 
 var FILE = new FILE_CLASS();
 
@@ -96,6 +96,45 @@ function FILE_CLASS() {
 		EDIT.save_state();
 		this.open();
 	};
+	
+	//open url
+	this.file_open_url = function(){
+		POP.add({name: "url", title: "URL:", value: ""});
+		POP.show('Open URL', [FILE, 'file_open_url_handler']);
+	};
+	
+	//handler for open url
+	this.file_open_url_handler = function(user_response){
+		var url = user_response.url;
+		if(url == '')
+			return;
+		
+		var layer_name = url.replace(/^.*[\\\/]/, '');
+		
+		var img = new Image();
+		img.crossOrigin = "Anonymous";
+		img.onload = function () {
+			EDIT.save_state();
+			LAYER.layer_add(layer_name);
+			
+			if (img.width > WIDTH)
+				WIDTH = img.width;
+			if (img.height > HEIGHT)
+				HEIGHT = img.height;
+			LAYER.set_canvas_size();
+			
+			canvas_active().drawImage(img, 0, 0);
+			if(EVENTS.autosize == true)
+				IMAGE.trim();
+			GUI.zoom_auto(true);
+			GUI.redraw_preview();
+		};
+		img.onerror = function (ex) {
+			POP.add({html: 'Sorry, image could not be loaded. Try copy image and paste it.'});
+			POP.show('Error', '.');
+		};
+		img.src = url;
+	};
 
 	//save
 	this.file_save = function () {
@@ -134,6 +173,7 @@ function FILE_CLASS() {
 		
 		//draw canvas
 		canvas_active().drawImage(img, 0, 0);
+		IMAGE.trim();
 	};
 	
 	this.open_handler = function (e) {
