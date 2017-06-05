@@ -1322,7 +1322,6 @@ function DRAW_TOOLS_CLASS() {
 				}
 				
 				//resize
-				EDIT.save_state();
 				WIDTH = this.select_data.w;
 				HEIGHT = this.select_data.h;
 				LAYER.set_canvas_size();

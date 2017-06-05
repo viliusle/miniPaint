@@ -12,15 +12,14 @@ function IMAGE_CLASS() {
 
 	//information
 	this.image_information = function () {
-		var colors = this.unique_colors_count(canvas_active(true));
-		colors = HELPER.number_format(colors, 0);
+		var _this = this;
 		var pixels = WIDTH*HEIGHT;
 		pixels = HELPER.number_format(pixels, 0);
 		
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
 		POP.add({title: "Pixels:", value: pixels});
-		POP.add({title: "Unique colors:", value: colors});
+		POP.add({title: "Unique colors:", value: '...'});
 		
 		//show general data
 		for (var i in FILE.file_info.general){
@@ -38,7 +37,14 @@ function IMAGE_CLASS() {
 			n++;
 		}
 		
-		POP.show('Information', '');
+		POP.show('Information', null, null, function(){
+			//calc colors
+			setTimeout(function(){
+				var colors = _this.unique_colors_count(canvas_active(true));
+				colors = HELPER.number_format(colors, 0);
+				document.getElementById('pop_data_uniquecolo').innerHTML = colors;
+			}, 10);
+		});
 	};
 
 	//size

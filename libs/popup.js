@@ -277,7 +277,7 @@ function popup() {
 			document.getElementById("popup").style.overflowY = 'hidden';
 
 		//onload
-		if (this.onload != '') {
+		if (this.onload) {
 			if (typeof this.onload == "string")
 				window[this.onload]();
 			else
@@ -452,7 +452,7 @@ function popup() {
 		this.onload = false;
 		this.preview_in_main = false;
 		this.effects = false;
-		if (this.handler != '') {
+		if (this.handler) {
 			if (typeof this.handler == "object")
 				this.handler[0][this.handler[1]](response);
 			else if (typeof this.handler == "function")

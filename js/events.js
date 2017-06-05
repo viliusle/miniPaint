@@ -582,7 +582,9 @@ function EVENTS_CLASS() {
 		EDIT.save_state();
 		FILE.open_handler(e);
 	};
-	this.mouse_wheel_handler = function (e) {	//return true;
+	this.mouse_wheel_handler = function (e) {
+		if(POP.active == true)
+			return;
 		e.preventDefault();
 		//zoom
 		if (EVENTS.ctrl_pressed == true) {
