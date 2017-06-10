@@ -399,7 +399,7 @@ function FILE_CLASS() {
 		if(object.type != undefined)
 			FILE.file_info.general.Type = object.type;
 		if(object.lastModified != undefined)
-			FILE.file_info.general['Last modified'] = '___'+new Date(object.lastModified);
+			FILE.file_info.general['Last modified'] = HELPER.format_time(object.lastModified);
 	};
 	
 	this.export_as_json = function(){

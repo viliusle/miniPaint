@@ -22,6 +22,11 @@ function HELPER_CLASS() {
 			console.log(str);
 	};
 	
+	//format time
+	this.format_time = function(datetime){
+		return new Date(datetime).toJSON().slice(0, 19).replace(/T/g, ' ');
+	};
+	
 	this.strpos = function (haystack, needle, offset) {
 		var i = (haystack + '').indexOf(needle, (offset || 0));
 		return i === -1 ? false : i;

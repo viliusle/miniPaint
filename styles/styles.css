@@ -699,11 +699,11 @@ input[type="button"]{
 	padding-left:5px;
 }
 #popup .button{
-	margin-right:5px;
+	margin: 0 3px;
 	background-color:#5680c1;
 	min-width:60px;
 	border:1px solid #000000;
-	padding: 2px 6px;
+	padding: 5px 10px;
 }
 #popup input[type="text"], #popup input[type="number"], #popup textarea{
 	width:100%;
