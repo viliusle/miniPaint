@@ -61,7 +61,11 @@ table{
 }
 input[type="text"], input[type="button"], select, input[type="number"]{
 	border:1px solid #393939;
-	padding:1px 3px;
+	padding: 3px 5px;
+	font-size: 13px;
+}
+select{
+	padding: 2px 4px;
 }
 input[type="range"]{
 	margin-left:0px;
@@ -368,6 +372,10 @@ input[type="button"]{
 	right:0 !important;
 	box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 }
+#sidebar_left input[type="text"], #sidebar_left input[type="number"], #sidebar_left select{
+	padding: 2px 3px;
+	font-size: 13px;
+}
 #main_color{
 	border:1px solid #393939;
 	background-color:#727272;
@@ -534,6 +542,9 @@ input[type="button"]{
 	min-width:38px;
 	display:block;
 	float:left;
+}
+.color_area{
+	cursor: pointer;
 }
 @media screen and (max-width:700px){
 	#sidebar_right{
