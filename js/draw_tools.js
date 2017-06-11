@@ -803,11 +803,6 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.lineJoin = 'round';
 				}
 				
-				/*canvas_front.beginPath();
-				canvas_front.arc(mouse.x, mouse.y, GUI.action_data().attributes.size / 2, 0, 2 * Math.PI, false);
-				canvas_front.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-				canvas_front.fill();*/
-
 				//blur
 				canvas_active().shadowBlur = 0;
 				if (GUI.action_data().attributes.anti_aliasing == true) {
