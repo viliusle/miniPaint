@@ -294,9 +294,14 @@ function GUI_CLASS() {
 				if (this.ZOOM <= 90 && recalc > 0){
 					step = 10;
 				}
-				this.ZOOM = this.ZOOM + recalc * step;
-				if (this.ZOOM > 100 && this.ZOOM < 200){
-					this.ZOOM = 100;
+				if (this.ZOOM >= 100 && this.ZOOM < 300 && recalc == 1){
+					this.ZOOM += 50;
+				}
+				else if (this.ZOOM <= 300 && this.ZOOM > 100 && recalc == -1){
+					this.ZOOM -= 50;
+				}
+				else{
+					this.ZOOM = this.ZOOM + recalc * step;
 				}
 			}
 			else {
