@@ -36,6 +36,7 @@ function MAIN_CLASS() {
 		document.getElementById("rgb_b").value = color_rgb.b;
 		document.getElementById("rgb_a").value = ALPHA;
 		GUI.redraw_preview();
+		GUI.show_action_attributes();
 		
 		//detect color support
 		if (HELPER.chech_input_color_support('main_color') == true)

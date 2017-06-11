@@ -12,15 +12,14 @@ function IMAGE_CLASS() {
 
 	//information
 	this.image_information = function () {
-		var colors = this.unique_colors_count(canvas_active(true));
-		colors = HELPER.number_format(colors, 0);
+		var _this = this;
 		var pixels = WIDTH*HEIGHT;
 		pixels = HELPER.number_format(pixels, 0);
 		
 		POP.add({title: "Width:", value: WIDTH});
 		POP.add({title: "Height:", value: HEIGHT});
 		POP.add({title: "Pixels:", value: pixels});
-		POP.add({title: "Unique colors:", value: colors});
+		POP.add({title: "Unique colors:", value: '...'});
 		
 		//show general data
 		for (var i in FILE.file_info.general){
@@ -38,7 +37,14 @@ function IMAGE_CLASS() {
 			n++;
 		}
 		
-		POP.show('Information', '');
+		POP.show('Information', null, null, function(){
+			//calc colors
+			setTimeout(function(){
+				var colors = _this.unique_colors_count(canvas_active(true));
+				colors = HELPER.number_format(colors, 0);
+				document.getElementById('pop_data_uniquecolo').innerHTML = colors;
+			}, 10);
+		});
 	};
 
 	//size
@@ -624,11 +630,17 @@ function IMAGE_CLASS() {
 		};
 	};
 
-	this.trim = function (layer, no_resize, include_white) {
+	this.trim = function (layer, no_resize, removeWhiteColor) {
 		var all_top = HEIGHT;
 		var all_left = WIDTH;
 		var all_bottom = HEIGHT;
 		var all_right = WIDTH;
+		
+		if(no_resize == undefined)
+			no_resize = false;
+		if(removeWhiteColor == undefined)
+			removeWhiteColor = false;
+		
 		for (var i in LAYER.layers) {
 			if (layer != undefined && LAYER.layers[i].name != layer)
 				continue;
@@ -645,8 +657,8 @@ function IMAGE_CLASS() {
 				for (var x = 0; x < img.width; x++) {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
-						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+						continue; //transparent
+					if (removeWhiteColor === true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 						continue; //white
 					break main1;
 				}
@@ -658,8 +670,8 @@ function IMAGE_CLASS() {
 				for (var y = 0; y < img.height; y++) {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
-						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+						continue; //transparent
+					if (removeWhiteColor === true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 						continue; //white
 					break main2;
 				}
@@ -671,8 +683,8 @@ function IMAGE_CLASS() {
 				for (var x = img.width - 1; x >= 0; x--) {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
-						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+						continue; //transparent
+					if (removeWhiteColor === true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 						continue; //white
 					break main3;
 				}
@@ -684,8 +696,8 @@ function IMAGE_CLASS() {
 				for (var y = img.height - 1; y >= 0; y--) {
 					var k = ((y * (img.width * 4)) + (x * 4));
 					if (imgData[k + 3] == 0)
-						continue; //transparent 
-					if (include_white !== true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+						continue; //transparent
+					if (removeWhiteColor === true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
 						continue; //white
 					break main4;
 				}
@@ -706,36 +718,43 @@ function IMAGE_CLASS() {
 			document.getElementById(LAYER.layers[i].name).getContext("2d").putImageData(tmp_data, -all_left, -all_top);
 			var canvas_name = LAYER.layers[i].name;
 		}
+		
+		if(removeWhiteColor == false && (all_left + all_right + all_top + all_bottom == 0 || (all_left + all_top == 0 && no_resize == true )) ){	
+			//also trim white color
+			this.trim(layer, no_resize, true);
+			return;
+		}
+		
 		//resize
-		if (no_resize != undefined)
-			return false;
-		if (layer != undefined) {
-			var W = Math.round(WIDTH - all_left - all_right);
-			var H = Math.round(HEIGHT - all_top - all_bottom);
+		if (no_resize == false){
+			if (layer != undefined) {
+				var W = Math.round(WIDTH - all_left - all_right);
+				var H = Math.round(HEIGHT - all_top - all_bottom);
 
-			var imageData = document.getElementById(layer).getContext("2d").getImageData(0, 0, W, H);
-			document.getElementById(layer).width = W;
-			document.getElementById(layer).height = H;
-			document.getElementById(layer).getContext("2d").clearRect(0, 0, W, H);
-			document.getElementById(layer).getContext("2d").putImageData(imageData, 0, 0);
+				var imageData = document.getElementById(layer).getContext("2d").getImageData(0, 0, W, H);
+				document.getElementById(layer).width = W;
+				document.getElementById(layer).height = H;
+				document.getElementById(layer).getContext("2d").clearRect(0, 0, W, H);
+				document.getElementById(layer).getContext("2d").putImageData(imageData, 0, 0);
 
-			return {
-				top: all_top,
-				left: all_left,
-				bottom: all_bottom,
-				right: all_right
-			};
+				return {
+					top: all_top,
+					left: all_left,
+					bottom: all_bottom,
+					right: all_right
+				};
+			}
+			else {
+				WIDTH = WIDTH - all_left - all_right;
+				HEIGHT = HEIGHT - all_top - all_bottom;
+				if (WIDTH < 1)
+					WIDTH = 1;
+				if (HEIGHT < 1)
+					HEIGHT = 1;
+				LAYER.set_canvas_size();
+				LAYER.update_info_block();
+			}
 		}
-		else {
-			WIDTH = WIDTH - all_left - all_right;
-			HEIGHT = HEIGHT - all_top - all_bottom;
-			if (WIDTH < 1)
-				WIDTH = 1;
-			if (HEIGHT < 1)
-				HEIGHT = 1;
-			LAYER.set_canvas_size();
-		}
-		LAYER.update_info_block();
 	};
 
 	this.decrease_colors = function (canvas_source, canvas_destination, W, H, colors, greyscale) {

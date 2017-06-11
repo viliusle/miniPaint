@@ -8,7 +8,7 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 
 **Start using**: **http://viliusle.github.io/miniPaint/**
 
-![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/img/preview.jpg)
+![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/img/preview.gif)
 
 **Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
 
@@ -23,7 +23,7 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 ## Features
 
 - Open images, drag and drop images.
-- Save images as PNG, JPG, JSON (layers data), (plus BMP and WEBP on some browsers).
+- Save images as PNG, JPG, GIF (can be animated), JSON (layers data), (plus BMP and WEBP on some browsers).
 - 3 levels undo.
 - Transparency support.
 - Selection operation: cut, copy, paste, resize, delete, move.

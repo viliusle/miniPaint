@@ -17,7 +17,6 @@ document.addEventListener("mousewheel", EVENTS.mouse_wheel_handler, false);	//mo
 document.addEventListener("DOMMouseScroll", EVENTS.mouse_wheel_handler, false);	//mouse scroll
 document.oncontextmenu = function (e) { return EVENTS.mouse_right_click(e); };	//mouse right click
 document.getElementById('color_hex').onkeyup = function (e) { GUI.set_color_manual(e); };	//on main color type
-document.getElementById('color_hex').onpaste = function (e) { GUI.set_color_manual(e); }; // on paste in main color input
 
 //windows touch
 document.addEventListener('MSPointerDown', EVENTS.mouse_click, false);
@@ -583,7 +582,9 @@ function EVENTS_CLASS() {
 		EDIT.save_state();
 		FILE.open_handler(e);
 	};
-	this.mouse_wheel_handler = function (e) {	//return true;
+	this.mouse_wheel_handler = function (e) {
+		if(POP.active == true)
+			return;
 		e.preventDefault();
 		//zoom
 		if (EVENTS.ctrl_pressed == true) {
@@ -630,12 +631,7 @@ function EVENTS_CLASS() {
 	};
 	this.on_resize = function(){
 		GUI.redraw_preview();
-		
-		//recalc popup position
-		var dim = HELPER.get_dimensions();
-		popup = document.getElementById('popup');
-		popup.style.top = 150 + 'px';
-		popup.style.left = Math.round(dim[0] / 2) + 'px';
+		POP.reset_position();
 		
 		document.querySelector('#sidebar_left').classList.remove("active");
 		document.querySelector('#sidebar_right').classList.remove("active");

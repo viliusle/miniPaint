@@ -31,6 +31,25 @@ function LAYER_CLASS() {
 		this.layer_add();
 	};
 	
+	//remaps layer at different position
+	this.layer_translate = function () {
+		POP.add({name: "x", title: "X position:", value: 0});
+		POP.add({name: "y", title: "Y position:", value: 0});
+		POP.show('Translate to', [LAYER, 'layer_translate_custom']);	
+	};
+	
+	//transalte handler for layer_translate()
+	this.layer_translate_custom = function(user_response){
+		EDIT.save_state();
+		var x = parseInt(user_response.x);
+		var y = parseInt(user_response.y);
+		
+		//move
+		var tmp = canvas_active().getImageData(0, 0, WIDTH, HEIGHT);
+		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+		canvas_active().putImageData(tmp, x, y);
+	};
+	
 	//removes all layers
 	this.remove_all_layers = function(){
 		//delete old layers
@@ -259,6 +278,7 @@ function LAYER_CLASS() {
 				LAYER.layer_renew();
 			}
 		);
+		document.getElementById("pop_data_param1").select();
 	};
 
 	//trim
@@ -380,7 +400,19 @@ function LAYER_CLASS() {
 		tmp_data = document.createElement("canvas");
 		tmp_data.width = WIDTH;
 		tmp_data.height = HEIGHT;
+		
+		//prepare first layer
+		LAYER.layer_active = this.layers.length-1;
+		if(this.layers[LAYER.layer_active].visible == 0){
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);			
+			LAYER.layer_visibility(LAYER.layer_active);
+		}
+		
 		for (var i = this.layers.length-2; i >= 0; i--) {
+			if(this.layers[i].visible == false){
+				continue;
+			}
+			
 			//copy
 			LAYER.layer_active = i;
 			tmp_data.getContext("2d").clearRect(0, 0, WIDTH, HEIGHT);
@@ -407,7 +439,6 @@ function LAYER_CLASS() {
 		new_canvas.width = WIDTH;
 		new_canvas.height = HEIGHT;
 		
-		new_canvas.getContext("2d").mozImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").webkitImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").msImageSmoothingEnabled = false;
 		new_canvas.getContext("2d").imageSmoothingEnabled = false;
@@ -720,6 +751,32 @@ function LAYER_CLASS() {
 			canvas_preview.scale(w / WIDTH, h / HEIGHT);
 			canvas_preview.drawImage(canvas_tmp, 0, 0);
 			canvas_preview.restore();
+		}
+	};
+
+	/**
+	 * exports all layers to canvas for saving
+	 * 
+	 * @param {canvas.context} ctx
+	 * @param {string} type
+	 * @param {boolean} only_one_layer
+	 */
+	this.export_layers_to_canvas = function (ctx, type, only_one_layer){
+		//handle transparency
+		if (GUI.TRANSPARENCY == false || type == 'JPG') {
+			ctx.beginPath();
+			ctx.rect(0, 0, WIDTH, HEIGHT);
+			ctx.fillStyle = "#ffffff";
+			ctx.fill();
+		}
+
+		//take data
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			if (LAYER.layers[i].visible == false)
+				continue;
+			if (only_one_layer == true && type != 'JSON' && i != LAYER.layer_active)
+				continue;
+			ctx.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
 		}
 	};
 }

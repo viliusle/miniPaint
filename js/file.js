@@ -1,5 +1,5 @@
-/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW */
-/* global SAVE_TYPES */
+/* global MAIN, POP, LAYER, EXIF, HELPER, IMAGE, GUI, EDIT, DRAW, EVENTS */
+/* global SAVE_TYPES, canvas_active */
 
 var FILE = new FILE_CLASS();
 
@@ -30,8 +30,9 @@ function FILE_CLASS() {
 		"PNG - Portable Network Graphics",	//default
 		"JPG - JPG/JPEG Format",		//autodetect on photos where png useless?
 		"JSON - Full layers data",		//aka PSD
-		"BMP - Windows Bitmap",			//firefox only, useless?
+		"GIF - Graphics Interchange Format",//animated GIF
 		"WEBP - Weppy File Format",		//chrome only
+		"BMP - Windows Bitmap",			//firefox only
 		];
 	//new
 	this.file_new = function () {
@@ -96,6 +97,45 @@ function FILE_CLASS() {
 		EDIT.save_state();
 		this.open();
 	};
+	
+	//open url
+	this.file_open_url = function(){
+		POP.add({name: "url", title: "URL:", value: ""});
+		POP.show('Open URL', [FILE, 'file_open_url_handler']);
+	};
+	
+	//handler for open url
+	this.file_open_url_handler = function(user_response){
+		var url = user_response.url;
+		if(url == '')
+			return;
+		
+		var layer_name = url.replace(/^.*[\\\/]/, '');
+		
+		var img = new Image();
+		img.crossOrigin = "Anonymous";
+		img.onload = function () {
+			EDIT.save_state();
+			LAYER.layer_add(layer_name);
+			
+			if (img.width > WIDTH)
+				WIDTH = img.width;
+			if (img.height > HEIGHT)
+				HEIGHT = img.height;
+			LAYER.set_canvas_size();
+			
+			canvas_active().drawImage(img, 0, 0);
+			if(EVENTS.autosize == true)
+				IMAGE.trim();
+			GUI.zoom_auto(true);
+			GUI.redraw_preview();
+		};
+		img.onerror = function (ex) {
+			POP.add({html: 'Sorry, image could not be loaded. Try copy image and paste it.'});
+			POP.show('Error', '.');
+		};
+		img.src = url;
+	};
 
 	//save
 	this.file_save = function () {
@@ -122,6 +162,19 @@ function FILE_CLASS() {
 
 		//force click
 		document.querySelector('#file_open').click();
+	};
+	
+	this.open_image = function(image_id) {
+		var img = document.getElementById(image_id);
+		
+		//set name
+		var name = img.src.replace(/^.*[\\\/]/, '');
+		LAYER.layer_add(name);
+		LAYER.layer_remove(1);
+		
+		//draw canvas
+		canvas_active().drawImage(img, 0, 0);
+		IMAGE.trim();
 	};
 	
 	this.open_handler = function (e) {
@@ -171,77 +224,185 @@ function FILE_CLASS() {
 		var save_default = this.SAVE_TYPES[0];	//png
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
+		
+		calc_size_value = 'No';
+		if(WIDTH * HEIGHT < 1000000)
+			calc_size_value = 'Yes';
 
 		POP.add({name: "name", title: "File name:", value: this.SAVE_NAME});
-		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default});
-		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100]});
-		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected']});
-		POP.add({name: "trim", title: "Trim:", values: ['No', 'Yes']});
+		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default, onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100], onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "delay", title: "Gif delay (in ms):", value: 500});
+		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected'], onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "calc_size", title: "Show file size:", values: ['No', 'Yes'], value: calc_size_value, onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({title: "File size:", html: '<span id="file_size">-</span>'});
 		POP.show('Save as', [FILE, 'save']);
 		document.getElementById("pop_data_name").select();
 		if (e != undefined)
 			e.preventDefault();
 	};
+	
+	//activated on save dialog parameters change
+	this.save_dialog_onchange = function (object){
+		var _this = this;
+		this.update_file_size('...');
+		
+		//get values
+		var only_one_layer = document.getElementById("pop_data_layers_poptmp1").checked;
+		var calc_size = document.getElementById("pop_data_calc_size_poptmp1").checked;
+		
+		var quality = document.getElementById("pop_data_quality").value;
+		if (quality > 100 || quality < 1 || isNaN(quality) == true)
+			quality = 90;
+		quality = quality / 100;
+		
+		var type = null;
+		for(var i in this.SAVE_TYPES){
+			if(document.getElementById("pop_data_type_poptmp" + i).checked){
+				type = this.SAVE_TYPES[i];
+			}
+		}
+		var parts = type.split(" ");
+		type = parts[0];
+		
+		if(calc_size == false){
+			document.getElementById('file_size').innerHTML = '-';
+			return;
+		}
+		
+		if (type != 'JSON' && type != 'GIF') {
+			//create temp canvas
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			
+			//ask data
+			LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		}
+		
+		//calc size
+		if (type == 'PNG') {
+			//png
+			tempCanvas.toBlob(function(blob) {
+				_this.update_file_size(blob.size);
+			});
+		}
+		else if (type == 'JPG') {
+			//jpg
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, "image/jpeg", quality);
+		}
+		else if (type == 'WEBP') {
+			//WEBP - new format for chrome only
+			var data_header = "image/webp";
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header, false) == false){
+				this.update_file_size('-');
+				return;
+			}
+			
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header);
+		}
+		else if (type == 'BMP') {
+			//bmp
+			var data_header = "image/bmp";
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header, false) == false){
+				this.update_file_size('-');
+				return;
+			}
+			
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header);
+		}
+		else if (type == 'JSON') {
+			//json
+			var data_json = this.export_as_json();
+			
+			var blob = new Blob([data_json], {type: "text/plain"});
+			this.update_file_size(blob.size);
+		}
+		else if (type == 'GIF') {
+			//gif
+			this.update_file_size('-');
+		}
+	};
+	
+	this.update_file_size = function (file_size){
+		if(typeof file_size == 'string'){
+			document.getElementById('file_size').innerHTML = file_size;
+			return;
+		}
+		
+		if(file_size > 1024 * 1024)
+			file_size = HELPER.number_format(file_size / 1024 / 1024, 2) + ' MB';
+		else if(file_size > 1024)
+			file_size = HELPER.number_format(file_size / 1024, 2) + ' KB';
+		else 
+			file_size = (file_size) + ' B';
+		document.getElementById('file_size').innerHTML = file_size;
+	};
 
 	this.save = function (user_response) {
 		fname = user_response.name;
-		var tempCanvas = document.createElement("canvas");
-		var tempCtx = tempCanvas.getContext("2d");
-		tempCanvas.width = WIDTH;
-		tempCanvas.height = HEIGHT;
-
-		//save choosen type
-		var save_default = this.SAVE_TYPES[0];	//png
+		if(user_response.layers == 'All')
+			only_one_layer = false;
+		else
+			only_one_layer = true;
+		
+		var quality = parseInt(user_response.quality);
+		if (quality > 100 || quality < 1 || isNaN(quality) == true)
+			quality = 90;
+		quality = quality / 100;
+		
+		delay = parseInt(user_response.delay);
+		if (delay < 0 || isNaN(quality) == true)
+			quality = 500;
+		
+		//detect type
+		var type = user_response.type;
+		var parts = type.split(" ");
+		type = parts[0];
+		
+		if (HELPER.strpos(fname, '.png') !== false)
+			type = 'PNG';
+		else if (HELPER.strpos(fname, '.jpg') !== false)
+			type = 'JPG';
+		else if (HELPER.strpos(fname, '.json') !== false)
+			type = 'JSON';
+		else if (HELPER.strpos(fname, '.bmp') !== false)
+			type = 'BMP';
+		else if (HELPER.strpos(fname, '.webp') !== false)
+			type = 'WEBP';
+		
+		//save type as cookie
+		var save_default = this.SAVE_TYPES[0]; //png
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
 		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
 			HELPER.setCookie('save_default', 'png');
 		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
 			HELPER.setCookie('save_default', 'jpg');
-
-		//detect type
-		var parts = user_response.type.split(" ");
-		user_response.type = parts[0];
-
-		if (HELPER.strpos(fname, '.png') !== false)
-			user_response.type = 'PNG';
-		else if (HELPER.strpos(fname, '.jpg') !== false)
-			user_response.type = 'JPG';
-		else if (HELPER.strpos(fname, '.json') !== false)
-			user_response.type = 'JSON';
-		else if (HELPER.strpos(fname, '.bmp') !== false)
-			user_response.type = 'BMP';
-		else if (HELPER.strpos(fname, '.webp') !== false)
-			user_response.type = 'WEBP';
-
-		//handle transparency
-		if (GUI.TRANSPARENCY == false || user_response.type == 'JPG') {
-			tempCtx.beginPath();
-			tempCtx.rect(0, 0, WIDTH, HEIGHT);
-			tempCtx.fillStyle = "#ffffff";
-			tempCtx.fill();
+		
+		if (type != 'JSON' && type != 'GIF') {
+			//create temp canvas
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			
+			//ask data
+			LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
 		}
 
-		//take data
-		for(var i = LAYER.layers.length-1; i >=0; i--){
-			if (LAYER.layers[i].visible == false)
-				continue;
-			if (user_response.layers == 'Selected' && user_response.type != 'JSON' && i != LAYER.layer_active)
-				continue;
-			tempCtx.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
-		}
-
-		if (user_response.trim == 'Yes' && user_response.type != 'JSON') {
-			//trim
-			var trim_info = IMAGE.trim_info(tempCanvas);
-			tmp_data = tempCtx.getImageData(0, 0, WIDTH, HEIGHT);
-			tempCtx.clearRect(0, 0, WIDTH, HEIGHT);
-			tempCanvas.width = WIDTH - trim_info.right - trim_info.left;
-			tempCanvas.height = HEIGHT - trim_info.bottom - trim_info.top;
-			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
-		}
-
-		if (user_response.type == 'PNG') {
+		if (type == 'PNG') {
 			//png - default format
 			if (HELPER.strpos(fname, '.png') == false)
 				fname = fname + ".png";
@@ -250,21 +411,16 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			});
 		}
-		else if (user_response.type == 'JPG') {
+		else if (type == 'JPG') {
 			//jpg
 			if (HELPER.strpos(fname, '.jpg') == false)
 				fname = fname + ".jpg";
-			
-			var quality = parseInt(user_response.quality);
-			if (quality > 100 || quality < 1 || isNaN(quality) == true)
-				quality = 90;
-			quality = quality / 100;
 			
 			tempCanvas.toBlob(function (blob) {
 				saveAs(blob, fname);
 			}, "image/jpeg", quality);
 		}
-		else if (user_response.type == 'WEBP') {
+		else if (type == 'WEBP') {
 			//WEBP - new format for chrome only
 			if (HELPER.strpos(fname, '.webp') == false)
 				fname = fname + ".webp";
@@ -278,7 +434,7 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			}, data_header);
 		}
-		else if (user_response.type == 'BMP') {
+		else if (type == 'BMP') {
 			//bmp
 			if (HELPER.strpos(fname, '.bmp') == false)
 				fname = fname + ".bmp";
@@ -292,7 +448,7 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			}, data_header);
 		}
-		else if (user_response.type == 'JSON') {
+		else if (type == 'JSON') {
 			//json - full data with layers
 			if (HELPER.strpos(fname, '.json') == false)
 				fname = fname + ".json";
@@ -303,16 +459,46 @@ function FILE_CLASS() {
 			//var data = window.URL.createObjectURL(blob); //html5
 			saveAs(blob, fname);
 		}
+		else if (type == 'GIF') {
+			//gif
+			var cores = navigator.hardwareConcurrency || 4;
+			var gif_settings = {
+				workers: cores,
+				quality: 10, //1-30, lower is better
+				repeat: 0,
+				width: WIDTH,
+				height: HEIGHT,
+				dither: 'FloydSteinberg-serpentine',
+				workerScript: 'vendor/gif.js/dist/gif.worker.js',
+			};
+			if(GUI.TRANSPARENCY == true){
+				gif_settings.transparent = 'rgba(0,0,0,0)';
+			}
+			var gif = new GIF(gif_settings);
+			
+			//add frames
+			for(var i = LAYER.layers.length - 1; i >= 0; i--){
+				if (LAYER.layers[i].visible == false)
+					continue;
+				gif.addFrame(document.getElementById(LAYER.layers[i].name).getContext("2d"), {copy: true, delay: delay});
+			}
+			gif.render();
+			gif.on('finished', function(blob) {
+				saveAs(blob, fname);
+			});
+		}
 	};
 	
-	this.check_format_support = function(canvas, data_header){
+	this.check_format_support = function(canvas, data_header, show_error){
 		var data = canvas.toDataURL(data_header);
 		var actualType = data.replace(/^data:([^;]*).*/, '$1');
 		
 		if (data_header != actualType && data_header != "text/plain") {
-			//error - no support
-			POP.add({title: "Error:", value: 'Your browser does not support this format.'});
-			POP.show('Sorry', '');
+			if(show_error == undefined || show_error == true) {
+				//error - no support
+				POP.add({title: "Error:", value: 'Your browser does not support this format.'});
+				POP.show('Sorry', '');
+			}
 			delete data;
 			return false;
 		}
@@ -326,7 +512,7 @@ function FILE_CLASS() {
 			a.href = '';
 			var element = document.getElementById("save_data");
 			element.parentNode.removeChild(element);
-		}, 1500);
+		}, 3000);
 	};
 	
 	this.save_file_info = function (object) {
@@ -347,16 +533,29 @@ function FILE_CLASS() {
 		if(object.type != undefined)
 			FILE.file_info.general.Type = object.type;
 		if(object.lastModified != undefined)
-			FILE.file_info.general['Last modified'] = '___'+new Date(object.lastModified);
+			FILE.file_info.general['Last modified'] = HELPER.format_time(object.lastModified);
 	};
 	
 	this.export_as_json = function(){
 		var export_data = {};
+		
+		//get date
+		var today = new Date();
+		var yyyy = today.getFullYear();
+		var mm = today.getMonth()+1; //January is 0!
+		var dd = today.getDate();
+		if(dd < 10)
+			dd = '0'+dd;
+		if(mm < 10)
+			mm = '0'+mm;
+		var today = yyyy+'-'+mm+'-'+dd;
 
 		//basic info
 		export_data.info = {
 			width: WIDTH,
 			height: HEIGHT,
+			about: 'Image data with multi-layers. Can be opened using miniPaint, https://github.com/viliusle/miniPaint',
+			date: today,
 		};
 
 		//layers

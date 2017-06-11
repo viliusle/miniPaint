@@ -28,7 +28,7 @@ function DRAW_TOOLS_CLASS() {
 	/**
 	 * currently used tool
 	 */
-	this.active_tool = 'select_tool';
+	this.active_tool = 'brush';
 	
 	/**
 	 * line points data for curved line
@@ -429,7 +429,19 @@ function DRAW_TOOLS_CLASS() {
 		var from_x = mouse.click_x;
 		var from_y = mouse.click_y;
 		var attribute_type = GUI.action_data().attributes.type;
-
+		if(attribute_type == undefined)
+			attribute_type = 'Simple';
+		
+		//set line endings
+		if(attribute_type == 'Simple'){
+			var lineCap = 'butt';
+		}
+		else{
+			var lineCap = 'round';
+		}
+		canvas_front.lineCap = lineCap;
+		canvas_active().lineCap = lineCap;
+			
 		if (type == 'move') {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
@@ -497,6 +509,10 @@ function DRAW_TOOLS_CLASS() {
 					canvas_active().stroke();
 					curve_points = [];
 				}
+			}
+			if (attribute_type != 'Multi-line'){
+				//reset last line position
+				DRAW.last_line = [];
 			}
 		}
 		else if (type == 'release') {
@@ -787,11 +803,6 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.lineJoin = 'round';
 				}
 				
-				/*canvas_front.beginPath();
-				canvas_front.arc(mouse.x, mouse.y, GUI.action_data().attributes.size / 2, 0, 2 * Math.PI, false);
-				canvas_front.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-				canvas_front.fill();*/
-
 				//blur
 				canvas_active().shadowBlur = 0;
 				if (GUI.action_data().attributes.anti_aliasing == true) {
@@ -1306,7 +1317,6 @@ function DRAW_TOOLS_CLASS() {
 				}
 				
 				//resize
-				EDIT.save_state();
 				WIDTH = this.select_data.w;
 				HEIGHT = this.select_data.h;
 				LAYER.set_canvas_size();
@@ -1449,10 +1459,9 @@ function DRAW_TOOLS_CLASS() {
 					canvas_front.save();
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					
-					canvas_front.mozImageSmoothingEnabled = false;
 					canvas_front.webkitImageSmoothingEnabled = false;
 					canvas_front.msImageSmoothingEnabled = false;
-					canvas_front.ImageSmoothingEnabled = false;
+					canvas_front.imageSmoothingEnabled = false;
 					
 					canvas_front.drawImage(canvas_active(true),
 						this.select_data.x, this.select_data.y, this.select_data.w, this.select_data.h,

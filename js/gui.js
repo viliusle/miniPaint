@@ -56,7 +56,7 @@ function GUI_CLASS() {
 			[1600,1200, 'UXGA'],
 			[1920,1080, 'Full HD, 1080p'],
 			[3840,2160, '4K UHD'],
-			[7680,4320, '8K UHD'],
+			//[7680,4320, '8K UHD'],
 		];
 	
 	/**
@@ -65,12 +65,17 @@ function GUI_CLASS() {
 	var COLOR_copy;
 	
 	this.draw_helpers = function () {
+		var active_tool = HELPER.getCookie('active_tool');
+		if(active_tool == '')
+			active_tool = DRAW.active_tool;
+		DRAW.active_tool = active_tool;
+		
 		//left menu
 		var html = '';
 		for (var i in DRAW_TOOLS_CONFIG) {
 			html += '<a title="' + DRAW_TOOLS_CONFIG[i].title + '"';
 			html += ' style="background: #989898 url(\'img/' + DRAW_TOOLS_CONFIG[i].icon[0] + '\') no-repeat ' + DRAW_TOOLS_CONFIG[i].icon[1] + 'px ' + DRAW_TOOLS_CONFIG[i].icon[2] + 'px;"';
-			if (DRAW_TOOLS_CONFIG[i].name == DRAW.active_tool)
+			if (DRAW_TOOLS_CONFIG[i].name == active_tool)
 				html += ' class="active trn"';
 			else
 				html += ' class="trn"';
@@ -289,9 +294,14 @@ function GUI_CLASS() {
 				if (this.ZOOM <= 90 && recalc > 0){
 					step = 10;
 				}
-				this.ZOOM = this.ZOOM + recalc * step;
-				if (this.ZOOM > 100 && this.ZOOM < 200){
-					this.ZOOM = 100;
+				if (this.ZOOM >= 100 && this.ZOOM < 300 && recalc == 1){
+					this.ZOOM += 50;
+				}
+				else if (this.ZOOM <= 300 && this.ZOOM > 100 && recalc == -1){
+					this.ZOOM -= 50;
+				}
+				else{
+					this.ZOOM = this.ZOOM + recalc * step;
 				}
 			}
 			else {
@@ -351,7 +361,8 @@ function GUI_CLASS() {
 	};
 	
 	this.update_attribute = function (object, next_value) {
-		var max_value = 500;
+		var max_value = 999;
+		
 		for (var k in this.action_data().attributes) {
 			if (k != object.id)
 				continue;
@@ -383,31 +394,32 @@ function GUI_CLASS() {
 			else {
 				//numbers
 				if (next_value != undefined) {
+					var old_value = parseInt(this.action_data().attributes[k]);
 					if (next_value > 0) {
-						if (parseInt(this.action_data().attributes[k]) == 0)
-							object.value = 1;
-						else if (parseInt(this.action_data().attributes[k]) == 1)
-							object.value = 5;
-						else if (parseInt(this.action_data().attributes[k]) == 5)
-							object.value = 10;
+						//increase
+						if (old_value >= 100)
+							object.value = old_value + 50;
+						else if (old_value >= 10)
+							object.value = old_value + 10;
+						else if (old_value >= 5)
+							object.value = old_value + 5;
 						else
-							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+							object.value = old_value + 1;
 					}
 					else if (next_value < 0) {
-						if (parseInt(this.action_data().attributes[k]) == 1)
-							object.value = 0;
-						else if (parseInt(this.action_data().attributes[k]) <= 5)
-							object.value = 1;
-						else if (parseInt(this.action_data().attributes[k]) <= 10)
-							object.value = 5;
-						else if (parseInt(this.action_data().attributes[k]) <= 20)
-							object.value = 10;
+						//decrease
+						if (old_value > 100)
+							object.value = old_value - 50;
+						else if (old_value > 10)
+							object.value = old_value - 10;
+						else if (old_value > 5)
+							object.value = old_value - 5;
 						else
-							object.value = parseInt(this.action_data().attributes[k]) + next_value;
+							object.value = old_value - 1;
 					}
 
-					if (object.value < 0)
-						object.value = 0;
+					if (object.value < 1)
+						object.value = 1;
 					if (object.value > max_value)
 						object.value = max_value;
 				}
@@ -459,6 +471,9 @@ function GUI_CLASS() {
 		DRAW.active_tool = key;
 		document.getElementById(key).className = "active trn";
 		this.show_action_attributes();
+		
+		//save for next session
+		HELPER.setCookie('active_tool', key);
 
 		return false;
 	};
@@ -476,7 +491,6 @@ function GUI_CLASS() {
 	 */
 	this.show_action_attributes = function () {
 		html = '';
-		var step = 10;
 		for (var k in this.action_data().attributes) {
 			var title = k[0].toUpperCase() + k.slice(1);
 			title = title.replace("_", " ");
@@ -519,8 +533,8 @@ function GUI_CLASS() {
 				html += '<td><input onKeyUp="GUI.update_attribute(this);" type="number" id="' + k + '" value="' + GUI.action_data().attributes[k] + '" /></td>';
 				html += '</tr>';
 				html += '</table>';
-				html += '<div style="float:left;width:32px;" onclick="GUI.update_attribute(this, ' + (step) + ')" class="attribute-area" id="' + k + '">+</div>';
-				html += '<div style="margin-left:48px;margin-bottom:15px;" onclick="GUI.update_attribute(this, ' + (-step) + ')" class="attribute-area" id="' + k + '">-</div>';
+				html += '<div style="float:left;width:32px;" onclick="GUI.update_attribute(this, 1)" class="attribute-area" id="' + k + '">+</div>';
+				html += '<div style="margin-left:48px;margin-bottom:15px;" onclick="GUI.update_attribute(this, -1)" class="attribute-area" id="' + k + '">-</div>';
 				html += '</div>';
 			}
 		}
