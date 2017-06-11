@@ -772,7 +772,7 @@ function LAYER_CLASS() {
 		//take data
 		for(var i = LAYER.layers.length-1; i >=0; i--){
 			if (LAYER.layers[i].visible == false)
-				only_one_layer;
+				continue;
 			if (only_one_layer == true && type != 'JSON' && i != LAYER.layer_active)
 				continue;
 			ctx.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
