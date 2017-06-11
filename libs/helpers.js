@@ -165,7 +165,15 @@ function HELPER_CLASS() {
 		return "#" + r + g + b;
 	};
 	
-	//IntegraXor Web SCADA - JavaScript Number Formatter, author: KPL, KHL
+	/**
+	 * JavaScript Number Formatter, author: KPL, KHL
+	 * 
+	 * @param {int} n
+	 * @param {int} decPlaces
+	 * @param {string} thouSeparator
+	 * @param {string} decSeparator
+	 * @returns {string}
+	 */
 	this.number_format = function (n, decPlaces, thouSeparator, decSeparator) {
 		var decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces;
 		var decSeparator = decSeparator == undefined ? "." : decSeparator;

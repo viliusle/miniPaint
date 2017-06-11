@@ -30,8 +30,8 @@ function FILE_CLASS() {
 		"PNG - Portable Network Graphics",	//default
 		"JPG - JPG/JPEG Format",		//autodetect on photos where png useless?
 		"JSON - Full layers data",		//aka PSD
-		"BMP - Windows Bitmap",			//firefox only, useless?
 		"WEBP - Weppy File Format",		//chrome only
+		"BMP - Windows Bitmap",			//firefox only
 		];
 	//new
 	this.file_new = function () {
@@ -223,77 +223,172 @@ function FILE_CLASS() {
 		var save_default = this.SAVE_TYPES[0];	//png
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
+		
+		calc_size_value = 'No';
+		if(WIDTH * HEIGHT < 1000000)
+			calc_size_value = 'Yes';
 
 		POP.add({name: "name", title: "File name:", value: this.SAVE_NAME});
-		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default});
-		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100]});
-		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected']});
-		POP.add({name: "trim", title: "Trim:", values: ['No', 'Yes']});
+		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default, onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100], onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected'], onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "calc_size", title: "Show file size:", values: ['No', 'Yes'], value: calc_size_value, onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({title: "File size:", html: '<span id="file_size">-</span>'});
 		POP.show('Save as', [FILE, 'save']);
 		document.getElementById("pop_data_name").select();
 		if (e != undefined)
 			e.preventDefault();
 	};
-
-	this.save = function (user_response) {
-		fname = user_response.name;
+	
+	//activated on save dialog parameters change
+	this.save_dialog_onchange = function (object){
+		var _this = this;
+		this.update_file_size('...');
+		
+		//get values
+		var only_one_layer = document.getElementById("pop_data_layers_poptmp1").checked;
+		var calc_size = document.getElementById("pop_data_calc_size_poptmp1").checked;
+		
+		var quality = document.getElementById("pop_data_quality").value;
+		if (quality > 100 || quality < 1 || isNaN(quality) == true)
+			quality = 90;
+		quality = quality / 100;
+		
+		var type = null;
+		for(var i in this.SAVE_TYPES){
+			if(document.getElementById("pop_data_type_poptmp" + i).checked){
+				type = this.SAVE_TYPES[i];
+			}
+		}
+		var parts = type.split(" ");
+		type = parts[0];
+		
+		if(calc_size == false){
+			document.getElementById('file_size').innerHTML = '-';
+			return;
+		}
+		
+		//create temp canvas
 		var tempCanvas = document.createElement("canvas");
 		var tempCtx = tempCanvas.getContext("2d");
 		tempCanvas.width = WIDTH;
 		tempCanvas.height = HEIGHT;
+		
+		//ask data
+		LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		
+		//calc size
+		if (type == 'PNG') {
+			//png
+			tempCanvas.toBlob(function(blob) {
+				_this.update_file_size(blob.size);
+			});
+		}
+		else if (type == 'JPG') {
+			//jpg
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, "image/jpeg", quality);
+		}
+		else if (type == 'WEBP') {
+			//WEBP - new format for chrome only
+			var data_header = "image/webp";
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header, false) == false){
+				this.update_file_size('-');
+				return;
+			}
+			
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header);
+		}
+		else if (type == 'BMP') {
+			//bmp
+			var data_header = "image/bmp";
+			
+			//check support
+			if(this.check_format_support(tempCanvas, data_header, false) == false){
+				this.update_file_size('-');
+				return;
+			}
+			
+			tempCanvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header);
+		}
+		else if (type == 'JSON') {
+			//json
+			var data_json = this.export_as_json();
+			
+			var blob = new Blob([data_json], {type: "text/plain"});
+			this.update_file_size(blob.size);
+		}
+	};
+	
+	this.update_file_size = function (file_size){
+		if(typeof file_size == 'string'){
+			document.getElementById('file_size').innerHTML = file_size;
+			return;
+		}
+		
+		if(file_size > 1024 * 1024)
+			file_size = HELPER.number_format(file_size / 1024 / 1024, 2) + ' MB';
+		else if(file_size > 1024)
+			file_size = HELPER.number_format(file_size / 1024, 2) + ' KB';
+		else 
+			file_size = (file_size) + ' B';
+		document.getElementById('file_size').innerHTML = file_size;
+	};
 
-		//save choosen type
-		var save_default = this.SAVE_TYPES[0];	//png
+	this.save = function (user_response) {
+		fname = user_response.name;
+		if(user_response.layers == 'All')
+			only_one_layer = false;
+		else
+			only_one_layer = true;
+		
+		var quality = parseInt(user_response.quality);
+		if (quality > 100 || quality < 1 || isNaN(quality) == true)
+			quality = 90;
+		quality = quality / 100;
+		
+		//detect type
+		var type = user_response.type;
+		var parts = type.split(" ");
+		type = parts[0];
+		
+		if (HELPER.strpos(fname, '.png') !== false)
+			type = 'PNG';
+		else if (HELPER.strpos(fname, '.jpg') !== false)
+			type = 'JPG';
+		else if (HELPER.strpos(fname, '.json') !== false)
+			type = 'JSON';
+		else if (HELPER.strpos(fname, '.bmp') !== false)
+			type = 'BMP';
+		else if (HELPER.strpos(fname, '.webp') !== false)
+			type = 'WEBP';
+		
+		//save type as cookie
+		var save_default = this.SAVE_TYPES[0]; //png
 		if (HELPER.getCookie('save_default') == 'jpg')
 			save_default = this.SAVE_TYPES[1]; //jpg
 		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
 			HELPER.setCookie('save_default', 'png');
 		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
 			HELPER.setCookie('save_default', 'jpg');
+		
+		//create temp canvas
+		var tempCanvas = document.createElement("canvas");
+		var tempCtx = tempCanvas.getContext("2d");
+		tempCanvas.width = WIDTH;
+		tempCanvas.height = HEIGHT;
+		
+		//ask data
+		LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
 
-		//detect type
-		var parts = user_response.type.split(" ");
-		user_response.type = parts[0];
-
-		if (HELPER.strpos(fname, '.png') !== false)
-			user_response.type = 'PNG';
-		else if (HELPER.strpos(fname, '.jpg') !== false)
-			user_response.type = 'JPG';
-		else if (HELPER.strpos(fname, '.json') !== false)
-			user_response.type = 'JSON';
-		else if (HELPER.strpos(fname, '.bmp') !== false)
-			user_response.type = 'BMP';
-		else if (HELPER.strpos(fname, '.webp') !== false)
-			user_response.type = 'WEBP';
-
-		//handle transparency
-		if (GUI.TRANSPARENCY == false || user_response.type == 'JPG') {
-			tempCtx.beginPath();
-			tempCtx.rect(0, 0, WIDTH, HEIGHT);
-			tempCtx.fillStyle = "#ffffff";
-			tempCtx.fill();
-		}
-
-		//take data
-		for(var i = LAYER.layers.length-1; i >=0; i--){
-			if (LAYER.layers[i].visible == false)
-				continue;
-			if (user_response.layers == 'Selected' && user_response.type != 'JSON' && i != LAYER.layer_active)
-				continue;
-			tempCtx.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
-		}
-
-		if (user_response.trim == 'Yes' && user_response.type != 'JSON') {
-			//trim
-			var trim_info = IMAGE.trim_info(tempCanvas);
-			tmp_data = tempCtx.getImageData(0, 0, WIDTH, HEIGHT);
-			tempCtx.clearRect(0, 0, WIDTH, HEIGHT);
-			tempCanvas.width = WIDTH - trim_info.right - trim_info.left;
-			tempCanvas.height = HEIGHT - trim_info.bottom - trim_info.top;
-			tempCtx.putImageData(tmp_data, -trim_info.left, -trim_info.top);
-		}
-
-		if (user_response.type == 'PNG') {
+		if (type == 'PNG') {
 			//png - default format
 			if (HELPER.strpos(fname, '.png') == false)
 				fname = fname + ".png";
@@ -302,21 +397,16 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			});
 		}
-		else if (user_response.type == 'JPG') {
+		else if (type == 'JPG') {
 			//jpg
 			if (HELPER.strpos(fname, '.jpg') == false)
 				fname = fname + ".jpg";
-			
-			var quality = parseInt(user_response.quality);
-			if (quality > 100 || quality < 1 || isNaN(quality) == true)
-				quality = 90;
-			quality = quality / 100;
 			
 			tempCanvas.toBlob(function (blob) {
 				saveAs(blob, fname);
 			}, "image/jpeg", quality);
 		}
-		else if (user_response.type == 'WEBP') {
+		else if (type == 'WEBP') {
 			//WEBP - new format for chrome only
 			if (HELPER.strpos(fname, '.webp') == false)
 				fname = fname + ".webp";
@@ -330,7 +420,7 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			}, data_header);
 		}
-		else if (user_response.type == 'BMP') {
+		else if (type == 'BMP') {
 			//bmp
 			if (HELPER.strpos(fname, '.bmp') == false)
 				fname = fname + ".bmp";
@@ -344,7 +434,7 @@ function FILE_CLASS() {
 				saveAs(blob, fname);
 			}, data_header);
 		}
-		else if (user_response.type == 'JSON') {
+		else if (type == 'JSON') {
 			//json - full data with layers
 			if (HELPER.strpos(fname, '.json') == false)
 				fname = fname + ".json";
@@ -357,14 +447,16 @@ function FILE_CLASS() {
 		}
 	};
 	
-	this.check_format_support = function(canvas, data_header){
+	this.check_format_support = function(canvas, data_header, show_error){
 		var data = canvas.toDataURL(data_header);
 		var actualType = data.replace(/^data:([^;]*).*/, '$1');
 		
 		if (data_header != actualType && data_header != "text/plain") {
-			//error - no support
-			POP.add({title: "Error:", value: 'Your browser does not support this format.'});
-			POP.show('Sorry', '');
+			if(show_error == undefined || show_error == true) {
+				//error - no support
+				POP.add({title: "Error:", value: 'Your browser does not support this format.'});
+				POP.show('Sorry', '');
+			}
 			delete data;
 			return false;
 		}
@@ -378,7 +470,7 @@ function FILE_CLASS() {
 			a.href = '';
 			var element = document.getElementById("save_data");
 			element.parentNode.removeChild(element);
-		}, 1500);
+		}, 3000);
 	};
 	
 	this.save_file_info = function (object) {

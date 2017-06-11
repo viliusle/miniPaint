@@ -752,6 +752,32 @@ function LAYER_CLASS() {
 			canvas_preview.restore();
 		}
 	};
+
+	/**
+	 * exports all layers to canvas for saving
+	 * 
+	 * @param {canvas.context} ctx
+	 * @param {string} type
+	 * @param {boolean} only_one_layer
+	 */
+	this.export_layers_to_canvas = function (ctx, type, only_one_layer){
+		//handle transparency
+		if (GUI.TRANSPARENCY == false || type == 'JPG') {
+			ctx.beginPath();
+			ctx.rect(0, 0, WIDTH, HEIGHT);
+			ctx.fillStyle = "#ffffff";
+			ctx.fill();
+		}
+
+		//take data
+		for(var i = LAYER.layers.length-1; i >=0; i--){
+			if (LAYER.layers[i].visible == false)
+				only_one_layer;
+			if (only_one_layer == true && type != 'JSON' && i != LAYER.layer_active)
+				continue;
+			ctx.drawImage(document.getElementById(LAYER.layers[i].name), 0, 0, WIDTH, HEIGHT);
+		}
+	};
 }
 
 function canvas_active(base) {

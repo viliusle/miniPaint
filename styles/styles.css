@@ -77,6 +77,9 @@ input[type="button"]:disabled{
 input[type="button"]{
 	background: #dddddd;
 }
+label{
+	font-size:13px;
+}
 
 /* ========== 2. Header ===================================================== */
 
@@ -681,7 +684,7 @@ input[type="button"]{
 	overflow-y:scroll;
 	margin:0px auto 0px auto;
 	padding:10px;
-	font-size:12px;
+	font-size: 13px;
 	color: #333;
 	z-index: 100;
 }
@@ -689,8 +692,16 @@ input[type="button"]{
 	margin-top:0px;
 	cursor:move;
 }
+#popup td, #popup th{
+	height: 25px;
+}
 #popup td{
-	height:20px;
+	vertical-align: middle;
+}
+#popup th{
+	text-align:left;
+	padding: 5px 5px 5px 0;
+	width: 130px;
 }
 #popup textarea{
 	color:#000000;
