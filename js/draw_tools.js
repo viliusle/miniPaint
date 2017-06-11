@@ -1092,8 +1092,7 @@ function DRAW_TOOLS_CLASS() {
 	this.blur_tool = function (type, mouse, event) {
 		if (mouse.valid == false)
 			return true;
-		var size = GUI.action_data().attributes.size;
-		var size_half = Math.round(size / 2);
+		var size = parseInt(GUI.action_data().attributes.size);
 		var xx = mouse.x - size / 2;
 		var yy = mouse.y - size / 2;
 		if (xx < 0)
@@ -1102,7 +1101,7 @@ function DRAW_TOOLS_CLASS() {
 			yy = 0;
 		if (type == 'click') {
 			EDIT.save_state();
-			var param1 = GUI.action_data().attributes.power;
+			var param1 = parseInt(GUI.action_data().attributes.power);
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1659,7 +1658,7 @@ function DRAW_TOOLS_CLASS() {
 		var strength = GUI.action_data().attributes.size / 100;
 		if(strength > 1)
 			strength = 1;
-		var radius = GUI.action_data().attributes.radius;
+		var radius = parseInt(GUI.action_data().attributes.radius);
 		var bulge = GUI.action_data().attributes.bulge;
 		if(bulge == false)
 			strength = -1 * strength;
