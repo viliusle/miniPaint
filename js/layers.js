@@ -278,6 +278,7 @@ function LAYER_CLASS() {
 				LAYER.layer_renew();
 			}
 		);
+		document.getElementById("pop_data_param1").select();
 	};
 
 	//trim

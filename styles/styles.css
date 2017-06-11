@@ -657,6 +657,7 @@ label{
 	border:1px solid #888888;
 	margin:5px 0px 5px 0px;
 	padding:5px;
+	line-height: 1.5;
 }
 @media screen and (max-width:700px){
 	body{

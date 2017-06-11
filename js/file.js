@@ -462,20 +462,22 @@ function FILE_CLASS() {
 		else if (type == 'GIF') {
 			//gif
 			var cores = navigator.hardwareConcurrency || 4;
-			var gif = new GIF({
+			var gif_settings = {
 				workers: cores,
 				quality: 10, //1-30, lower is better
-				transparent: 'rgba(0,0,0,0)',
 				repeat: 0,
 				width: WIDTH,
 				height: HEIGHT,
 				dither: 'FloydSteinberg-serpentine',
 				workerScript: 'vendor/gif.js/dist/gif.worker.js',
-				globalPalette: true,
-			});
+			};
+			if(GUI.TRANSPARENCY == true){
+				gif_settings.transparent = 'rgba(0,0,0,0)';
+			}
+			var gif = new GIF(gif_settings);
 			
 			//add frames
-			for(var i = 0; i < LAYER.layers.length; i++){
+			for(var i = LAYER.layers.length - 1; i >= 0; i--){
 				if (LAYER.layers[i].visible == false)
 					continue;
 				gif.addFrame(document.getElementById(LAYER.layers[i].name).getContext("2d"), {copy: true, delay: delay});
