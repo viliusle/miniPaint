@@ -262,11 +262,11 @@ function popup() {
 		html += '</table>';
 
 		//action buttons
-		html += '<div style="text-align:center;margin-top:20px;margin-bottom:15px;">';
-		html += '<button onclick="POP.save();" class="button trn">Ok</button>';
-		html += '<button onclick="POP.hide();" class="button trn">Cancel</button>';
+		html += '<div style="text-align:center;margin-top:20px;margin-bottom:5px;">';
+		html += '	<button onclick="POP.save();" class="button trn">Ok</button>';
+		html += '	<button onclick="POP.hide();" class="button trn">Cancel</button>';
 		if (this.preview_in_main !== false)
-			html += '<button onclick="POP.view();" class="button trn">Preview</button>';
+			html += '	<button onclick="POP.view();" class="button trn">Preview</button>';
 		html += '</div>';
 
 		document.getElementById("popup").innerHTML = html;

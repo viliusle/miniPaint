@@ -30,6 +30,7 @@ function FILE_CLASS() {
 		"PNG - Portable Network Graphics",	//default
 		"JPG - JPG/JPEG Format",		//autodetect on photos where png useless?
 		"JSON - Full layers data",		//aka PSD
+		"GIF - Graphics Interchange Format",//animated GIF
 		"WEBP - Weppy File Format",		//chrome only
 		"BMP - Windows Bitmap",			//firefox only
 		];
@@ -231,6 +232,7 @@ function FILE_CLASS() {
 		POP.add({name: "name", title: "File name:", value: this.SAVE_NAME});
 		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default, onchange: "FILE.save_dialog_onchange(this)"});
 		POP.add({name: "quality", title: "Quality (jpeg):", value: 90, range: [1, 100], onchange: "FILE.save_dialog_onchange(this)"});
+		POP.add({name: "delay", title: "Gif delay (in ms):", value: 500});
 		POP.add({name: "layers", title: "Save layers:", values: ['All', 'Selected'], onchange: "FILE.save_dialog_onchange(this)"});
 		POP.add({name: "calc_size", title: "Show file size:", values: ['No', 'Yes'], value: calc_size_value, onchange: "FILE.save_dialog_onchange(this)"});
 		POP.add({title: "File size:", html: '<span id="file_size">-</span>'});
@@ -268,14 +270,16 @@ function FILE_CLASS() {
 			return;
 		}
 		
-		//create temp canvas
-		var tempCanvas = document.createElement("canvas");
-		var tempCtx = tempCanvas.getContext("2d");
-		tempCanvas.width = WIDTH;
-		tempCanvas.height = HEIGHT;
-		
-		//ask data
-		LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		if (type != 'JSON' && type != 'GIF') {
+			//create temp canvas
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			
+			//ask data
+			LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		}
 		
 		//calc size
 		if (type == 'PNG') {
@@ -325,6 +329,10 @@ function FILE_CLASS() {
 			var blob = new Blob([data_json], {type: "text/plain"});
 			this.update_file_size(blob.size);
 		}
+		else if (type == 'GIF') {
+			//gif
+			this.update_file_size('-');
+		}
 	};
 	
 	this.update_file_size = function (file_size){
@@ -354,6 +362,10 @@ function FILE_CLASS() {
 			quality = 90;
 		quality = quality / 100;
 		
+		delay = parseInt(user_response.delay);
+		if (delay < 0 || isNaN(quality) == true)
+			quality = 500;
+		
 		//detect type
 		var type = user_response.type;
 		var parts = type.split(" ");
@@ -379,14 +391,16 @@ function FILE_CLASS() {
 		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
 			HELPER.setCookie('save_default', 'jpg');
 		
-		//create temp canvas
-		var tempCanvas = document.createElement("canvas");
-		var tempCtx = tempCanvas.getContext("2d");
-		tempCanvas.width = WIDTH;
-		tempCanvas.height = HEIGHT;
-		
-		//ask data
-		LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		if (type != 'JSON' && type != 'GIF') {
+			//create temp canvas
+			var tempCanvas = document.createElement("canvas");
+			var tempCtx = tempCanvas.getContext("2d");
+			tempCanvas.width = WIDTH;
+			tempCanvas.height = HEIGHT;
+			
+			//ask data
+			LAYER.export_layers_to_canvas(tempCtx, type, only_one_layer);
+		}
 
 		if (type == 'PNG') {
 			//png - default format
@@ -444,6 +458,32 @@ function FILE_CLASS() {
 			var blob = new Blob([data_json], {type: "text/plain"});
 			//var data = window.URL.createObjectURL(blob); //html5
 			saveAs(blob, fname);
+		}
+		else if (type == 'GIF') {
+			//gif
+			var cores = navigator.hardwareConcurrency || 4;
+			var gif = new GIF({
+				workers: cores,
+				quality: 10, //1-30, lower is better
+				transparent: 'rgba(0,0,0,0)',
+				repeat: 0,
+				width: WIDTH,
+				height: HEIGHT,
+				dither: 'FloydSteinberg-serpentine',
+				workerScript: 'vendor/gif.js/dist/gif.worker.js',
+				globalPalette: true,
+			});
+			
+			//add frames
+			for(var i = 0; i < LAYER.layers.length; i++){
+				if (LAYER.layers[i].visible == false)
+					continue;
+				gif.addFrame(document.getElementById(LAYER.layers[i].name).getContext("2d"), {copy: true, delay: delay});
+			}
+			gif.render();
+			gif.on('finished', function(blob) {
+				saveAs(blob, fname);
+			});
 		}
 	};
 	
