@@ -201,7 +201,7 @@ function popup() {
 						var preview_code = '';
 						if (this.preview !== false)
 							preview_code = 'POP.view();';
-						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="' + parameter.range[1] + '" step="' + step + '" " oninput="document.getElementById(\'pv' + i + '\').innerHTML=Math.round(this.value*100)/100;"'+ ' ' +onchange + ' ' + preview_code + '" /></td>';
+						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="' + parameter.range[1] + '" step="' + step + '" " oninput="document.getElementById(\'pv' + i + '\').innerHTML=Math.round(this.value*100)/100;'+ preview_code + '" ' + onchange + ' /></td>';
 						html += '<td style="padding-left:10px;width:50px;" id="pv' + i + '">' + parameter.value + '</td>';
 					}
 					else if (parameter.type == 'color') {
