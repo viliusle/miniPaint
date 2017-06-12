@@ -363,9 +363,16 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.fill = function (type, mouse, event) {
-		if (mouse.valid == false)
+		if (mouse.valid == false){
 			return true;
+		}
 		if (type == 'click') {
+			if(ALPHA == 0){
+				POP.add({html: 'Alpha color can not be zero.'});
+				POP.show('Error', '.');
+				return;
+			}
+			
 			EDIT.save_state();
 			var color_to = HELPER.hex2rgb(COLOR);
 			color_to.a = ALPHA;
@@ -379,9 +386,11 @@ function DRAW_TOOLS_CLASS() {
 			var c = canvas_active().getImageData(mouse.x, mouse.y, 1, 1).data;
 			COLOR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 
-			//set alpha
-			ALPHA = c[3];
-			document.getElementById("rgb_a").value = ALPHA;
+			if(c[3] > 0) {
+				//set alpha
+				ALPHA = c[3];
+				document.getElementById("rgb_a").value = ALPHA;
+			}
 
 			GUI.sync_colors();
 		}
