@@ -561,6 +561,12 @@ function GUI_CLASS() {
 		document.getElementById("rgb_r").value = colors.r;
 		document.getElementById("rgb_g").value = colors.g;
 		document.getElementById("rgb_b").value = colors.b;
+		
+		//also set alpha to max
+		if(ALPHA == 0) {
+			ALPHA = 255;
+			document.getElementById("rgb_a").value = ALPHA;
+		}
 	};
 	
 	this.set_color_manual = function (event) {

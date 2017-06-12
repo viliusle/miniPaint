@@ -363,9 +363,16 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.fill = function (type, mouse, event) {
-		if (mouse.valid == false)
+		if (mouse.valid == false){
 			return true;
+		}
 		if (type == 'click') {
+			if(ALPHA == 0){
+				POP.add({html: 'Alpha color can not be zero.'});
+				POP.show('Error', '.');
+				return;
+			}
+			
 			EDIT.save_state();
 			var color_to = HELPER.hex2rgb(COLOR);
 			color_to.a = ALPHA;
@@ -379,9 +386,11 @@ function DRAW_TOOLS_CLASS() {
 			var c = canvas_active().getImageData(mouse.x, mouse.y, 1, 1).data;
 			COLOR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
 
-			//set alpha
-			ALPHA = c[3];
-			document.getElementById("rgb_a").value = ALPHA;
+			if(c[3] > 0) {
+				//set alpha
+				ALPHA = c[3];
+				document.getElementById("rgb_a").value = ALPHA;
+			}
 
 			GUI.sync_colors();
 		}
@@ -779,18 +788,17 @@ function DRAW_TOOLS_CLASS() {
 			return true;
 		var brush_type = GUI.action_data().attributes.type;
 		var color_rgb = HELPER.hex2rgb(COLOR);
-		var size = GUI.action_data().attributes.size;
-		var original_size = GUI.action_data().attributes.size;
-
+		var size = parseInt(GUI.action_data().attributes.size);
+		
 		if (type == 'click')
 			EDIT.save_state();
-
+		
 		if (brush_type == 'Brush') {
 			if (type == 'click') {
 				//init settings
 				canvas_active().beginPath();
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-				canvas_active().lineWidth = GUI.action_data().attributes.size;
+				canvas_active().lineWidth = size;
 				canvas_active().lineCap = 'round';
 				canvas_active().lineJoin = 'round';
 
@@ -798,7 +806,7 @@ function DRAW_TOOLS_CLASS() {
 				if (ALPHA < 255) {
 					canvas_front.beginPath();
 					canvas_front.strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-					canvas_front.lineWidth = GUI.action_data().attributes.size;
+					canvas_front.lineWidth = size;
 					canvas_front.lineCap = 'round';
 					canvas_front.lineJoin = 'round';
 				}
@@ -807,7 +815,7 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().shadowBlur = 0;
 				if (GUI.action_data().attributes.anti_aliasing == true) {
 					canvas_active().shadowColor = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-					canvas_active().shadowBlur = Math.round(GUI.action_data().attributes.size);
+					canvas_active().shadowBlur = Math.round(size);
 				}
 			}
 			else if (type == 'drag' && mouse.last_x != false && mouse.last_y != false) {
@@ -816,8 +824,8 @@ function DRAW_TOOLS_CLASS() {
 				var max_speed = 20;
 				var power = 0.7; //max 1, how much speed reduce size, 1 means reduce to 0
 				
-				var new_size = original_size - original_size / max_speed * mouse.speed_average * power;
-				new_size = Math.max(new_size, original_size/4);
+				var new_size = size - size / max_speed * mouse.speed_average * power;
+				new_size = Math.max(new_size, size/4);
 				new_size = Math.round(new_size);
 				canvas_front.lineWidth = new_size;		
 				canvas_active().lineWidth = new_size;
@@ -855,7 +863,7 @@ function DRAW_TOOLS_CLASS() {
 				//if mouse was not moved
 				if (mouse.click_x == mouse.x && mouse.click_y == mouse.y) {
 					canvas_active().beginPath();
-					canvas_active().arc(mouse.x, mouse.y, GUI.action_data().attributes.size / 2, 0, 2 * Math.PI, false);
+					canvas_active().arc(mouse.x, mouse.y, size / 2, 0, 2 * Math.PI, false);
 					canvas_active().fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 					canvas_active().fill();
 				}
@@ -875,7 +883,7 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 				canvas_active().lineWidth = 0.5;
 
-				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y, GUI.action_data().attributes.size);
+				BezierCurveBrush.draw(canvas_active(), color_rgb, mouse.x, mouse.y, size);
 			}
 		}
 		else if (brush_type == 'Chrome') {
@@ -888,7 +896,7 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 				canvas_active().lineWidth = 1;
 
-				chrome_brush.stroke(color_rgb, mouse.x, mouse.y, GUI.action_data().attributes.size);
+				chrome_brush.stroke(color_rgb, mouse.x, mouse.y, size);
 			}
 		}
 		else if (brush_type == 'Fur') {
@@ -915,7 +923,7 @@ function DRAW_TOOLS_CLASS() {
 					b = points[e][0] - points[count][0];
 					a = points[e][1] - points[count][1];
 					g = b * b + a * a;
-					var g_size = Math.round(400 * GUI.action_data().attributes.size);
+					var g_size = Math.round(400 * size);
 					if (g < g_size && Math.random() > g / g_size) {
 						canvas_active().beginPath();
 						canvas_active().moveTo(f + (b * 0.5), c + (a * 0.5));
@@ -929,7 +937,7 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 		else if (brush_type == 'Grouped') {
-			groups_n = GUI.action_data().attributes.size;
+			groups_n = size;
 			gsize = 10;
 			random_power = 5;
 
@@ -979,7 +987,7 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 				canvas_active().lineWidth = 1;
 
-				shaded_brush.stroke(color_rgb, mouse.x, mouse.y, GUI.action_data().attributes.size);
+				shaded_brush.stroke(color_rgb, mouse.x, mouse.y, size);
 			}
 		}
 		else if (brush_type == 'Sketchy') {
@@ -992,7 +1000,7 @@ function DRAW_TOOLS_CLASS() {
 				canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 				canvas_active().lineWidth = 1;
 
-				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y, GUI.action_data().attributes.size);
+				sketchy_brush.stroke(color_rgb, mouse.x, mouse.y, size);
 			}
 		}
 	};
@@ -1092,8 +1100,7 @@ function DRAW_TOOLS_CLASS() {
 	this.blur_tool = function (type, mouse, event) {
 		if (mouse.valid == false)
 			return true;
-		var size = GUI.action_data().attributes.size;
-		var size_half = Math.round(size / 2);
+		var size = parseInt(GUI.action_data().attributes.size);
 		var xx = mouse.x - size / 2;
 		var yy = mouse.y - size / 2;
 		if (xx < 0)
@@ -1102,7 +1109,7 @@ function DRAW_TOOLS_CLASS() {
 			yy = 0;
 		if (type == 'click') {
 			EDIT.save_state();
-			var param1 = GUI.action_data().attributes.power;
+			var param1 = parseInt(GUI.action_data().attributes.power);
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1112,7 +1119,7 @@ function DRAW_TOOLS_CLASS() {
 			EL.circle(canvas_front, mouse.x, mouse.y, size);
 		}
 		else if (type == 'drag') {
-			var param1 = GUI.action_data().attributes.power;
+			var param1 = parseInt(GUI.action_data().attributes.power);
 			var imageData = canvas_active().getImageData(xx, yy, size, size);
 			var filtered = ImageFilters.StackBlur(imageData, param1);	//add effect
 			EL.image_round(canvas_active(), mouse.x, mouse.y, size, filtered, document.getElementById("canvas_front"));
@@ -1659,7 +1666,7 @@ function DRAW_TOOLS_CLASS() {
 		var strength = GUI.action_data().attributes.size / 100;
 		if(strength > 1)
 			strength = 1;
-		var radius = GUI.action_data().attributes.radius;
+		var radius = parseInt(GUI.action_data().attributes.radius);
 		var bulge = GUI.action_data().attributes.bulge;
 		if(bulge == false)
 			strength = -1 * strength;
