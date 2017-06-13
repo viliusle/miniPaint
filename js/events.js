@@ -92,11 +92,6 @@ function EVENTS_CLASS() {
 	var resize_all = false;
 	
 	/**
-	 * if mouse was click on canvas
-	 */
-	var mouse_click_valid = false;
-	
-	/**
 	 * mouse click position of popup drag start
 	 */
 	var last_pop_click = [0, 0];
@@ -357,7 +352,7 @@ function EVENTS_CLASS() {
 			last_x: mouse_move_last[0],
 			last_y: mouse_move_last[1],
 			valid: valid,
-			click_valid: mouse_click_valid,
+			click_valid: EVENTS.mouse.click_valid,
 			abs_x: abs_x,
 			abs_y: abs_y,
 		};
@@ -414,10 +409,10 @@ function EVENTS_CLASS() {
 			return true;
 		}
 		if (EVENTS.mouse.valid == false)
-			mouse_click_valid = false;
+			EVENTS.mouse.click_valid = false;
 		else
-			mouse_click_valid = true;
-
+			EVENTS.mouse.click_valid = true;
+		
 		//check tools functions
 		for (var i in DRAW) {
 			if (i == DRAW.active_tool) {

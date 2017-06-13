@@ -225,7 +225,7 @@ function popup() {
 							if(parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 							
-							html += '<td colspan="2"><input type="'+input_type+'" id="pop_data_' + parameter.name + '" onkeyup="POP.onkeyup(event);" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" onkeyup="POP.validate(this);" /></td>';
+							html += '<td colspan="2"><input type="'+input_type+'" id="pop_data_' + parameter.name + '" onkeyup="POP.validate(this);POP.onkeyup(event);" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" /></td>';
 						}
 					}
 				}

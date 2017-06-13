@@ -245,7 +245,7 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.erase = function (type, mouse, event) {
-		if (mouse.valid == false)
+		if (mouse.valid == false || mouse.click_valid == false)
 			return true;
 		var strict = GUI.action_data().attributes.strict;
 		var size = GUI.action_data().attributes.size;
@@ -396,7 +396,7 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.pencil = function (type, mouse, event) {
-		if (mouse.valid == false)
+		if (mouse.valid == false || mouse.click_valid == false)
 			return true;
 		var color_rgb = HELPER.hex2rgb(COLOR);
 		if (type == 'click') {
@@ -784,7 +784,7 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.brush = function (type, mouse, event) {
-		if (mouse.valid == false)
+		if (mouse.valid == false || mouse.click_valid == false)
 			return true;
 		var brush_type = GUI.action_data().attributes.type;
 		var color_rgb = HELPER.hex2rgb(COLOR);
