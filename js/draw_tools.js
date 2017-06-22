@@ -822,9 +822,9 @@ function DRAW_TOOLS_CLASS() {
 				
 				//detect line size
 				var max_speed = 20;
-				var power = 0.7; //max 1, how much speed reduce size, 1 means reduce to 0
+				var power = 2; //how speed affects size
 				
-				var new_size = size - size / max_speed * mouse.speed_average * power;
+				var new_size = size + size / max_speed * mouse.speed_average * power;
 				new_size = Math.max(new_size, size/4);
 				new_size = Math.round(new_size);
 				canvas_front.lineWidth = new_size;		
