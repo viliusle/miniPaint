@@ -201,6 +201,7 @@ function EVENTS_CLASS() {
 			//undo
 			if (EVENTS.ctrl_pressed == true){
 				EDIT.undo();
+				event.preventDefault();
 			}
 		}
 		//t - trim
