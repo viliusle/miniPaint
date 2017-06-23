@@ -29,6 +29,11 @@ document.addEventListener("touchend", EVENTS.mouse_release, false);
 document.addEventListener("touchmove", EVENTS.mouse_move, false);
 //document.addEventListener("touchcancel", handleCancel, false);
 
+document.getElementById('canvas_front').oncontextmenu = function (e) {
+	//disable right click on canvas - save does not work anyway
+	e.preventDefault();
+};
+
 /**
  * all events handling
  * 

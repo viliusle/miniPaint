@@ -120,7 +120,7 @@ function popup() {
 
 		//preview area
 		if (this.preview !== false && this.preview_in_main == false) {
-			html += '<div style="margin-top:15px;margin-bottom:15px;">';
+			html += '<div style="margin-top:10px;margin-bottom:15px;">';
 			html += '<canvas style="position:relative;float:left;margin:0 5px 5px 0;border:1px solid #393939;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_pre"></canvas>';
 			html += '<div id="canvas_preview_container">';
 			html += '	<canvas style="position:absolute;border:1px solid #393939;background-color:#ffffff;" width="' + POP.width_mini + '" height="' + POP.height_mini + '" id="pop_post_back"></canvas>';
