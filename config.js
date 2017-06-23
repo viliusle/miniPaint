@@ -30,7 +30,7 @@ var DRAW_TOOLS_CONFIG = [
 	{name: 'letters', 	title: 'Draw letters',		icon: ['sprites.png', -350+3, 4],	attributes: {}	},
 	{name: 'draw_square', 	title: 'Draw rectangle',	icon: ['sprites.png', -400+3, 5],	attributes: {fill: false, square: false}	},
 	{name: 'draw_circle', 	title: 'Draw circle',		icon: ['sprites.png', -450+3, 5],	attributes: {fill: false, circle: false}	},
-	{name: 'brush',		title: 'Brush',			icon: ['sprites.png', -500+6, 3],	attributes: {type: 'Brush', type_values: ['Brush', 'BezierCurve', 'Chrome', 'Fur', 'Grouped', 'Shaded', 'Sketchy'], size: 5, anti_aliasing: false }, on_update: 'update_brush', },
+	{name: 'brush',		title: 'Brush',			icon: ['sprites.png', -500+6, 3],	attributes: {type: 'Brush', type_values: ['Brush', 'BezierCurve', 'Chrome', 'Fur', 'Grouped', 'Shaded', 'Sketchy'], size: 5, anti_aliasing: false, smart_brush: true }, on_update: 'update_brush', },
 	{name: 'blur_tool', 	title: 'Blur tool',		icon: ['sprites.png', -250+5, -50+2],	attributes: {size: 30, power: 1}	},
 	{name: 'sharpen_tool', 	title: 'Sharpen tool',		icon: ['sprites.png', -300+5, -50+2],	attributes: {size: 30 }	},
 	{name: 'burn_dodge_tool', title: 'Burn/Dodge tool',	icon: ['sprites.png', -500+3, -50+4],	attributes: {burn: true, size: 30, power: 50}	},
