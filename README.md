@@ -57,6 +57,12 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 - **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Perspective, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vibrance, Vintage,
 - Print support.
 
+### Embed
+
+To embed this app in other page, use this HTML code:
+
+    <iframe style="width:100%; height:35vw;" src="https://viliusle.github.io/miniPaint/"></iframe>
+
 ### License
 
     Copyright (C) 2013-2016 ViliusL

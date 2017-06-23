@@ -245,7 +245,7 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.erase = function (type, mouse, event) {
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.valid == false || (mouse.click_valid == false && type != 'move'))
 			return true;
 		var strict = GUI.action_data().attributes.strict;
 		var size = GUI.action_data().attributes.size;
@@ -752,8 +752,11 @@ function DRAW_TOOLS_CLASS() {
 	};
 	this.update_brush = function () {
 		document.getElementById('anti_aliasing').style.display = '';
-		if (GUI.action_data().attributes.type != 'Brush')
+		document.getElementById('smart_brush').style.display = '';
+		if (GUI.action_data().attributes.type != 'Brush'){
 			document.getElementById('anti_aliasing').style.display = 'none';
+			document.getElementById('smart_brush').style.display = 'none';
+		}
 	};
 	this.desaturate_tool = function (type, mouse, event) {
 		if (mouse.valid == false)
@@ -784,7 +787,7 @@ function DRAW_TOOLS_CLASS() {
 		}
 	};
 	this.brush = function (type, mouse, event) {
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.valid == false || (mouse.click_valid == false && type != 'move'))
 			return true;
 		var brush_type = GUI.action_data().attributes.type;
 		var color_rgb = HELPER.hex2rgb(COLOR);
@@ -822,13 +825,19 @@ function DRAW_TOOLS_CLASS() {
 				
 				//detect line size
 				var max_speed = 20;
-				var power = 0.7; //max 1, how much speed reduce size, 1 means reduce to 0
+				var power = 2; //how speed affects size
 				
-				var new_size = size - size / max_speed * mouse.speed_average * power;
-				new_size = Math.max(new_size, size/4);
-				new_size = Math.round(new_size);
-				canvas_front.lineWidth = new_size;		
-				canvas_active().lineWidth = new_size;
+				if (GUI.action_data().attributes.smart_brush == true) {
+					var new_size = size + size / max_speed * mouse.speed_average * power;
+					new_size = Math.max(new_size, size/4);
+					new_size = Math.round(new_size);
+					canvas_front.lineWidth = new_size;		
+					canvas_active().lineWidth = new_size;
+				}
+				else{
+					canvas_front.lineWidth = size;		
+					canvas_active().lineWidth = size;
+				}
 				
 				if (ALPHA == 255)
 					canvas_active().beginPath();

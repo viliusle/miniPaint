@@ -226,8 +226,11 @@ function FILE_CLASS() {
 			save_default = this.SAVE_TYPES[1]; //jpg
 		
 		calc_size_value = 'No';
-		if(WIDTH * HEIGHT < 1000000)
+		calc_size = false;
+		if(WIDTH * HEIGHT < 1000000){
 			calc_size_value = 'Yes';
+			calc_size = true;
+		}
 
 		POP.add({name: "name", title: "File name:", value: this.SAVE_NAME});
 		POP.add({name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default, onchange: "FILE.save_dialog_onchange(this)"});
@@ -240,6 +243,11 @@ function FILE_CLASS() {
 		document.getElementById("pop_data_name").select();
 		if (e != undefined)
 			e.preventDefault();
+		
+		if(calc_size == true){
+			//calc size once
+			this.save_dialog_onchange();
+		}
 	};
 	
 	//activated on save dialog parameters change
