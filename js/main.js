@@ -10,6 +10,8 @@ document.onload = MAIN.init(true);
  * @author ViliusL
  */
 function MAIN_CLASS() {
+	this.use_OS_color_mode = true;
+	
 	this.init = function (first_load) {
 		if (first_load === true) {
 			GUI.draw_helpers();
@@ -39,8 +41,13 @@ function MAIN_CLASS() {
 		GUI.show_action_attributes();
 		
 		//detect color support
-		if (HELPER.chech_input_color_support('main_color') == true)
+		this.use_OS_color_mode = false;
+		if (HELPER.chech_input_color_support('main_color') == true){
+			this.use_OS_color_mode = true;
+		}
+		if (this.use_OS_color_mode == true){
 			document.getElementById("main_color").value = COLOR; //supported
+		}
 		else {
 			//not supported
 			document.getElementById("main_color").style.display = 'none';
