@@ -369,38 +369,7 @@ function popup() {
 			}
 
 			//prepare
-			var response = {};
-			inputs = document.getElementsByTagName('input');
-			for (i = 0; i < inputs.length; i++) {
-				if (inputs[i].id.substr(0, 9) == 'pop_data_') {
-					var key = inputs[i].id.substr(9);
-					if (HELPER.strpos(key, "_poptmp") != false)
-						key = key.substring(0, HELPER.strpos(key, "_poptmp"));
-					var value = inputs[i].value;
-					if (inputs[i].type == 'radio') {
-						if (inputs[i].checked == true)
-							response[key] = value;
-					}
-					else
-						response[key] = value;
-				}
-			}
-			selects = document.getElementsByTagName('select');
-			for (i = 0; i < selects.length; i++) {
-				if (selects[i].id.substr(0, 9) == 'pop_data_') {
-					var key = selects[i].id.substr(9);
-					var value = selects[i].value;
-					response[key] = value;
-				}
-			}
-			textareas = document.getElementsByTagName('textarea');
-			for (i = 0; i < textareas.length; i++) {
-				if (textareas[i].id.substr(0, 9) == 'pop_data_') {
-					var key = textareas[i].id.substr(9);
-					var value = textareas[i].value;
-					response[key] = value;
-				}
-			}
+			var response = this.getCurentData();
 
 			//call handler
 			if (this.preview_in_main == false)
@@ -408,6 +377,44 @@ function popup() {
 			else
 				this.preview(response);
 		}
+	};
+	
+	this.getCurentData = function () {
+		var response = {};
+		
+		inputs = document.getElementsByTagName('input');
+		for (i = 0; i < inputs.length; i++) {
+			if (inputs[i].id.substr(0, 9) == 'pop_data_') {
+				var key = inputs[i].id.substr(9);
+				if (HELPER.strpos(key, "_poptmp") != false)
+					key = key.substring(0, HELPER.strpos(key, "_poptmp"));
+				var value = inputs[i].value;
+				if (inputs[i].type == 'radio') {
+					if (inputs[i].checked == true)
+						response[key] = value;
+				}
+				else
+					response[key] = value;
+			}
+		}
+		selects = document.getElementsByTagName('select');
+		for (i = 0; i < selects.length; i++) {
+			if (selects[i].id.substr(0, 9) == 'pop_data_') {
+				var key = selects[i].id.substr(9);
+				var value = selects[i].value;
+				response[key] = value;
+			}
+		}
+		textareas = document.getElementsByTagName('textarea');
+		for (i = 0; i < textareas.length; i++) {
+			if (textareas[i].id.substr(0, 9) == 'pop_data_') {
+				var key = textareas[i].id.substr(9);
+				var value = textareas[i].value;
+				response[key] = value;
+			}
+		}
+		
+		return response;
 	};
 	
 	//OK pressed - prepare data and call handlers

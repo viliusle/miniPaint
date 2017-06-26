@@ -69,8 +69,13 @@ function LAYER_CLASS() {
 	};
 	
 	//create layer
-	this.layer_add = function (name, data) {
+	this.layer_add = function (name, data, layer_type, layer_extra_info) {
 		layer_max_index++;
+		
+		if(layer_type == undefined)
+			layer_type = 'default';
+		if(layer_extra_info == undefined)
+			layer_extra_info = {};
 		
 		//save selected area
 		var copy = false;
@@ -92,6 +97,8 @@ function LAYER_CLASS() {
 			new_layer.title = name;
 			new_layer.visible = true;
 			new_layer.opacity = 1;
+			new_layer.type = layer_type;
+			new_layer.extra = layer_extra_info;
 			LAYER.create_canvas(name);
 			this.layers.unshift(new_layer);
 			
@@ -521,7 +528,18 @@ function LAYER_CLASS() {
 			LAYER.layer_active = parseInt(i);	//select
 			this.layer_renew();
 		}
-		LAYER.shake(i);
+		
+		//if this text layer?
+		var layer_active = this.layers[this.layer_active];
+		if(layer_active.type == 'text'){
+			//open edit box
+			EDIT.save_state();
+			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			DRAW.letters('click', EVENTS.mouse, undefined, layer_active.extra);
+		}
+		else{
+			LAYER.shake(i);
+		}
 	};
 	this.layer_renew = function () {
 		var html = '';
