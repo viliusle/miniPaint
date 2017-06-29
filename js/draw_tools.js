@@ -693,12 +693,13 @@ function DRAW_TOOLS_CLASS() {
 		var fill = GUI.action_data().attributes.fill;
 		var width = mouse.x - mouse.click_x;
 		var height = mouse.y - mouse.click_y;
+		var size = parseInt(GUI.action_data().attributes.size);
 			
 		if (type == 'drag') {
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 			canvas_front.fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 			canvas_front.strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-			canvas_front.lineWidth = 1;
+			canvas_front.lineWidth = size;
 			
 			if (GUI.action_data().attributes.square == true)
 				EL.square(canvas_front, mouse.click_x, mouse.click_y, width, height, fill);
@@ -712,7 +713,7 @@ function DRAW_TOOLS_CLASS() {
 			
 			canvas_active().fillStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
 			canvas_active().strokeStyle = "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")";
-			canvas_active().lineWidth = 1;
+			canvas_active().lineWidth = size;
 			
 			if (GUI.action_data().attributes.square == true)
 				EL.square(canvas_active(), mouse.click_x, mouse.click_y, width, height, fill);
@@ -724,10 +725,12 @@ function DRAW_TOOLS_CLASS() {
 		if (mouse.click_valid == false)
 			return true;
 		var color_rgb = HELPER.hex2rgb(COLOR);
+		var size = parseInt(GUI.action_data().attributes.size);
 		if (type == 'drag') {
 			dist_x = mouse.x - mouse.click_x;
 			dist_y = mouse.y - mouse.click_y;
 			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
+			canvas_front.lineWidth = size;
 			if (GUI.action_data().attributes.circle == true)
 				dist_x = dist_y = Math.min(dist_x, dist_y);
 			if (GUI.action_data().attributes.fill == true)
@@ -743,7 +746,7 @@ function DRAW_TOOLS_CLASS() {
 			EDIT.save_state();
 			if (GUI.action_data().attributes.circle == true)
 				dist_x = dist_y = Math.min(dist_x, dist_y);
-			canvas_active().lineWidth = 1;
+			canvas_active().lineWidth = size;
 			if (GUI.action_data().attributes.fill == true)
 				EL.ellipse_by_center(canvas_active(), mouse.click_x, mouse.click_y, dist_x * 2, dist_y * 2, "rgba(" + color_rgb.r + ", " + color_rgb.g + ", " + color_rgb.b + ", " + ALPHA / 255 + ")", true);
 			else
