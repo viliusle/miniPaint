@@ -42,7 +42,7 @@ function MAIN_CLASS() {
 		
 		//detect color support
 		this.use_OS_color_mode = false;
-		if (HELPER.chech_input_color_support('main_color') == true){
+		if (HELPER.chech_input_color_support() == true){
 			this.use_OS_color_mode = true;
 		}
 		if (this.use_OS_color_mode == true){
