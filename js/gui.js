@@ -545,13 +545,13 @@ function GUI_CLASS() {
 	};
 	
 	this.set_color = function (object) {
-		if (HELPER.chech_input_color_support('main_color') == true && object.id == 'main_color')
+		if (MAIN.use_OS_color_mode == true && object.id == 'main_color')
 			COLOR = object.value;
 		else
 			COLOR = HELPER.rgb2hex_all(object.style.backgroundColor);
 		COLOR_copy = COLOR;
 
-		if (HELPER.chech_input_color_support('main_color') == true)
+		if (MAIN.use_OS_color_mode == true)
 			document.getElementById("main_color").value = COLOR; //supported
 		else
 			document.getElementById("main_color_alt").style.backgroundColor = COLOR; //not supported
@@ -606,7 +606,7 @@ function GUI_CLASS() {
 	this.sync_colors = function () {
 		document.getElementById("color_hex").value = COLOR;
 
-		if (HELPER.chech_input_color_support('main_color') == true)
+		if (MAIN.use_OS_color_mode == true)
 			document.getElementById("main_color").value = COLOR; //supported
 		else
 			document.getElementById("main_color_alt").style.backgroundColor = COLOR; //not supported
@@ -695,7 +695,7 @@ function GUI_CLASS() {
 				}
 				var c = document.getElementById("c_all").getContext("2d").getImageData(mouse_x, mouse_y, 1, 1).data;
 				COLOR = "#" + ("000000" + HELPER.rgbToHex(c[0], c[1], c[2])).slice(-6);
-				this.sync_colors();
+				GUI.sync_colors();
 				COLOR_copy = COLOR;
 				document.getElementById("lum_ranger").value = 0;
 			};

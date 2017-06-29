@@ -518,7 +518,7 @@ function EVENTS_CLASS() {
 		}
 
 		if (EVENTS.isDrag === false)
-			return false;	//only drag now
+			return true;	//only drag now
 
 		//check tools functions
 		for (var i in DRAW) {
