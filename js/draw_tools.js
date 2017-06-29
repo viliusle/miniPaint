@@ -570,32 +570,18 @@ function DRAW_TOOLS_CLASS() {
 			}
 		}
 	};
-	this.letters = function (type, mouse, event, edit_details) {
+	this.letters = function (type, mouse, event) {
 		var _this = this;
-		if (mouse.valid == false && edit_details == undefined)
+		if (mouse.valid == false)
 			return true;
 		var xx = mouse.x;
 		var yy = mouse.y;
-		var text = '';
-		var size = 20;
-		var color = "#000000";
-		if(edit_details != undefined){
-			xx = edit_details.x;
-			yy = edit_details.y;
-			text = edit_details.text;
-			size = edit_details.size;
-			color = edit_details.color;
-		}
 		if (type == 'click') {
-			POP.add({name: "text", title: "Text:", value: text, type: 'textarea'});
-			POP.add({name: "size", title: "Size:", value: size, range: [2, 1000], step: 2});
-			POP.add({name: "color", title: "Color:", value: color, type: "color"});
+			POP.add({name: "text", title: "Text:", value: "", type: 'textarea'});
+			POP.add({name: "size", title: "Size:", value: 20, range: [2, 1000], step: 2});
+			POP.add({name: "color", title: "Color:", value: "#000000", type: "color"});
 			POP.add({name: "style", title: "Font style:", values: ["Normal", "Italic", "Bold", "Bold Italic"], type: 'select'});
 			POP.add({name: "family", title: "Font family:", values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"], type: 'select'});
-			
-			POP.add({name: "pos_x", title: "Position X:", value: xx, range: [0, WIDTH], step: 1});
-			POP.add({name: "pos_y", title: "Position Y:", value: yy, range: [0, HEIGHT], step: 1});
-			
 			POP.add({name: "size_3d", title: "3D size:", value: 0, range: [0, 200]});
 			POP.add({name: "pos_3d", title: "3D position:", values: ["Top-left", "Top-right", "Bottom-left", "Bottom-right"], type: 'select'});
 			POP.add({name: "shadow", title: "Shadow:", values: ["No", "Yes"]});
@@ -607,71 +593,33 @@ function DRAW_TOOLS_CLASS() {
 			POP.show(
 				'Text', 
 				function (user_response) {
-					//save
-					if(edit_details != undefined){
-						//update layer data
-						LAYER.layers[LAYER.layer_active].extra.text = user_response.text;
-						LAYER.layers[LAYER.layer_active].extra.x = parseInt(user_response.pos_x);
-						LAYER.layers[LAYER.layer_active].extra.y = parseInt(user_response.pos_y);
-						LAYER.layers[LAYER.layer_active].extra.size = parseInt(user_response.size);
-						LAYER.layers[LAYER.layer_active].extra.color = user_response.color;
-					}
-					else{
-						EDIT.save_state();
-						var extra_data = {
-							text: user_response.text,
-							x: parseInt(user_response.pos_x),
-							y: parseInt(user_response.pos_y),
-							size: parseInt(user_response.size),
-							color: user_response.color,
-						};
-						LAYER.layer_add(LAYER.generate_layer_name('Text'), undefined, 'text', extra_data);
+					EDIT.save_state();
+					var trim_details = IMAGE.trim_info(canvas_active(true));
+					if (trim_details.empty == false) {
+						LAYER.layer_add();
 					}
 					text = user_response.text.split("\n");
 					for (var i in text) {
 						user_response.text = text[i];
-						//var yyy = yy + i * (parseInt(user_response.size) + 2);
-						_this.letters_render(canvas_active(), user_response);
+						var yyy = yy + i * (parseInt(user_response.size) + 2);
+						_this.letters_render(canvas_active(), xx, yyy, user_response);
 					}
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 				},
 				function (user_response) {
-					//preview				
 					canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
 					text = user_response.text.split("\n");
 					for (var i in text) {
 						user_response.text = text[i];
-						//var yyy = yy + i * (parseInt(user_response.size) + 2);
-						_this.letters_render(canvas_front, user_response);
+						var yyy = yy + i * (parseInt(user_response.size) + 2);
+						_this.letters_render(canvas_front, xx, yyy, user_response);
 					}
 				}
 			);
-			
-			//add event to redraw text after input text change
-			document.getElementById("pop_data_text").addEventListener("keyup", this.letters_on_update, false);
-			document.getElementById("pop_data_text").addEventListener("change", this.letters_on_update, false);
-			
-			if(text != '') {
-				//do first draw
-				DRAW.letters_render(canvas_front);
-			}
 		}
 	};
-	this.letters_on_update = function (event) {
-		if(POP.active == false || document.getElementById("pop_data_text") == undefined)
-			return;
-		DRAW.letters_render(canvas_front);
-	};
-	
-	this.letters_render = function (canvas, user_response) {
-		if(user_response == undefined){
-			canvas_front.clearRect(0, 0, WIDTH, HEIGHT);
-			user_response = POP.getCurentData();
-		}
-		
+	this.letters_render = function (canvas, xx, yy, user_response) {
 		var text = user_response.text;
-		var xx = parseInt(user_response.pos_x);
-		var yy = parseInt(user_response.pos_y);
 		var size = parseInt(user_response.size);
 		var color = user_response.color;
 		var dpth = parseInt(user_response.size_3d);

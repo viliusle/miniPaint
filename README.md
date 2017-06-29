@@ -6,9 +6,12 @@ Key features: layers, drag & drop, transparency, filters, no-flash, open source.
 
 miniPaint operates directly in the browser. You can create images, paste from clipboard (ctrl+v) or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
 
-**Start using**: **http://viliusle.github.io/miniPaint/**
+## URL:
+**http://viliusle.github.io/miniPaint/**
 
+## Preview:
 ![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/img/preview.gif)
+(generated using miniPaint)
 
 **Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
 
