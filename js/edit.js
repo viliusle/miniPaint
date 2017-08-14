@@ -90,7 +90,7 @@ function EDIT_CLASS() {
 			}
 			return false;
 		}
-
+		LAYER.layer_max_index++;
 		tmp = new Array();
 		var new_name = LAYER.generate_layer_name();
 		LAYER.create_canvas(new_name);
@@ -150,6 +150,7 @@ function EDIT_CLASS() {
 			return false;
 		}
 		
+		EDIT.edit_clear();
 		LAYER.remove_all_layers();
 		
 		if (WIDTH != layers_archive[j].width || HEIGHT != layers_archive[j].height) {

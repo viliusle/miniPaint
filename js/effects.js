@@ -771,7 +771,7 @@ function EFFECTS_CLASS() {
 		
 		POP.add({name: "level", title: "Level:", value: "0.5", range: [-1, 1], step: 0.01});
 		POP.effects = true;
-		POP.show('Vignette',
+		POP.show('Vibrance',
 			function (user_response) {
 				EDIT.save_state();
 				var level = parseFloat(user_response.level);

@@ -23,7 +23,7 @@ function LAYER_CLASS() {
 	/**
 	 * latest layer index
 	 */
-	var layer_max_index = 0;
+	this.layer_max_index = 0;
 
 	//new layer
 	this.layer_new = function () {
@@ -56,7 +56,7 @@ function LAYER_CLASS() {
 		for (var i = LAYER.layers.length-1; i >= 0; i--) {
 			LAYER.layer_remove(i, true);
 		}
-		layer_max_index = 0;
+		this.layer_max_index = 0;
 		this.layer_renew();
 	};
 	
@@ -65,12 +65,12 @@ function LAYER_CLASS() {
 		if(prefix == undefined)
 			prefix = 'Layer';
 			
-		return prefix + ' #' + (layer_max_index);
+		return prefix + ' #' + (this.layer_max_index);
 	};
 	
 	//create layer
 	this.layer_add = function (name, data, layer_type, layer_extra_info) {
-		layer_max_index++;
+		this.layer_max_index++;
 		
 		if(layer_type == undefined)
 			layer_type = 'default';
@@ -182,6 +182,7 @@ function LAYER_CLASS() {
 		if (this.layers.length == 1 && force == undefined){
 			//only 1 layer left
 			canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
+			GUI.redraw_preview();
 			return false;
 		}
 		element = document.getElementById(this.layers[i].name);
@@ -208,7 +209,7 @@ function LAYER_CLASS() {
 			LAYER.layer_renew();
 		}
 		else {
-			layer_max_index++;
+			this.layer_max_index++;
 			//copy all layer
 			tmp_data = document.createElement("canvas");
 			tmp_data.width = WIDTH;
