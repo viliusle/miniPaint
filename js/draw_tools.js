@@ -1029,7 +1029,7 @@ function DRAW_TOOLS_CLASS() {
 			POP.add({name: "param3", title: "Color #2:", value: '#ffffff', type: 'color'});
 			POP.add({name: "param4", title: "Transparency #2:", value: '255', range: [0, 255]});
 			POP.show(
-				'Text', 
+				'Gradient', 
 				function (user_response) {
 					color1 = HELPER.hex2rgb(user_response.param1);
 					color1.a = parseInt(user_response.param2);
