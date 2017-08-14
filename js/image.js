@@ -135,8 +135,8 @@ function IMAGE_CLASS() {
 		//flip
 		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
 		canvas_active().save();
-		canvas_active().scale(-1, 1);
-		canvas_active().drawImage(tempCanvas, -WIDTH, 0);
+		canvas_active().scale(1, -1);
+		canvas_active().drawImage(tempCanvas, 0, -HEIGHT);
 		canvas_active().restore();
 	};
 
@@ -151,8 +151,8 @@ function IMAGE_CLASS() {
 		//flip
 		canvas_active().clearRect(0, 0, WIDTH, HEIGHT);
 		canvas_active().save();
-		canvas_active().scale(1, -1);
-		canvas_active().drawImage(tempCanvas, 0, -HEIGHT);
+		canvas_active().scale(-1, 1);
+		canvas_active().drawImage(tempCanvas, -WIDTH, 0);
 		canvas_active().restore();
 	};
 
