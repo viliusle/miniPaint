@@ -172,9 +172,18 @@ function FILE_CLASS() {
 		LAYER.layer_add(name);
 		LAYER.layer_remove(1);
 		
+		if (img.width > WIDTH || img.height > HEIGHT) {
+			if (img.width > WIDTH)
+				WIDTH = img.width;
+			if (img.height > HEIGHT)
+				HEIGHT = img.height;
+			LAYER.set_canvas_size();
+		}
+		
 		//draw canvas
 		canvas_active().drawImage(img, 0, 0);
 		IMAGE.trim();
+		GUI.zoom_auto(true);
 	};
 	
 	this.open_handler = function (e) {
