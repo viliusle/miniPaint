@@ -687,10 +687,6 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 
 	//constructor - prepare
 	this.init = function () {
-		//if using auto
-		if (window.Clipboard)
-			return true;
-
 		pasteCatcher = document.createElement("div");
 		pasteCatcher.setAttribute("id", "paste_ff");
 		pasteCatcher.setAttribute("contenteditable", "");
@@ -699,6 +695,10 @@ function CLIPBOARD_CLASS(canvas_id, autoresize) {
 		pasteCatcher.style.width = "10px";
 		document.body.appendChild(pasteCatcher);
 		
+		//if using auto
+		if (window.Clipboard)
+			return true;
+
 		// create an observer instance
 		var observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
