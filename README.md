@@ -10,7 +10,7 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 **http://viliusle.github.io/miniPaint/**
 
 ## Preview:
-![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/img/preview.gif)
+![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/images/preview.gif)
 (generated using miniPaint)
 
 **Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
