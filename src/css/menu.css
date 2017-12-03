@@ -1,0 +1,214 @@
+.mobile_menu{
+	display:none;
+	position: absolute;
+	width:100%;
+	top: 0;
+}
+.left_mobile_menu, .right_mobile_menu{
+	position:absolute;
+	width:50px;
+	height:50px;
+	background: url("images/sprites.png") no-repeat 11px -86px;
+	filter: invert(1);
+	display:block;
+	top:0;
+	z-index:200;
+	border:0;
+	outline:0;
+	cursor: pointer;
+}
+.left_mobile_menu{left:0;}
+.right_mobile_menu{right:0;}
+
+.ddsmoothmenu{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	font:12px Arial,sans-serif;
+	background: #2D2D2D;
+	width: 100%;
+	padding-left:10px;
+	z-index:100;
+}
+.ddsmoothmenu ul{
+	z-index:100;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	height:30px;
+}
+.ddsmoothmenu ul li{
+	position: relative;	
+	display: inline-block;
+	float: left;
+	color: #2d2b2b;
+	height:100%;
+}
+.ddsmoothmenu ul ul li a{
+	width:100%;
+}
+.ddsmoothmenu .rightarrowclass{
+	display:none !important;
+}
+.ddsmoothmenu ul li a{	
+	display: inline-block;
+	color: #2D2D2D;
+	text-decoration: none;
+	color: #cccccc;
+	text-align:center;
+	padding: 7px 10px 8px 10px !important;
+}
+.ddsmoothmenu ul ul li a{	
+	padding-right: 25px !important;
+}
+.ddsmoothmenu ul li a.selected{
+	background-color: #FFFFFF !important;
+	color: #2d2b2b;
+}
+.ddsmoothmenu ul li ul li a.selected{
+	background-color:#E4EBF8 !important;
+}
+.ddsmoothmenu ul li a:hover{
+	background-color: #E4EBF8;
+	color: #2D2D2D;
+}
+.ddsmoothmenu .hide_ul{
+	position: absolute;
+	left: -3000px;
+	display: none;
+	visibility: hidden;
+	border:1px solid #5680C1;
+	border-top:0px;
+}
+.ddsmoothmenu ul li ul{
+	position: absolute;
+	left: -3000px;
+	display: none;
+	visibility: hidden;
+	border:1px solid #5680C1;
+	border-top:0px;
+	margin-left: -1px;
+	height:auto;
+	min-width:140px;
+	width:auto !important;
+	top:30px !important;
+}
+.ddsmoothmenu ul li ul li{
+	display: list-item;
+	background: #ffffff;
+	float: none;
+	height:auto;
+	width:100%;
+}
+.ddsmoothmenu ul li ul li a{
+	text-align:left;
+}
+.ddsmoothmenu ul li ul li ul{
+	top: 0;
+	border-top:1px solid #5680C1;
+}
+.ddsmoothmenu ul li ul li a{
+	padding-left: 5px;
+	padding-right:5px;
+	margin: 0;
+	color: #2D2D2D;
+	white-space: nowrap;
+}
+.ddsmoothmenu ul li ul li ul{
+	top:0 !important;
+}
+.ddsmoothmenu .downarrowclass{
+	position: absolute;
+	top: 12px;
+	right: 7px;
+}
+.ddsmoothmenu .ddshadow{ 
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 0;
+	height: 0;
+	background-color: #ccc;
+}
+.ddsmoothmenu .mid-line{
+	background-color:#ff0000;
+	border-top:1px solid #e5e5e5;
+	font-size:0;
+	padding:0 8px 0 8px;
+}
+.ddsmoothmenu ul li ul li.more > a{
+	position:relative;
+}
+.ddsmoothmenu ul li ul li.more > a:before{
+	position: absolute;
+	content:">";
+	right: 9px;
+	width: 5px;
+	height: 14px;
+	transform: scaleY(2);
+	color: #808080;
+}
+.ddsmoothmenu ul li ul li ul{
+	left: calc(100% + 1px) !important;
+}
+.ddsmoothmenu .dots::after{
+	content: " ...";
+}
+.ddsmoothmenu a[data-key]:after{
+	position: absolute;
+	content: attr(data-key) " ";
+	color: #aaa;
+	font-size: 12px;
+	margin-left: 8px;
+	right:10px;
+}
+
+@media screen and (max-width:700px){
+	.mobile_menu{
+		display:block;
+	}
+	.left_mobile_menu{
+		display:none;
+	}
+	.ddsmoothmenu{
+		height:50px;
+	}
+	.ddsmoothmenu ul{
+		width: calc(100% - 50px);
+		height:50px;
+	}
+	.ddsmoothmenu > ul > li > a{
+		height:50px;
+		padding-top: 15px !important;
+	}
+	.ddsmoothmenu ul li ul{
+		top:50px !important;
+	}
+	.ddsmoothmenu ul li ul li{
+		height:auto;
+	}
+	.ddsmoothmenu ul li ul li a{
+		height:30px;
+	}
+}
+@media screen and (max-width:550px){
+	.ddsmoothmenu{
+		padding-left:0;
+	}
+	.ddsmoothmenu ul{
+		width: calc(100% - 50px);
+	}
+	.ddsmoothmenu > ul > li{
+		width: calc(100% / 7);
+	}
+	.ddsmoothmenu > ul > li > a{
+		width:100%;
+		padding-left: 3px !important;
+		padding-right: 3px !important;
+		overflow: hidden;
+	}
+	.left_mobile_menu{
+		display:block;
+	}
+}

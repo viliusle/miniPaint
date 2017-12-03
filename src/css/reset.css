@@ -1,0 +1,115 @@
+*{
+	box-sizing: border-box;
+	background-repeat: no-repeat;
+}
+:root {
+	/* default */
+	--background-color: #424F5A;
+	--background-color-medium: rgba(255, 255, 255, 0.2);
+	--background-color-light: rgba(255, 255, 255, 0.3);
+	--background-color-lightest: rgba(255, 255, 255, 0.5);
+	--background-color-border: rgba(0, 0, 0, 0.5);
+	--background-color-active: #419147;
+	--text-color: #000000;
+}
+body{
+	margin: 0px;
+	padding: 0px;
+	padding-top: 30px;
+	background-color: #424F5A;
+	background-color: var(--background-color);
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	color: var(--text-color);
+	line-height: 1.4;
+	font-weight: normal;
+	overflow: hidden;
+}
+canvas{
+	outline: none;
+	/* disable select canvas */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+	/* disable antialiasing */
+	image-rendering: optimizeSpeed;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: -o-crisp-edges;
+	image-rendering: pixelated;
+	-ms-interpolation-mode: nearest-neighbor;
+}
+img{
+	border: none;
+}
+td, th{
+	vertical-align:top;
+}
+table{
+	border: 0;
+	margin: 0;
+	padding: 0;
+	vertical-align: baseline;
+	border-collapse: collapse;
+	border-spacing: 0;
+	width:100%;
+}
+hr{
+	border-color: rgba(0,0,0,0.3);
+	border-bottom: 0;
+}
+input[type="text"], input[type="button"], select, input[type="number"], textarea{
+	border:1px solid #393939;
+	padding: 3px 5px;
+	font-size: 13px;
+}
+input:disabled {
+	opacity: 0.3;
+}
+select{
+	padding: 2px 4px;
+}
+input[type="range"]{
+	margin-left:0px;
+	width:100%;
+}
+input[type="button"]{
+	background: #dddddd;
+}
+input[type="button"]:disabled{
+	visibility:hidden;
+}
+button{
+	cursor: pointer;
+}
+label{
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 7px;
+}
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+::-webkit-scrollbar-track-piece {
+    background: rgba(0,0,0,0.3);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.6);
+}
+@supports (zoom:2) {
+	input[type="radio"],  input[type=checkbox]{
+		zoom: 1.5;
+	}
+}
+@supports not (zoom:2) {
+	input[type="radio"],  input[type=checkbox]{
+		transform: scale(1.5);
+		margin: 8px;
+	}
+}

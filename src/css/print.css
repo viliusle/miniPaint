@@ -1,0 +1,34 @@
+@media print{
+	body{
+		background:none !important;
+		background: #fff;
+		background-color: #fff;
+		font-family: Arial,Helvetica,Verdana;
+		width:auto !important;
+		padding:5px !important;
+		font-size: 12px;
+	}
+	progress,
+	.menu,
+	.sidebar_left,
+	.sidebar_right,
+	.submenu,
+	.ddsmoothmenu{
+		display: none;
+		height: 0;
+		width: 0;
+	}
+	.main_wrapper{
+		margin:0px;
+		padding:0px;
+	}
+	canvas{
+		border:0px;
+		position: absolute;
+		top:0px;
+		left:0px;
+	}
+	.canvas_wrapper canvas{
+		border:0;
+	}
+}

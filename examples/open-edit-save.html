@@ -1,0 +1,70 @@
+<html>
+<body style="margin:0;">
+	
+<iframe id="myFrame" style="width:100%;height:70vh;" src="../"></iframe>
+
+<div style="height:20vh;margin:10px;">
+	Click on image to edit.
+	<br /><br />
+	<button onclick="my_update()">Update</button>
+	<button onclick="my_save()">Save</button>
+	<br /><br />
+	
+	<img style="max-height:100%" id="testImage" alt="" src="../images/logo.png" onclick="open_image(this)"  />
+</div>
+
+<script>
+/**
+ * will open image on minipaint
+ * 
+ * @param {string|image} image image or image id
+ */
+function open_image(image){
+	if(typeof image == 'string'){
+		image = document.getElementById(image);
+	}
+	var Layers = document.getElementById('myFrame').contentWindow.Layers;
+	var name = image.src.replace(/^.*[\\\/]/, '');
+	var new_layer = {
+		name: name,
+		type: 'image',
+		data: image,
+		width: image.naturalWidth || image.width,
+		height: image.naturalHeight || image.height,
+		width_original: image.naturalWidth || image.width,
+		height_original: image.naturalHeight || image.height,
+	};
+	Layers.insert(new_layer);
+}
+
+function my_save(){
+	var Layers = document.getElementById('myFrame').contentWindow.Layers;
+	var tempCanvas = document.createElement("canvas");
+	var tempCtx = tempCanvas.getContext("2d");
+	var dim = Layers.get_dimensions();
+	tempCanvas.width = dim.width;
+	tempCanvas.height = dim.height;
+	Layers.convert_layers_to_canvas(tempCtx);
+	tempCanvas.toBlob(function(blob) {
+		//image data here
+		alert('Data length: ' + blob.size);
+		console.log(blob);
+	});
+}
+
+function my_update(){
+	var target = document.getElementById('testImage');
+	
+	var Layers = document.getElementById('myFrame').contentWindow.Layers;
+	var tempCanvas = document.createElement("canvas");
+	var tempCtx = tempCanvas.getContext("2d");
+	var dim = Layers.get_dimensions();
+	tempCanvas.width = dim.width;
+	tempCanvas.height = dim.height;
+	Layers.convert_layers_to_canvas(tempCtx);
+	
+	target.width = dim.width;
+	target.height = dim.height;
+	target.src = tempCanvas.toDataURL();
+}
+</script>
