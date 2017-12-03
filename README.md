@@ -19,46 +19,19 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 - Firefox
 - Chrome
 - Opera
-- IE 10+
 - Edge
 - Safari
+- IE 11 (?)
 
 ## Features
 
-- Open images, drag and drop images.
-- Save images as PNG, JPG, GIF (can be animated), JSON (layers data), (plus BMP and WEBP on some browsers).
-- 3 levels undo.
-- Transparency support.
-- Selection operation: cut, copy, paste, resize, delete, move.
-- Image information: dimensions, colors count, EXIF data.
-- Trim.
-- Tools: pencil, brush, magic wand, erase, fill, color picker, letters, crop, blur, sharpen, burn/dodge, desaturate, clone.
-- Image resize (Hermite resample, HQX upscaling, default resize).
-- Rotate: left, right, custom angle.
-- Flip: vertical or horizontal.
-- Color corrections: brightness, contrast, hue, saturation, luminance, channels (red, green, blue).
-- Auto adjust colors.
-- Grid.
-- Histogram.
-- Decrease color depth.
-- Negative.
-- GrayScale.
-- Layers.
-- Gradients.
-- Differences.
-- Borders.
-- Sprites.
-- Key-points.
-- Color to alpha.
-- Restore alpha.
-- Color Zoom
-- Replace Color
-- Zoom.
-- Keyboard shortcuts.
-- Effect browser.
-- Translations (Menu > Help > Languages).
-- **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Colorize, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Perspective, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vibrance, Vintage,
-- Print support.
+- **Files**: open images, directories, URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, JSON (layers data), print.
+- **Edit**: Undo, cut, copy, paste, selection, paste from clipboard.
+- **Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, color corrections (brightness, contrast, hue, saturation, luminance), auto adjust colors, grid, histogram, negative.
+- **Layers**: multiple layers system, differences, merge, flatten, Transparency support.
+- **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Denoise, Desaturate, Dither, Dot Screen, Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Sepia, Sharpen, Solarize, Tilt Shift, Vignette, Vibrance, Vintage,
+- **Tools**: pencil, brush, magic wand, erase, fill, color picker, letters, crop, blur, sharpen, desaturate, clone, borders, sprites, key-points, color to alpha, color zoom, replace color, restore alpha, content fill.
+- **Help**: keyboard shortcuts, translations.
 
 ### Embed
 
@@ -66,23 +39,19 @@ To embed this app in other page, use this HTML code:
 
     <iframe style="width:100%; height:35vw;" src="https://viliusle.github.io/miniPaint/"></iframe>
 
+## Build instructions
+
+- git clone https://github.com/viliusle/miniPaint.git
+- cd [miniPaint directory]
+- npm install
+- webpack-dev-server (using http://localhost:8080/ with live reload, require: npm install -g webpack-dev-server)
+- edit files...
+- webpack -p (build for production)
+
 ### License
 
-    Copyright (C) 2013-2016 ViliusL
-
-    miniPaint is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    miniPaint is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with miniPaint.  If not, see <http://www.gnu.org/licenses/>.
+MIT License
 
 ## Support
 
-Please use the GitHub issues for support requests, or use mail www.viliusl@gmail.com for contacts.
+Please use the GitHub issues for support, features, issues or use mail www.viliusl@gmail.com for contacts.

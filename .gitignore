@@ -7,5 +7,9 @@ Icon?
 ehthumbs.db
 Thumbs.db
 nbproject/
+.idea/
 .git/
 /.project
+*.log
+
+/node_modules/
