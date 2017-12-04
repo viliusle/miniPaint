@@ -18,6 +18,7 @@
 	overflow-y: scroll;
 }
 #popup.wide{
+	top: 15vh;
 	width: 800px;
 	left: calc(50% - 800px / 2);
 }
