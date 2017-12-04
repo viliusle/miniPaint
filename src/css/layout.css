@@ -443,13 +443,19 @@
 	width: 70px;
 	padding: 3px 5px;
 }
-.block.details button{
-	width: 25px;
+.block.details select{
+	width: calc(100% - 70px);
 	height: 23px;
-	overflow: hidden;
-	opacity: 0.3;
+}
+.block.details button{
+	height: 23px;
 	border: 1px solid #444;
 	background-color: var(--background-color-medium);
+}
+.block.details button.reset{
+	width: 25px;
+	overflow: hidden;
+	opacity: 0.3;
 	background-image: url(images/sprites.png);
 	background-repeat: no-repeat;
 	background-position: -747px 2px;

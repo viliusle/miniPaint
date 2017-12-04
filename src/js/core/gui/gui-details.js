@@ -10,17 +10,17 @@ var template = `
 	<div class="row">
 		<span class="trn label">X</span>
 		<input type="number" id="detail_x" />
-		<button class="extra" type="button" id="reset_x" title="Reset">Reset</button>
+		<button class="extra reset" type="button" id="reset_x" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Y:</span>
 		<input type="number" id="detail_y" />
-		<button class="extra" type="button" id="reset_y" title="Reset">Reset</button>
+		<button class="extra reset" type="button" id="reset_y" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Width:</span>
 		<input type="number" id="detail_width" />
-		<button class="extra" type="button" id="reset_size" title="Reset">Reset</button>
+		<button class="extra reset" type="button" id="reset_size" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Height:</span>
@@ -41,18 +41,35 @@ var template = `
 	</div>
 	<div id="params_details">
 		<hr />
-		<div id="params_details">
-			<span class="trn label">Text:</span>
+		<div class="row">
 			<button type="buton" class="" id="detail_param_text">Edit text...</button>
+			<button type="buton" class="" id="detail_param_bold">Bold</button>
+			<button type="buton" class="" id="detail_param_italic">Italic</button>
+			<button type="buton" class="" id="detail_param_stroke">Stroke</button>
 		</div>
 		<div class="row">
 			<span class="trn label">Size:</span>
 			<input type="number" min="1" id="detail_param_size" />
 		</div>
 		<div class="row">
-			<button type="buton" class="" id="detail_param_bold">Bold</button>
-			<button type="buton" class="" id="detail_param_italic">Italic</button>
-			<button type="buton" class="" id="detail_param_stroke">Stroke</button>
+			<span class="trn label">Align:</span>
+			<select id="detail_param_align">
+				<option value="Left">Left</option>
+				<option value="Center">Center</option>
+				<option value="Right">Right</option>
+			</select>
+		</div>
+		<div class="row">
+			<span class="trn label">Font:</span>
+			<select id="detail_param_family">
+				<option value="Arial">Arial</option>
+				<option value="Courier">Courier</option>
+				<option value="Impact">Impact</option>
+				<option value="Helvetica">Helvetica</option>
+				<option value="monospace">monospace</option>
+				<option valueTimes New Roman">Times New Roman</option>
+				<option value="Verdana">Verdana</option>
+			</select>
 		</div>
 		<div class="row">
 			<span class="trn label">Stroke:</span>
@@ -97,6 +114,8 @@ class GUI_details_class {
 		this.render_general_param('italic', events);
 		this.render_general_param('stroke', events);
 		this.render_general_param('stroke_size', events);
+		this.render_general_select_param('align', events);
+		this.render_general_select_param('family', events);
 	}
 
 	render_general(key, events) {
@@ -191,6 +210,32 @@ class GUI_details_class {
 					return;
 				this.classList.toggle('active');
 				config.layer.params[key] = !config.layer.params[key];
+				config.need_render = true;
+			});
+		}
+	}
+	
+	render_general_select_param(key, events){
+		var layer = config.layer;
+
+		if (layer != undefined) {
+			var target = document.getElementById('detail_param_' + key);
+			
+			if (layer.params[key] == null) {
+				target.value = '';
+				target.disabled = true;
+			}
+			else {
+				target.value = layer.params[key].value;
+				target.disabled = false;
+			}
+		}
+
+		if (events) {
+			//events
+			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
+				var value = this.value;
+				config.layer.params[key].value = value;
 				config.need_render = true;
 			});
 		}

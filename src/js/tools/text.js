@@ -2,6 +2,7 @@ import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Helper_class from './../libs/helpers.js';
+import Dialog_class from './../libs/popup.js';
 
 class Text_class extends Base_tools_class {
 
@@ -9,6 +10,7 @@ class Text_class extends Base_tools_class {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
+		this.POP = new Dialog_class();
 		this.ctx = ctx;
 		this.name = 'text';
 		this.layer = {};
@@ -73,6 +75,7 @@ class Text_class extends Base_tools_class {
 
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
+		var params = this.getParams();
 		if (mouse.valid == false || mouse.click_valid == false) {
 			return;
 		}
@@ -83,13 +86,29 @@ class Text_class extends Base_tools_class {
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
 			width = config.WIDTH - this.layer.x - Math.round(config.WIDTH / 50);
-			height = 100;
+			height = params.size;
 		}
-
+		width = Math.max(width, params.size * 0.5 * 12);
+		height = Math.max(height, params.size);
 		//more data
 		config.layer.width = width;
 		config.layer.height = height;
 		this.Base_layers.render();
+		
+		//ask for text
+		var settings = {
+			title: 'Edit text',
+			params: [
+				{name: "text", title: "Text:", value: "Text example"},
+			],
+			on_finish: function (params) {
+				if(config.layer.type == 'text' && params.text != ''){
+					config.layer.params.text = params.text;
+					config.need_render = true;
+				}
+			},
+		};
+		this.POP.show(settings);			
 	}
 
 	render(ctx, layer) {
