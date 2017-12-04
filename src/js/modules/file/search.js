@@ -36,6 +36,8 @@ class File_search_media_class {
 			//fix for last line
 			html += '<div class="item"></div>';
 			html += '<div class="item"></div>';
+			html += '<div class="item"></div>';
+			html += '<div class="item"></div>';
 		}
 
 		var settings = {
