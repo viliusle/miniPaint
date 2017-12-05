@@ -2,7 +2,6 @@
 
 var config = {};
 
-config.VERSION = '4.0.0';
 config.TRANSPARENCY = false;
 config.TRANSPARENCY_TYPE = 'squares'; //squares, green, grey
 config.LANG = 'en';

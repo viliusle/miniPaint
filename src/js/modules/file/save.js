@@ -512,7 +512,7 @@ class File_save_class {
 			about: 'Image data with multi-layers. Can be opened using miniPaint - '
 				+ 'https://github.com/viliusle/miniPaint',
 			date: today,
-			version: config.VERSION,
+			version: VERSION,
 			layer_active: config.layer.id,
 		};
 

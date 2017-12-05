@@ -42,7 +42,7 @@ To embed this app in other page, use this HTML code:
 ## Build instructions
 
 - git clone https://github.com/viliusle/miniPaint.git
-- cd [miniPaint directory]
+- cd miniPaint
 - npm install
 - webpack-dev-server (using http://localhost:8080/ with live reload, require: npm install -g webpack-dev-server)
 - edit files...

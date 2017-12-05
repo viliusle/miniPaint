@@ -44,6 +44,9 @@ module.exports = {
             jQuery: "jquery",
             "window.jQuery": "jquery"
 		}),
+		new webpack.DefinePlugin({
+			VERSION: JSON.stringify(require("./package.json").version)
+		}),
 	],
 	devtool: "cheap-module-source-map",
 	devServer: {
