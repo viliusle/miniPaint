@@ -192,8 +192,6 @@ class File_save_class {
 			this.disable_canvas_smooth(ctx);
 
 			//ask data
-			if (type == 'JPG' || config.TRANSPARENCY == false)
-				this.fillCanvasBackground(ctx, '#ffffff');
 			if (only_one_layer == true && type != 'GIF' && config.layer.type != null) {
 				//only current layer !!!
 				var layer = config.layer;
@@ -209,9 +207,6 @@ class File_save_class {
 
 					canvas.width = layer.width;
 					canvas.height = layer.height;
-					if (type == 'JPG' || config.TRANSPARENCY == false) {
-						this.fillCanvasBackground(ctx, '#ffffff', canvas.width, canvas.height);
-					}
 				}
 
 				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
@@ -225,6 +220,13 @@ class File_save_class {
 			else {
 				this.Base_layers.convert_layers_to_canvas(ctx);
 			}
+		}
+		
+		if (type != 'JSON' && (type == 'JPG' || config.TRANSPARENCY == false)) {
+			//add white background
+			ctx.globalCompositeOperation = 'destination-over';
+			this.fillCanvasBackground(ctx, '#ffffff');
+			ctx.globalCompositeOperation = 'source-over';
 		}
 
 		//calc size
@@ -332,9 +334,6 @@ class File_save_class {
 			this.disable_canvas_smooth(ctx);
 
 			//ask data
-			if (type == 'JPG' || config.TRANSPARENCY == false) {
-				this.fillCanvasBackground(ctx, '#ffffff');
-			}
 			if (only_one_layer == true && type != 'GIF' && config.layer.type != null) {
 				//only current layer !!!
 				var layer = config.layer;
@@ -350,9 +349,6 @@ class File_save_class {
 
 					canvas.width = layer.width;
 					canvas.height = layer.height;
-					if (type == 'JPG' || config.TRANSPARENCY == false) {
-						this.fillCanvasBackground(ctx, '#ffffff', canvas.width, canvas.height);
-					}
 				}
 
 				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
@@ -366,6 +362,13 @@ class File_save_class {
 			else {
 				this.Base_layers.convert_layers_to_canvas(ctx);
 			}
+		}
+		
+		if (type != 'JSON' && (type == 'JPG' || config.TRANSPARENCY == false)) {
+			//add white background
+			ctx.globalCompositeOperation = 'destination-over';
+			this.fillCanvasBackground(ctx, '#ffffff');
+			ctx.globalCompositeOperation = 'source-over';
 		}
 
 		if (type == 'PNG') {
