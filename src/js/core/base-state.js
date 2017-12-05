@@ -6,7 +6,7 @@
 import config from './../config.js';
 import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
-import alertify from 'alertifyjs/build/alertify.min.js';
+import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
 

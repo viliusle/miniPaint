@@ -8,7 +8,7 @@ import './../css/reset.css';
 import './../css/layout.css';
 import './../css/menu.css';
 import './../css/print.css';
-import 'alertifyjs/build/css/alertify.min.css';
+import './../../node_modules/alertifyjs/build/css/alertify.min.css';
 //js
 import config from './config.js';
 import Base_gui_class from './core/base-gui.js';
