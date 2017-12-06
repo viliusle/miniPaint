@@ -85,6 +85,7 @@ input[type="button"]:disabled{
 	visibility:hidden;
 }
 button{
+	border-radius: 0;
 	cursor: pointer;
 }
 label{
