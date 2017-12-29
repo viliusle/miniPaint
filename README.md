@@ -1,8 +1,8 @@
 # miniPaint
 
-Online graphics editing tool lets create, edit images using HTML5 technologies.
-No need to buy, download, install or have obsolete flash.
-Key features: layers, drag & drop, transparency, filters, no-flash, no ads, open source. 
+Online image editor lets you create, edit images using HTML5 technologies.
+No need to buy, download, install or have obsolete flash. No ads.
+Key features: layers, filters, HTML5, open source, photoshop alternative.
 
 miniPaint operates directly in the browser. You can create images, paste from clipboard (ctrl+v) 
 or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
