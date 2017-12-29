@@ -11,7 +11,7 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 var instance = null;
 
 /**
- * Undo system
+ * Undo state class. Supports multiple levels undo.
  */
 class Base_state_class {
 

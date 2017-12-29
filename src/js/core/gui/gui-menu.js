@@ -7,6 +7,9 @@ import config from './../../config.js';
 import menu_template from './../../config-menu.js';
 import ddsmoothmenu from './../../libs/menu.js';
 
+/**
+ * class responsible for rendering main menu
+ */
 class GUI_menu_class {
 
 	render_main() {

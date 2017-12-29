@@ -39,6 +39,9 @@ var template = `
 		</div>
 `;
 
+/**
+ * GUI class responsible for rendering colos block on right sidebar
+ */
 class GUI_colors_class {
 
 	render_main_colors() {

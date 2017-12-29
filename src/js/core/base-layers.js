@@ -657,7 +657,13 @@ class Base_layers_class {
 
 		return false;
 	}
-
+	
+	/**
+	 * find next layer
+	 * 
+	 * @param {int} id layer id
+	 * @returns {layer|null}
+	 */
 	find_next(id) {
 		id = parseInt(id);
 		var link = this.get_layer(id);
@@ -675,7 +681,13 @@ class Base_layers_class {
 
 		return null;
 	}
-
+	
+	/**
+	 * find previous layer
+	 * 
+	 * @param {int} id layer id
+	 * @returns {layer|null}
+	 */
 	find_previous(id) {
 		id = parseInt(id);
 		var link = this.get_layer(id);
@@ -694,12 +706,15 @@ class Base_layers_class {
 		return null;
 	}
 
+	/**
+	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute at 100% zoom.
+	 * 
+	 * @param {int} x
+	 * @param {int} y
+	 * @returns {object} keys: x, y
+	 */
 	get_world_coords(x, y) {
 		return zoomView.toWorld(x, y);
-	}
-
-	getCurrentPos() {
-		return zoomView.getCurrentPos();
 	}
 
 	/**

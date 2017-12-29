@@ -18,6 +18,9 @@ var template = `
 	<div class="layers_list" id="layers"></div>
 `;
 
+/**
+ * GUI class responsible for rendering layers on right sidebar
+ */
 class GUI_layers_class {
 
 	constructor(ctx) {

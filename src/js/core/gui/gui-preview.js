@@ -22,6 +22,9 @@ var template = `
 	<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" /> 
 `;
 
+/**
+ * GUI class responsible for rendering preview on right sidebar
+ */
 class GUI_preview_class {
 
 	constructor(GUI_class) {

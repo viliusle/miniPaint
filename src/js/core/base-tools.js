@@ -6,6 +6,9 @@
 import config from './../config.js';
 import Base_layers_class from './base-layers.js';
 
+/**
+ * Base tools class, can be used for extending on tools like brush, provides various helping methods.
+ */
 class Base_tools_class {
 
 	constructor(save_mouse) {

@@ -8,6 +8,9 @@ import config from './../config.js';
 var instance = null;
 var settings_all = [];
 
+/**
+ * Selection class - draws rectangular selection on canvas, can be resized.
+ */
 class Base_selection_class {
 
 	/**

@@ -2,9 +2,10 @@
 
 Online graphics editing tool lets create, edit images using HTML5 technologies.
 No need to buy, download, install or have obsolete flash.
-Key features: layers, drag & drop, transparency, filters, no-flash, open source. 
+Key features: layers, drag & drop, transparency, filters, no-flash, no ads, open source. 
 
-miniPaint operates directly in the browser. You can create images, paste from clipboard (ctrl+v) or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
+miniPaint operates directly in the browser. You can create images, paste from clipboard (ctrl+v) 
+or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
 
 ## URL:
 **http://viliusle.github.io/miniPaint/**
@@ -16,12 +17,12 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 **Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
 
 ## Browser Support
-- Firefox
 - Chrome
+- Firefox
 - Opera
 - Edge
 - Safari
-- IE 11 (?)
+- IE 11 (only basic support)
 
 ## Features
 
@@ -33,25 +34,19 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 - **Tools**: pencil, brush, magic wand, erase, fill, color picker, letters, crop, blur, sharpen, desaturate, clone, borders, sprites, key-points, color to alpha, color zoom, replace color, restore alpha, content fill.
 - **Help**: keyboard shortcuts, translations.
 
-### Embed
-
+## Embed
 To embed this app in other page, use this HTML code:
 
-    <iframe style="width:100%; height:35vw;" src="https://viliusle.github.io/miniPaint/"></iframe>
+    <iframe style="width:100%; height:1000px;" id="miniPaint" src="https://viliusle.github.io/miniPaint/"></iframe>
 
 ## Build instructions
+See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions)
 
-- git clone https://github.com/viliusle/miniPaint.git
-- cd miniPaint
-- npm install
-- webpack-dev-server (using http://localhost:8080/ with live reload, require: npm install -g webpack-dev-server)
-- edit files...
-- webpack -p (build for production)
+## Wiki
+See [Wiki](https://github.com/viliusle/miniPaint/wiki)
 
-### License
-
+## License
 MIT License
 
 ## Support
-
 Please use the GitHub issues for support, features, issues or use mail www.viliusl@gmail.com for contacts.

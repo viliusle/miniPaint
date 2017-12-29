@@ -10,6 +10,9 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 
 var instance = null;
 
+/**
+ * GUI class responsible for rendering left sidebar tools
+ */
 class GUI_tools_class {
 
 	constructor(GUI_class) {

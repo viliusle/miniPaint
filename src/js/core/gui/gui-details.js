@@ -78,6 +78,9 @@ var template = `
 	<div>
 `;
 
+/**
+ * GUI class responsible for rendering selected layer details block on right sidebar
+ */
 class GUI_details_class {
 
 	constructor() {

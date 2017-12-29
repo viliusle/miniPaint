@@ -14,6 +14,9 @@ var template = `
 	<span id="mouse_info_mouse">-</span>
 `;
 
+/**
+ * GUI class responsible for rendering information block on right sidebar
+ */
 class GUI_information_class {
 
 	constructor(ctx) {

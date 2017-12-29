@@ -17,6 +17,9 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
 
+/**
+ * Main GUI class
+ */
 class Base_gui_class {
 
 	constructor() {
