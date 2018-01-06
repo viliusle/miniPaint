@@ -67,4 +67,11 @@ function my_update(){
 	target.height = dim.height;
 	target.src = tempCanvas.toDataURL();
 }
+
+/**
+ * will auto load image on page load. Uncomment line below to make it work
+ */
+window.onload = function () {
+	//open_image(document.getElementById('testImage'));  //uncomment me
+};
 </script>
