@@ -281,129 +281,138 @@ class Base_layers_class {
 	 * @param {array} settings
 	 * @param {boolean} can_automate
 	 */
-	insert(settings, can_automate = true) {
+	async insert(settings, can_automate = true) {
 		var _this = this;
-		var need_autoresize = false;
+		
+		return new Promise(function(resolve, reject) {
+			var resolvable = false;
+			var need_autoresize = false;
 
-		//create empty layer
-		var layer = {
-			id: this.auto_increment,
-			parent_id: 0,
-			name: this.Helper.ucfirst(config.TOOL.name) + ' #' + this.auto_increment,
-			type: null,
-			link: null,
-			x: 0,
-			y: 0,
-			width: 0,
-			width_original: null,
-			height: 0,
-			height_original: null,
-			visible: true,
-			opacity: 100,
-			order: this.auto_increment,
-			composition: 'source-over',
-			rotate: 0,
-			data: null,
-			params: {},
-			status: null,
-			color: config.COLOR,
-			filters: [],
-			render_function: null,
-		};
+			//default data
+			var layer = {
+				id: _this.auto_increment,
+				parent_id: 0,
+				name: _this.Helper.ucfirst(config.TOOL.name) + ' #' + _this.auto_increment,
+				type: null,
+				link: null,
+				x: 0,
+				y: 0,
+				width: 0,
+				width_original: null,
+				height: 0,
+				height_original: null,
+				visible: true,
+				opacity: 100,
+				order: _this.auto_increment,
+				composition: 'source-over',
+				rotate: 0,
+				data: null,
+				params: {},
+				status: null,
+				color: config.COLOR,
+				filters: [],
+				render_function: null,
+			};
 
-		//add data
-		for (var i in settings) {
-			if (typeof layer[i] == "undefined") {
-				alertify.error('Error: wrong key: ' + i);
-				continue;
-			}
-			layer[i] = settings[i];
-		}
-
-		//if image - prepare
-		if (layer.type == 'image') {
-
-			if (config.layers.length == 1 && config.layer.width == 0
-				&& config.layer.height == 0 && config.layer.data == null) {
-				//remove first empty layer?
-				this.delete(config.layer.id, true);
-			}
-
-			if (layer.link == null) {
-				if (typeof layer.data == 'object') {
-					//load actual image
-					if (layer.width == 0)
-						layer.width = layer.data.width;
-					if (layer.height == 0)
-						layer.height = layer.data.height;
-					layer.link = layer.data.cloneNode(true);
-					layer.data = null;
-					need_autoresize = true;
+			//build data
+			for (var i in settings) {
+				if (typeof layer[i] == "undefined") {
+					alertify.error('Error: wrong key: ' + i);
+					continue;
 				}
-				else if (typeof layer.data == 'string') {
-					//try loading as imageData
-					layer.link = new Image();
-					layer.link.onload = function () {
-						//update dimensions
+				layer[i] = settings[i];
+			}
+
+			//prepare image
+			if (layer.type == 'image') {
+
+				if (config.layers.length == 1 && config.layer.width == 0
+					&& config.layer.height == 0 && config.layer.data == null) {
+					//remove first empty layer?
+					_this.delete(config.layer.id, true);
+				}
+
+				if (layer.link == null) {
+					if (typeof layer.data == 'object') {
+						//load actual image
 						if (layer.width == 0)
-							layer.width = layer.link.width;
+							layer.width = layer.data.width;
 						if (layer.height == 0)
-							layer.height = layer.link.height;
-						if (layer.width_original == null)
-							layer.width_original = layer.width;
-						if (layer.height_original == null)
-							layer.height_original = layer.height;
-						//free data
-
+							layer.height = layer.data.height;
+						layer.link = layer.data.cloneNode(true);
 						layer.data = null;
-						_this.autoresize(layer.width, layer.height, layer.id, can_automate);
-						_this.render();
+						need_autoresize = true;
+					}
+					else if (typeof layer.data == 'string') {
+						//try loading as imageData
+						resolvable = true;
+						layer.link = new Image();
 						layer.link.onload = function () {
-							config.need_render = true;
+							//update dimensions
+							if (layer.width == 0)
+								layer.width = layer.link.width;
+							if (layer.height == 0)
+								layer.height = layer.link.height;
+							if (layer.width_original == null)
+								layer.width_original = layer.width;
+							if (layer.height_original == null)
+								layer.height_original = layer.height;
+							//free data
+
+							layer.data = null;
+							_this.autoresize(layer.width, layer.height, layer.id, can_automate);
+							_this.render();
+							layer.link.onload = function () {
+								config.need_render = true;
+							};
+							resolve(true);
 						};
-					};
-					layer.link.src = layer.data;
+						layer.link.src = layer.data;
+					}
+					else {
+						alertify.error('Error: can not load image.');
+					}
 				}
-				else {
-					alertify.error('Error: can not load image.');
+			}
+
+			if (settings != undefined && config.layers.length > 0
+				&& config.layer.width == 0 && config.layer.height == 0
+				&& config.layer.data == null && layer.type != 'image' && can_automate !== false) {
+				//update existing layer, because its empty
+				for (var i in layer) {
+					if (i == 'id')
+						continue;
+					if (i == 'name')
+						continue;
+					if (i == 'order')
+						continue;
+					config.layer[i] = layer[i];
 				}
 			}
-		}
+			else {
+				//create new layer
+				config.layers.push(layer);
+				config.layer = _this.get_layer(layer.id);
+				_this.auto_increment++;
 
-		if (settings != undefined && config.layers.length > 0
-			&& config.layer.width == 0 && config.layer.height == 0
-			&& config.layer.data == null && layer.type != 'image' && can_automate !== false) {
-			//update existing empty
-			for (var i in layer) {
-				if (i == 'id')
-					continue;
-				if (i == 'name')
-					continue;
-				if (i == 'order')
-					continue;
-				config.layer[i] = layer[i];
+				if (config.layer == null) {
+					config.layer = config.layers[0];
+				}
 			}
-		}
-		else {
-			//new layer
-			config.layers.push(layer);
-			config.layer = this.get_layer(this.auto_increment);
-			this.auto_increment++;
 
-			if (config.layer == null) {
-				config.layer = config.layers[0];
+			if (layer.id >= _this.auto_increment)
+				_this.auto_increment = layer.id + 1;
+
+			if (need_autoresize == true) {
+				_this.autoresize(config.layer.width, config.layer.height);
 			}
-		}
 
-		if (layer.id >= this.auto_increment)
-			this.auto_increment = layer.id + 1;
-
-		if (need_autoresize == true) {
-			this.autoresize(config.layer.width, config.layer.height);
-		}
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+			_this.render();
+			_this.Base_gui.GUI_layers.render_layers();
+			if(resolvable == false){
+				resolve(true);
+			}
+		});
 	}
 
 	/**
@@ -453,7 +462,7 @@ class Base_layers_class {
 			function myCallback() {
 				_this.Base_gui.GUI_preview.zoom_auto();
 			}
-	}
+		}
 	}
 
 	/**
@@ -463,11 +472,15 @@ class Base_layers_class {
 	 * @returns {object}
 	 */
 	get_layer(id) {
+		if(id == undefined){
+			id = config.layer.id;
+		}
 		for (var i in config.layers) {
 			if (config.layers[i].id == id) {
 				return config.layers[i];
 			}
 		}
+		alertify.error('Error: can not find layer with id:' + id);
 		return null;
 	}
 
@@ -787,12 +800,14 @@ class Base_layers_class {
 	/**
 	 * exports (active) layer to canvas for saving
 	 * 
-	 * @param {int} layer_id
-	 * @param {boolean} actual_area if false, all visible and trimed area will be used
+	 * @param {int} layer_id or current layer by default
+	 * @param {boolean} actual_area used for resized image. Default is false.
 	 * @param {boolean} can_trim default is true
 	 * @returns {canvas}
 	 */
-	convert_layer_to_canvas(layer_id, actual_area = false, can_trim) {
+	convert_layer_to_canvas(layer_id, actual_area = false, can_trim) {	
+		if(actual_area == null)
+			actual_area = false;
 		if (layer_id == null)
 			layer_id = config.layer.id;
 		var link = this.get_layer(layer_id);
@@ -825,12 +840,12 @@ class Base_layers_class {
 			if (trim_info.left > 0 || trim_info.top > 0 || trim_info.right > 0 || trim_info.bottom > 0) {
 				offset_x = trim_info.left;
 				offset_y = trim_info.top;
-
-				this.Helper.change_canvas_size(canvas,
-					canvas.width - trim_info.left - trim_info.right,
-					canvas.height - trim_info.top - trim_info.bottom,
-					offset_x,
-					offset_y);
+				
+				var w = canvas.width - trim_info.left - trim_info.right;
+				var h = canvas.height - trim_info.top - trim_info.bottom;
+				if(w > 1 && h > 1) {
+					this.Helper.change_canvas_size(canvas, w, h, offset_x, offset_y);
+				}
 			}
 		}
 
@@ -851,8 +866,10 @@ class Base_layers_class {
 			layer_id = config.layer.id;
 		var link = this.get_layer(layer_id);
 
-		if (link.type != 'image')
+		if (link.type != 'image'){
+			alertify.error('Error: layer must be image.');
 			return null;
+		}
 		
 		if(this.Helper.is_edge_or_ie() == false){
 			//update image using blob (faster)

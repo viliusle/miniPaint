@@ -16,7 +16,7 @@ import Base_layers_class from './core/base-layers.js';
 import Base_tools_class from './core/base-tools.js';
 import Base_state_class from './core/base-state.js';
 
-window.onload = function (e) {
+window.addEventListener('load', function (e) {
 	//initiate app
 	var Layers = new Base_layers_class();
 	var Base_tools = new Base_tools_class(true);
@@ -33,4 +33,4 @@ window.onload = function (e) {
 	GUI.render_main_gui();
 
 	Layers.init();
-};
+}, false);

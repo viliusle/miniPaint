@@ -5,6 +5,7 @@
 
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
+import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var Helper = new Helper_class();
 
@@ -138,17 +139,17 @@ class GUI_colors_class {
 		var value = parseInt(object.value);
 		if (isNaN(value) || value < 0) {
 			object.value = 0;
-			return false;
+			alertify.error('Error: bad rgb value.');
 		}
 		if (value > 255) {
 			object.value = 255;
-			return false;
+			alertify.error('Error: bad rgb value.');
 		}
 		config.COLOR = Helper.rgbToHex(
 			document.getElementById("rgb_r").value,
 			document.getElementById("rgb_g").value,
 			document.getElementById("rgb_b").value
-			);
+		);
 		config.ALPHA = document.getElementById("rgb_a").value;
 
 		this.render_colors(object.id);
@@ -162,7 +163,7 @@ class GUI_colors_class {
 		}
 		if (value > 255) {
 			object.value = 255;
-			return false;
+			alertify.error('Error: bad hsl value.');
 		}
 		var rgb = Helper.hslToRgb(
 			document.getElementById("hsl_h").value / 255,

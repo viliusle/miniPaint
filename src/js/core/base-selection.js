@@ -236,7 +236,7 @@ class Base_selection_class {
 		if (e.type == 'mousedown' && config.mouse.valid == false || settings.enable_controlls == false) {
 			return;
 		}
-		if (settings.data.rotate != null && settings.data.rotate > 0) {
+		if (settings.data != null && settings.data.rotate != null && settings.data.rotate > 0) {
 			//controls on rotated object disabled
 			return;
 		}

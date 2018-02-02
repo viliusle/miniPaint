@@ -68,7 +68,7 @@ class Base_tools_class {
 
 	set_mouse_info(event) {
 		if (this.save_mouse !== true) {
-			//not maint
+			//not main
 			return false;
 		}
 		if (event != undefined && event.changedTouches) {
