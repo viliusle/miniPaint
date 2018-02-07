@@ -457,6 +457,7 @@ class Base_layers_class {
 		this.Base_gui.prepare_canvas();
 
 		//fit zoom when after short pause
+		//@todo - remove setTimeout
 		if (need_fit == true) {
 			var internal = window.setTimeout(myCallback, 100);
 			function myCallback() {

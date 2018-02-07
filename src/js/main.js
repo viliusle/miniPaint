@@ -25,6 +25,7 @@ window.addEventListener('load', function (e) {
 
 	//register as global for quick or external access
 	window.Layers = Layers;
+	window.AppConfig = config;
 	window.State = Base_state;	// window.State.save();
 
 	//render all
