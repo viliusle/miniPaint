@@ -3,7 +3,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Dialog_class from './../../libs/popup.js';
 import ImageFilters_class from './../../libs/imagefilters.js';
-import Hermite_class from './../../../../node_modules/hermite-resize/dist/hermite.npm.js';
+import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
