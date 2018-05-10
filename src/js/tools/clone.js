@@ -18,34 +18,59 @@ class Clone_class extends Base_tools_class {
 		this.clone_coords = null;
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
+    dragMove(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousemove(event);
+
+        //mouse cursor
+        var mouse = _this.get_mouse_info(event);
+        var params = _this.getParams();
+        _this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+    }
+
+    dragEnd(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mouseup(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//mouse events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('mousemove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('mouseup', function (event) {
+            _this.dragEnd(event);
+        });
 
-			//mouse cursor
-			var mouse = _this.get_mouse_info(e);
-			var params = _this.getParams();
-			_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
-		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
-		});
-		document.addEventListener('contextmenu', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseRightClick(e);
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('touchmove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('touchend', function (event) {
+            _this.dragEnd(event);
+        });
+
+		document.addEventListener('contextmenu', function (event) {
+			_this.mouseRightClick(event);
 		});
 	}
 
@@ -64,6 +89,8 @@ class Clone_class extends Base_tools_class {
 	}
 
 	mouseRightClick(e) {
+        if (config.TOOL.name != this.name)
+            return;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 
@@ -124,8 +151,8 @@ class Clone_class extends Base_tools_class {
 			alertify.error('Clone tool disabled for resized image. Sorry.');
 			return;
 		}
-		if (params.source_layer.value == 'Previous' && 
-			(previous_layer.width != previous_layer.width_original 
+		if (params.source_layer.value == 'Previous' &&
+			(previous_layer.width != previous_layer.width_original
 			|| previous_layer.height != previous_layer.height_original)) {
 			alertify.error('Clone tool disabled for resized image. Sorry.');
 			return;

@@ -33,25 +33,51 @@ class Crop_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
+    dragMove(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousemove(event);
+    }
+
+    dragEnd(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mouseup(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
-		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
-		});
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('mousemove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('mouseup', function (event) {
+            _this.dragEnd(event);
+        });
+
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('touchmove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('touchend', function (event) {
+            _this.dragEnd(event);
+        });
 	}
 
 	mousedown(e) {
@@ -170,11 +196,11 @@ class Crop_class extends Base_tools_class {
 			var link = config.layers[i];
 			if (link.type == null)
 				continue;
-			
+
 			//move
 			link.x -= parseInt(selection.x);
 			link.y -= parseInt(selection.y);
-			
+
 			if(link.type == 'image'){
 				//also remove unvisible data
 				var left = 0;
@@ -191,23 +217,23 @@ class Crop_class extends Base_tools_class {
 					bottom = link.y + link.height - selection.height;
 				var width = link.width - left - right;
 				var height = link.height - top - bottom;
-				
+
 				//if image was streched
 				var width_ratio = (link.width / link.width_original);
 				var height_ratio = (link.height / link.height_original);
-				
+
 				//create smaller canvas
 				var canvas = document.createElement('canvas');
 				var ctx = canvas.getContext("2d");
 				canvas.width = width / width_ratio;
 				canvas.height = height / height_ratio;
-				
+
 				//cut required part
 				ctx.translate(-left / width_ratio, -top / height_ratio);
 				canvas.getContext("2d").drawImage(link.link, 0, 0);
 				ctx.translate(0, 0);
 				this.Base_layers.update_layer_image(canvas, link.id);
-				
+
 				//update attributes
 				link.width = Math.ceil(canvas.width * width_ratio);
 				link.height = Math.ceil(canvas.height * height_ratio);

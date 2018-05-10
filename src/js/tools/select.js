@@ -26,20 +26,38 @@ class Select_tool_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
+    dragMove(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousemove(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//mouse events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
-		});
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('mousemove', function (event) {
+            _this.dragMove(event);
+        });
+
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('touchmove', function (event) {
+            _this.dragMove(event);
+        });
 
 		//keyboard actions
 		document.addEventListener('keydown', function (e) {
@@ -83,10 +101,10 @@ class Select_tool_class extends Base_tools_class {
 			return;
 		if (this.Base_selection.mouse_lock != null)
 			return;
-		
+
 		this.auto_select_object(e);
 		this.saved = false;
-		
+
 		this.last_post = {
 			x: config.layer.x,
 			y: config.layer.y,
@@ -111,7 +129,7 @@ class Select_tool_class extends Base_tools_class {
 		//move object
 		config.layer.x = Math.round(mouse.x - mouse.click_x + this.last_post.x);
 		config.layer.y = Math.round(mouse.y - mouse.click_y + this.last_post.y);
-		
+
 		this.Base_layers.render();
 	}
 
