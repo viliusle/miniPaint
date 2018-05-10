@@ -33,51 +33,51 @@ class Crop_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
-    dragStart(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mousedown(event);
-    }
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
 
-    dragMove(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mousemove(event);
-    }
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+	}
 
-    dragEnd(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mouseup(event);
-    }
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+	}
 
 	load() {
 		var _this = this;
 
-        //mouse events
-        document.addEventListener('mousedown', function (event) {
-            _this.dragStart(event);
-        });
-        document.addEventListener('mousemove', function (event) {
-            _this.dragMove(event);
-        });
-        document.addEventListener('mouseup', function (event) {
-            _this.dragEnd(event);
-        });
+		//mouse events
+		document.addEventListener('mousedown', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('mousemove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
 
-        // collect touch events
-        document.addEventListener('touchstart', function (event) {
-            _this.dragStart(event);
-        });
-        document.addEventListener('touchmove', function (event) {
-            _this.dragMove(event);
-        });
-        document.addEventListener('touchend', function (event) {
-            _this.dragEnd(event);
-        });
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
+		});
 	}
 
 	mousedown(e) {
@@ -201,19 +201,19 @@ class Crop_class extends Base_tools_class {
 			link.x -= parseInt(selection.x);
 			link.y -= parseInt(selection.y);
 
-			if(link.type == 'image'){
+			if (link.type == 'image') {
 				//also remove unvisible data
 				var left = 0;
-				if(link.x < 0)
+				if (link.x < 0)
 					left = -link.x;
 				var top = 0;
-				if(link.y < 0)
+				if (link.y < 0)
 					top = -link.y;
 				var right = 0;
-				if(link.x + link.width > selection.width)
+				if (link.x + link.width > selection.width)
 					right = link.x + link.width - selection.width;
 				var bottom = 0;
-				if(link.y + link.height > selection.height)
+				if (link.y + link.height > selection.height)
 					bottom = link.y + link.height - selection.height;
 				var width = link.width - left - right;
 				var height = link.height - top - bottom;
