@@ -46,25 +46,52 @@ class Selection_class extends Base_tools_class {
 		this.GUI_tools = new GUI_tools_class();
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
+    dragMove(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousemove(event);
+    }
+
+    dragEnd(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mouseup(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
-		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
-		});
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('mousemove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('mouseup', function (event) {
+            _this.dragEnd(event);
+        });
+
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('touchmove', function (event) {
+            _this.dragMove(event);
+        });
+        document.addEventListener('touchend', function (event) {
+            _this.dragEnd(event);
+        });
+
 		document.addEventListener('keydown', function (e) {
 			var code = e.keyCode;
 			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.type == 'textarea')
@@ -266,10 +293,10 @@ class Selection_class extends Base_tools_class {
 		}
 
 		this.init_tmp_canvas();
-		
+
 		var mouse_x = selection.x - layer.x;
 		var mouse_y = selection.y - layer.y;
-		
+
 		//adapt to origin size
 		mouse_x = this.adaptSize(mouse_x, 'width');
 		mouse_y = this.adaptSize(mouse_y, 'height');

@@ -12,15 +12,25 @@ class Magic_wand_class extends Base_tools_class {
 		this.name = 'magic_wand';
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//mouse events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
 	}
 
 	mousedown(e) {
@@ -73,7 +83,7 @@ class Magic_wand_class extends Base_tools_class {
 
 	/**
 	 * apply magic wand
-	 * 
+	 *
 	 * @param {ctx} context
 	 * @param {int} W
 	 * @param {int} H

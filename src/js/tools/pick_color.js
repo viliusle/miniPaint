@@ -15,20 +15,38 @@ class Pick_color_class extends Base_tools_class {
 		this.name = 'pick_color';
 	}
 
+    dragStart(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousedown(event);
+    }
+
+    dragMove(event) {
+        var _this = this;
+        if (config.TOOL.name != _this.name)
+            return;
+        _this.mousemove(event);
+    }
+
 	load() {
 		var _this = this;
 
-		//mouse events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
-		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
-		});
+        //mouse events
+        document.addEventListener('mousedown', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('mousemove', function (event) {
+            _this.dragMove(event);
+        });
+
+        // collect touch events
+        document.addEventListener('touchstart', function (event) {
+            _this.dragStart(event);
+        });
+        document.addEventListener('touchmove', function (event) {
+            _this.dragMove(event);
+        });
 	}
 
 	mousedown(e) {
