@@ -77,7 +77,7 @@ class Base_tools_class {
             _this.dragMove(event);
             if(event.target.id === "canvas_minipaint" && !$('.scroll').has($(event.target)).length)
                 event.preventDefault();
-        });
+        }, {passive: false});
         document.addEventListener('touchend', function (event) {
             _this.dragEnd(event);
         });
