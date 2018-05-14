@@ -106,7 +106,7 @@ class Base_layers_class {
 
 	/**
 	 * renders all layers objects on main canvas
-	 * 
+	 *
 	 * @param {bool} force
 	 */
 	render(force) {
@@ -212,7 +212,7 @@ class Base_layers_class {
 
 	/**
 	 * export current 1ayers to given canvas
-	 * 
+	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
 	 */
@@ -277,13 +277,13 @@ class Base_layers_class {
 
 	/**
 	 * creates new layer
-	 * 
+	 *
 	 * @param {array} settings
 	 * @param {boolean} can_automate
 	 */
 	async insert(settings, can_automate = true) {
 		var _this = this;
-		
+
 		return new Promise(function(resolve, reject) {
 			var resolvable = false;
 			var need_autoresize = false;
@@ -340,6 +340,9 @@ class Base_layers_class {
 						if (layer.height == 0)
 							layer.height = layer.data.height;
 						layer.link = layer.data.cloneNode(true);
+                        layer.link.onload = function () {
+                            config.need_render = true;
+                        };
 						layer.data = null;
 						need_autoresize = true;
 					}
@@ -417,7 +420,7 @@ class Base_layers_class {
 
 	/**
 	 * autoresize layer, based on dimensions, up - always, if 1 layer - down.
-	 * 
+	 *
 	 * @param {int} width
 	 * @param {int} height
 	 * @param {int} layer_id
@@ -468,7 +471,7 @@ class Base_layers_class {
 
 	/**
 	 * returns layer
-	 * 
+	 *
 	 * @param {int} id
 	 * @returns {object}
 	 */
@@ -487,7 +490,7 @@ class Base_layers_class {
 
 	/**
 	 * removes layer
-	 * 
+	 *
 	 * @param {int} id
 	 * @param {boolean} force - Force to delete first layer?
 	 */
@@ -549,7 +552,7 @@ class Base_layers_class {
 
 	/**
 	 * toggle layer visibility
-	 * 
+	 *
 	 * @param {int} id
 	 */
 	toggle_visibility(id) {
@@ -574,7 +577,7 @@ class Base_layers_class {
 
 	/**
 	 * marks layer as selected, active
-	 * 
+	 *
 	 * @param {int} id
 	 */
 	select(id) {
@@ -588,7 +591,7 @@ class Base_layers_class {
 
 	/**
 	 * change layer opacity
-	 * 
+	 *
 	 * @param {int} id
 	 * @param {int} value 0-100
 	 */
@@ -606,7 +609,7 @@ class Base_layers_class {
 
 	/**
 	 * clear layer data
-	 * 
+	 *
 	 * @param {int} id
 	 */
 	layer_clear(id) {
@@ -622,7 +625,7 @@ class Base_layers_class {
 
 	/**
 	 * move layer up or down
-	 * 
+	 *
 	 * @param {int} id
 	 * @param {int} direction
 	 */
@@ -658,7 +661,7 @@ class Base_layers_class {
 
 	/**
 	 * checks if layer empty
-	 * 
+	 *
 	 * @param {int} id
 	 * @returns {Boolean}
 	 */
@@ -671,10 +674,10 @@ class Base_layers_class {
 
 		return false;
 	}
-	
+
 	/**
 	 * find next layer
-	 * 
+	 *
 	 * @param {int} id layer id
 	 * @returns {layer|null}
 	 */
@@ -695,10 +698,10 @@ class Base_layers_class {
 
 		return null;
 	}
-	
+
 	/**
 	 * find previous layer
-	 * 
+	 *
 	 * @param {int} id layer id
 	 * @returns {layer|null}
 	 */
@@ -722,7 +725,7 @@ class Base_layers_class {
 
 	/**
 	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute at 100% zoom.
-	 * 
+	 *
 	 * @param {int} x
 	 * @param {int} y
 	 * @returns {object} keys: x, y
@@ -733,7 +736,7 @@ class Base_layers_class {
 
 	/**
 	 * register new live filter
-	 * 
+	 *
 	 * @param {int} layer_id
 	 * @param {string} name
 	 * @param {object} params
@@ -755,7 +758,7 @@ class Base_layers_class {
 
 	/**
 	 * delets live filter
-	 * 
+	 *
 	 * @param {int} layer_id
 	 * @param {string} filter_id
 	 */
@@ -776,7 +779,7 @@ class Base_layers_class {
 
 	/**
 	 * exports all layers to canvas for saving
-	 * 
+	 *
 	 * @param {canvas.context} ctx
 	 * @param {int} layer_id Optional
 	 */
@@ -800,13 +803,13 @@ class Base_layers_class {
 	}
 	/**
 	 * exports (active) layer to canvas for saving
-	 * 
+	 *
 	 * @param {int} layer_id or current layer by default
 	 * @param {boolean} actual_area used for resized image. Default is false.
 	 * @param {boolean} can_trim default is true
 	 * @returns {canvas}
 	 */
-	convert_layer_to_canvas(layer_id, actual_area = false, can_trim) {	
+	convert_layer_to_canvas(layer_id, actual_area = false, can_trim) {
 		if(actual_area == null)
 			actual_area = false;
 		if (layer_id == null)
@@ -841,7 +844,7 @@ class Base_layers_class {
 			if (trim_info.left > 0 || trim_info.top > 0 || trim_info.right > 0 || trim_info.bottom > 0) {
 				offset_x = trim_info.left;
 				offset_y = trim_info.top;
-				
+
 				var w = canvas.width - trim_info.left - trim_info.right;
 				var h = canvas.height - trim_info.top - trim_info.bottom;
 				if(w > 1 && h > 1) {
@@ -858,7 +861,7 @@ class Base_layers_class {
 
 	/**
 	 * updates layer image data
-	 * 
+	 *
 	 * @param {canvas} canvas
 	 * @param {int} layer_id (optional)
 	 */
@@ -871,7 +874,7 @@ class Base_layers_class {
 			alertify.error('Error: layer must be image.');
 			return null;
 		}
-		
+
 		if(this.Helper.is_edge_or_ie() == false){
 			//update image using blob (faster)
 			canvas.toBlob(function (blob) {
@@ -889,7 +892,7 @@ class Base_layers_class {
 
 	/**
 	 * returns canvas dimensions.
-	 * 
+	 *
 	 * @returns {object}
 	 */
 	get_dimensions() {
