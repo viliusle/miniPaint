@@ -15,34 +15,34 @@ class Erase_class extends Base_tools_class {
 		this.started = false;
 	}
 
-    dragStart(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mousedown(event);
-    }
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
 
-    dragMove(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mousemove(event);
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
 
-        //mouse cursor
-        var mouse = _this.get_mouse_info(event);
-        var params = _this.getParams();
-        if (params.circle == true)
-            _this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
-        else
-            _this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'rect');
-    }
+		//mouse cursor
+		var mouse = _this.get_mouse_info(event);
+		var params = _this.getParams();
+		if (params.circle == true)
+			_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+		else
+			_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'rect');
+	}
 
-    dragEnd(event) {
-        var _this = this;
-        if (config.TOOL.name != _this.name)
-            return;
-        _this.mouseup(event);
-    }
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+	}
 
 	load() {
 		var _this = this;
@@ -58,16 +58,16 @@ class Erase_class extends Base_tools_class {
 			_this.dragEnd(event);
 		});
 
-        // collect touch events
-        document.addEventListener('touchstart', function (event) {
-            _this.dragStart(event);
-        });
-        document.addEventListener('touchmove', function (event) {
-            _this.dragMove(event);
-        });
-        document.addEventListener('touchend', function (event) {
-            _this.dragEnd(event);
-        });
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
+		});
 	}
 
 	on_params_update() {
@@ -179,7 +179,7 @@ class Erase_class extends Base_tools_class {
 		if (is_circle == false) {
 			//rectangle
 			var size_half = Math.ceil(size / 2);
-			if(size == 1){
+			if (size == 1) {
 				//single cell mode
 				mouse_x = Math.floor(mouse.x) - config.layer.x;
 				mouse_y = Math.floor(mouse.y) - config.layer.y;

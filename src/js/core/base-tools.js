@@ -30,28 +30,28 @@ class Base_tools_class {
 	}
 
 	dragStart(event) {
-        var _this = this;
-        _this.set_mouse_info(event);
+		var _this = this;
+		_this.set_mouse_info(event);
 
-        _this.is_drag = true;
-        _this.speed_average = 0;
-        var mouse = _this.get_mouse_info(event, true);
-        _this.mouse_click_pos[0] = mouse.x;
-        _this.mouse_click_pos[1] = mouse.y;
-    }
+		_this.is_drag = true;
+		_this.speed_average = 0;
+		var mouse = _this.get_mouse_info(event, true);
+		_this.mouse_click_pos[0] = mouse.x;
+		_this.mouse_click_pos[1] = mouse.y;
+	}
 
-    dragMove(event) {
-        var _this = this;
-        _this.set_mouse_info(event);
+	dragMove(event) {
+		var _this = this;
+		_this.set_mouse_info(event);
 
-        _this.speed_average = _this.calc_average_mouse_speed(event);
-    }
+		_this.speed_average = _this.calc_average_mouse_speed(event);
+	}
 
-    dragEnd(event) {
-        var _this = this;
-        _this.is_drag = false;
-        _this.set_mouse_info(event);
-    }
+	dragEnd(event) {
+		var _this = this;
+		_this.is_drag = false;
+		_this.set_mouse_info(event);
+	}
 
 	events() {
 		var _this = this;
@@ -60,27 +60,27 @@ class Base_tools_class {
 
 		//collect mouse info
 		document.addEventListener('mousedown', function (event) {
-            _this.dragStart(event);
+			_this.dragStart(event);
 		});
 		document.addEventListener('mousemove', function (event) {
-            _this.dragMove(event);
+			_this.dragMove(event);
 		});
 		document.addEventListener('mouseup', function (event) {
-            _this.dragEnd(event);
+			_this.dragEnd(event);
 		});
 
 		// collect touch info
-        document.addEventListener('touchstart', function (event) {
-            _this.dragStart(event);
-        });
-        document.addEventListener('touchmove', function (event) {
-            _this.dragMove(event);
-            if(event.target.id === "canvas_minipaint" && !$('.scroll').has($(event.target)).length)
-                event.preventDefault();
-        }, {passive: false});
-        document.addEventListener('touchend', function (event) {
-            _this.dragEnd(event);
-        });
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+			if (event.target.id === "canvas_minipaint" && !$('.scroll').has($(event.target)).length)
+				event.preventDefault();
+		}, {passive: false});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
+		});
 	}
 
 	/**
@@ -104,13 +104,13 @@ class Base_tools_class {
 
 		var eventType = event.type;
 
-        if (event.target.id != "canvas_minipaint") {
-            //outside canvas
-            this.mouse_valid = false;
-        }
-        else {
-            this.mouse_valid = true;
-        }
+		if (event.target.id != "canvas_minipaint") {
+			//outside canvas
+			this.mouse_valid = false;
+		}
+		else {
+			this.mouse_valid = true;
+		}
 
 		if (eventType === 'mousedown' || eventType === 'touchstart') {
 			if (event.target.id != "canvas_minipaint" || (event.which != 1 && eventType !== 'touchstart'))
@@ -120,13 +120,13 @@ class Base_tools_class {
 			this.mouse_valid = true;
 		}
 
-        if (event != undefined && event.changedTouches) {
-            //using touch events
-            event = event.changedTouches[0];
-        }
+		if (event != undefined && event.changedTouches) {
+			//using touch events
+			event = event.changedTouches[0];
+		}
 
-        var mouse_x = event.pageX - this.canvas_offset.x;
-        var mouse_y = event.pageY - this.canvas_offset.y;
+		var mouse_x = event.pageX - this.canvas_offset.x;
+		var mouse_y = event.pageY - this.canvas_offset.y;
 
 		//adapt coords to ZOOM
 		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
