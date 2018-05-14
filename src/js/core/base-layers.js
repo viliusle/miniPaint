@@ -340,9 +340,9 @@ class Base_layers_class {
 						if (layer.height == 0)
 							layer.height = layer.data.height;
 						layer.link = layer.data.cloneNode(true);
-                        layer.link.onload = function () {
-                            config.need_render = true;
-                        };
+						layer.link.onload = function () {
+							config.need_render = true;
+						};
 						layer.data = null;
 						need_autoresize = true;
 					}
