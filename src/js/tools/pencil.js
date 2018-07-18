@@ -75,13 +75,18 @@ class Pencil_class extends Base_tools_class {
 		window.State.save();
 
 		var params_hash = this.get_params_hash();
-
+		var params = this.getParams();
+		var opacity = 100;
+		if (params.antialiasing == false)
+			opacity = Math.round(config.ALPHA / 255 * 100);
+		
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
 			//register new object - current layer is not ours or params changed
 			this.data = [];
 			this.layer = {
 				type: this.name,
 				data: this.data,
+				opacity: opacity,
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
