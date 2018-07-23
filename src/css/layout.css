@@ -401,6 +401,7 @@
 	height:19px;
 	background: url('images/sprites.png') no-repeat -148px -99px;
 	opacity:0.1;
+	filter: drop-shadow(0px 0px 2px white);
 }
 .layers_list .visible{ opacity:0.4; }
 .layers_list .delete{
