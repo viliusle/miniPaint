@@ -20,6 +20,7 @@
  *		on_load: function(params){...},
  *		on_change: function(params, canvas_preview, w, h){...},
  *		on_finish: function(params){...},
+ *		on_cancel: function(params){...},
  * };
  * this.POP.show(settings);
  * 
@@ -72,6 +73,7 @@ class Dialog_class {
 		this.active = false;
 		this.title = null;
 		this.onfinish = false;
+		this.oncancel = false;
 		this.preview = false;
 		this.onload = false;
 		this.onchange = false;
@@ -107,6 +109,7 @@ class Dialog_class {
 		this.title = config.title || '';
 		this.parameters = config.params || [];
 		this.onfinish = config.on_finish || false;
+		this.oncancel = config.on_cancel || false;
 		this.preview = config.preview || false;
 		this.onchange = config.on_change || false;
 		this.onload = config.on_load || false;
@@ -132,6 +135,7 @@ class Dialog_class {
 		this.className = '';
 		this.comment = '';
 		this.onfinish = false;
+		this.oncancel = false;
 	}
 
 	/* ----------------- private functions ---------------------------------- */
@@ -191,6 +195,15 @@ class Dialog_class {
 		}
 
 		this.hide();
+	}
+	
+	//"Cancel" pressed
+	cancel() {
+		var params = this.get_params();
+
+		if (this.oncancel) {
+			this.oncancel(params);
+		}
 	}
 
 	get_params() {
@@ -296,6 +309,9 @@ class Dialog_class {
 		var _this = this;
 		document.getElementById('popup_ok').addEventListener('click', function (event) {
 			_this.save();
+		});
+		document.getElementById('popup_cancel').addEventListener('click', function (event) {
+			_this.cancel();
 		});
 		var targets = document.querySelectorAll('#popup input');
 		for (var i = 0; i < targets.length; i++) {

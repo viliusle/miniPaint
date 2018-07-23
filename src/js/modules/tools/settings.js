@@ -35,6 +35,15 @@ class Tools_settings_class {
 		else {
 			var save_resolution = false;
 		}
+
+		//theme
+		var theme_cookie = this.Helper.getCookie('theme');
+		if (theme_cookie) {
+			var theme = theme_cookie;
+		}
+		else {
+			var theme = config.themes[0];
+		}	
 		
 		var t_values = ['squares', 'green', 'grey'];
 
@@ -42,9 +51,17 @@ class Tools_settings_class {
 			title: 'Settings',
 			params: [
 				{name: "transparency", title: "Transparent:", value: transparency},
-				{name: "transparency_type", title: "Transparency background:", value: config.TRANSPARENCY_TYPE, values: t_values},
+				{name: "transparency_type", title: "Transparency background:", 
+					value: config.TRANSPARENCY_TYPE, values: t_values},
+				{name: "theme", title: "Theme", values: config.themes, value: theme},
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
 			],
+			on_change: function (params) {
+				this.Base_gui.change_theme(params.theme);
+			},
+			on_cancel: function (params) {
+				this.Base_gui.change_theme(theme);
+			},
 			on_finish: function (params) {
 				_this.save_values(params);
 			},
@@ -55,6 +72,7 @@ class Tools_settings_class {
 	save_values(params) {
 		var save_resolution = params.save_resolution;
 		var transparency = params.transparency;
+		var theme = params.theme;
 
 		//save_resolution
 		if (save_resolution) {
@@ -73,6 +91,10 @@ class Tools_settings_class {
 			this.Helper.setCookie('transparency', 0);
 			config.TRANSPARENCY = false;
 		}
+
+		//save theme
+		this.Helper.setCookie('theme', theme);
+		this.Base_gui.change_theme(theme);
 		
 		//transparency_type
 		config.TRANSPARENCY_TYPE = params.transparency_type;

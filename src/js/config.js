@@ -18,6 +18,13 @@ config.layer = null;
 config.need_render = false;
 config.mouse = {};
 
+//requires styles in reset.css
+config.themes = [
+	'dark',
+	'light',
+	'green',
+];
+
 config.TOOLS = [
 	{
 		name: 'select',
