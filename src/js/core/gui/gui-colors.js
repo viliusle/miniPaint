@@ -16,26 +16,26 @@ var template = `
 		<div class="main_color_rgb">
 			<div>
 				<span class="trn red">Red:</span>
-				<input id="rgb_r" type="number" />
+				<input id="rgb_r" min="0" max="255" type="number" />
 				<br />				
 				<span class="trn green">Green:</span>
-				<input id="rgb_g" type="number" />
+				<input id="rgb_g" min="0" max="255" type="number" />
 				<br />
 				<span class="trn blue">Blue:</span>
-				<input id="rgb_b" type="number" />
+				<input id="rgb_b" min="0" max="255" type="number" />
 				<br />
 				<span class="trn alpha">Alpha:</span>
-				<input id="rgb_a" type="number" />
+				<input id="rgb_a" min="0" max="255" type="number" />
 			</div>
 			<div>
 				<span class="trn">Hue:</span>
-				<input id="hsl_h" type="number" />
+				<input id="hsl_h" min="0" max="360" type="number" />
 				<br />				
 				<span class="trn">Sat:</span>
-				<input id="hsl_s" type="number" />
+				<input id="hsl_s" min="0" max="100" type="number" />
 				<br />
 				<span class="trn">Lum:</span>
-				<input id="hsl_l" type="number" />
+				<input id="hsl_l" min="0" max="100" type="number" />
 			</div>
 		</div>
 `;
@@ -89,13 +89,13 @@ class GUI_colors_class {
 		document.getElementById("rgb_b").value = colors.b;
 		document.getElementById("rgb_a").value = config.ALPHA;
 
-		var hsl = Helper.rgbToHsl(colors.r, colors.g, colors.b);
+		var hsl = Helper.rgbToHsl(colors.r, colors.g, colors.b, false);
 		if (ignore_id !== 'hsl_h')
-			document.getElementById("hsl_h").value = hsl.h;
+			document.getElementById("hsl_h").value = Math.round(hsl.h * 360);
 		if (ignore_id !== 'hsl_s')
-			document.getElementById("hsl_s").value = hsl.s;
+			document.getElementById("hsl_s").value = Math.round(hsl.s * 100);
 		if (ignore_id !== 'hsl_l')
-			document.getElementById("hsl_l").value = hsl.l;
+			document.getElementById("hsl_l").value = Math.round(hsl.l * 100);
 	}
 
 	set_color(object) {
@@ -161,14 +161,24 @@ class GUI_colors_class {
 			object.value = 0;
 			return false;
 		}
-		if (value > 255) {
-			object.value = 255;
+		
+		var max = 100;
+		if(object.id == 'hsl_h'){
+			max = 360;
+		}
+		
+		if (value > max) {
+			object.value = max;
+			alertify.error('Error: bad hsl value.');
+		}
+		if (value < 0) {
+			object.value = 0;
 			alertify.error('Error: bad hsl value.');
 		}
 		var rgb = Helper.hslToRgb(
-			document.getElementById("hsl_h").value / 255,
-			document.getElementById("hsl_s").value / 255,
-			document.getElementById("hsl_l").value / 255
+			document.getElementById("hsl_h").value / 360,
+			document.getElementById("hsl_s").value / 100,
+			document.getElementById("hsl_l").value / 100
 			);
 		config.COLOR = Helper.rgbToHex(rgb[0], rgb[1], rgb[2]);
 

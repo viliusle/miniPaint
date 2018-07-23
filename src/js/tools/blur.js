@@ -32,7 +32,7 @@ class Blur_class extends Base_tools_class {
 		_this.mousemove(event);
 
 		//mouse cursor
-		var mouse = _this.get_mouse_info(e);
+		var mouse = _this.get_mouse_info(event);
 		var params = _this.getParams();
 		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
 	}

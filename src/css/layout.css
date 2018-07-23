@@ -286,7 +286,7 @@
 .canvas_preview_wrapper{
 	position:relative;
 	height:100px;
-	margin-bottom:10px;
+	margin: 5px 5px 10px 5px;
 }
 .canvas_preview_details{
 	padding: 0 5px;
