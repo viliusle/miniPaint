@@ -84,6 +84,7 @@ class Gradient_class extends Base_tools_class {
 			x: mouse.x,
 			y: mouse.y,
 			rotate: null,
+			is_vector: true,
 			data: {
 				center_x: mouse.x,
 				center_y: mouse.y,

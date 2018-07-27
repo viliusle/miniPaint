@@ -74,6 +74,7 @@ class Rectangle_class extends Base_tools_class {
 			render_function: [this.name, 'render'],
 			x: mouse.x,
 			y: mouse.y,
+			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
 	}

@@ -93,6 +93,7 @@ class Pencil_class extends Base_tools_class {
 				width: null,
 				height: null,
 				rotate: null,
+				is_vector: true,
 			};
 			this.Base_layers.insert(this.layer);
 			this.params_hash = params_hash;

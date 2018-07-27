@@ -75,6 +75,7 @@ class Line_class extends Base_tools_class {
 			x: mouse.x,
 			y: mouse.y,
 			rotate: null,
+			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
 	}

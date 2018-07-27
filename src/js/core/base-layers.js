@@ -28,6 +28,7 @@ var instance = null;
  * - width_original (int)
  * - height_original (int)
  * - visible (bool)
+ * - is_vector (bool)
  * - opacity (0-100)
  * - order (int)
  * - composition (string)
@@ -302,6 +303,7 @@ class Base_layers_class {
 				height: 0,
 				height_original: null,
 				visible: true,
+				is_vector: false,
 				opacity: 100,
 				order: _this.auto_increment,
 				composition: 'source-over',

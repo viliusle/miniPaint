@@ -75,6 +75,7 @@ class Circle_class extends Base_tools_class {
 			status: 'draft',
 			x: mouse.x,
 			y: mouse.y,
+			is_vector: true,
 			data: {
 				center_x: mouse.x,
 				center_y: mouse.y,
