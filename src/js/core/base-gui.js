@@ -293,7 +293,6 @@ class Base_gui_class {
 		var gap_y = this.grid_size[1];
 
 		var width = config.WIDTH;
-		;
 		var height = config.HEIGHT;
 
 		//size

@@ -78,7 +78,6 @@ class Effects_nightVision_class {
 		//vignete
 		var texture = this.fx_filter.texture(canvas2);
 		this.fx_filter.draw(texture).vignette(0.2, 0.9).update();	//effect
-
 		canvas2 = this.fx_filter;
 		
 		return canvas2;

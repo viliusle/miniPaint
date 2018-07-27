@@ -121,6 +121,7 @@ var menu_template = `
 					</ul>
 				</li>
 				<li><a class="trn dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>
+				<li><a class="trn dots" data-target="effects/blueprint.blueprint" href="#">Blueprint</a>
 				<li><a class="trn dots" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>
 				<li><a class="trn dots" data-target="effects/denoise.denoise" href="#">Denoise</a>
 				<li><a class="trn dots" data-target="effects/dither.dither" href="#">Dither</a>
