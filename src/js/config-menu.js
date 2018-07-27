@@ -131,6 +131,7 @@ var menu_template = `
 				<li><a class="trn dots" data-target="effects/grains.grains" href="#">Grains</a>
 				<li><a class="trn dots" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>
 				<li><a class="trn dots" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>
+				<li><a class="trn dots" data-target="effects/night_vision.night_vision" href="#">Night Vision</a>
 				<li><a class="trn dots" data-target="effects/oil.oil" href="#">Oil</a>
 				<li><a class="trn dots" data-target="effects/pencil.pencil" href="#">Pencil</a>
 				<li><a class="trn dots" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>
