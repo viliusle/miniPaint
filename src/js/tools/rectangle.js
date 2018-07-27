@@ -157,6 +157,9 @@ class Rectangle_class extends Base_tools_class {
 		var params = layer.params;
 		var fill = params.fill;
 		var rotateSupport = true;
+		var radius = params.radius;
+		if(radius == undefined)
+			radius = 0;
 
 		ctx.save();
 
@@ -166,19 +169,28 @@ class Rectangle_class extends Base_tools_class {
 		ctx.lineWidth = params.size;
 
 		if (rotateSupport == false) {
-			this.rectangle(ctx, layer.x, layer.y, layer.width, layer.height, fill);
+			this.roundRect(ctx, layer.x, layer.y, layer.width, layer.height, radius, fill);
 		}
 		else {
 			//rotate
 			ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
 			ctx.rotate(layer.rotate * Math.PI / 180);
-			this.rectangle(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, fill);
+			this.roundRect(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, radius, fill);
 		}
 
 		ctx.restore();
 	}
 
-	//draws rectangle
+	/**
+	 * draws rectangle
+	 * 
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} width
+	 * @param {Number} height
+	 * @param {Boolean} fill
+	 */
 	rectangle(ctx, x, y, width, height, fill) {
 		x = x + 0.5;
 		y = y + 0.5;
@@ -197,7 +209,69 @@ class Rectangle_class extends Base_tools_class {
 			ctx.stroke();
 		}
 	}
+	
+	/**
+	 * Draws a rounded rectangle on canvas.
+	 * 
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} width
+	 * @param {Number} height
+	 * @param {Number} radius
+	 * @param {Boolean} fill
+	 */
+	roundRect(ctx, x, y, width, height, radius, fill) {
+		x = parseInt(x);
+		y = parseInt(y);
+		width = parseInt(width);
+		height = parseInt(height);
+		if(width < 0){
+			width = Math.abs(width);
+			x = x - width;
+		}
+		if(height < 0){
+			height = Math.abs(height);
+			y = y - height;
+		}
+		
+		radius = parseInt(radius);
+		if (typeof fill == 'undefined') {
+			fill = false;
+		}
+		if (typeof radius === 'undefined') {
+			radius = 0;
+		}
+		radius = Math.min(radius, width / 2, height / 2);
+		radius = Math.floor(radius);
+		
+		//make it nicer
+		x = x + 0.5;
+		y = y + 0.5;
+		width--;
+		height--;
+		
+		radius = {tl: radius, tr: radius, br: radius, bl: radius};
+		
+		ctx.beginPath();
+		ctx.moveTo(x + radius.tl, y);
+		ctx.lineTo(x + width - radius.tr, y);
+		ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+		ctx.lineTo(x + width, y + height - radius.br);
+		ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+		ctx.lineTo(x + radius.bl, y + height);
+		ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+		ctx.lineTo(x, y + radius.tl);
+		ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+		ctx.closePath();
+		if (fill) {
+			ctx.fill();
+		}
+		else {
+			ctx.stroke();
+		}
+	}
 
 }
-;
+
 export default Rectangle_class;

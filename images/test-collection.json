@@ -5,7 +5,7 @@
 		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
 		"date": "2018-07-27",
 		"version": "4.0.1",
-		"layer_active": 16
+		"layer_active": 14
 	},
 	"layers": [
 		{
@@ -532,7 +532,7 @@
 			"name": "Circle #10",
 			"type": "circle",
 			"link": null,
-			"x": 500,
+			"x": 600,
 			"y": 450,
 			"width": 50,
 			"width_original": null,
@@ -567,7 +567,7 @@
 			"name": "Circle #12",
 			"type": "circle",
 			"link": null,
-			"x": 600,
+			"x": 700,
 			"y": 450,
 			"width": 50,
 			"width_original": null,
@@ -587,41 +587,6 @@
 				"size": 5,
 				"fill": false,
 				"circle": false
-			},
-			"status": null,
-			"color": "#008000",
-			"filters": [],
-			"render_function": [
-				"circle",
-				"render"
-			]
-		},
-		{
-			"id": 13,
-			"parent_id": 0,
-			"name": "Circle #13",
-			"type": "circle",
-			"link": null,
-			"x": 700,
-			"y": 450,
-			"width": 100,
-			"width_original": null,
-			"height": 100,
-			"height_original": null,
-			"visible": true,
-			"is_vector": false,
-			"opacity": 100,
-			"order": 12,
-			"composition": "source-over",
-			"rotate": null,
-			"data": {
-				"center_x": 1091,
-				"center_y": 51
-			},
-			"params": {
-				"size": 5,
-				"fill": false,
-				"circle": true
 			},
 			"status": null,
 			"color": "#008000",
@@ -768,8 +733,8 @@
 			"name": "Radial gradient #19",
 			"type": "gradient",
 			"link": null,
-			"x": 727,
-			"y": 497,
+			"x": 956,
+			"y": 479,
 			"width": 46,
 			"width_original": null,
 			"height": 10,
@@ -919,6 +884,39 @@
 			"filters": [],
 			"render_function": [
 				"borders",
+				"render"
+			]
+		},
+		{
+			"id": 24,
+			"parent_id": 0,
+			"name": "Rectangle #24",
+			"type": "rectangle",
+			"link": null,
+			"x": 500,
+			"y": 450,
+			"width": 50,
+			"width_original": null,
+			"height": 100,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"opacity": 100,
+			"order": 24,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"size": 1,
+				"radius": 999,
+				"fill": true,
+				"square": false
+			},
+			"status": null,
+			"color": "#6b6b6b",
+			"filters": [],
+			"render_function": [
+				"rectangle",
 				"render"
 			]
 		}
