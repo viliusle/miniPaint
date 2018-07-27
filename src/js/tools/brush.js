@@ -7,9 +7,7 @@ class Brush_class extends Base_tools_class {
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
-		this.ctx = ctx;
 		this.name = 'brush';
-		this.data = [];
 		this.layer = {};
 		this.params_hash = false;
 	}
@@ -77,10 +75,9 @@ class Brush_class extends Base_tools_class {
 
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
 			//register new object - current layer is not ours or params changed
-			this.data = [];
 			this.layer = {
 				type: this.name,
-				data: this.data,
+				data: [],
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
@@ -94,7 +91,7 @@ class Brush_class extends Base_tools_class {
 		}
 		else {
 			//continue adding layer data, just register break
-			this.data.push(null);
+			config.layer.data.push(null);
 		}
 	}
 
@@ -103,7 +100,6 @@ class Brush_class extends Base_tools_class {
 		if (mouse.is_drag == false)
 			return;
 		if (mouse.valid == false || mouse.click_valid == false) {
-			this.data.push(null);
 			return;
 		}
 
@@ -121,7 +117,7 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		this.Base_layers.render();
 	}
 
@@ -133,7 +129,7 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
 		config.layer.status = null;
 		this.Base_layers.render();
 	}
@@ -193,6 +189,6 @@ class Brush_class extends Base_tools_class {
 		ctx.translate(-layer.x, -layer.y);
 	}
 
-}
-;
+};
+
 export default Brush_class;

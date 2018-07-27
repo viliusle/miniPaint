@@ -7,9 +7,7 @@ class Pencil_class extends Base_tools_class {
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
-
 		this.name = 'pencil';
-		this.data = [];
 		this.layer = {};
 		this.params_hash = false;
 	}
@@ -82,10 +80,9 @@ class Pencil_class extends Base_tools_class {
 		
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
 			//register new object - current layer is not ours or params changed
-			this.data = [];
 			this.layer = {
 				type: this.name,
-				data: this.data,
+				data: [],
 				opacity: opacity,
 				params: this.clone(this.getParams()),
 				status: 'draft',
@@ -100,7 +97,7 @@ class Pencil_class extends Base_tools_class {
 		}
 		else {
 			//continue adding layer data, just register break
-			this.data.push(null);
+			config.layer.data.push(null);
 		}
 	}
 
@@ -115,9 +112,9 @@ class Pencil_class extends Base_tools_class {
 
 		//more data
 		if (params.antialiasing == false)
-			this.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
+			config.layer.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
 		else
-			this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
 		this.Base_layers.render();
 	}
 
@@ -131,9 +128,9 @@ class Pencil_class extends Base_tools_class {
 
 		//more data
 		if (params.antialiasing == false)
-			this.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
+			config.layer.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
 		else
-			this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
 		config.layer.status = null;
 		this.Base_layers.render();
 	}
@@ -155,10 +152,68 @@ class Pencil_class extends Base_tools_class {
 	render(ctx, layer) {
 		var params = layer.params;
 
-		if (params.antialiasing == false)
-			this.render_aliased(ctx, layer);
-		else
+		if (params.antialiasing == true)
 			this.render_antialiased(ctx, layer);
+		else
+			this.render_aliased(ctx, layer);
+	}
+	
+	/**
+	 * draw with antialiasing, nice mode
+	 *
+	 * @param {ctx} ctx
+	 * @param {object} layer
+	 */
+	render_antialiased(ctx, layer) {
+		if (layer.data.length == 0)
+			return;
+
+		var params = layer.params;
+		var data = layer.data;
+		var n = data.length;
+		var size = params.size || 1;
+
+		//set styles
+		ctx.fillStyle = layer.color;
+		ctx.strokeStyle = layer.color;
+		ctx.lineWidth = size;
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
+
+		ctx.translate(layer.x, layer.y);
+
+		//draw
+		ctx.beginPath();
+		ctx.moveTo(data[0][0], data[0][1]);
+		for (var i = 1; i < n; i++) {
+			if (data[i] === null) {
+				//break
+				ctx.beginPath();
+			}
+			else {
+				//line
+				if (data[i - 1] == null) {
+					//exception - point
+					ctx.arc(data[i][0], data[i][1], size / 2, 0, 2 * Math.PI, false);
+					ctx.fill();
+				}
+				else {
+					//lines
+					ctx.beginPath();
+					ctx.moveTo(data[i - 1][0], data[i - 1][1]);
+					ctx.lineTo(data[i][0], data[i][1]);
+					ctx.stroke();
+				}
+			}
+		}
+		if (n == 1 || data[1] == null) {
+			//point
+			ctx.beginPath();
+			ctx.arc(data[0][0], data[0][1], size / 2, 0, 2 * Math.PI, false);
+			ctx.fill();
+		}
+
+		ctx.translate(-layer.x, -layer.y);
 	}
 
 	/**
@@ -233,64 +288,6 @@ class Pencil_class extends Base_tools_class {
 		}
 	}
 
-	/**
-	 * draw with antialiasing, nice mode
-	 *
-	 * @param {ctx} ctx
-	 * @param {object} layer
-	 */
-	render_antialiased(ctx, layer) {
-		if (layer.data.length == 0)
-			return;
+};
 
-		var params = layer.params;
-		var data = layer.data;
-		var n = data.length;
-		var size = params.size || 1;
-
-		//set styles
-		ctx.fillStyle = layer.color;
-		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = size;
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
-
-		ctx.translate(layer.x, layer.y);
-
-		//draw
-		ctx.beginPath();
-		ctx.moveTo(data[0][0], data[0][1]);
-		for (var i = 1; i < n; i++) {
-			if (data[i] === null) {
-				//break
-				ctx.beginPath();
-			}
-			else {
-				//line
-				if (data[i - 1] == null) {
-					//exception - point
-					ctx.arc(data[i][0], data[i][1], size / 2, 0, 2 * Math.PI, false);
-					ctx.fill();
-				}
-				else {
-					//lines
-					ctx.beginPath();
-					ctx.moveTo(data[i - 1][0], data[i - 1][1]);
-					ctx.lineTo(data[i][0], data[i][1]);
-					ctx.stroke();
-				}
-			}
-		}
-		if (n == 1 || data[1] == null) {
-			//point
-			ctx.beginPath();
-			ctx.arc(data[0][0], data[0][1], size / 2, 0, 2 * Math.PI, false);
-			ctx.fill();
-		}
-
-		ctx.translate(-layer.x, -layer.y);
-	}
-
-}
-;
 export default Pencil_class;
