@@ -227,6 +227,18 @@ class File_open_class {
 				FR.readAsDataURL(f);
 		}
 	}
+	
+	open_template_test(){
+		var _this = this;
+		
+		window.fetch("./../../../../images/test-collection.json").then(function(response) {
+			return response.json();
+		}).then(function(json) {
+			_this.load_json(json, false);
+		}).catch(function(ex) {
+			alertify.error('Sorry, image could not be loaded.');
+		});
+	}
 
 	/**
 	 * check if url has url params, for example: http://viliusle.github.io/miniPaint/?image=http://i.imgur.com/ATda8Ae.jpg
@@ -276,7 +288,11 @@ class File_open_class {
 	}
 
 	load_json(data) {
-		var json = JSON.parse(data);
+		var json;
+		if(typeof data == 'string')
+			json = JSON.parse(data);
+		else
+			json = data;
 		if (json.info.version == undefined) {
 			json.info.version = "3";
 		}
