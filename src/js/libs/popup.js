@@ -124,6 +124,11 @@ class Dialog_class {
 	 * hides dialog
 	 */
 	hide() {
+		var params = this.get_params();
+
+		if (this.oncancel) {
+			this.oncancel(params);
+		}
 		document.getElementById("popup").style.display = 'none';
 		this.parameters = [];
 		this.active = false;

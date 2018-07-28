@@ -10,6 +10,7 @@ var menu_template = `
 					<ul>
 					<li><a class="trn dots" data-target="file/open.open_file" data-key="Drag&Drop" href="#">Open File</a></li>
 					<li><a class="trn dots" data-target="file/open.open_dir" href="#">Open Directory</a></li>
+					<li><a class="trn dots" data-target="file/open.open_webcam" href="#">Open from Webcam</a></li>
 					<li><a class="trn dots" data-target="file/open.open_url" href="#">Open URL</a></li>
 					<li><a class="trn dots" data-target="file/open.open_data_url" href="#">Open Data URL</a></li>
 					<li><a class="trn dots" data-target="file/open.open_template_test" href="#">Open test template</a></li>
