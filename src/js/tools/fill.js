@@ -201,9 +201,7 @@ class Fill_class extends Base_tools_class {
 
 		ctxTemp.putImageData(img_tmp, 0, 0);
 		if (anti_aliasing == true) {
-			context.shadowColor = "rgba(" + color_to.r + ", " + color_to.g + ", "
-				+ color_to.b + ", " + color_to.a / 255 + ")";
-			context.shadowBlur = 5;
+			context.filter = 'blur(1px)';
 		}
 		context.drawImage(canvasTemp, 0, 0);
 	}

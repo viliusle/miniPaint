@@ -188,7 +188,7 @@ class Magic_wand_class extends Base_tools_class {
 		ctxTemp.putImageData(img_tmp, 0, 0);
 		context.globalCompositeOperation = "destination-out";
 		if (anti_aliasing == true) {
-			context.filter = 'blur(2px)';
+			context.filter = 'blur(1px)';
 		}
 		context.drawImage(canvasTemp, 0, 0);
 	}
