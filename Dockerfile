@@ -6,10 +6,10 @@ RUN yum install epel-release -y
 RUN yum install git -y
 RUN yum install nodejs -y
 RUN yum install gcc-c++ make -y
+RUN git clone https://github.com/viliusle/miniPaint.git
+RUN cd miniPaint
 RUN npm update -y
 RUN npm init -y
 RUN npm cache clean 
 RUN npm install -g npm -y
-RUN git clone https://github.com/viliusle/miniPaint.git
-RUN cd miniPaint
 RUN npm run build
