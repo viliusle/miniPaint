@@ -1,7 +1,6 @@
 FROM centos:latest
 MAINTAINER Basit Mohammad <basit.mohammad@microhealthllc.com>
 
-RUN sudo su
 RUN yum update -y
 RUN yum install epel-release -y
 RUN yum install git -y
