@@ -10,7 +10,6 @@ RUN npm update -y
 RUN npm init -y
 RUN npm cache clean 
 RUN npm install -g npm -y
-RUN npm install -y
 RUN git clone https://github.com/viliusle/miniPaint.git
 RUN cd miniPaint
 RUN npm run build
