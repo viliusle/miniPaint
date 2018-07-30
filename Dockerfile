@@ -7,5 +7,4 @@ RUN yum install git -y
 RUN yum install nodejs -y
 RUN git clone https://github.com/viliusle/miniPaint.git
 RUN cd miniPaint
-RUN npm update -y
 RUN npm run build
