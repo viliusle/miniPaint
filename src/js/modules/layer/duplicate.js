@@ -40,6 +40,10 @@ class Layer_duplicate_class {
 		delete params.id;
 		delete params.order;
 		params.name = "Copy: " + params.name;
+		if(params.x != 0 || params.y != 0 || params.width != config.WIDTH || params.height != config.HEIGHT){
+			params.x += 10;
+			params.y += 10;
+		}
 
 		for (var i in params) {
 			//remove private attributes

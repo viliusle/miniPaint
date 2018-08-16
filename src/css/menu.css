@@ -27,6 +27,7 @@
 	width:100%;
 	font:12px Arial,sans-serif;
 	background: #2D2D2D;
+	background: var(--background-color-menu);
 	width: 100%;
 	padding-left:10px;
 	z-index:100;
@@ -53,9 +54,9 @@
 }
 .ddsmoothmenu ul li a{	
 	display: inline-block;
-	color: #2D2D2D;
-	text-decoration: none;
 	color: #cccccc;
+	color: var(--text-color-menu);
+	text-decoration: none;
 	text-align:center;
 	padding: 7px 10px 8px 10px !important;
 }

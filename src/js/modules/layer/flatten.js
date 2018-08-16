@@ -21,13 +21,17 @@ class Layer_flatten_class {
 		canvas.width = config.WIDTH;
 		canvas.height = config.HEIGHT;
 		var ctx = canvas.getContext("2d");
+		
+		var layers_sorted = this.Base_layers.get_sorted_layers();
 
 		//paint layers
-		for (var i in config.layers) {
-			ctx.globalAlpha = config.layers[i].opacity / 100;
-			ctx.globalCompositeOperation = config.layers[i].composition;
+		for (var i = layers_sorted.length - 1; i >= 0; i--) {
+			var layer = layers_sorted[i];
+			
+			ctx.globalAlpha = layer.opacity / 100;
+			ctx.globalCompositeOperation = layer.composition;
 
-			this.Base_layers.render_object(ctx, config.layers[i]);
+			this.Base_layers.render_object(ctx, layer);
 		}
 
 		//create requested layer

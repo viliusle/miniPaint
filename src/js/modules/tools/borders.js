@@ -73,6 +73,7 @@ class Tools_borders_class {
 			y: null,
 			width: null,
 			height: null,
+			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
 	}

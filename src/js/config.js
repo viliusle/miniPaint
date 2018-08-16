@@ -2,7 +2,6 @@
 
 var config = {};
 
-config.VERSION = '4.0.0';
 config.TRANSPARENCY = false;
 config.TRANSPARENCY_TYPE = 'squares'; //squares, green, grey
 config.LANG = 'en';
@@ -18,6 +17,13 @@ config.layers = [];
 config.layer = null;
 config.need_render = false;
 config.mouse = {};
+
+//requires styles in reset.css
+config.themes = [
+	'dark',
+	'light',
+	'green',
+];
 
 config.TOOLS = [
 	{
@@ -101,6 +107,7 @@ config.TOOLS = [
 		title: 'Rectangle',
 		attributes: {
 			size: 1,
+			radius: 0,
 			fill: true,
 			square: false,
 		},

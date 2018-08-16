@@ -16,24 +16,50 @@ class Text_class extends Base_tools_class {
 		this.layer = {};
 	}
 
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+	}
+
 	load() {
 		var _this = this;
 
-		//events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
+		//mouse events
+		document.addEventListener('mousedown', function (event) {
+			_this.dragStart(event);
 		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
+		document.addEventListener('mousemove', function (event) {
+			_this.dragMove(event);
 		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
+
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
 		});
 	}
 
@@ -52,6 +78,7 @@ class Text_class extends Base_tools_class {
 			x: mouse.x,
 			y: mouse.y,
 			rotate: null,
+			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
 	}
@@ -94,7 +121,7 @@ class Text_class extends Base_tools_class {
 		config.layer.width = width;
 		config.layer.height = height;
 		this.Base_layers.render();
-		
+
 		//ask for text
 		var settings = {
 			title: 'Edit text',
@@ -102,13 +129,13 @@ class Text_class extends Base_tools_class {
 				{name: "text", title: "Text:", value: "Text example"},
 			],
 			on_finish: function (params) {
-				if(config.layer.type == 'text' && params.text != ''){
+				if (config.layer.type == 'text' && params.text != '') {
 					config.layer.params.text = params.text;
 					config.need_render = true;
 				}
 			},
 		};
-		this.POP.show(settings);			
+		this.POP.show(settings);
 	}
 
 	render(ctx, layer) {

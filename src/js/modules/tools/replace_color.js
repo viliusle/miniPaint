@@ -67,7 +67,7 @@ class Tools_replaceColor_class {
 		var imgData = data.data;
 		var target_rgb = this.Helper.hex2rgb(target);
 		var target_hsl = this.Helper.rgbToHsl(target_rgb.r, target_rgb.g, target_rgb.b);
-		var target_normalized = this.Helper.hslToRgb(target_hsl.h / 255, target_hsl.s / 255, 0.5);
+		var target_normalized = this.Helper.hslToRgb(target_hsl.h, target_hsl.s, 0.5);
 
 		var replacement_rgb = this.Helper.hex2rgb(replacement);
 		var replacement_hsl = this.Helper.rgbToHsl(replacement_rgb.r, replacement_rgb.g, replacement_rgb.b);
@@ -94,9 +94,9 @@ class Tools_replaceColor_class {
 			}
 			else {
 				//advanced replace using HSL
-
+				
 				var hsl = this.Helper.rgbToHsl(imgData[i], imgData[i + 1], imgData[i + 2]);
-				var normalized = this.Helper.hslToRgb(hsl.h / 255, hsl.s / 255, 0.5);
+				var normalized = this.Helper.hslToRgb(hsl.h, hsl.s, 0.5);
 				var diff = (Math.abs(normalized[0] - target_normalized[0])
 					+ Math.abs(normalized[1] - target_normalized[1])
 					+ Math.abs(normalized[2] - target_normalized[2])) / 3;
@@ -105,10 +105,10 @@ class Tools_replaceColor_class {
 
 				//change to new color with existing luminance
 				var normalized_final = this.Helper.hslToRgb(
-					replacement_hsl.h / 255,
-					replacement_hsl.s / 255,
-					hsl.l * (replacement_hsl.l) / 120 / 255
-					);
+					replacement_hsl.h,
+					replacement_hsl.s,
+					hsl.l * (replacement_hsl.l)
+				);
 
 				imgData[i] = normalized_final[0];
 				imgData[i + 1] = normalized_final[1];

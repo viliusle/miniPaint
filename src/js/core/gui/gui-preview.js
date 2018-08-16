@@ -13,15 +13,20 @@ var template = `
 		<div class="transparent-grid" id="canvas_preview_background"></div>
 		<canvas width="188" height="100" class="transparent" id="canvas_preview"></canvas>
 	</div>
-	<div class="details">
-		<input title="Zoom out" class="layer_add" id="zoom_less" type="button" value="-" />
-		<input title="Reset zoom level" class="layer_add" id="zoom_100" type="button" value="100%" />
-		<input title="Zoom in" class="layer_add" id="zoom_more" type="button" value="+" />
-		<input class="layer_add" id="zoom_fit" type="button" value="Fit" />
+	<div class="canvas_preview_details">
+		<div class="details">
+			<input title="Zoom out" class="layer_add" id="zoom_less" type="button" value="-" />
+			<input title="Reset zoom level" class="layer_add" id="zoom_100" type="button" value="100%" />
+			<input title="Zoom in" class="layer_add" id="zoom_more" type="button" value="+" />
+			<input class="layer_add" id="zoom_fit" type="button" value="Fit" />
+		</div>
+		<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" />
 	</div>
-	<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" /> 
 `;
 
+/**
+ * GUI class responsible for rendering preview on right sidebar
+ */
 class GUI_preview_class {
 
 	constructor(GUI_class) {
@@ -282,6 +287,22 @@ class GUI_preview_class {
 
 		config.need_render = true;
 	}
+	
+	/**
+	 * moves visible area to new position.
+	 * 
+	 * @param {int} x global offset
+	 * @param {int} y global offset
+	 */
+	zoom_to_position(x, y) {
+		var zoom_data = this.zoom_data;		
+		zoom_data.move_pos = {};
+		zoom_data.move_pos.x = parseInt(x);
+		zoom_data.move_pos.y = parseInt(y);
+		
+		config.need_render = true;
+	}
+	
 }
 
 export default GUI_preview_class;

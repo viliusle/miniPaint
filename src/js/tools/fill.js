@@ -14,14 +14,24 @@ class Fill_class extends Base_tools_class {
 		this.name = 'fill';
 	}
 
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
+
 	load() {
 		var _this = this;
 
 		//mouse events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
+		document.addEventListener('mousedown', function (event) {
+			_this.dragStart(event);
+		});
+
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
 		});
 	}
 
@@ -191,9 +201,7 @@ class Fill_class extends Base_tools_class {
 
 		ctxTemp.putImageData(img_tmp, 0, 0);
 		if (anti_aliasing == true) {
-			context.shadowColor = "rgba(" + color_to.r + ", " + color_to.g + ", "
-				+ color_to.b + ", " + color_to.a / 255 + ")";
-			context.shadowBlur = 5;
+			context.filter = 'blur(1px)';
 		}
 		context.drawImage(canvasTemp, 0, 0);
 	}

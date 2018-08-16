@@ -79,6 +79,74 @@ class File_open_class {
 		//force click
 		document.querySelector('#file_open').click();
 	}
+	
+	open_webcam(){
+		var _this = this;
+		var video = document.createElement('video');
+		video.autoplay = true;
+		video.style.maxWidth = '100%';
+		var track = null;
+		
+		function handleSuccess(stream) {	
+			track = stream.getTracks()[0];
+			video.srcObject = stream;	
+		}
+
+		function handleError(error) {
+			alertify.error('Sorry, cold not load getUserMedia() data: ' + error);
+		}
+		
+		var settings = {
+			title: 'Webcam',
+			params: [
+				{title: "Stream:", html: '<div id="webcam_container"></div>'},
+			],
+			on_load: function(params){
+				document.getElementById('webcam_container').appendChild(video);
+			},
+			on_finish: function(params){
+				//capture data
+				var width = video.videoWidth;
+				var height = video.videoHeight;
+				
+				var tmpCanvas = document.createElement('canvas');
+				var tmpCanvasCtx = tmpCanvas.getContext("2d");
+				tmpCanvas.width = width;
+				tmpCanvas.height = height;
+				tmpCanvasCtx.drawImage(video, 0, 0);
+				
+				//create requested layer
+				var new_layer = {
+					name: "Webcam #" + _this.Base_layers.auto_increment,
+					type: 'image',
+					data: tmpCanvas.toDataURL("image/png"),
+					width: width,
+					height: height,
+					width_original: width,
+					height_original: height,
+				};
+				this.Base_layers.insert(new_layer);
+				_this.Base_layers.autoresize(width, height);
+				
+				//destroy
+				track.stop();
+				video.pause();
+				video.src = "";
+				video.load();
+			},
+			on_cancel: function(params){
+				track.stop();
+				video.pause();
+				video.src = "";
+				video.load();
+			},
+		};
+		this.POP.show(settings);
+		
+		navigator.mediaDevices.getUserMedia({audio: false, video: true})
+			.then(handleSuccess)
+			.catch(handleError);
+	}
 
 	open_dir() {
 		var _this = this;
@@ -227,6 +295,18 @@ class File_open_class {
 				FR.readAsDataURL(f);
 		}
 	}
+	
+	open_template_test(){
+		var _this = this;
+		
+		window.fetch("./../../../../images/test-collection.json").then(function(response) {
+			return response.json();
+		}).then(function(json) {
+			_this.load_json(json, false);
+		}).catch(function(ex) {
+			alertify.error('Sorry, image could not be loaded.');
+		});
+	}
 
 	/**
 	 * check if url has url params, for example: http://viliusle.github.io/miniPaint/?image=http://i.imgur.com/ATda8Ae.jpg
@@ -276,7 +356,11 @@ class File_open_class {
 	}
 
 	load_json(data) {
-		var json = JSON.parse(data);
+		var json;
+		if(typeof data == 'string')
+			json = JSON.parse(data);
+		else
+			json = data;
 		if (json.info.version == undefined) {
 			json.info.version = "3";
 		}

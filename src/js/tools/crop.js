@@ -4,7 +4,7 @@ import Base_layers_class from './../core/base-layers.js';
 import GUI_tools_class from './../core/gui/gui-tools.js';
 import Base_gui_class from './../core/base-gui.js';
 import Base_selection_class from './../core/base-selection.js';
-import alertify from 'alertifyjs/build/alertify.min.js';
+import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Crop_class extends Base_tools_class {
 
@@ -33,24 +33,50 @@ class Crop_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+	}
+
 	load() {
 		var _this = this;
 
-		//events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
+		//mouse events
+		document.addEventListener('mousedown', function (event) {
+			_this.dragStart(event);
 		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
+		document.addEventListener('mousemove', function (event) {
+			_this.dragMove(event);
 		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
+
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
 		});
 	}
 
@@ -81,6 +107,26 @@ class Crop_class extends Base_tools_class {
 
 		var width = mouse.x - mouse.click_x;
 		var height = mouse.y - mouse.click_y;
+		
+		if(event.ctrlKey == true || event.metaKey){
+			//ctrl is pressed - crop will be calculated based on global width and height ratio
+			var ratio = config.WIDTH / config.HEIGHT;
+			var width_new = Math.round(height * config.WIDTH / config.HEIGHT);
+			var height_new = Math.round(width * config.HEIGHT / config.WIDTH);
+
+			if(Math.abs(width * 100 / width_new) > Math.abs(height * 100 / height_new)){
+				if (width * 100 / width_new > 0)
+					height = height_new;
+				else
+					height = -height_new;
+			}
+			else{
+				if (height * 100 / height_new > 0)
+					width = width_new;
+				else
+					width = -width_new;
+			}
+		}
 
 		this.Base_selection.set_selection(null, null, width, height);
 	}
@@ -170,44 +216,44 @@ class Crop_class extends Base_tools_class {
 			var link = config.layers[i];
 			if (link.type == null)
 				continue;
-			
+
 			//move
 			link.x -= parseInt(selection.x);
 			link.y -= parseInt(selection.y);
-			
-			if(link.type == 'image'){
+
+			if (link.type == 'image') {
 				//also remove unvisible data
 				var left = 0;
-				if(link.x < 0)
+				if (link.x < 0)
 					left = -link.x;
 				var top = 0;
-				if(link.y < 0)
+				if (link.y < 0)
 					top = -link.y;
 				var right = 0;
-				if(link.x + link.width > selection.width)
+				if (link.x + link.width > selection.width)
 					right = link.x + link.width - selection.width;
 				var bottom = 0;
-				if(link.y + link.height > selection.height)
+				if (link.y + link.height > selection.height)
 					bottom = link.y + link.height - selection.height;
 				var width = link.width - left - right;
 				var height = link.height - top - bottom;
-				
+
 				//if image was streched
 				var width_ratio = (link.width / link.width_original);
 				var height_ratio = (link.height / link.height_original);
-				
+
 				//create smaller canvas
 				var canvas = document.createElement('canvas');
 				var ctx = canvas.getContext("2d");
 				canvas.width = width / width_ratio;
 				canvas.height = height / height_ratio;
-				
+
 				//cut required part
 				ctx.translate(-left / width_ratio, -top / height_ratio);
 				canvas.getContext("2d").drawImage(link.link, 0, 0);
 				ctx.translate(0, 0);
 				this.Base_layers.update_layer_image(canvas, link.id);
-				
+
 				//update attributes
 				link.width = Math.ceil(canvas.width * width_ratio);
 				link.height = Math.ceil(canvas.height * height_ratio);

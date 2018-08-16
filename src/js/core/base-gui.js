@@ -17,6 +17,9 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
 
+/**
+ * Main GUI class
+ */
 class Base_gui_class {
 
 	constructor() {
@@ -46,7 +49,7 @@ class Base_gui_class {
 			[1600, 1200, 'UXGA'],
 			[1920, 1080, 'Full HD, 1080p'],
 			[3840, 2160, '4K UHD'],
-				//[7680,4320, '8K UHD'],
+			//[7680,4320, '8K UHD'],
 		];
 
 		this.GUI_tools = new GUI_tools_class(this);
@@ -100,6 +103,7 @@ class Base_gui_class {
 	render_main_gui() {
 		this.autodetect_dimensions();
 
+		this.change_theme();
 		this.prepare_canvas();
 		this.GUI_tools.render_main_tools();
 		this.GUI_preview.render_main_preview();
@@ -289,7 +293,6 @@ class Base_gui_class {
 		var gap_y = this.grid_size[1];
 
 		var width = config.WIDTH;
-		;
 		var height = config.HEIGHT;
 
 		//size
@@ -339,6 +342,60 @@ class Base_gui_class {
 			ctx.lineTo(width, 0.5 + i);
 			ctx.stroke();
 		}
+	}
+	
+	/**
+	 * change draw area size
+	 * 
+	 * @param {int} width
+	 * @param {int} height
+	 */
+	set_size(width, height) {
+		config.WIDTH = parseInt(width);
+		config.HEIGHT = parseInt(height);
+		this.prepare_canvas();
+	}
+	
+	/**
+	 * 
+	 * @returns {object} keys: width, height
+	 */
+	get_visible_area_size() {
+		var wrapper = document.getElementById('main_wrapper');
+		var page_w = wrapper.clientWidth;
+		var page_h = wrapper.clientHeight;
+		
+		//find visible size in pixels, but make sure its correct even if image smaller then screen
+		var w = Math.min(Math.ceil(config.WIDTH * config.ZOOM), Math.ceil(page_w / config.ZOOM));
+		var h = Math.min(Math.ceil(config.HEIGHT * config.ZOOM), Math.ceil(page_h / config.ZOOM));
+		
+		return {
+			width: w,
+			height: h,
+		};
+	}
+
+	/**
+	 * change theme or set automatically from cookie if possible
+	 * 
+	 * @param {string} theme_name
+	 */
+	change_theme(theme_name){
+		if(theme_name == undefined){
+			//auto detect
+			var theme_cookie = this.Helper.getCookie('theme');
+			if (theme_cookie) {
+				theme_name = theme_cookie;
+			}
+			else {
+				theme_name = config.themes[0];
+			}
+		}
+
+		for(var i in config.themes){
+			document.querySelector('body').classList.remove('theme-' +  config.themes[i]);
+		}
+		document.querySelector('body').classList.add('theme-' + theme_name);
 	}
 
 }

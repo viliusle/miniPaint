@@ -3,10 +3,13 @@ var path = require('path');
 
 module.exports = {
 	entry: [
+		'babel-polyfill',
 		'./src/js/main.js',
 	],
 	output: {
-		filename: 'dist/bundle.js',
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'bundle.js',
+		publicPath: '/dist/'
 	},
 	resolve: {
 		extensions: ['.js', '.css'],
@@ -15,7 +18,7 @@ module.exports = {
 		}
 	},
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /\.css$/,
 				use: [
@@ -43,6 +46,9 @@ module.exports = {
             $: "jquery",
             jQuery: "jquery",
             "window.jQuery": "jquery"
+		}),
+		new webpack.DefinePlugin({
+			VERSION: JSON.stringify(require("./package.json").version)
 		}),
 	],
 	devtool: "cheap-module-source-map",

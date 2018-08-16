@@ -1,7 +1,7 @@
 <html>
 <body style="margin:0;">
 	
-<iframe id="myFrame" style="width:100%;height:70vh;" src="../"></iframe>
+<iframe id="myFrame" style="width:100%;height:70vh;border:0;" src="../"></iframe>
 
 <div style="height:20vh;margin:10px;">
 	Click on image to edit.
@@ -45,11 +45,20 @@ function my_save(){
 	tempCanvas.width = dim.width;
 	tempCanvas.height = dim.height;
 	Layers.convert_layers_to_canvas(tempCtx);
-	tempCanvas.toBlob(function(blob) {
-		//image data here
-		alert('Data length: ' + blob.size);
-		console.log(blob);
-	});
+	
+	if(is_edge_or_ie() == false){
+		//update image using blob (faster)
+		tempCanvas.toBlob(function (blob) {
+			alert('Data length: ' + blob.size);
+			console.log(blob);
+		}, 'image/png');
+	}
+	else{
+		//slow way for IE, Edge
+		var data = tempCanvas.toDataURL();
+		console.log(data);
+		alert('Data length: ' + data.length);
+	}
 }
 
 function my_update(){
@@ -66,5 +75,23 @@ function my_update(){
 	target.width = dim.width;
 	target.height = dim.height;
 	target.src = tempCanvas.toDataURL();
+}
+
+/**
+ * will auto load image on page load. Uncomment line below to make it work
+ */
+window.onload = function () {
+	//open_image(document.getElementById('testImage'));  //uncomment me
+};
+
+//if IE 11 or Edge
+function is_edge_or_ie() {
+	//ie11
+	if( !(window.ActiveXObject) && "ActiveXObject" in window )
+		return true;
+	//edge
+	if( navigator.userAgent.indexOf('Edge/') != -1 )
+		return true;
+	return false;
 }
 </script>

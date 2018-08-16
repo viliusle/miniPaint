@@ -7,36 +7,60 @@ class Brush_class extends Base_tools_class {
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
-		this.ctx = ctx;
 		this.name = 'brush';
-		this.data = [];
 		this.layer = {};
 		this.params_hash = false;
+	}
+
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+
+		//mouse cursor
+		var mouse = _this.get_mouse_info(event);
+		var params = _this.getParams();
+		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
 	}
 
 	load() {
 		var _this = this;
 
-		//events
-		document.addEventListener('mousedown', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousedown(e);
+		//mouse events
+		document.addEventListener('mousedown', function (event) {
+			_this.dragStart(event);
 		});
-		document.addEventListener('mousemove', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mousemove(e);
+		document.addEventListener('mousemove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
 
-			//mouse cursor
-			var mouse = _this.get_mouse_info(e);
-			var params = _this.getParams();
-			_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.dragStart(event);
 		});
-		document.addEventListener('mouseup', function (e) {
-			if (config.TOOL.name != _this.name)
-				return;
-			_this.mouseup(e);
+		document.addEventListener('touchmove', function (event) {
+			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
 		});
 	}
 
@@ -51,23 +75,23 @@ class Brush_class extends Base_tools_class {
 
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
 			//register new object - current layer is not ours or params changed
-			this.data = [];
 			this.layer = {
 				type: this.name,
-				data: this.data,
+				data: [],
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
 				width: null,
 				height: null,
 				rotate: null,
+				is_vector: true,
 			};
 			this.Base_layers.insert(this.layer);
 			this.params_hash = params_hash;
 		}
 		else {
 			//continue adding layer data, just register break
-			this.data.push(null);
+			config.layer.data.push(null);
 		}
 	}
 
@@ -76,7 +100,6 @@ class Brush_class extends Base_tools_class {
 		if (mouse.is_drag == false)
 			return;
 		if (mouse.valid == false || mouse.click_valid == false) {
-			this.data.push(null);
 			return;
 		}
 
@@ -94,7 +117,7 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		this.Base_layers.render();
 	}
 
@@ -106,7 +129,7 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		this.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
 		config.layer.status = null;
 		this.Base_layers.render();
 	}
@@ -166,6 +189,6 @@ class Brush_class extends Base_tools_class {
 		ctx.translate(-layer.x, -layer.y);
 	}
 
-}
-;
+};
+
 export default Brush_class;

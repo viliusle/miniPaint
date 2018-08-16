@@ -8,10 +8,12 @@ var menu_template = `
 				<li class="more">
 					<a class="trn" href="#">Open</a>
 					<ul>
-					<li><a class="trn dots" data-target="file/open.open_file" href="#">Open File</a></li>
+					<li><a class="trn dots" data-target="file/open.open_file" data-key="Drag&Drop" href="#">Open File</a></li>
 					<li><a class="trn dots" data-target="file/open.open_dir" href="#">Open Directory</a></li>
+					<li><a class="trn dots" data-target="file/open.open_webcam" href="#">Open from Webcam</a></li>
 					<li><a class="trn dots" data-target="file/open.open_url" href="#">Open URL</a></li>
 					<li><a class="trn dots" data-target="file/open.open_data_url" href="#">Open Data URL</a></li>
+					<li><a class="trn dots" data-target="file/open.open_template_test" href="#">Open test template</a></li>
 					</ul>
 				</li>
 				<li><a class="trn dots" data-target="file/search.search" href="#">Search images</a></li>
@@ -120,6 +122,7 @@ var menu_template = `
 					</ul>
 				</li>
 				<li><a class="trn dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>
+				<li><a class="trn dots" data-target="effects/blueprint.blueprint" href="#">Blueprint</a>
 				<li><a class="trn dots" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>
 				<li><a class="trn dots" data-target="effects/denoise.denoise" href="#">Denoise</a>
 				<li><a class="trn dots" data-target="effects/dither.dither" href="#">Dither</a>
@@ -130,7 +133,9 @@ var menu_template = `
 				<li><a class="trn dots" data-target="effects/grains.grains" href="#">Grains</a>
 				<li><a class="trn dots" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>
 				<li><a class="trn dots" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>
+				<li><a class="trn dots" data-target="effects/night_vision.night_vision" href="#">Night Vision</a>
 				<li><a class="trn dots" data-target="effects/oil.oil" href="#">Oil</a>
+				<li><a class="trn dots" data-target="effects/pencil.pencil" href="#">Pencil</a>
 				<li><a class="trn dots" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>
 				<li><a class="trn dots" data-target="effects/solarize.solarize" href="#">Solarize</a>
 				<li><a class="trn dots" data-target="effects/tilt_shift.tilt_shift" href="#">Tilt Shift</a>

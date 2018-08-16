@@ -18,7 +18,7 @@ class Animation_class extends Base_tools_class {
 		this.name = 'animation';
 		this.intervalID = null;
 		this.index = 0;
-		
+
 		this.disable_selection(ctx);
 	}
 
@@ -29,11 +29,11 @@ class Animation_class extends Base_tools_class {
 	render(ctx, layer) {
 		//nothing
 	}
-	
+
 	/**
 	 * disable_selection
 	 */
-	disable_selection(ctx){
+	disable_selection(ctx) {
 		var sel_config = {
 			enable_background: false,
 			enable_borders: false,

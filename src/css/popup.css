@@ -4,8 +4,9 @@
 	top: 20vh;
 	left: calc(50% - 500px / 2);
 	background-color: #7A838B;
+	background-color: var(--background-color-section);
 	border: 1px solid rgba(0, 0, 0, 0.5);
-	border: 1px solid var(--background-color-border);
+	border: 1px solid var(--border-color);
 	width:500px;
 	max-width: 100%;
 	max-height: calc(80vh);
@@ -30,7 +31,7 @@
 	padding: 6px 10px;
 	font-size: 18px;
 	background-color: rgba(255, 255, 255, 0.3);
-	background-color: var(--background-color-light);
+	background-color: var(--background-color-header);
 	/*cursor:move;*/
 }
 #popup .buttons{
@@ -58,10 +59,10 @@
 #popup .button{
 	margin: 0 3px;
 	background-color: rgba(255, 255, 255, 0.2);
-	background-color: var(--background-color-medium);
+	background-color: var(--background-color-button);
 	min-width:60px;
 	border:1px solid rgba(0, 0, 0, 0.5);
-	border:1px solid var(--background-color-border);
+	border:1px solid var(--border-color);
 	padding: 5px 10px;
 }
 #popup input[type="text"], #popup input[type="number"], #popup textarea{

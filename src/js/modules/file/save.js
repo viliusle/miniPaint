@@ -2,9 +2,9 @@ import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
-import alertify from 'alertifyjs/build/alertify.min.js';
-import canvasToBlob from 'blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
-import filesaver from 'file-saver/FileSaver.min.js';
+import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
+import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
 import GIF from './../../libs/gifjs/gif.js';
 
 var instance = null;
@@ -192,8 +192,6 @@ class File_save_class {
 			this.disable_canvas_smooth(ctx);
 
 			//ask data
-			if (type == 'JPG' || config.TRANSPARENCY == false)
-				this.fillCanvasBackground(ctx, '#ffffff');
 			if (only_one_layer == true && type != 'GIF' && config.layer.type != null) {
 				//only current layer !!!
 				var layer = config.layer;
@@ -209,9 +207,6 @@ class File_save_class {
 
 					canvas.width = layer.width;
 					canvas.height = layer.height;
-					if (type == 'JPG' || config.TRANSPARENCY == false) {
-						this.fillCanvasBackground(ctx, '#ffffff', canvas.width, canvas.height);
-					}
 				}
 
 				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
@@ -225,6 +220,13 @@ class File_save_class {
 			else {
 				this.Base_layers.convert_layers_to_canvas(ctx);
 			}
+		}
+		
+		if (type != 'JSON' && (type == 'JPG' || config.TRANSPARENCY == false)) {
+			//add white background
+			ctx.globalCompositeOperation = 'destination-over';
+			this.fillCanvasBackground(ctx, '#ffffff');
+			ctx.globalCompositeOperation = 'source-over';
 		}
 
 		//calc size
@@ -332,9 +334,6 @@ class File_save_class {
 			this.disable_canvas_smooth(ctx);
 
 			//ask data
-			if (type == 'JPG' || config.TRANSPARENCY == false) {
-				this.fillCanvasBackground(ctx, '#ffffff');
-			}
 			if (only_one_layer == true && type != 'GIF' && config.layer.type != null) {
 				//only current layer !!!
 				var layer = config.layer;
@@ -350,9 +349,6 @@ class File_save_class {
 
 					canvas.width = layer.width;
 					canvas.height = layer.height;
-					if (type == 'JPG' || config.TRANSPARENCY == false) {
-						this.fillCanvasBackground(ctx, '#ffffff', canvas.width, canvas.height);
-					}
 				}
 
 				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
@@ -366,6 +362,13 @@ class File_save_class {
 			else {
 				this.Base_layers.convert_layers_to_canvas(ctx);
 			}
+		}
+		
+		if (type != 'JSON' && (type == 'JPG' || config.TRANSPARENCY == false)) {
+			//add white background
+			ctx.globalCompositeOperation = 'destination-over';
+			this.fillCanvasBackground(ctx, '#ffffff');
+			ctx.globalCompositeOperation = 'source-over';
 		}
 
 		if (type == 'PNG') {
@@ -512,7 +515,7 @@ class File_save_class {
 			about: 'Image data with multi-layers. Can be opened using miniPaint - '
 				+ 'https://github.com/viliusle/miniPaint',
 			date: today,
-			version: config.VERSION,
+			version: VERSION,
 			layer_active: config.layer.id,
 		};
 

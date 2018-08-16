@@ -1,6 +1,7 @@
 import config from './../../config.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Dialog_class from './../../libs/popup.js';
+import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Image_size_class {
 
@@ -22,8 +23,8 @@ class Image_size_class {
 		var settings = {
 			title: 'Size',
 			params: [
-				{name: "w", title: "Width:", value: config.WIDTH},
-				{name: "h", title: "Height:", value: config.HEIGHT},
+				{name: "w", title: "Width:", value: config.WIDTH, placeholder: config.WIDTH},
+				{name: "h", title: "Height:", value: config.HEIGHT, placeholder: config.HEIGHT},
 				{name: "resolution", title: "Resolution:", values: resolutions},
 			],
 			on_finish: function (params) {
@@ -37,12 +38,27 @@ class Image_size_class {
 	size_handler(data) {
 		var width = parseInt(data.w);
 		var height = parseInt(data.h);
+		var ratio = config.WIDTH / config.HEIGHT;
 
-		if (width < 1)
+		if (width < 1){
 			width = 1;
-		if (height < 1)
+		}
+		if (height < 1){
 			height = 1;
-
+		}
+		
+		//aspect ratio
+		if (isNaN(width) && isNaN(height)){
+			alertify.error('Wrong dimensions');
+			return;
+		}
+		if (isNaN(width)){
+			width = height * ratio;
+		}
+		if (isNaN(height)){
+			height = width / ratio;
+		}
+		
 		if (data.resolution != 'Custom') {
 			var dim = data.resolution.split(" ");
 			dim = dim[0].split("x");
