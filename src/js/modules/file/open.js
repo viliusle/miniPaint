@@ -299,7 +299,7 @@ class File_open_class {
 	open_template_test(){
 		var _this = this;
 		
-		window.fetch("./../../../../images/test-collection.json").then(function(response) {
+		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
 		}).then(function(json) {
 			_this.load_json(json, false);
