@@ -309,7 +309,7 @@ class File_open_class {
 	}
 
 	/**
-	 * check if url has url params, for example: http://viliusle.github.io/miniPaint/?image=http://i.imgur.com/ATda8Ae.jpg
+	 * check if url has url params, for example: https://viliusle.github.io/miniPaint/?image=http://i.imgur.com/ATda8Ae.jpg
 	 */
 	maybe_file_open_url_handler() {
 		var url_params = this.Helper.get_url_parameters();
