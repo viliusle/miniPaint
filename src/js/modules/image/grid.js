@@ -27,7 +27,7 @@ class Image_grid_class {
 			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
 				return;
 
-			if (code == 71) {
+			if (code == 71 && event.ctrlKey != true && event.metaKey != true) {
 				//G - grid
 				_this.toggle_grid({visible: !_this.GUI.grid});
 				event.preventDefault();

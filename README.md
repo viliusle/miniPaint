@@ -8,7 +8,7 @@ miniPaint operates directly in the browser. You can create images, paste from cl
 or upload from computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your browser. 
 
 ## URL:
-**http://viliusle.github.io/miniPaint/**
+**https://viliusle.github.io/miniPaint/**
 
 ## Preview:
 ![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/images/preview.gif)

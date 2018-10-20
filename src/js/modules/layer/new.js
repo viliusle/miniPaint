@@ -24,7 +24,7 @@ class Layer_new_class {
 			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
 				return;
 
-			if (code == 78) {
+			if (code == 78 && event.ctrlKey != true && event.metaKey != true) {
 				//N
 				_this.new();
 			}

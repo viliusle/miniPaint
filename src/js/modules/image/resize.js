@@ -34,7 +34,7 @@ class Image_resize_class {
 			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
 				return;
 
-			if (code == 82) {
+			if (code == 82 && event.ctrlKey != true && event.metaKey != true) {
 				//R - resize
 				_this.resize();
 				event.preventDefault();
