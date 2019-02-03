@@ -382,7 +382,7 @@ class Dialog_class {
 		}
 
 		//call translation again to translate popup
-		this.Help_translate.translate();
+		this.Help_translate.translate(app_config.LANG);
 	}
 
 	generateParamsHtml() {
