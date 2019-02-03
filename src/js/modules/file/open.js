@@ -129,13 +129,17 @@ class File_open_class {
 				_this.Base_layers.autoresize(width, height);
 				
 				//destroy
-				track.stop();
+				if(track != null){
+					track.stop();
+				}
 				video.pause();
 				video.src = "";
 				video.load();
 			},
 			on_cancel: function(params){
-				track.stop();
+				if(track != null){
+					track.stop();
+				}
 				video.pause();
 				video.src = "";
 				video.load();
