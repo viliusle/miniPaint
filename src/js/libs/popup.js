@@ -47,6 +47,7 @@ import Help_translate_class from './../modules/help/translate.js';
 var instance = null;
 
 var template = `
+	<button type="button" class="close" id="popup_close">&times;</button>
 	<div id="pretitle_area"></div>
 	<span class="grey right" id="popup_comment"></span>
 	<h2 class="trn" id="popup_title"></h2>
@@ -317,6 +318,9 @@ class Dialog_class {
 		});
 		document.getElementById('popup_cancel').addEventListener('click', function (event) {
 			_this.cancel();
+		});
+		document.getElementById('popup_close').addEventListener('click', function (event) {
+			_this.hide();
 		});
 		var targets = document.querySelectorAll('#popup input');
 		for (var i = 0; i < targets.length; i++) {

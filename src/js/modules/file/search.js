@@ -42,7 +42,7 @@ class File_search_media_class {
 
 		var settings = {
 			title: 'Search',
-			comment: 'Powred by <a class="grey" href="https://pixabay.com/">pixabay.com</a>.',
+			comment: 'Source: <a class="grey" href="https://pixabay.com/">pixabay.com</a>.',
 			className: 'wide',
 			params: [
 				{name: "query", title: "Keyword:", value: query},
