@@ -33,8 +33,8 @@ class Image_color_class {
 			var rgb = this.Helper.rgbToHex(palette[i][0], palette[i][1], palette[i][2]);
 			i = parseInt(i);
 			settings.params.push(
-				{title: "Color #" + (i + 1) + ":", html: this.generate_color_box(rgb, 100)},
-				);
+				{title: "Color #" + (i + 1) + ":", html: this.generate_color_box(rgb, 100)}
+			);
 		}
 		this.POP.show(settings);
 	}
