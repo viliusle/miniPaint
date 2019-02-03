@@ -579,3 +579,18 @@ canvas{
 		margin-left: 0px;
 	}
 }
+@media screen and (max-height: 720px){
+	.sidebar_left{
+		width: 79px;
+		padding: 4px 2px 0px 2px;
+	}
+	.sidebar_left .item{
+		display: inline-block;
+		width: 30px;
+		margin-right: 5px;
+		margin: 1px 3px 0 3px;
+	}
+	.main_wrapper{
+		margin-left: 85px;
+	}	
+}
