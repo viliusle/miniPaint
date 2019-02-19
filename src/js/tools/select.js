@@ -19,6 +19,7 @@ class Select_tool_class extends Base_tools_class {
 			enable_background: false,
 			enable_borders: true,
 			enable_controlls: true,
+			keep_ratio: true,
 			data_function: function () {
 				return config.layer;
 			},
