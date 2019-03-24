@@ -5,6 +5,7 @@ import Dialog_class from './../../libs/popup.js';
 import ImageFilters_class from './../../libs/imagefilters.js';
 import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import Pica from './../../../../node_modules/pica/dist/pica.js';
 
 var instance = null;
 
@@ -22,6 +23,7 @@ class Image_resize_class {
 		this.POP = new Dialog_class();
 		this.ImageFilters = ImageFilters_class;
 		this.Hermite = new Hermite_class();
+		this.pica = Pica();
 
 		this.set_events();
 	}
@@ -58,8 +60,8 @@ class Image_resize_class {
 				{name: "height", title: "Height:", value: '', placeholder: config.HEIGHT},
 				{name: "width_percent", title: "Width (%):", value: '', placeholder: 100},
 				{name: "height_percent", title: "Height (%):", value: '', placeholder: 100},
-				{name: "mode", title: "Mode:", values: ["Resample - Hermite", "Basic"]},
-				{name: "preblur", title: "Pre-Blur:", value: false},
+				{name: "mode", title: "Mode:", values: ["Lanczos", "Hermite", "Basic"]},
+
 				{name: "sharpen", title: "Sharpen:", value: false},
 				{name: "layers", title: "Layers:", values: ["Active", "All"], value: "Active"},
 			],
@@ -98,8 +100,8 @@ class Image_resize_class {
 		var height = parseInt(params.height);
 		var width_100 = parseInt(params.width_percent);
 		var height_100 = parseInt(params.height_percent);
-		var preblur = params.preblur;
 		var sharpen = params.sharpen;
+		var _this = this;
 
 		if (isNaN(width) && isNaN(height) && isNaN(width_100) && isNaN(height_100))
 			return false;
@@ -136,45 +138,66 @@ class Image_resize_class {
 				height = Math.round(width / ratio);
 		}
 
-		//anti-artifacting?
-		if (preblur == true) {
-			var ratio_w = canvas.width / width;
-			var ratio_h = canvas.height / height;
-			var ratio_avg = Math.max(ratio_w, ratio_h);
-			var power = ratio_avg * 0.3;
-			if (power > 0.6) {
-				var filtered = this.ImageFilters.GaussianBlur(imageData, power);
-				ctx.putImageData(filtered, 0, 0);
-			}
-		}
-
 		//validate
-		if (mode == "Resample - Hermite" && (width > canvas.width || height > canvas.height)) {
-			//scalling up - Hermite not supported
+		if (mode == "Hermite" && (width > canvas.width || height > canvas.height)) {
+			alertify.warning('Scalling up is not supported in Hermite, using Basic mode.');
 			mode = "Basic";
 		}
+		if(mode == "Steps" && (width >= canvas.width / 2 && height >= canvas.height / 2)) {
+			//no need for Steps
+			mode = "Basic";
+		}
+		
+		//resize
+		if (mode == "Lanczos") {
+			//Pica resize with max quality
+			
+			var tmp_data = document.createElement("canvas");
+			tmp_data.width = width;
+			tmp_data.height = height;
+			
+			this.pica.resize(canvas, tmp_data, {
+				alpha: true,
+			})
+			.then(function(result) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				_this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
+				ctx.drawImage(tmp_data, 0, 0, width, height);
+				
+				
+				//sharpen after?
+				if (sharpen == true) {
+					var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+					var filtered = _this.ImageFilters.Sharpen(imageData, 1);	//add effect
+					ctx.putImageData(filtered, 0, 0);
+				}
 
-		var resize_type;
-		if (mode == "Resample - Hermite") {
-			//Hermite resample - nice quality
-			resize_type = 'Hermite';
+				_this.trim_canvas(canvas, width, height);
 
+				//save
+				_this.Base_layers.update_layer_image(canvas, layer.id);
+				layer.width = canvas.width;
+				layer.height = canvas.height;
+				layer.width_original = canvas.width;
+				layer.height_original = canvas.height;
+				config.need_render = true;
+			});
+			return;
+		}
+		else 
+			if (mode == "Hermite") {
+			//Hermite resample
 			this.Hermite.resample_single(canvas, width, height);
-
 			this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
 		}
 		else {
-			//simple resize - max speed
-			resize_type = 'Default';
+			//simple resize
 			var tmp_data = document.createElement("canvas");
 			tmp_data.width = canvas.width;
 			tmp_data.height = canvas.height;
 			tmp_data.getContext("2d").drawImage(canvas, 0, 0);
-
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 			this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
-
 			ctx.drawImage(tmp_data, 0, 0, width, height);
 		}
 
