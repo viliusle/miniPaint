@@ -6,6 +6,7 @@ import ImageFilters_class from './../../libs/imagefilters.js';
 import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Pica from './../../../../node_modules/pica/dist/pica.js';
+import Helper_class from './../../libs/helpers.js';
 
 var instance = null;
 
@@ -24,6 +25,7 @@ class Image_resize_class {
 		this.ImageFilters = ImageFilters_class;
 		this.Hermite = new Hermite_class();
 		this.pica = Pica();
+		this.Helper = new Helper_class();
 
 		this.set_events();
 	}
@@ -73,6 +75,17 @@ class Image_resize_class {
 	}
 
 	do_resize(params) {
+		//validate
+		if (isNaN(params.width) && isNaN(params.height) && isNaN(params.width_percent) && isNaN(params.height_percent)){
+			alertify.error('Missing at least 1 size parameter.');
+			return false;
+		}
+		if (params.width == config.WIDTH && params.height == config.HEIGHT){
+			return false;
+		}
+		
+		window.State.save();
+		
 		if (params.layers == 'All') {
 			//resize all layers
 			var skips = 0;
@@ -103,49 +116,33 @@ class Image_resize_class {
 		var sharpen = params.sharpen;
 		var _this = this;
 
-		if (isNaN(width) && isNaN(height) && isNaN(width_100) && isNaN(height_100))
-			return false;
-		if (width == config.WIDTH && height == config.HEIGHT)
-			return false;
-
-		window.State.save();
-
-		//get canvas from layer
-		var canvas = this.Base_layers.convert_layer_to_canvas(layer.id, true);
-		var ctx = canvas.getContext("2d");
-
-		var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-		var layer_x = parseInt(canvas.dataset.x);
-		var layer_y = parseInt(canvas.dataset.y);
-
 		//if dimension with percent provided
 		if (isNaN(width) && isNaN(height)) {
 			if (isNaN(width_100) == false) {
-				width = Math.round(canvas.width * width_100 / 100);
+				width = Math.round(layer.width * width_100 / 100);
 			}
 			if (isNaN(height_100) == false) {
-				height = Math.round(canvas.height * height_100 / 100);
+				height = Math.round(layer.height * height_100 / 100);
 			}
 		}
 
 		//if only 1 dimension was provided
 		if (isNaN(width) || isNaN(height)) {
-			var ratio = canvas.width / canvas.height;
+			var ratio = layer.width / layer.height;
 			if (isNaN(width))
 				width = Math.round(height * ratio);
 			if (isNaN(height))
 				height = Math.round(width / ratio);
 		}
+		
+		//get canvas from layer
+		var canvas = this.Base_layers.convert_layer_to_canvas(layer.id, true, false);
+		var ctx = canvas.getContext("2d");
 
 		//validate
 		if (mode == "Hermite" && (width > canvas.width || height > canvas.height)) {
-			alertify.warning('Scalling up is not supported in Hermite, using Basic mode.');
-			mode = "Basic";
-		}
-		if(mode == "Steps" && (width >= canvas.width / 2 && height >= canvas.height / 2)) {
-			//no need for Steps
-			mode = "Basic";
+			alertify.warning('Scalling up is not supported in Hermite, using Lanczos.');
+			mode = "Lanczos";
 		}
 		
 		//resize
@@ -161,34 +158,18 @@ class Image_resize_class {
 			})
 			.then(function(result) {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				_this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
+				canvas.width = width;
+				canvas.height = height;
+			
 				ctx.drawImage(tmp_data, 0, 0, width, height);
 				
-				
-				//sharpen after?
-				if (sharpen == true) {
-					var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-					var filtered = _this.ImageFilters.Sharpen(imageData, 1);	//add effect
-					ctx.putImageData(filtered, 0, 0);
-				}
-
-				_this.trim_canvas(canvas, width, height);
-
-				//save
-				_this.Base_layers.update_layer_image(canvas, layer.id);
-				layer.width = canvas.width;
-				layer.height = canvas.height;
-				layer.width_original = canvas.width;
-				layer.height_original = canvas.height;
-				config.need_render = true;
+				finish_resize();
 			});
 			return;
 		}
-		else 
-			if (mode == "Hermite") {
+		else if (mode == "Hermite") {
 			//Hermite resample
-			this.Hermite.resample_single(canvas, width, height);
-			this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
+			this.Hermite.resample_single(canvas, width, height, true);
 		}
 		else {
 			//simple resize
@@ -196,59 +177,56 @@ class Image_resize_class {
 			tmp_data.width = canvas.width;
 			tmp_data.height = canvas.height;
 			tmp_data.getContext("2d").drawImage(canvas, 0, 0);
+			
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			this.maybe_resize_up(canvas, width, height, layer_x, layer_y);
+			canvas.width = width;
+			canvas.height = height;
+			
 			ctx.drawImage(tmp_data, 0, 0, width, height);
 		}
 
-		//sharpen after?
-		if (sharpen == true) {
-			var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-			var filtered = this.ImageFilters.Sharpen(imageData, 1);	//add effect
-			ctx.putImageData(filtered, 0, 0);
+		finish_resize();
+	
+		//private finish action
+		function finish_resize(){
+			if (sharpen == true) {
+				var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				var filtered = _this.ImageFilters.Sharpen(imageData, 1);	//add effect
+				ctx.putImageData(filtered, 0, 0);
+			}
+
+			//save
+			_this.Base_layers.update_layer_image(canvas, layer.id);
+			layer.width = canvas.width;
+			layer.height = canvas.height;
+			layer.width_original = canvas.width;
+			layer.height_original = canvas.height;
+			config.need_render = true;
+			
+			_this.resize_gui();
+		}		
+	}
+	
+	resize_gui() {
+		var max_x = 0;
+		var max_y = 0;
+		
+		for (var i = 0; i < config.layers.length; i++) {
+			var layer = config.layers[i];
+			
+			if(layer.width == null || layer.height == null || layer.x == null || layer.y == null){
+				//layer without dimensions
+				continue;
+			}
+
+			max_x = Math.max(max_x, layer.x + layer.width);
+			max_y = Math.max(max_y, layer.y + layer.height);
 		}
-
-		this.trim_canvas(canvas, width, height);
-
-		//save
-		this.Base_layers.update_layer_image(canvas, layer.id);
-		layer.width = canvas.width;
-		layer.height = canvas.height;
-		layer.width_original = canvas.width;
-		layer.height_original = canvas.height;
+		
+		config.WIDTH = parseInt(max_x);
+		config.HEIGHT = parseInt(max_y);
+		this.Base_gui.prepare_canvas();
 		config.need_render = true;
-	}
-
-	maybe_resize_up(canvas, width, height, layer_x, layer_y) {
-		if (width > config.WIDTH || height > config.HEIGHT) {
-			config.WIDTH = Math.max(parseInt(width), config.WIDTH);
-			config.HEIGHT = Math.max(parseInt(height), config.HEIGHT);
-			canvas.width = width;
-			canvas.height = height;
-
-			this.Base_gui.prepare_canvas();
-		}
-
-		if (config.layers.length == 1 && layer_x == 0 && layer_y == 0) {
-			config.WIDTH = width;
-			config.HEIGHT = height;
-			this.Base_gui.prepare_canvas();
-		}
-	}
-
-	trim_canvas(canvas, width, height) {
-		if (width >= canvas.width && height >= canvas.height)
-			return;
-
-		var tmp_data = document.createElement("canvas");
-		tmp_data.width = width;
-		tmp_data.height = height;
-		tmp_data.getContext("2d").drawImage(canvas, 0, 0);
-
-		canvas.width = width;
-		canvas.height = height;
-
-		canvas.getContext("2d").drawImage(tmp_data, 0, 0);
 	}
 
 }
