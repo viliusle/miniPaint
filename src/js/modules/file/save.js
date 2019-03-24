@@ -58,7 +58,6 @@ class File_save_class {
 
 	save() {
 		var _this = this;
-		this.POP.hide();
 
 		//find default format
 		var save_default = this.SAVE_TYPES[0];	//png

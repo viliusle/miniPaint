@@ -123,11 +123,14 @@ class Dialog_class {
 
 	/**
 	 * hides dialog
+	 * 
+	 * @param {boolean} success
+	 * @returns {undefined}
 	 */
-	hide() {
+	hide(success) {
 		var params = this.get_params();
 
-		if (this.oncancel) {
+		if (success === false && this.oncancel) {
 			this.oncancel(params);
 		}
 		document.getElementById("popup").style.display = 'none';
@@ -154,7 +157,7 @@ class Dialog_class {
 
 			if (code == 27) {
 				//escape
-				_this.hide();
+				_this.hide(false);
 			}
 		}, false);
 	}
@@ -200,14 +203,13 @@ class Dialog_class {
 			this.onfinish(params);
 		}
 
-		this.hide();
+		this.hide(true);
 	}
 	
 	//"Cancel" pressed
 	cancel() {
-		var params = this.get_params();
-
 		if (this.oncancel) {
+			var params = this.get_params();
 			this.oncancel(params);
 		}
 	}
@@ -317,20 +319,15 @@ class Dialog_class {
 			_this.save();
 		});
 		document.getElementById('popup_cancel').addEventListener('click', function (event) {
-			_this.cancel();
+			_this.hide(false);
 		});
 		document.getElementById('popup_close').addEventListener('click', function (event) {
-			_this.hide();
+			_this.hide(false);
 		});
 		var targets = document.querySelectorAll('#popup input');
 		for (var i = 0; i < targets.length; i++) {
 			targets[i].addEventListener('keyup', function (event) {
 				_this.onkeyup(event);
-			});
-		}
-		if (this.onfinish != false) {
-			document.getElementById('popup_cancel').addEventListener('click', function (event) {
-				_this.hide();
 			});
 		}
 
@@ -676,20 +673,20 @@ class Dialog_class {
 		}
 		//previous
 		document.getElementById('previous_filter').addEventListener('click', function (event) {
-			_this.hide();
+			_this.hide(false);
 			var function_name = prev_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
 			filters_config[prev_index][function_name]();
 		});
 		//next
 		document.getElementById('next_filter').addEventListener('click', function (event) {
-			_this.hide();
+			_this.hide(false);
 			var function_name = next_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
 			filters_config[next_index][function_name]();
 		});
 		//onchange
 		var effect_browser = document.getElementById('effect_browser');
 		effect_browser.addEventListener('change', function (event) {
-			_this.hide();
+			_this.hide(false);
 			var value = effect_browser.options[effect_browser.selectedIndex].value;
 			var function_name = value.toLowerCase().replace(/ /g, '_').replace('effects/', '');
 			filters_config[value][function_name]();
