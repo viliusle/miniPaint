@@ -144,6 +144,7 @@ class Base_selection_class {
 		var half_size = Math.ceil(block_size / 2);
 
 		this.ctx.save();
+		this.ctx.globalAlpha = 1;
 		if (data.rotate != null && data.rotate != 0) {
 			//rotate
 			this.ctx.translate(data.x + data.width / 2, data.y + data.height / 2);
