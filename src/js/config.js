@@ -142,8 +142,8 @@ config.TOOLS = [
 				values: ["Left", "Center", "Right"],
 			},
 			family: {
-				value: 'Arial',
-				values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],
+				value: 'Tahoma',
+				values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Tahoma", "Times New Roman", "Verdana"],
 			},
 			stroke_size: 1,
 		},

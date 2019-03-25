@@ -126,7 +126,7 @@ class Text_class extends Base_tools_class {
 		var settings = {
 			title: 'Edit text',
 			params: [
-				{name: "text", title: "Text:", value: "Text example"},
+				{name: "text", title: "Text:", value: "Text example", type: "textarea"},
 			],
 			on_finish: function (params) {
 				if (config.layer.type == 'text' && params.text != '') {
@@ -137,55 +137,86 @@ class Text_class extends Base_tools_class {
 		};
 		this.POP.show(settings);
 	}
+	
+	getLines(ctx, text, maxWidth) {
+		var words = text.split(" ");
+		var lines = [];
+		var currentLine = words[0];
+
+		for (var i = 1; i < words.length; i++) {
+			var word = words[i];
+			var width = ctx.measureText(currentLine + " " + word).width;
+			if (width < maxWidth) {
+				currentLine += " " + word;
+			} else {
+				lines.push(currentLine);
+				currentLine = word;
+			}
+		}
+		lines.push(currentLine);
+		
+		return lines;
+	}
 
 	render(ctx, layer) {
 		if (layer.width == 0 && layer.height == 0)
 			return;
 		var params = layer.params;
 
+		var font = params.family.value;
 		var text = params.text;
+		var size = params.size;
+		var line_height = size;
 		if (params.text == undefined) {
 			params.text = "Text example";
 			text = "Text example";
 		}
-		var size = params.size;
-		var font = params.family.value;
-		var stroke = params.stroke;
-		var bold = params.bold;
-		var italic = params.italic;
-		var stroke_size = params.stroke_size;
-		var align = params.align.value.toLowerCase();
-
-		if (bold && italic)
+		
+		//set styles
+		if (params.bold && params.italic)
 			ctx.font = "Bold Italic " + size + "px " + font;
-		else if (bold)
+		else if (params.bold)
 			ctx.font = "Bold " + size + "px " + font;
-		else if (italic)
+		else if (params.italic)
 			ctx.font = "Italic " + size + "px " + font;
 		else
 			ctx.font = "Normal " + size + "px " + font;
-
-		//main text
-		ctx.textAlign = align;
-		ctx.textBaseline = 'top';
 		ctx.fillStyle = layer.color;
 		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = stroke_size;
-
+		ctx.lineWidth = params.stroke_size;
+		
+		var paragraphs = text.split("\n");
+		var offset_y = 0;
+		for(var i in paragraphs){
+			var block_test = paragraphs[i];
+			var lines = this.getLines(ctx, block_test, layer.width);
+			for (var j in lines) {
+				offset_y += line_height;
+				this.render_text_line(ctx, layer, lines[j], offset_y);
+			}
+		}
+	}
+	
+	render_text_line(ctx, layer, text, offset_y) {
+		var params = layer.params;
+		var stroke = params.stroke;
+		var align = params.align.value.toLowerCase();
+		var text_width = ctx.measureText(text).width;
+		
 		var start_x = layer.x;
 		if (align == 'right') {
-			start_x = layer.x + layer.width;
+			start_x = layer.x + layer.width - text_width;
 		}
 		else if (align == 'center') {
-			start_x = layer.x + Math.round(layer.width / 2);
+			start_x = layer.x + Math.round(layer.width / 2) - Math.round(text_width / 2);
 		}
 
 		if (stroke == false)
-			ctx.fillText(text, start_x, layer.y);
+			ctx.fillText(text, start_x, layer.y + offset_y);
 		else
-			ctx.strokeText(text, start_x, layer.y);
+			ctx.strokeText(text, start_x, layer.y + offset_y);
 	}
-
+	
 }
 
 export default Text_class;

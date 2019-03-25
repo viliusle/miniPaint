@@ -67,7 +67,8 @@ var template = `
 				<option value="Impact">Impact</option>
 				<option value="Helvetica">Helvetica</option>
 				<option value="monospace">monospace</option>
-				<option valueTimes New Roman">Times New Roman</option>
+				<option value="Tahoma">Tahoma</option>
+				<option value="Times New Roman">Times New Roman</option>
 				<option value="Verdana">Verdana</option>
 			</select>
 		</div>

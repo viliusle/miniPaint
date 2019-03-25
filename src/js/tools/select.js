@@ -66,10 +66,9 @@ class Select_tool_class extends Base_tools_class {
 				return;
 			if (_this.POP.active == true)
 				return;
-			if (e.target.type == 'text' || e.target.tagName == 'INPUT')
+			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.tagName == 'SELECT')
 				return;
 			var k = e.keyCode;
-
 
 			//up
 			if (k == 38) {

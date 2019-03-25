@@ -462,7 +462,7 @@ class Dialog_class {
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
 						if (parameter.type == 'textarea') {
-							html += '<td><textarea style="height:80px;" id="pop_data_' + parameter.name + '" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
+							html += '<td><textarea rows="15" id="pop_data_' + parameter.name + '" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
 						}
 						else {
 							var input_type = "text";

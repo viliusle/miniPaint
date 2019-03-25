@@ -169,7 +169,7 @@ class Base_selection_class {
 		}
 
 		//draw corners
-		if (Math.abs(w) > block_size * 3 && Math.abs(h) > block_size * 3) {
+		if (Math.abs(w) > block_size * 2 && Math.abs(h) > block_size * 2) {
 			corner(x - half_size, y - half_size, 0, 0, 'left_top');
 			corner(x + w + half_size, y - half_size, -1, 0, 'right_top');
 			corner(x - half_size, y + h + half_size, 0, -1, 'left_bottom');
