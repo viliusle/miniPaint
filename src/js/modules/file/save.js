@@ -34,8 +34,8 @@ class File_save_class {
 			"PNG - Portable Network Graphics",
 			"JPG - JPG/JPEG Format",
 			"JSON - Full layers data", //aka PSD
-			"GIF - Graphics Interchange Format", //animated GIF
 			"WEBP - Weppy File Format", //chrome only
+			"GIF - Graphics Interchange Format", //animated GIF
 			"BMP - Windows Bitmap", //firefox only
 		];
 	}
@@ -96,6 +96,9 @@ class File_save_class {
 					var active_layer = config.layer.id;
 					params.layers = 'Selected';
 					for (var i in config.layers) {
+						if (config.layers[i].visible == false)
+							continue;
+						
 						this.Base_layers.select(config.layers[i].id);
 						_this.save_action(params, true);
 					}
@@ -311,7 +314,7 @@ class File_save_class {
 	/**
 	 * saves data in requested way
 	 * 
-	 * @param {object} object parameters
+	 * @param {object} user_response parameters
 	 * @param {boolean} autoname if use name from layer, false by default
 	 */
 	save_action(user_response, autoname) {
@@ -355,40 +358,22 @@ class File_save_class {
 			this.Helper.setCookie('save_default', 'jpg');
 
 		if (type != 'JSON') {
-			//create temp canvas
-			var canvas = document.createElement('canvas');
-			var ctx = canvas.getContext("2d");
-			canvas.width = config.WIDTH;
-			canvas.height = config.HEIGHT;
-			this.disable_canvas_smooth(ctx);
-
-			//ask data
-			if (user_response.layers == 'Selected' && type != 'GIF' && config.layer.type != null) {
-				//only current layer !!!
-				var layer = config.layer;
-
-				var initial_x = null;
-				var initial_y = null;
-				if (layer.x != null && layer.y != null && layer.width != null && layer.height != null) {
-					//change position to top left corner
-					initial_x = layer.x;
-					initial_y = layer.y;
-					layer.x = 0;
-					layer.y = 0;
-
-					canvas.width = layer.width;
-					canvas.height = layer.height;
-				}
-
-				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
-
-				if (initial_x != null && initial_x != null) {
-					//restore position
-					layer.x = initial_x;
-					layer.y = initial_y;
-				}
+			//temp canvas
+			var canvas;
+			var ctx;
+			
+			//get data
+			if (user_response.layers == 'Selected' && type != 'GIF') {
+				canvas = this.Base_layers.convert_layer_to_canvas();
+				ctx = canvas.getContext("2d");
 			}
 			else {
+				canvas = document.createElement('canvas');
+				ctx = canvas.getContext("2d");
+				canvas.width = config.WIDTH;
+				canvas.height = config.HEIGHT;
+				this.disable_canvas_smooth(ctx);
+				
 				this.Base_layers.convert_layers_to_canvas(ctx);
 			}
 		}
