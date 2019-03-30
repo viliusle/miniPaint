@@ -203,6 +203,9 @@ class Text_class extends Base_tools_class {
 		var align = params.align.value.toLowerCase();
 		var text_width = ctx.measureText(text).width;
 		
+		//tabs
+		text = text.replace(/\t/g, '      ');
+		
 		var start_x = layer.x;
 		if (align == 'right') {
 			start_x = layer.x + layer.width - text_width;
