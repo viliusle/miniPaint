@@ -162,7 +162,7 @@ class Base_selection_class {
 		}
 
 		//borders
-		if (settings.enable_borders == true && config.layers.length > 1) {
+		if (settings.enable_borders == true && (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT)) {
 			this.ctx.lineWidth = 1;
 			this.ctx.strokeStyle = "rgba(0, 128, 0, 0.5)";
 			this.ctx.strokeRect(x + half_fix, y + half_fix, w, h);
