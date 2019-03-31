@@ -191,6 +191,11 @@ class Text_class extends Base_tools_class {
 		var size = params.size;
 		var line_height = size;
 		
+		if(text == undefined){
+			//not defined yet
+			return;
+		}
+		
 		this.load_fonts();
 		
 		//set styles
