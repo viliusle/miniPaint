@@ -462,7 +462,7 @@ class Dialog_class {
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
 						if (parameter.type == 'textarea') {
-							html += '<td><textarea rows="15" id="pop_data_' + parameter.name + '" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
+							html += '<td><textarea rows="10" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
 						}
 						else {
 							var input_type = "text";
@@ -471,7 +471,7 @@ class Dialog_class {
 							if (parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 
-							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" /></td>';
+							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" /></td>';
 						}
 					}
 				}

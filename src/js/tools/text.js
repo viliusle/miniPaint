@@ -14,6 +14,7 @@ class Text_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'text';
 		this.layer = {};
+		this.is_fonts_loaded = false;
 	}
 
 	dragStart(event) {
@@ -113,10 +114,8 @@ class Text_class extends Base_tools_class {
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
 			width = config.WIDTH - this.layer.x - Math.round(config.WIDTH / 50);
-			height = params.size;
+			height = 100;
 		}
-		width = Math.max(width, params.size * 0.5 * 12);
-		height = Math.max(height, params.size);
 		//more data
 		config.layer.width = width;
 		config.layer.height = height;
@@ -127,12 +126,33 @@ class Text_class extends Base_tools_class {
 			title: 'Edit text',
 			params: [
 				{name: "text", title: "Text:", value: "Text example", type: "textarea"},
+				{name: "size", title: "Size:", value: 40},
+				{name: "family", title: "Custom font", value: "Verdana", values: this.get_fonts()},
+				{name: "bold", title: "Bold:", value: false},
+				{name: "italic", title: "Italic:", value: false},
+				{name: "align", title: "Align:", value: 'Left', values: ["Left", "Center", "Right"], type: 'select' },
+				{name: "stroke", title: "Stroke:", value: false},
+				{name: "stroke_size", title: "Stroke size:", value: 1},
 			],
-			on_finish: function (params) {
-				if (config.layer.type == 'text' && params.text != '') {
-					config.layer.params.text = params.text;
+			on_load: function (params) {
+				config.layer.params = params;
+				config.need_render = true;
+				//add preview
+				var button = document.createElement('button');
+				button.innerHTML = 'Preview';
+				button.className = 'button trns';
+				document.querySelector('#popup .buttons').appendChild(button);
+				button.addEventListener('click', function (e) {
 					config.need_render = true;
-				}
+				});
+			},
+			on_change: function (params) {
+				config.layer.params = params;
+				config.need_render = true;
+			},
+			on_finish: function (params) {
+				config.layer.params = params;
+				config.need_render = true;
 			},
 		};
 		this.POP.show(settings);
@@ -163,14 +183,15 @@ class Text_class extends Base_tools_class {
 			return;
 		var params = layer.params;
 
-		var font = params.family.value;
+		var font = params.family;
+		if(typeof font == 'object'){
+			font = font.value; //legacy
+		}
 		var text = params.text;
 		var size = params.size;
 		var line_height = size;
-		if (params.text == undefined) {
-			params.text = "Text example";
-			text = "Text example";
-		}
+		
+		this.load_fonts();
 		
 		//set styles
 		if (params.bold && params.italic)
@@ -184,9 +205,10 @@ class Text_class extends Base_tools_class {
 		ctx.fillStyle = layer.color;
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = params.stroke_size;
+		ctx.textBaseline = 'top';
 		
 		var paragraphs = text.split("\n");
-		var offset_y = 0;
+		var offset_y = -line_height;
 		for(var i in paragraphs){
 			var block_test = paragraphs[i];
 			var lines = this.getLines(ctx, block_test, layer.width);
@@ -200,7 +222,11 @@ class Text_class extends Base_tools_class {
 	render_text_line(ctx, layer, text, offset_y) {
 		var params = layer.params;
 		var stroke = params.stroke;
-		var align = params.align.value.toLowerCase();
+		var align = params.align;
+		if(typeof align == 'object'){
+			align = align.value; //legacy
+		}
+		align = align.toLowerCase();
 		var text_width = ctx.measureText(text).width;
 		
 		//tabs
@@ -218,6 +244,82 @@ class Text_class extends Base_tools_class {
 			ctx.fillText(text, start_x, layer.y + offset_y);
 		else
 			ctx.strokeText(text, start_x, layer.y + offset_y);
+	}
+	
+	load_fonts(){
+		if(this.is_fonts_loaded == true){
+			return;
+		}
+		
+		var fonts = this.get_external_fonts();
+		var head = document.getElementsByTagName('head')[0];
+		for(var i in fonts) {
+			var font_family = fonts[i].replace(/[^a-zA-Z0-9 ]/g, '').replace(/ +/g, '+');
+			var font_url = 'https://fonts.googleapis.com/css?family=' + font_family;
+
+			var link  = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = font_url;
+			head.appendChild(link);
+		}
+		
+		this.is_fonts_loaded = true;
+	}
+
+	get_fonts(){
+		var default_fonts = [
+			"Arial",
+			"Courier",
+			"Impact", 
+			"Helvetica",
+			"Monospace", 
+			"Tahoma", 
+			"Times New Roman",
+			"Verdana",
+		];
+		
+		var external_fonts = this.get_external_fonts();
+		
+		//merge and sort
+		var merged = default_fonts.concat(external_fonts);
+		merged = merged.sort();
+		
+		return merged;
+	}
+	
+	get_external_fonts(){		
+		var google_fonts = [
+			"Amatic SC",
+			"Arimo",
+			"Codystar",
+			"Creepster",
+			"Indie Flower",
+			"Lato",
+			"Lora",
+			"Merriweather",
+			"Monoton",
+			"Montserrat",
+			"Mukta",
+			"Muli",
+			"Nosifer",
+			"Nunito",
+			"Oswald",
+			"Orbitron",
+			"Pacifico",
+			"PT Sans",
+			"PT Serif",
+			"Playfair Display",
+			"Poppins",
+			"Raleway",
+			"Roboto",
+			"Rubik",
+			"Special Elite",
+			"Tangerine",
+			"Titillium Web",
+			"Ubuntu",
+		];
+		
+		return google_fonts;
 	}
 	
 }
