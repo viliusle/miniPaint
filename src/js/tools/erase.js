@@ -95,6 +95,10 @@ class Erase_class extends Base_tools_class {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
+		if (config.layer.is_vector == true) {
+			alertify.error('Layer is vector, convert it to raster to apply this tool.');
+			return;
+		}
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Sorry.');
 			return;
