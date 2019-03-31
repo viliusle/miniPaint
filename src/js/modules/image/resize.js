@@ -49,12 +49,6 @@ class Image_resize_class {
 	resize() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			//error - no support
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
-			return false;
-		}
-
 		var settings = {
 			title: 'Resize',
 			params: [
@@ -90,15 +84,13 @@ class Image_resize_class {
 			//resize all layers
 			var skips = 0;
 			for (var i in config.layers) {
-				if (config.layers[i].type != 'image') {
+				var response = this.resize_layer(config.layers[i], params);
+				if(response === false){
 					skips++;
-					continue;
 				}
-
-				this.resize_layer(config.layers[i], params);
 			}
 			if (skips > 0) {
-				alertify.error(skips + ' layer(s) were skipped, because they are not image.');
+				alertify.error(skips + ' layer(s) were skipped.');
 			}
 		}
 		else {
@@ -107,6 +99,13 @@ class Image_resize_class {
 		}
 	}
 
+	/**
+	 * it will try to resize layer (image, text, vector), returns false on failure.
+	 * 
+	 * @param {object} layer
+	 * @param {object} params
+	 * @returns {undefined|Boolean}
+	 */
 	resize_layer(layer, params) {
 		var mode = params.mode;
 		var width = parseInt(params.width);
@@ -133,6 +132,33 @@ class Image_resize_class {
 				width = Math.round(height * ratio);
 			if (isNaN(height))
 				height = Math.round(width / ratio);
+		}
+		
+		//is text
+		if(layer.type == 'text'){
+			var ratio = width / layer.width;
+			layer.width = width;
+			layer.height = height;
+			layer.params.size = Math.ceil(layer.params.size * ratio);
+			this.resize_gui();
+			config.need_render = true;
+			return true;
+		}
+		
+		//is vector
+		if(layer.is_vector == true && layer.width != null && layer.height != null){
+			layer.width = width;
+			layer.height = height;
+			this.resize_gui();
+			config.need_render = true;
+			return true;
+		}
+		
+		//only images supported at this point
+		if (layer.type != 'image') {
+			//error - no support
+			alertify.error('Layer must be vector or image (convert it to raster).');
+			return false;
 		}
 		
 		//get canvas from layer
@@ -204,7 +230,7 @@ class Image_resize_class {
 			config.need_render = true;
 			
 			_this.resize_gui();
-		}		
+		}
 	}
 	
 	resize_gui() {
