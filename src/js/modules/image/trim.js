@@ -50,8 +50,8 @@ class Image_trim_class {
 		var settings = {
 			title: 'Trim',
 			params: [
-				{name: "trim_all", title: "Trim everything:", value: true},
 				{name: "trim_layer", title: "Trim layer:", value: true},
+				{name: "trim_all", title: "Trim borders:", value: true},
 				{}, //gap
 				{name: "remove_white", title: "Trim white color?", value: removeWhiteColor},
 			],

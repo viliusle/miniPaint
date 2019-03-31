@@ -55,9 +55,7 @@ class Base_tools_class {
 
 	events() {
 		var _this = this;
-
-
-
+		
 		//collect mouse info
 		document.addEventListener('mousedown', function (event) {
 			_this.dragStart(event);
@@ -80,6 +78,11 @@ class Base_tools_class {
 		}, {passive: false});
 		document.addEventListener('touchend', function (event) {
 			_this.dragEnd(event);
+		});
+		
+		//on resize
+		window.addEventListener('resize', function (event) {
+			_this.prepare();
 		});
 	}
 

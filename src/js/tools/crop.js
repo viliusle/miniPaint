@@ -111,8 +111,8 @@ class Crop_class extends Base_tools_class {
 		if(event.ctrlKey == true || event.metaKey){
 			//ctrl is pressed - crop will be calculated based on global width and height ratio
 			var ratio = config.WIDTH / config.HEIGHT;
-			var width_new = Math.round(height * config.WIDTH / config.HEIGHT);
-			var height_new = Math.round(width * config.HEIGHT / config.WIDTH);
+			var width_new = Math.round(height * ratio);
+			var height_new = Math.round(width / ratio);
 
 			if(Math.abs(width * 100 / width_new) > Math.abs(height * 100 / height_new)){
 				if (width * 100 / width_new > 0)

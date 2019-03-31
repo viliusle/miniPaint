@@ -109,6 +109,16 @@
 	font-weight:bold;
 }
 
+/* color chooser */
+body .sp-replacer{
+	width: 100%;
+	height: 40px;
+}
+body .sp-preview{
+	width: calc(100% - 20px);
+	height: 100%;
+}
+
 /* ========== header ======================================================== */
 
 .logo{
@@ -578,4 +588,19 @@ canvas{
 	.canvas_wrapper{
 		margin-left: 0px;
 	}
+}
+@media screen and (max-height: 720px){
+	.sidebar_left{
+		width: 79px;
+		padding: 4px 2px 0px 2px;
+	}
+	.sidebar_left .item{
+		display: inline-block;
+		width: 30px;
+		margin-right: 5px;
+		margin: 1px 3px 0 3px;
+	}
+	.main_wrapper{
+		margin-left: 85px;
+	}	
 }

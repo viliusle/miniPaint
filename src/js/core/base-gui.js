@@ -222,9 +222,16 @@ class Base_gui_class {
 	}
 
 	load_translations() {
-		var lang_cookie = this.Helper.getCookie('language');
-		if (lang_cookie != null && lang_cookie != 'en') {
-			config.LANG = lang_cookie.replace(/([^a-z]+)/gi, '');
+		var lang = this.Helper.getCookie('language');
+		
+		//load from params
+		var params = this.Helper.get_url_parameters();
+		if(params.lang != undefined){
+			lang = params.lang.replace(/([^a-z]+)/gi, '');
+		}
+		
+		if (lang != null && lang != config.LANG) {
+			config.LANG = lang.replace(/([^a-z]+)/gi, '');
 			this.Help_translate.translate(config.LANG);
 		}
 	}

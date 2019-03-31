@@ -38,6 +38,7 @@ class Base_selection_class {
 		this.mouse_lock = null;
 		this.selected_obj_positions = {};
 		this.selected_object_drag_type = null;
+		this.click_details = {};
 
 		this.events();
 	}
@@ -143,6 +144,7 @@ class Base_selection_class {
 		var half_size = Math.ceil(block_size / 2);
 
 		this.ctx.save();
+		this.ctx.globalAlpha = 1;
 		if (data.rotate != null && data.rotate != 0) {
 			//rotate
 			this.ctx.translate(data.x + data.width / 2, data.y + data.height / 2);
@@ -160,14 +162,14 @@ class Base_selection_class {
 		}
 
 		//borders
-		if (settings.enable_borders == true && config.layers.length > 1) {
+		if (settings.enable_borders == true && (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT)) {
 			this.ctx.lineWidth = 1;
 			this.ctx.strokeStyle = "rgba(0, 128, 0, 0.5)";
 			this.ctx.strokeRect(x + half_fix, y + half_fix, w, h);
 		}
 
 		//draw corners
-		if (Math.abs(w) > block_size * 3 && Math.abs(h) > block_size * 3) {
+		if (Math.abs(w) > block_size * 2 && Math.abs(h) > block_size * 2) {
 			corner(x - half_size, y - half_size, 0, 0, 'left_top');
 			corner(x + w + half_size, y - half_size, -1, 0, 'right_top');
 			corner(x - half_size, y + h + half_size, 0, -1, 'left_bottom');
@@ -244,46 +246,58 @@ class Base_selection_class {
 		var mouse = config.mouse;
 		var type = this.selected_object_drag_type;
 
+		if(e.type == 'mousedown'){
+			this.click_details = {
+				x: settings.data.x,
+				y: settings.data.y,
+				width: settings.data.width,
+				height: settings.data.height,
+			};
+		}
 		if (e.type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
 			document.body.style.cursor = "pointer";
+			
+			var is_ctrl = false;
+			if (e.ctrlKey == true || e.metaKey){
+				is_ctrl = true;
+			}
+			
 			if (e.buttons == 1) {
-				//do transformations
-				var dx = mouse.x - mouse.last_x;
-				var dy = mouse.y - mouse.last_y;
+				//do transformations				
+				var dx = Math.round(mouse.x - mouse.click_x);
+				var dy = Math.round(mouse.y - mouse.click_y);
+				var width = this.click_details.width + dx;
+				var height = this.click_details.height + dy;
+				if(type.indexOf("top") >= 0)
+					var height = this.click_details.height - dy;
+				if(type.indexOf("left") >= 0)
+					var width = this.click_details.width - dx;
+				
+				if(type.indexOf("_") >= 0 && (settings.keep_ratio == true && is_ctrl == false) 
+					|| (settings.keep_ratio !== true && is_ctrl == true)){
+					//keep ratio
+					var ratio = this.click_details.width / this.click_details.height;
+					var width_new = Math.round(height * ratio);
+					var height_new = Math.round(width / ratio);
 
-				if (type == 'left_top') {
-					settings.data.x += dx;
-					settings.data.y += dy;
-					settings.data.width -= dx;
-					settings.data.height -= dy;
+					if(Math.abs(width * 100 / width_new) > Math.abs(height * 100 / height_new)){
+						height = height_new;
+					}
+					else{
+						width = width_new;
+					}
 				}
-				else if (type == 'right_top') {
-					settings.data.width += dx;
-					settings.data.y += dy;
-					settings.data.height -= dy;
-				}
-				else if (type == 'left_bottom') {
-					settings.data.x += dx;
-					settings.data.height += dy;
-					settings.data.width -= dx;
-				}
-				else if (type == 'right_bottom') {
-					settings.data.width += dx;
-					settings.data.height += dy;
-				}
-				else if (type == 'top') {
-					settings.data.y += dy;
-					settings.data.height -= dy;
-				}
-				else if (type == 'bottom')
-					settings.data.height += dy;
-				else if (type == 'left') {
-					settings.data.x += dx;
-					settings.data.width -= dx;
-				}
-				else if (type == 'right')
-					settings.data.width += dx;
-
+				
+				//set values
+				if(type.indexOf("top") >= 0)
+					settings.data.y = this.click_details.y - (height - this.click_details.height);
+				if(type.indexOf("left") >= 0)
+					settings.data.x = this.click_details.x - (width - this.click_details.width);
+				if(type.indexOf("left") >= 0 || type.indexOf("right") >= 0)
+					settings.data.width = width;
+				if(type.indexOf("top") >= 0 || type.indexOf("bottom") >= 0)
+					settings.data.height = height;
+				
 				config.need_render = true;
 			}
 			return;

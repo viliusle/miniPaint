@@ -13,11 +13,6 @@ class Layer_raster_class {
 		var current_layer = config.layer;
 		var current_id = current_layer.id;
 
-		if (config.layer.type == 'image') {
-			alertify.error('Layer is already image.');
-			return;
-		}
-
 		window.State.save();
 
 		//show

@@ -129,13 +129,17 @@ class File_open_class {
 				_this.Base_layers.autoresize(width, height);
 				
 				//destroy
-				track.stop();
+				if(track != null){
+					track.stop();
+				}
 				video.pause();
 				video.src = "";
 				video.load();
 			},
 			on_cancel: function(params){
-				track.stop();
+				if(track != null){
+					track.stop();
+				}
 				video.pause();
 				video.src = "";
 				video.load();
@@ -312,13 +316,28 @@ class File_open_class {
 	 * check if url has url params, for example: https://viliusle.github.io/miniPaint/?image=http://i.imgur.com/ATda8Ae.jpg
 	 */
 	maybe_file_open_url_handler() {
+		var _this = this;
 		var url_params = this.Helper.get_url_parameters();
+		
 		if (url_params.image != undefined) {
 			//found params - try to load it
-			var data = {
-				url: url_params.image,
-			};
-			this.file_open_url_handler(data);
+			if(url_params.image.toLowerCase().indexOf('.json') == url_params.image.length - 5){
+				//load json
+				window.fetch(url_params.image).then(function(response) {
+					return response.json();
+				}).then(function(json) {
+					_this.load_json(json, false);
+				}).catch(function(ex) {
+					alertify.error('Sorry, image could not be loaded.');
+				});
+			}
+			else{
+				//load image
+				var data = {
+					url: url_params.image,
+				};
+				this.file_open_url_handler(data);
+			}
 		}
 	}
 

@@ -55,6 +55,10 @@ class Magic_wand_class extends Base_tools_class {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
+		if (config.layer.is_vector == true) {
+			alertify.error('Layer is vector, convert it to raster to apply this tool.');
+			return;
+		}
 
 		//get canvas from layer
 		var canvas = document.createElement('canvas');

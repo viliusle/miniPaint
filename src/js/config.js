@@ -132,21 +132,7 @@ config.TOOLS = [
 	{
 		name: 'text',
 		title: 'Text',
-		attributes: {
-			size: 40,
-			bold: false,
-			italic: false,
-			stroke: false,
-			align: {
-				value: 'Left',
-				values: ["Left", "Center", "Right"],
-			},
-			family: {
-				value: 'Arial',
-				values: ["Arial", "Courier", "Impact", "Helvetica", "monospace", "Times New Roman", "Verdana"],
-			},
-			stroke_size: 1,
-		},
+		attributes: {},
 	},
 	{
 		name: 'gradient',

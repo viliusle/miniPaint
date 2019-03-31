@@ -5,6 +5,7 @@
 
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
+import Text_class from './../../tools/text.js';
 
 var template = `
 	<div class="row">
@@ -61,15 +62,7 @@ var template = `
 		</div>
 		<div class="row">
 			<span class="trn label">Font:</span>
-			<select id="detail_param_family">
-				<option value="Arial">Arial</option>
-				<option value="Courier">Courier</option>
-				<option value="Impact">Impact</option>
-				<option value="Helvetica">Helvetica</option>
-				<option value="monospace">monospace</option>
-				<option valueTimes New Roman">Times New Roman</option>
-				<option value="Verdana">Verdana</option>
-			</select>
+			<select id="detail_param_family"></select>
 		</div>
 		<div class="row">
 			<span class="trn label">Stroke:</span>
@@ -85,6 +78,7 @@ class GUI_details_class {
 
 	constructor() {
 		this.POP = new Dialog_class();
+		this.Text = new Text_class();
 	}
 
 	render_main_details() {
@@ -191,7 +185,14 @@ class GUI_details_class {
 			else {
 				if (typeof layer.params[key] == 'boolean') {
 					//boolean
-					target.value = !target.value;
+					if(target.tagName == 'BUTTON'){
+						if(layer.params[key]){
+							target.classList.add('active');
+						}
+						else{
+							target.classList.remove('active');
+						}
+					}
 				}
 				else {
 					//common
@@ -229,7 +230,10 @@ class GUI_details_class {
 				target.disabled = true;
 			}
 			else {
-				target.value = layer.params[key].value;
+				if(typeof layer.params[key] == 'object')
+					target.value = layer.params[key].value; //legacy
+				else
+					target.value = layer.params[key];
 				target.disabled = false;
 			}
 		}
@@ -238,7 +242,7 @@ class GUI_details_class {
 			//events
 			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
 				var value = this.value;
-				config.layer.params[key].value = value;
+				config.layer.params[key] = value;
 				config.need_render = true;
 			});
 		}
@@ -322,6 +326,16 @@ class GUI_details_class {
 				};
 				_this.POP.show(settings);
 			});
+			
+			//also show font families
+			var families = this.Text.get_fonts();
+			var select = document.getElementById('detail_param_family');
+			for(var i in families){
+				var opt = document.createElement('option');
+				opt.value = families[i];
+				opt.innerHTML = families[i];
+				select.appendChild(opt);
+			}
 		}
 	}
 

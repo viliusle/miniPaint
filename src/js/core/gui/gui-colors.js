@@ -6,6 +6,8 @@
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import './../../../../node_modules/spectrum-colorpicker/spectrum.css';
+import spectrum from './../../../../node_modules/spectrum-colorpicker/spectrum.js';
 
 var Helper = new Helper_class();
 
@@ -69,6 +71,17 @@ class GUI_colors_class {
 				_this.set_color_hsl(this);
 			}, false);
 		}
+		
+		$("#main_color").spectrum({
+			showAlpha: true,
+			move: function(color) {
+				var rgba = color.toRgb();
+				
+				_this.change_color(color.toHexString());
+				_this.change_alpha(rgba.a * 255);
+				_this.render_colors();
+			},
+		});
 
 		//colors
 		document.getElementById('color_hex').addEventListener('keyup', function (e) {
@@ -100,9 +113,9 @@ class GUI_colors_class {
 
 	set_color(object) {
 		if (object.id == 'main_color')
-			config.COLOR = object.value;
+			this.change_color(object.value);
 		else
-			config.COLOR = Helper.rgb2hex_all(object.style.backgroundColor);
+			this.change_color(Helper.rgb2hex_all(object.style.backgroundColor));
 
 		document.getElementById("main_color").value = config.COLOR;
 		document.getElementById("color_hex").value = config.COLOR;
@@ -113,8 +126,7 @@ class GUI_colors_class {
 
 		//also set alpha to max
 		if (config.ALPHA == 0) {
-			config.ALPHA = 255;
-			document.getElementById("rgb_a").value = config.ALPHA;
+			this.change_alpha(255);
 		}
 
 		this.render_colors();
@@ -123,11 +135,11 @@ class GUI_colors_class {
 	set_color_manual(event) {
 		var object = event.target;
 		if (object.value.length == 6 && object.value[0] != '#') {
-			config.COLOR = '#' + object.value;
+			this.change_color('#' + object.value);
 			this.render_colors();
 		}
 		if (object.value.length == 7) {
-			config.COLOR = object.value;
+			this.change_color(object.value);
 			this.render_colors();
 		}
 		else if (object.value.length > 7) {
@@ -145,12 +157,13 @@ class GUI_colors_class {
 			object.value = 255;
 			alertify.error('Error: bad rgb value.');
 		}
-		config.COLOR = Helper.rgbToHex(
+		this.change_color(
+			null, 
 			document.getElementById("rgb_r").value,
 			document.getElementById("rgb_g").value,
 			document.getElementById("rgb_b").value
 		);
-		config.ALPHA = document.getElementById("rgb_a").value;
+		this.change_alpha(document.getElementById("rgb_a").value);
 
 		this.render_colors(object.id);
 	}
@@ -179,10 +192,37 @@ class GUI_colors_class {
 			document.getElementById("hsl_h").value / 360,
 			document.getElementById("hsl_s").value / 100,
 			document.getElementById("hsl_l").value / 100
-			);
-		config.COLOR = Helper.rgbToHex(rgb[0], rgb[1], rgb[2]);
+		);
+		this.change_color(null, rgb[0], rgb[1], rgb[2]);
 
 		this.render_colors(object.id);
+	}
+	
+	/**
+	 * change global color value
+	 * 
+	 * @param {type} hex can be null, but r/g/b/ must be provided then. Can be #ff0000 or ff0000
+	 * @param {type} r optional
+	 * @param {type} g optional
+	 * @param {type} b optional
+	 * @returns {undefined}
+	 */
+	change_color(hex, r, g, b) {
+		if(hex != '' && hex != null){
+			if(hex[0] != '#'){
+				hex = '#' + hex;
+			}
+			config.COLOR = hex;
+		}
+		else if(r != undefined && g != undefined && b != undefined){
+			config.COLOR = Helper.rgbToHex(r, g, b);
+		}
+		else{
+			alertify.error('Error: wrong color.');
+			return;
+		}
+		
+		$("#main_color").spectrum("set", config.COLOR);
 	}
 
 	/**
@@ -191,6 +231,7 @@ class GUI_colors_class {
 	 * @param {int} value
 	 */
 	change_alpha(value) {
+		value = Math.ceil(value);
 		config.ALPHA = parseInt(value);
 		document.getElementById("rgb_a").value = config.ALPHA;
 	}
