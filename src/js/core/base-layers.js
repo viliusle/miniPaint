@@ -328,7 +328,7 @@ class Base_layers_class {
 			//prepare image
 			if (layer.type == 'image') {
 				
-				if(layer.name.toLowerCase().indexOf('.svg') >= 0){
+				if(layer.name.toLowerCase().indexOf('.svg') == layer.name.length - 4){
 					//we have svg
 					layer.is_vector = true;
 				}
