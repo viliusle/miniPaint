@@ -68,8 +68,10 @@ class Gradient_class extends Base_tools_class {
 			return;
 
 		var name = this.name;
+		var is_vector = false;
 		if (params.radial == true) {
 			name = 'Radial gradient';
+			is_vector = true;
 		}
 
 		window.State.save();
@@ -84,7 +86,7 @@ class Gradient_class extends Base_tools_class {
 			x: mouse.x,
 			y: mouse.y,
 			rotate: null,
-			is_vector: true,
+			is_vector: is_vector,
 			color: params.color_1,
 			data: {
 				center_x: mouse.x,
