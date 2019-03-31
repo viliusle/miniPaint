@@ -327,6 +327,11 @@ class Base_layers_class {
 
 			//prepare image
 			if (layer.type == 'image') {
+				
+				if(layer.name.toLowerCase().indexOf('.svg') >= 0){
+					//we have svg
+					layer.is_vector = true;
+				}
 
 				if (config.layers.length == 1 && config.layer.width == 0
 					&& config.layer.height == 0 && config.layer.data == null) {
