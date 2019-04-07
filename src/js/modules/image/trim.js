@@ -78,7 +78,7 @@ class Image_trim_class {
 		trim = trim.relative;
 		
 		if(layer.type == 'image'){
-			//if image was streched
+			//if image was stretched
 			var width_ratio = (layer.width / layer.width_original);
 			var height_ratio = (layer.height / layer.height_original);
 
@@ -167,7 +167,7 @@ class Image_trim_class {
 	 * 
 	 * @param {int} layer_id
 	 * @param {boolean} trim_white
-	 * @returns {object} keys: top, left, botom, right, width, height, relative
+	 * @returns {object} keys: top, left, bottom, right, width, height, relative
 	 */
 	get_trim_info(layer_id, trim_white) {
 		if (trim_white == undefined) {

@@ -43,7 +43,7 @@ var template = `
 `;
 
 /**
- * GUI class responsible for rendering colos block on right sidebar
+ * GUI class responsible for rendering colors block on right sidebar
  */
 class GUI_colors_class {
 

@@ -75,11 +75,11 @@ class Erase_class extends Base_tools_class {
 		var strict_element = document.querySelector('.attributes #strict');
 
 		if (params.circle == false) {
-			//hide strict controlls
+			//hide strict controls
 			strict_element.style.display = 'none';
 		}
 		else {
-			//show strict controlls
+			//show strict controls
 			strict_element.style.display = 'block';
 		}
 	}

@@ -103,7 +103,7 @@ class File_new_class {
 		this.Base_layers.insert({});
 		config.need_render = true;
 
-		//reset exif
+		//reset EXIF
 		config.layer._exif = null;
 
 		//last resolution

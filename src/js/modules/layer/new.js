@@ -51,7 +51,7 @@ class Layer_new_class {
 
 		window.State.save();
 		
-		//if image was streched
+		//if image was stretched
 		var width_ratio = (layer.width / layer.width_original);
 		var height_ratio = (layer.height / layer.height_original);
 		

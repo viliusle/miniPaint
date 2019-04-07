@@ -285,8 +285,8 @@ class File_open_class {
 				}
 				else {
 					//json
-					var responce = _this.load_json(event.target.result);
-					if (responce === true) {
+					var response = _this.load_json(event.target.result);
+					if (response === true) {
 						return false;
 					}
 				}

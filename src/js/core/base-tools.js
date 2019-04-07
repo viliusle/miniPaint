@@ -211,11 +211,11 @@ class Base_tools_class {
 	 * @param {int} x
 	 * @param {int} y
 	 * @param {int} size
-	 * @param {string} type cicle, rect
+	 * @param {string} type circle, rect
 	 */
 	show_mouse_cursor(x, y, size, type) {
 
-		//fix coods, because of scroll
+		//fix coordinates, because of scroll
 		var start_pos = this.Base_layers.get_world_coords(0, 0);
 		x = x - start_pos.x;
 		y = y - start_pos.y;

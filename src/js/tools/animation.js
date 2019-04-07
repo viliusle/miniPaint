@@ -37,7 +37,7 @@ class Animation_class extends Base_tools_class {
 		var sel_config = {
 			enable_background: false,
 			enable_borders: false,
-			enable_controlls: false,
+			enable_controls: false,
 			data_function: function () {
 				return null;
 			},

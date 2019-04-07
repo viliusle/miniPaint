@@ -37,7 +37,7 @@ class Selection_class extends Base_tools_class {
 		var sel_config = {
 			enable_background: true,
 			enable_borders: true,
-			enable_controlls: false,
+			enable_controls: false,
 			data_function: function () {
 				return _this.selection;
 			},

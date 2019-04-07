@@ -34,7 +34,7 @@ class Base_gui_class {
 		//last used menu id
 		this.last_menu = '';
 
-		//grid dimnesions config
+		//grid dimensions config
 		this.grid_size = [50, 50];
 
 		//if grid is visible

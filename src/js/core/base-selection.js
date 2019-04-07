@@ -17,7 +17,7 @@ class Base_selection_class {
 	 * settings:
 	 * - enable_background
 	 * - enable_borders
-	 * - enable_controlls
+	 * - enable_controls
 	 * 
 	 * @param {ctx} ctx
 	 * @param {object} settings
@@ -176,7 +176,7 @@ class Base_selection_class {
 			corner(x + w + half_size, y + h + half_size, -1, -1, 'right_bottom');
 		}
 
-		if (settings.enable_controlls == true) {
+		if (settings.enable_controls == true) {
 			//draw centers
 			if (Math.abs(w) > block_size * 5) {
 				corner(x + w / 2 - block_size / 2, y - half_size, 0, 0, 'top');
@@ -204,7 +204,7 @@ class Base_selection_class {
 				size: block_size,
 			};
 
-			if (settings.enable_controlls == false || angle > 0) {
+			if (settings.enable_controls == false || angle > 0) {
 				_this.ctx.strokeStyle = "rgba(0, 128, 0, 0.4)";
 				_this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 			}
@@ -235,7 +235,7 @@ class Base_selection_class {
 		if (document.body.style.cursor != 'default') {
 			document.body.style.cursor = 'default';
 		}
-		if (e.type == 'mousedown' && config.mouse.valid == false || settings.enable_controlls == false) {
+		if (e.type == 'mousedown' && config.mouse.valid == false || settings.enable_controls == false) {
 			return;
 		}
 		if (settings.data != null && settings.data.rotate != null && settings.data.rotate > 0) {
