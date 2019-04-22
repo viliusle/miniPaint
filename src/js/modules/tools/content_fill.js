@@ -138,8 +138,8 @@ class Tools_contentFill_class {
 
 		//add blur
 		var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var blured = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
-		ctx.putImageData(blured, 0, 0);
+		var blurred = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+		ctx.putImageData(blurred, 0, 0);
 	}
 
 	add_resized_background(canvas, params) {
@@ -151,8 +151,8 @@ class Tools_contentFill_class {
 
 		//add blur
 		var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var blured = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
-		ctx.putImageData(blured, 0, 0);
+		var blurred = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+		ctx.putImageData(blurred, 0, 0);
 	}
 
 	add_cloned_background(canvas, params) {
@@ -246,8 +246,8 @@ class Tools_contentFill_class {
 
 		//add blur
 		var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var blured = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
-		ctx.putImageData(blured, 0, 0);
+		var blurred = ImageFilters.BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+		ctx.putImageData(blurred, 0, 0);
 	}
 
 }

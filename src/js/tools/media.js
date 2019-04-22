@@ -6,7 +6,7 @@ class Media_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
-		this.Seach = new File_search_media_class();
+		this.Search = new File_search_media_class();
 		this.name = 'media';
 	}
 
@@ -19,7 +19,7 @@ class Media_class extends Base_tools_class {
 	}
 
 	on_activate() {
-		this.Seach.search();
+		this.Search.search();
 	}
 }
 ;

@@ -227,7 +227,7 @@ class Vintage_class {
 		}
 	}
 
-	//adding vignette effect - blured dark borders
+	//adding vignette effect - blurred dark borders
 	optics(canvas, param1, param2) {	//param1 [0, 0.5], param2 [0, 0.7], default 0.3, 0.5
 		var context = canvas.getContext("2d");
 		var W = canvas.width;

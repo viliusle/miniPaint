@@ -60,7 +60,7 @@ class Base_layers_class {
 		this.last_zoom = 1;
 		this.zoomView = zoomView;
 		this.auto_increment = 1;
-		this.stable_dimesions = [];
+		this.stable_dimensions = [];
 		this.tempCanvas = document.createElement('canvas');
 	}
 
@@ -74,7 +74,7 @@ class Base_layers_class {
 		var sel_config = {
 			enable_background: false,
 			enable_borders: true,
-			enable_controlls: false,
+			enable_controls: false,
 			data_function: function () {
 				return config.layer;
 			},
@@ -87,7 +87,7 @@ class Base_layers_class {
 	init_zoom_lib() {
 		zoomView.setBounds(0, 0, config.WIDTH, config.HEIGHT);
 		zoomView.setContext(this.ctx);
-		this.stable_dimesions = [
+		this.stable_dimensions = [
 			config.WIDTH,
 			config.HEIGHT
 		];
@@ -118,8 +118,8 @@ class Base_layers_class {
 			return;
 		}
 
-		if (this.stable_dimesions[0] != config.WIDTH || this.stable_dimesions[1] != config.HEIGHT) {
-			//dimensions changed - reinit zoom lib
+		if (this.stable_dimensions[0] != config.WIDTH || this.stable_dimensions[1] != config.HEIGHT) {
+			//dimensions changed - re-init zoom lib
 			this.init_zoom_lib();
 		}
 
@@ -237,7 +237,7 @@ class Base_layers_class {
 
 		//example with canvas object - other types should overwrite this method
 		if (object.type == 'image') {
-			//image - default behaviour
+			//image - default behavior
 			var rotateSupport = true;
 			if (rotateSupport == false) {
 				if (object.link_canvas != undefined && object.link_canvas != null) {
@@ -764,7 +764,7 @@ class Base_layers_class {
 	}
 
 	/**
-	 * delets live filter
+	 * delete live filter
 	 *
 	 * @param {int} layer_id
 	 * @param {string} filter_id

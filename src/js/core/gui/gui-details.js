@@ -43,10 +43,10 @@ var template = `
 	<div id="params_details">
 		<hr />
 		<div class="row">
-			<button type="buton" class="" id="detail_param_text">Edit text...</button>
-			<button type="buton" class="" id="detail_param_bold">Bold</button>
-			<button type="buton" class="" id="detail_param_italic">Italic</button>
-			<button type="buton" class="" id="detail_param_stroke">Stroke</button>
+			<button type="button" class="" id="detail_param_text">Edit text...</button>
+			<button type="button" class="" id="detail_param_bold">Bold</button>
+			<button type="button" class="" id="detail_param_italic">Italic</button>
+			<button type="button" class="" id="detail_param_stroke">Stroke</button>
 		</div>
 		<div class="row">
 			<span class="trn label">Size:</span>

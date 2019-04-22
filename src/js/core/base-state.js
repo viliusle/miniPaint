@@ -157,9 +157,9 @@ class Base_state_class {
 				images++;
 			}
 		}
-		var total_megapx = megapixels * images;
+		var total_megapixels = megapixels * images;
 
-		if (total_megapx > 100) {
+		if (total_megapixels > 100) {
 			//high dimensions - undo disabled
 			if (this.enabled == true)
 				alertify.warning('Undo disabled.');
@@ -172,7 +172,7 @@ class Base_state_class {
 				alertify.success('Undo enabled.');
 			this.enabled = true;
 
-			if (total_megapx > 50) {
+			if (total_megapixels > 50) {
 				//1 undo level
 				if (this.levels > 1)
 					alertify.warning('Undo levels changed to 1.');

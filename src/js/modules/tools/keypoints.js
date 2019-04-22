@@ -54,7 +54,7 @@ class Tools_keypoints_class {
 			var ctx_i = tmp_canvas.getContext("2d");
 			ctx_i.drawImage(clone, 0, 0);
 
-			//gausian blur
+			//Gausian blur
 			var imageData = ctx_i.getImageData(0, 0, W, H);
 			var filtered = this.ImageFilters.GaussianBlur(imageData, i + 0.5); //add effect
 			ctx_i.putImageData(filtered, 0, 0);

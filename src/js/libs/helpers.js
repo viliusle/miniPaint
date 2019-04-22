@@ -28,7 +28,7 @@ class Helper_class {
 	}
 
 	/**
-	 * calculates time betweeen two calls.
+	 * calculates time between two calls.
 	 * 
 	 * @param {string} name Optional
 	 * @param {boolean} echo Default is true.
@@ -113,13 +113,13 @@ class Helper_class {
 		return '';
 	}
 
-	_setCookie(NameOfCookie, value, expiredays) {
-		if (expiredays == undefined)
-			expiredays = 180;
+	_setCookie(NameOfCookie, value, expire_days) {
+		if (expire_days == undefined)
+			expire_days = 180;
 		var ExpireDate = new Date();
-		ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
+		ExpireDate.setTime(ExpireDate.getTime() + (expire_days * 24 * 3600 * 1000));
 		document.cookie = NameOfCookie + "=" + value +
-			((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+			((expire_days == null) ? "" : "; expires=" + ExpireDate.toGMTString());
 	}
 
 	delCookie(NameOfCookie) {
@@ -231,7 +231,7 @@ class Helper_class {
 		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
 	}
 
-	chech_input_color_support() {
+	check_input_color_support() {
 		var i = document.createElement("input");
 		i.setAttribute("type", "color");
 		return i.type !== "text";

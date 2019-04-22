@@ -4,7 +4,7 @@ import Dialog_class from './../../libs/popup.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 /** 
- * manages iamge search on https://pixabay.com/en/service/about/api/
+ * manages image search on https://pixabay.com/en/service/about/api/
  */
 class File_search_media_class {
 
@@ -74,7 +74,7 @@ class File_search_media_class {
 					//using cache
 
 					setTimeout(function () {
-						//only call same fuction after all handlers finishes
+						//only call same function after all handlers finishes
 						var data = _this.cache[params.query];
 						if (parseInt(data.totalHits) == 0) {
 							alertify.error('Your search did not match any images.');

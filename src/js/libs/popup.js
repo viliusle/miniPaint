@@ -36,7 +36,7 @@
  * - step		int/float			1	
  * - placeholder	text			'enter number here'
  * - html		html text			'<b>bold</b>'
- * - function	function			'cutom_function'
+ * - function	function			'custom_function'
  */
 import './../../css/popup.css';
 import app_config from './../config.js';
@@ -365,7 +365,7 @@ class Dialog_class {
 			this.layer_active_small_ctx.drawImage(canvas, 0, 0);
 			this.layer_active_small_ctx.scale(1, 1);
 
-			//draw right backround
+			//draw right background
 			var canvas_right_back = document.getElementById("pop_post_back").getContext("2d");
 			this.draw_background(canvas_right_back, this.width_mini, this.height_mini, 10);
 

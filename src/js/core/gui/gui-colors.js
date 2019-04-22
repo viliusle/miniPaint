@@ -43,7 +43,7 @@ var template = `
 `;
 
 /**
- * GUI class responsible for rendering colos block on right sidebar
+ * GUI class responsible for rendering colors block on right sidebar
  */
 class GUI_colors_class {
 
@@ -72,15 +72,30 @@ class GUI_colors_class {
 			}, false);
 		}
 		
+		var changed = false;
+		var last_color = config.COLOR;
 		$("#main_color").spectrum({
-			showAlpha: true,
-			move: function(color) {
-				var rgba = color.toRgb();
-				
+			move: function(color) {				
 				_this.change_color(color.toHexString());
-				_this.change_alpha(rgba.a * 255);
 				_this.render_colors();
 			},
+			show: function() {
+				changed = false;
+			},
+			change: function(color) {
+				changed = true;
+			},
+			hide: function(color) {
+				if(changed == false) {
+					// revert
+					_this.change_color(last_color);
+					_this.render_colors();
+				}
+				else{
+					//changed
+					last_color = config.COLOR;
+				}
+			}
 		});
 
 		//colors

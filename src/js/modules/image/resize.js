@@ -167,7 +167,7 @@ class Image_resize_class {
 
 		//validate
 		if (mode == "Hermite" && (width > canvas.width || height > canvas.height)) {
-			alertify.warning('Scalling up is not supported in Hermite, using Lanczos.');
+			alertify.warning('Scaling up is not supported in Hermite, using Lanczos.');
 			mode = "Lanczos";
 		}
 		

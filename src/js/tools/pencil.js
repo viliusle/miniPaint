@@ -140,11 +140,11 @@ class Pencil_class extends Base_tools_class {
 		var strict_element = document.querySelector('.block .item.size');
 
 		if (params.antialiasing == false) {
-			//hide strict controlls
+			//hide strict controls
 			strict_element.style.display = 'none';
 		}
 		else {
-			//show strict controlls
+			//show strict controls
 			strict_element.style.display = 'inline_block';
 		}
 	}
