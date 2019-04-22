@@ -86,7 +86,8 @@ class Pick_color_class extends Base_tools_class {
 		}
 		//find color
 		var c = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
-		config.COLOR = this.Helper.rgbToHex(c[0], c[1], c[2]);
+		var hex = this.Helper.rgbToHex(c[0], c[1], c[2]);
+		this.Base_gui.GUI_colors.change_color(hex);
 
 		if (c[3] > 0) {
 			//set alpha
