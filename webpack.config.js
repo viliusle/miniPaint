@@ -25,7 +25,7 @@ module.exports = {
 					'style-loader',
 					{
 						loader: 'css-loader',
-						options: {minimize: true, url: false}
+						options: {url: false}
 					}
 				]
 			},
