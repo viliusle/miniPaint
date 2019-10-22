@@ -203,6 +203,23 @@ class Crop_class extends Base_tools_class {
 			alertify.error('Empty selection');
 			return;
 		}
+		
+		//check for rotation
+		var rotated_name = false;
+		for (var i in config.layers) {
+			var link = config.layers[i];
+			if (link.type == null)
+				continue;
+			
+			if(link.rotate > 0){
+				rotated_name = link.name;
+				break;
+			}
+		}
+		if (rotated_name !== false) {
+			alertify.error('Crop on rotated layer is not supported. Convert it to raster to continue.' + '('+ rotated_name + ')');
+			return;
+		}
 
 		window.State.save();
 
