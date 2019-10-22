@@ -107,8 +107,13 @@ class GUI_colors_class {
 			_this.set_color(this);
 		}, false);
 	}
-
-	render_colors(ignore_id) {
+	
+	/**
+	 * renders current color to all color fields
+	 * 
+	 * @param boolean can_change_hsl True by default
+	 */
+	render_colors(can_change_hsl) {
 		document.getElementById("color_hex").value = config.COLOR;
 		document.getElementById("main_color").value = config.COLOR;
 
@@ -118,13 +123,12 @@ class GUI_colors_class {
 		document.getElementById("rgb_b").value = colors.b;
 		document.getElementById("rgb_a").value = config.ALPHA;
 
-		var hsl = Helper.rgbToHsl(colors.r, colors.g, colors.b, false);
-		if (ignore_id !== 'hsl_h')
+		if(can_change_hsl == undefined || can_change_hsl === true) {
+			var hsl = Helper.rgbToHsl(colors.r, colors.g, colors.b, false);
 			document.getElementById("hsl_h").value = Math.round(hsl.h * 360);
-		if (ignore_id !== 'hsl_s')
 			document.getElementById("hsl_s").value = Math.round(hsl.s * 100);
-		if (ignore_id !== 'hsl_l')
 			document.getElementById("hsl_l").value = Math.round(hsl.l * 100);
+		}
 	}
 
 	set_color(object) {
@@ -181,7 +185,7 @@ class GUI_colors_class {
 		);
 		this.change_alpha(document.getElementById("rgb_a").value);
 
-		this.render_colors(object.id);
+		this.render_colors();
 	}
 
 	set_color_hsl(object) {
@@ -211,7 +215,7 @@ class GUI_colors_class {
 		);
 		this.change_color(null, rgb[0], rgb[1], rgb[2]);
 
-		this.render_colors(object.id);
+		this.render_colors(false);
 	}
 	
 	/**
