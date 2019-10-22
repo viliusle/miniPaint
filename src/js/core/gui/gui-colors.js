@@ -81,6 +81,7 @@ class GUI_colors_class {
 			},
 			show: function() {
 				changed = false;
+				last_color = config.COLOR;
 			},
 			change: function(color) {
 				changed = true;
