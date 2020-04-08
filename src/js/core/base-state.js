@@ -43,6 +43,7 @@ class Base_state_class {
 			if (code == 90 && (event.ctrlKey == true || event.metaKey)) {
 				//undo
 				_this.undo();
+				event.preventDefault();
 			}
 		}, false);
 	}

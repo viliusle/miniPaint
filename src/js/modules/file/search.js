@@ -58,7 +58,6 @@ class File_search_media_class {
 					targets[i].addEventListener('click', function (event) {
 						//we have click
 						window.State.save();
-						this.dataset.url = this.dataset.url.replace('_640.', '_960.');
 						var data = {
 							url: this.dataset.url,
 						};
