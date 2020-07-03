@@ -368,6 +368,7 @@ class Base_layers_class {
 							resolve(true);
 						};
 						layer.link.src = layer.data;
+						layer.link.crossOrigin = "Anonymous";
 					}
 					else {
 						alertify.error('Error: can not load image.');
