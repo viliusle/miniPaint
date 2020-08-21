@@ -279,7 +279,7 @@ body .sp-preview{
 	right: 5px;
 	top: 45px;
 	width: 200px;
-	height: calc(100vh - 80px);
+	/*height: calc(100vh - 80px);*/
 	background-color: #424F5A;
 	background-color: var(--background-color);
 	transition: 0.2s;
