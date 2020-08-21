@@ -91,4 +91,17 @@
 	<div class="hidden" id="tmp"></div>
 	<div id="popup"></div>
 </body>
+  <script>
+    let height =window.innerHeight -30-60;
+    let item= document.getElementsByClassName("sidebar_right")[0];
+    item.style.height = height+"px";
+    item.style.overflowY = "auto";
+
+    window.onresize=function(){
+      let height =window.innerHeight -30-60;
+      let item= document.getElementsByClassName("sidebar_right")[0];
+      item.style.height = height+"px";
+      item.style.overflowY = "auto";
+    }
+  </script>
 </html>
