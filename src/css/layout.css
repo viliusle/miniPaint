@@ -199,6 +199,7 @@ body .sp-preview{
 	width: calc(100% - 125px);
 	margin-top: 5px;
 	margin-bottom: 5px !important;
+	min-height: 30px;
 	padding: 3px 10px 3px 10px;
 	border: 0;
 	overflow-x: auto;
