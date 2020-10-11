@@ -16,29 +16,28 @@ var template = `
 		<input type="text" class="color_hex" id="color_hex" value="#000000" />
 		<br />
 		<div class="main_color_rgb">
-			<div>
-				<span class="trn red">Red:</span>
-				<input id="rgb_r" min="0" max="255" type="number" />
-				<br />				
-				<span class="trn green">Green:</span>
-				<input id="rgb_g" min="0" max="255" type="number" />
-				<br />
-				<span class="trn blue">Blue:</span>
-				<input id="rgb_b" min="0" max="255" type="number" />
-				<br />
-				<span class="trn alpha">Alpha:</span>
-				<input id="rgb_a" min="0" max="255" type="number" />
-			</div>
-			<div>
-				<span class="trn">Hue:</span>
-				<input id="hsl_h" min="0" max="360" type="number" />
-				<br />				
-				<span class="trn">Sat:</span>
-				<input id="hsl_s" min="0" max="100" type="number" />
-				<br />
-				<span class="trn">Lum:</span>
-				<input id="hsl_l" min="0" max="100" type="number" />
-			</div>
+			<span class="trn red">Red:</span>
+			<input id="rgb_r" min="0" max="255" type="number" />
+			<br />				
+			<span class="trn green">Green:</span>
+			<input id="rgb_g" min="0" max="255" type="number" />
+			<br />
+			<span class="trn blue">Blue:</span>
+			<input id="rgb_b" min="0" max="255" type="number" />
+			<br />
+			<span class="trn alpha">Alpha:</span>
+			<input id="rgb_a" min="0" max="255" type="number" />
+			
+			<br /><br />
+
+			<span class="trn">Hue:</span>
+			<input id="hsl_h" min="0" max="360" type="number" />
+			<br />				
+			<span class="trn">Sat:</span>
+			<input id="hsl_s" min="0" max="100" type="number" />
+			<br />
+			<span class="trn">Lum:</span>
+			<input id="hsl_l" min="0" max="100" type="number" />
 		</div>
 `;
 

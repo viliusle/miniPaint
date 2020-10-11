@@ -40,6 +40,8 @@ class Base_gui_class {
 		//if grid is visible
 		this.grid = false;
 
+		this.canvas_offset = {x: 0, y: 0};
+
 		//common image dimensions
 		this.common_dimensions = [
 			[640, 480, '480p'],
@@ -120,6 +122,7 @@ class Base_gui_class {
 
 	set_events() {
 		var _this = this;
+
 		//menu events
 		var targets = document.querySelectorAll('#main_menu a');
 		for (var i = 0; i < targets.length; i++) {
@@ -173,8 +176,18 @@ class Base_gui_class {
 		window.addEventListener('resize', function (event) {
 			//resize
 			_this.prepare_canvas();
+			_this.check_canvas_offset();
 			config.need_render = true;
 		}, false);
+		_this.check_canvas_offset();
+	}
+
+	check_canvas_offset() {
+		//calc canvas position offset
+		var bodyRect = document.body.getBoundingClientRect();
+		var canvas_el = document.getElementById('canvas_minipaint').getBoundingClientRect();
+		this.canvas_offset.x = canvas_el.left - bodyRect.left;
+		this.canvas_offset.y = canvas_el.top - bodyRect.top;
 	}
 
 	prepare_canvas() {

@@ -204,6 +204,7 @@ body .sp-preview{
 	overflow-x: auto;
 	overflow-y: hidden;
 	white-space: nowrap;
+	min-height: 30px;
 }
 .attributes .item{
 	display: inline-block;
@@ -308,7 +309,7 @@ body .sp-preview{
 	background-color: var(--background-color);
 	transition: 0.2s;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: scroll;
 	margin: 0 5px;
 	width: 200px;
 }
@@ -366,10 +367,10 @@ body .sp-preview{
 .main_color_rgb span, .hex{
 	display: inline-block;
 	font-weight: bold;
-	width: 35px;
+	width: 50px;
 }
 .main_color_rgb input{
-	width:50px;
+	width: 70px;
 }
 .main_color_rgb .red{ color:#aa0000; }
 .main_color_rgb .green{ color:#00aa00; }
@@ -377,7 +378,7 @@ body .sp-preview{
 .main_color_rgb .alpha{ color: #333333; }
 
 .color_hex{
-	width: calc(100% - 41px);
+	width: calc(100% - 60px);
 }
 #all_colors{
 	margin-top:10px;
