@@ -298,7 +298,7 @@ body .sp-preview{
 /* ========== right sidebar ================================================= */
 
 .sidebar_right{
-	-ms-grid-row: 1;
+	-ms-grid-row: 2;
 	-ms-grid-column: 3;
 	grid-area: sidebar_right;
 	z-index: 2;
