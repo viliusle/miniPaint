@@ -19,6 +19,22 @@ class GUI_menu_class {
 			method: 'toggle', //'hover' (default) or 'toggle'
 			contentsource: "markup",
 		});
+
+		// Additional logic for ddsmoothmenu library:
+		// Add CSS class to primary dropdown to identify when to toggle scrolling for mobile.
+		document.getElementById('main_menu').addEventListener('click', (e) => {
+			const target = e.target;
+			if (!target || !target.parentNode) return;
+			if (target.parentNode.classList.contains('more')) {
+				var parentList = target.closest('ul');
+				var wasSelected = target.classList.contains('selected');
+				setTimeout(() => {
+					parentList.classList.toggle('expanded', !wasSelected);
+				}, 1);
+			} else if (target.tagName === 'A' && target.matches('#main_menu > ul > li > a')) {
+				target.nextElementSibling.classList.remove('expanded');
+			}
+		}, true);
 	}
 
 }
