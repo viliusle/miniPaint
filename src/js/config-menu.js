@@ -161,7 +161,10 @@ var menu_template = `
 				<li class="more">
 					<a class="trn" href="#">External</a>
 					<ul>
-						<li><a class="trn external" target="_blank" href="https://tinypng.com/">Compress PNG and JPEG</a>
+						<li><a class="trn external" target="_blank" href="https://tinypng.com">TINYPNG - compress PNG and JPEG</a>
+						<li><a class="trn external" target="_blank" href="https://www.remove.bg">REMOVE.BG - remove Image Background</a>
+						<li><a class="trn external" target="_blank" href="https://www.pngtosvg.com">PNGTOSVG - convert image to SVG</a>
+						<li><a class="trn external" target="_blank" href="https://squoosh.app">SQUOOSH - compress and compare images</a>			
 					</ul>
 				</li>
 				<li><div class="mid-line"></div></li>
