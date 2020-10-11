@@ -1,8 +1,19 @@
 .wrapper{
+	display: -ms-grid;
+	display: grid;
 	height: calc(100vh - 30px);
 	margin: 0;
-	position:relative;
+	position: relative;
 	overflow: hidden;
+
+	-ms-grid-rows: auto 1fr;
+	grid-template-rows: auto 1fr;
+	-ms-grid-columns: auto 1fr auto;
+	grid-template-columns: auto 1fr auto;
+
+	grid-template-areas:
+		"submenu submenu submenu"
+		"sidebar_left main sidebar_right";
 }
 .trn{}
 .toggle{
@@ -124,7 +135,6 @@ body .sp-preview{
 .logo{
 	position: relative;
 	display: inline-block;
-	float: left;
 	height: 30px;
 	width: 110px;
 	padding: 5px 5px 5px 36px;
@@ -173,18 +183,27 @@ body .sp-preview{
 /* ========== sub-header ==================================================== */
 
 .submenu{
-	height:40px;
+	-ms-grid-row: 1;
+	-ms-grid-column: 1;
+	-ms-grid-column-span: 3;
+	grid-area: submenu;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	background-color: rgba(255, 255, 255, 0.2);
 	background-color: var(--background-color-section);
 	overflow: hidden;
+	margin-bottom: 5px;
 }
 .attributes{
-	float: left;
 	width: calc(100% - 125px);
-	height: 30px;
 	margin-top: 5px;
-	padding: 3px 10px 0 10px;
+	margin-bottom: 5px !important;
+	padding: 3px 10px 3px 10px;
 	border: 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: nowrap;
 }
 .attributes .item{
 	display: inline-block;
@@ -214,12 +233,18 @@ body .sp-preview{
 /* ========== left sidebar ================================================== */
 
 .sidebar_left{
-	position: absolute;
-	left:0px;
-	top: 45px;
-	width: 40px;
-	padding: 0 5px;
+	-ms-grid-row: 2;
+	-ms-grid-column: 1;
+	grid-area: sidebar_left;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 	background-color: var(--background-color-section);
+	padding: 0 5px 5px 0;
+	margin-right: 5px;
+	overflow: hidden;
+	align-self: start;
+	width: 40px;
 }
 .sidebar_left .item{
 	display:block;
@@ -228,7 +253,8 @@ body .sp-preview{
 	background-image: url(images/sprites.png);
 	background-repeat: no-repeat;
 	height: 25px;
-	margin: 5px 0 5px 0;
+	width: 30px;
+	margin: 5px 0 0 5px;
 	overflow: hidden;
 	cursor: pointer;
 }
@@ -272,24 +298,28 @@ body .sp-preview{
 /* ========== right sidebar ================================================= */
 
 .sidebar_right{
-	position: absolute;
+	-ms-grid-row: 1;
+	-ms-grid-column: 3;
+	grid-area: sidebar_right;
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
-	right: 5px;
-	top: 45px;
-	width: 200px;
-	height: calc(100vh - 80px);
 	background-color: #424F5A;
 	background-color: var(--background-color);
 	transition: 0.2s;
+	overflow-x: hidden;
+	overflow-y: auto;
+	margin: 0 5px;
+	width: 200px;
 }
 .sidebar_right.active{
-	right:0 !important;
+	right: 0 !important;
 }
 .sidebar_right .block.layers{
 	flex: 1;
-	overflow-y: auto;
+}
+.sidebar_right .block.layers .content{
+	padding-bottom: 25px;
 }
 
 /* preview */
@@ -481,18 +511,22 @@ body .sp-preview{
 
 @media screen and (max-width:700px){
 	.sidebar_right{
-		right: -200px;
+		position: absolute;
+		height: 100%;
+		right: -210px;
 	}
 	.sidebar_right.active{
 		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
+		right: 0;
 	}
 }
 
 /* ========== content ======================================================= */
 
 .main_wrapper{
-	height: calc(100vh - 80px);
-	margin: 5px 210px 5px 45px;
+	-ms-grid-row: 2;
+	-ms-grid-column: 2;
+	grid-area: main;
 	overflow: hidden;
 }
 .canvas_wrapper{
@@ -580,27 +614,14 @@ canvas{
 	body{
 		padding-top:50px;
 	}
-	.main_wrapper{
-		margin-right: 5px;
-	}
 }
 @media screen and (max-width:550px){
 	.canvas_wrapper{
 		margin-left: 0px;
 	}
 }
-@media screen and (max-height: 720px){
+@media screen and (max-height: 740px){
 	.sidebar_left{
-		width: 79px;
-		padding: 4px 2px 0px 2px;
+		width: 75px;
 	}
-	.sidebar_left .item{
-		display: inline-block;
-		width: 30px;
-		margin-right: 5px;
-		margin: 1px 3px 0 3px;
-	}
-	.main_wrapper{
-		margin-left: 85px;
-	}	
 }

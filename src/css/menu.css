@@ -94,6 +94,13 @@
 	min-width:140px;
 	width:auto !important;
 	top:30px !important;
+	overflow-x: hidden;
+	overflow-y: auto;
+	max-height: calc(100vh - 60px);
+}
+.ddsmoothmenu ul li ul.expanded{
+	overflow: visible;
+	max-height: none;
 }
 .ddsmoothmenu ul li ul li{
 	display: list-item;
