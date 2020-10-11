@@ -97,6 +97,7 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	max-height: calc(100vh - 60px);
+	background-color: white;
 }
 .ddsmoothmenu ul li ul.expanded{
 	overflow: visible;
