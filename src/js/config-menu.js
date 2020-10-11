@@ -142,6 +142,15 @@ var menu_template = `
 		<li>
 			<a class="trn" href="#">Tools</a>
 			<ul>
+				<li class="more">
+					<a class="trn" href="#">External</a>
+					<ul>
+						<li><a class="trn external" target="_blank" href="https://tinypng.com">TINYPNG - compress PNG and JPEG</a>
+						<li><a class="trn external" target="_blank" href="https://www.remove.bg">REMOVE.BG - remove Image Background</a>
+						<li><a class="trn external" target="_blank" href="https://www.pngtosvg.com">PNGTOSVG - convert image to SVG</a>
+						<li><a class="trn external" target="_blank" href="https://squoosh.app">SQUOOSH - compress and compare images</a>			
+					</ul>
+				</li>
 				<li><div class="mid-line"></div></li>
 				<li><a class="trn dots" data-target="tools/borders.borders" href="#">Borders</a></li>
 				<li><a class="trn" data-target="tools/sprites.sprites" href="#">Sprites</a></li>
@@ -152,15 +161,6 @@ var menu_template = `
 				<li><a class="trn dots" data-target="tools/color_zoom.color_zoom" href="#">Color Zoom</a></li>
 				<li><a class="trn dots" data-target="tools/replace_color.replace_color" href="#">Replace Color</a></li>
 				<li><a class="trn dots" data-target="tools/restore_alpha.restore_alpha" href="#">Restore alpha</a></li>
-				<li class="more">
-					<a class="trn" href="#">External</a>
-					<ul>
-						<li><a class="trn external" target="_blank" href="https://tinypng.com">TINYPNG - compress PNG and JPEG</a>
-						<li><a class="trn external" target="_blank" href="https://www.remove.bg">REMOVE.BG - remove Image Background</a>
-						<li><a class="trn external" target="_blank" href="https://www.pngtosvg.com">PNGTOSVG - convert image to SVG</a>
-						<li><a class="trn external" target="_blank" href="https://squoosh.app">SQUOOSH - compress and compare images</a>			
-					</ul>
-				</li>
 				<li><div class="mid-line"></div></li>
 				<li><a class="trn dots" data-target="tools/settings.settings" href="#">Settings</a></li>	
 			</ul>
