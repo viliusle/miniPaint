@@ -106,48 +106,51 @@ var menu_template = `
 		<li>
 			<a class="trn" href="#">Effects</a>
 			<ul id="effects_list">
-				<li><div class="mid-line"></div></li>
-				<li class="more">
-					<a class="trn" href="#">CSS filters</a>
-					<ul>
-						<li><a class="trn dots" data-target="effects/blur.blur" href="#">Gaussian Blur</a>
-						<li><a class="trn dots" data-target="effects/brightness.brightness" href="#">Brightness</a>
-						<li><a class="trn dots" data-target="effects/contrast.contrast" href="#">Contrast</a>
-						<li><a class="trn dots" data-target="effects/grayscale.grayscale" href="#">Grayscale</a>
-						<li><a class="trn dots" data-target="effects/hue_rotate.hue_rotate" href="#">Hue Rotate</a>
-						<li><a class="trn dots" data-target="effects/negative.negative" href="#">Negative</a>
-						<li><a class="trn dots" data-target="effects/saturate.saturate" href="#">Saturate</a>
-						<li><a class="trn dots" data-target="effects/sepia.sepia" href="#">Sepia</a>
-						<li><a class="trn dots" data-target="effects/shadow.shadow" href="#">Shadow</a>
-					</ul>
-				</li>
-				<li><a class="trn dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>
-				<li><a class="trn dots" data-target="effects/blueprint.blueprint" href="#">Blueprint</a>
-				<li><a class="trn dots" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>
-				<li><a class="trn dots" data-target="effects/denoise.denoise" href="#">Denoise</a>
-				<li><a class="trn dots" data-target="effects/dither.dither" href="#">Dither</a>
-				<li><a class="trn dots" data-target="effects/dot_screen.dot_screen" href="#">Dot Screen</a>
-				<li><a class="trn dots" data-target="effects/edge.edge" href="#">Edge</a>
-				<li><a class="trn dots" data-target="effects/emboss.emboss" href="#">Emboss</a>
-				<li><a class="trn dots" data-target="effects/enrich.enrich" href="#">Enrich</a>
-				<li><a class="trn dots" data-target="effects/grains.grains" href="#">Grains</a>
-				<li><a class="trn dots" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>
-				<li><a class="trn dots" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>
-				<li><a class="trn dots" data-target="effects/night_vision.night_vision" href="#">Night Vision</a>
-				<li><a class="trn dots" data-target="effects/oil.oil" href="#">Oil</a>
-				<li><a class="trn dots" data-target="effects/pencil.pencil" href="#">Pencil</a>
-				<li><a class="trn dots" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>
-				<li><a class="trn dots" data-target="effects/solarize.solarize" href="#">Solarize</a>
-				<li><a class="trn dots" data-target="effects/tilt_shift.tilt_shift" href="#">Tilt Shift</a>
-				<li><a class="trn dots" data-target="effects/vignette.vignette" href="#">Vignette</a>
-				<li><a class="trn dots" data-target="effects/vibrance.vibrance" href="#">Vibrance</a>
-				<li><a class="trn dots" data-target="effects/vintage.vintage" href="#">Vintage</a>
-				<li><a class="trn dots" data-target="effects/zoom_blur.zoom_blur" href="#">Zoom Blur</a>
+				<li><a class="trn destructive dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/blueprint.blueprint" href="#">Blueprint</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>
+                <li><a class="trn dots" data-target="effects/brightness.brightness" href="#">Brightness</a>
+                <li><a class="trn dots" data-target="effects/contrast.contrast" href="#">Contrast</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/denoise.denoise" href="#">Denoise</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/dither.dither" href="#">Dither</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/dot_screen.dot_screen" href="#">Dot Screen</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/edge.edge" href="#">Edge</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/emboss.emboss" href="#">Emboss</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/enrich.enrich" href="#">Enrich</a>
+			    <li><a class="trn dots" data-target="effects/blur.blur" href="#">Gaussian Blur</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/grains.grains" href="#">Grains</a>
+                <li><a class="trn dots" data-target="effects/grayscale.grayscale" href="#">Grayscale</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>
+                <li><a class="trn dots" data-target="effects/hue_rotate.hue_rotate" href="#">Hue Rotate</a>
+				<li><a class="trn destructive dots title="Destructive"" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>
+                <li><a class="trn dots" data-target="effects/negative.negative" href="#">Negative</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/night_vision.night_vision" href="#">Night Vision</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/oil.oil" href="#">Oil</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/pencil.pencil" href="#">Pencil</a>
+                <li><a class="trn dots" data-target="effects/saturate.saturate" href="#">Saturate</a>
+                <li><a class="trn dots" data-target="effects/sepia.sepia" href="#">Sepia</a>
+                <li><a class="trn dots" data-target="effects/shadow.shadow" href="#">Shadow</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/solarize.solarize" href="#">Solarize</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/tilt_shift.tilt_shift" href="#">Tilt Shift</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/vignette.vignette" href="#">Vignette</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/vibrance.vibrance" href="#">Vibrance</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/vintage.vintage" href="#">Vintage</a>
+				<li><a class="trn destructive dots" title="Destructive" data-target="effects/zoom_blur.zoom_blur" href="#">Zoom Blur</a>
 			</ul>
 		</li>
 		<li>
 			<a class="trn" href="#">Tools</a>
 			<ul>
+				<li class="more">
+					<a class="trn" href="#">External</a>
+					<ul>
+						<li><a class="trn external" target="_blank" href="https://tinypng.com">TINYPNG - compress PNG and JPEG</a>
+						<li><a class="trn external" target="_blank" href="https://www.remove.bg">REMOVE.BG - remove Image Background</a>
+						<li><a class="trn external" target="_blank" href="https://www.pngtosvg.com">PNGTOSVG - convert image to SVG</a>
+						<li><a class="trn external" target="_blank" href="https://squoosh.app">SQUOOSH - compress and compare images</a>			
+					</ul>
+				</li>
 				<li><div class="mid-line"></div></li>
 				<li><a class="trn dots" data-target="tools/borders.borders" href="#">Borders</a></li>
 				<li><a class="trn" data-target="tools/sprites.sprites" href="#">Sprites</a></li>
@@ -158,15 +161,6 @@ var menu_template = `
 				<li><a class="trn dots" data-target="tools/color_zoom.color_zoom" href="#">Color Zoom</a></li>
 				<li><a class="trn dots" data-target="tools/replace_color.replace_color" href="#">Replace Color</a></li>
 				<li><a class="trn dots" data-target="tools/restore_alpha.restore_alpha" href="#">Restore alpha</a></li>
-				<li class="more">
-					<a class="trn" href="#">External</a>
-					<ul>
-						<li><a class="trn external" target="_blank" href="https://tinypng.com">TINYPNG - compress PNG and JPEG</a>
-						<li><a class="trn external" target="_blank" href="https://www.remove.bg">REMOVE.BG - remove Image Background</a>
-						<li><a class="trn external" target="_blank" href="https://www.pngtosvg.com">PNGTOSVG - convert image to SVG</a>
-						<li><a class="trn external" target="_blank" href="https://squoosh.app">SQUOOSH - compress and compare images</a>			
-					</ul>
-				</li>
 				<li><div class="mid-line"></div></li>
 				<li><a class="trn dots" data-target="tools/settings.settings" href="#">Settings</a></li>	
 			</ul>

@@ -246,6 +246,8 @@ body .sp-preview{
 	overflow: hidden;
 	align-self: start;
 	width: 40px;
+	overflow-y: auto;
+	max-height: 100%;
 }
 .sidebar_left .item{
 	display:block;
@@ -624,5 +626,10 @@ canvas{
 @media screen and (max-height: 740px){
 	.sidebar_left{
 		width: 75px;
+	}
+}
+@media screen and (max-height:450px){
+	.sidebar_left{
+		width: 88px;
 	}
 }

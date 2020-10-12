@@ -97,6 +97,7 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	max-height: calc(100vh - 60px);
+	background-color: white;
 }
 .ddsmoothmenu ul li ul.expanded{
 	overflow: visible;
@@ -170,6 +171,9 @@
 	font-size: 12px;
 	margin-left: 8px;
 	right:10px;
+}
+.ddsmoothmenu a.destructive {
+	background-color: rgba(0,0,0,0.08);
 }
 
 @media screen and (max-width:700px){
