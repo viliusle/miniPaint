@@ -155,6 +155,9 @@
 	flex-shrink: 1;
 	color: var(--menu-dropdown-text-muted-color);
 }
+.ddsmoothmenu a.destructive {
+	background-color: rgba(0,0,0,0.08);
+}
 
 .mobile_menu {
 	display: none;
