@@ -81,7 +81,7 @@ class GUI_menu_class {
 		} else {
 			return `
 				<li>
-					<a id="main_menu_${ level }_${ index }" role="menuitem" aria-haspopup="${ (!!definition.children) + '' }"
+					<a id="main_menu_${ level }_${ index }" role="menuitem" tabindex="-1" aria-haspopup="${ (!!definition.children) + '' }"
 						href="${ definition.href ? definition.href : 'javascript:void(0)' }"
 						target="${ definition.href ? '_blank' : '_self' }"
 						data-level="${ level }" data-index="${ index }">
@@ -203,6 +203,9 @@ class GUI_menu_class {
 					opener.click();
 					opener.focus();
 				}
+				else if (event.key === 'Tab') {
+					this.close_child_dropdowns(0);
+				}
 			}
 		}
 	}
@@ -292,6 +295,7 @@ class GUI_menu_class {
 		let dropdownElement = document.createElement('ul');
 		dropdownElement.className = 'menu_dropdown';
 		dropdownElement.role = 'menu';
+		dropdownElement.tabIndex = 0;
 		dropdownElement.setAttribute('aria-labelledby', 'main_menu_' + level + '_' + index);
 		let dropdownTemplate = '';
 		for (let i = 0; i < children.length; i++) {
