@@ -151,6 +151,12 @@ class GUI_menu_class {
 						activeElement.click();
 					}
 				}
+				else if (event.key === 'Home') {
+					menuParent.querySelector(`[data-index="0"]`).focus();
+				}
+				else if (event.key === 'End') {
+					menuParent.querySelector(`[data-index="${ menuParent.querySelectorAll('[data-index]').length - 1 }"]`).focus();
+				}
 				else if ([' ', 'Enter'].includes(event.key)) {
 					event.preventDefault();
 					activeElement.click();
@@ -179,20 +185,42 @@ class GUI_menu_class {
 					nextLink.focus();
 				}
 				else if (['Right', 'ArrowRight'].includes(event.key)) {
-					const menuBarLinkIndex = parseInt(this.dropdownStack[0].opener.getAttribute('data-index'), 10) || 0;
-					let nextLink = this.menuBarNode.querySelector(`[data-index="${ menuBarLinkIndex + 1 }"]`);
-					if (!nextLink) {
-						nextLink = this.menuBarNode.querySelector(`[data-index="0"]`);
+					if (activeElement.getAttribute('aria-haspopup') === 'true') {
+						activeElement.click();
 					}
-					nextLink.click();
+					else if (this.dropdownStack.length > 1) {
+						const opener = this.dropdownStack[linkLevel - 1].opener;
+						opener.click();
+						opener.focus();
+					}
+					else {
+						const menuBarLinkIndex = parseInt(this.dropdownStack[0].opener.getAttribute('data-index'), 10) || 0;
+						let nextLink = this.menuBarNode.querySelector(`[data-index="${ menuBarLinkIndex + 1 }"]`);
+						if (!nextLink) {
+							nextLink = this.menuBarNode.querySelector(`[data-index="0"]`);
+						}
+						nextLink.click();
+					}
 				}
 				else if (['Left', 'ArrowLeft'].includes(event.key)) {
-					const menuBarLinkIndex = parseInt(this.dropdownStack[0].opener.getAttribute('data-index'), 10) || 0;
-					let previousLink = this.menuBarNode.querySelector(`[data-index="${ menuBarLinkIndex - 1 }"]`);
-					if (!previousLink) {
-						previousLink = this.menuBarNode.querySelector(`[data-index="${ this.menuBarNode.querySelectorAll('[data-index]').length - 1 }"]`);
+					if (this.dropdownStack.length > 1) {
+						const opener = this.dropdownStack[linkLevel - 1].opener;
+						opener.click();
+						opener.focus();
+					} else {
+						const menuBarLinkIndex = parseInt(this.dropdownStack[0].opener.getAttribute('data-index'), 10) || 0;
+						let previousLink = this.menuBarNode.querySelector(`[data-index="${ menuBarLinkIndex - 1 }"]`);
+						if (!previousLink) {
+							previousLink = this.menuBarNode.querySelector(`[data-index="${ this.menuBarNode.querySelectorAll('[data-index]').length - 1 }"]`);
+						}
+						previousLink.click();
 					}
-					previousLink.click();
+				}
+				else if (event.key === 'Home') {
+					menuParent.querySelector(`[data-index="0"]`).focus();
+				}
+				else if (event.key === 'End') {
+					menuParent.querySelector(`[data-index="${ this.dropdownStack[linkLevel - 1].children.length - 1 }"]`).focus();
 				}
 				else if ([' ', 'Enter'].includes(event.key)) {
 					event.preventDefault();
