@@ -5,6 +5,7 @@
 
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
+import Help_translate_class from './../../modules/help/translate.js';
 
 /**
  * class responsible for rendering main menu
@@ -18,6 +19,8 @@ class GUI_menu_class {
 		this.menuBarNode = null;
 		this.lastFocusedMenuBarLink = 0;
 		this.dropdownStack = [];
+
+		this.Help_translate = new Help_translate_class();
 	}
 
 	render_main() {
@@ -66,7 +69,7 @@ class GUI_menu_class {
 		return `
 			<li>
 				<a id="main_menu_0_${index}" role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="false"
-					href="javascript:void(0)" data-level="0" data-index="${ index }"><span class="name">${ definition.name }</span></a>
+					href="javascript:void(0)" data-level="0" data-index="${ index }"><span class="name trn">${ definition.name }</span></a>
 			</li>
 		`.trim();
 	}
@@ -85,7 +88,7 @@ class GUI_menu_class {
 						href="${ definition.href ? definition.href : 'javascript:void(0)' }"
 						target="${ definition.href ? '_blank' : '_self' }"
 						data-level="${ level }" data-index="${ index }">
-						<span class="name">${ definition.name }${ definition.ellipsis ? ' ...' : '' }</span>
+						<span class="name"><span class="trn">${ definition.name }</span>${ definition.ellipsis ? ' ...' : '' }</span>
 						${ !!definition.shortcut ? `
 							<span class="shortcut"><span class="sr_only">Shortcut Key:</span> ${ definition.shortcut }</span>
 						` : `` }
@@ -332,6 +335,10 @@ class GUI_menu_class {
 		dropdownElement.innerHTML = dropdownTemplate;
 
 		this.menuContainer.appendChild(dropdownElement);
+
+		if (config.LANG != 'en') {
+			this.Help_translate.translate(config.LANG, this.menuContainer);
+		}
 
 		if (focusAfterCreation) {
 			dropdownElement.querySelector('a').focus();

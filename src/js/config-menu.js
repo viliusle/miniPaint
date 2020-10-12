@@ -195,7 +195,7 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Color Correction',
+				name: 'Color Corrections',
 				ellipsis: true,
 				target: 'image/color_corrections.color_corrections'
 			},
