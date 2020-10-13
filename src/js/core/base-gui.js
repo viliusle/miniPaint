@@ -165,10 +165,9 @@ class Base_gui_class {
 		window.addEventListener('resize', function (event) {
 			//resize
 			_this.prepare_canvas();
-			_this.check_canvas_offset();
 			config.need_render = true;
 		}, false);
-		_this.check_canvas_offset();
+		this.check_canvas_offset();
 	}
 
 	check_canvas_offset() {
@@ -206,6 +205,8 @@ class Base_gui_class {
 		//change wrapper dimensions
 		document.getElementById('canvas_wrapper').style.width = w + 'px';
 		document.getElementById('canvas_wrapper').style.height = h + 'px';
+
+		this.check_canvas_offset();
 	}
 
 	load_saved_changes() {

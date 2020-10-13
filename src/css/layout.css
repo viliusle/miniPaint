@@ -531,6 +531,9 @@ body .sp-preview{
 	-ms-grid-column: 2;
 	grid-area: main;
 	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 .canvas_wrapper{
 	position:relative;
