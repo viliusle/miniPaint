@@ -124,34 +124,23 @@ class Base_gui_class {
 		var _this = this;
 
 		//menu events
-		var targets = document.querySelectorAll('#main_menu a');
-		for (var i = 0; i < targets.length; i++) {
-			if (targets[i].dataset.target == undefined)
-				continue;
-			targets[i].addEventListener('click', function (event) {
-				var parts = this.dataset.target.split('.');
-				var module = parts[0];
-				var function_name = parts[1];
-				var param = parts[2];
+		this.GUI_menu.on('select_target', (target) => {
+			var parts = target.split('.');
+			var module = parts[0];
+			var function_name = parts[1];
+			var param = parts[2];
 
-				//close menu
-				var menu = document.querySelector('#main_menu .selected');
-				if (menu != undefined) {
-					menu.click();
-				}
-
-				//call module
-				if (_this.modules[module] == undefined) {
-					alertify.error('Modules class not found: ' + module);
-					return;
-				}
-				if (_this.modules[module][function_name] == undefined) {
-					alertify.error('Module function not found. ' + module + '.' + function_name);
-					return;
-				}
-				_this.modules[module][function_name](param);
-			});
-		}
+			//call module
+			if (this.modules[module] == undefined) {
+				alertify.error('Modules class not found: ' + module);
+				return;
+			}
+			if (this.modules[module][function_name] == undefined) {
+				alertify.error('Module function not found. ' + module + '.' + function_name);
+				return;
+			}
+			this.modules[module][function_name](param);
+		});
 
 		//registerToggleAbility
 		var targets = document.querySelectorAll('.toggle');

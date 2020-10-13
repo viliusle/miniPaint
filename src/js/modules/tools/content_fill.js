@@ -22,7 +22,7 @@ class Tools_contentFill_class {
 		}
 
 		var settings = {
-			title: 'Content fill',
+			title: 'Content Fill',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h, canvasElement) {
 				canvas_preview.clearRect(0, 0, w, h);

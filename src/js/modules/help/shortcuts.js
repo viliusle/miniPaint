@@ -11,11 +11,11 @@ class Help_shortcuts_class {
 		var settings = {
 			title: 'Keyboard Shortcuts',
 			params: [
-				{title: "F9", value: 'Quick save'},
-				{title: "F10", value: 'Quick load'},
+				{title: "F9", value: 'Quick Save'},
+				{title: "F10", value: 'Quick Load'},
 				{title: "S", value: 'Save'},
 				{title: "T", value: 'Trim'},
-				{title: "F", value: 'Auto adjust colors'},
+				{title: "F", value: 'Auto Adjust Colors'},
 				{title: "G", value: 'Grid on/off'},
 				{title: "L", value: 'Rotate left'},
 				{title: "N", value: 'New layer'},
@@ -23,7 +23,7 @@ class Help_shortcuts_class {
 				{title: "Scroll up", value: 'Zoom in'},
 				{title: "Scroll down", value: 'Zoom out'},
 				{title: "CTRL + Z", value: 'Undo'},
-				{title: "CTRL + A", value: 'Select all'},
+				{title: "CTRL + A", value: 'Select All'},
 				{title: "CTRL + V", value: 'Paste'},
 			],
 		};
