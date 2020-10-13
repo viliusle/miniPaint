@@ -46,7 +46,7 @@ See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build
 See [Wiki](https://github.com/viliusle/miniPaint/wiki)
 
 ## License
-MIT License
+MIT License.
 
 ## Support
 Please use the GitHub issues for support, features, issues or use mail www.viliusl@gmail.com for contacts.
