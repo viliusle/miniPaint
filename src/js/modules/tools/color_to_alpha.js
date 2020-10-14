@@ -21,7 +21,7 @@ class Tools_colorToAlpha_class {
 		}
 
 		var settings = {
-			title: 'Color to alpha',
+			title: 'Color to Alpha',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);

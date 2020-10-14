@@ -21,7 +21,7 @@ class Help_translate_class {
 	}
 
 	//change language
-	translate(lang_code) {
+	translate(lang_code, element) {
 		if (lang_code == undefined) {
 			lang_code = this.Helper.getCookie('language');
 			if (!lang_code) {
@@ -38,7 +38,7 @@ class Help_translate_class {
 
 		if (first[lang_code] != undefined || lang_code == 'en') {
 			//translate
-			$('body').translate({lang: lang_code, t: this.translations});
+			$(element || 'body').translate({lang: lang_code, t: this.translations});
 			config.LANG = lang_code;
 		}
 		else {

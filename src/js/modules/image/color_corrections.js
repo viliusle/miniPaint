@@ -23,7 +23,7 @@ class Image_colorCorrections_class {
 		}
 
 		var settings = {
-			title: 'Color corrections',
+			title: 'Color Corrections',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);
