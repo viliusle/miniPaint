@@ -49,7 +49,7 @@ var instance = null;
 var template = `
 	<button type="button" class="close" id="popup_close">&times;</button>
 	<div id="pretitle_area"></div>
-	<span class="grey right" id="popup_comment"></span>
+	<span class="text_muted right" id="popup_comment"></span>
 	<h2 class="trn" id="popup_title"></h2>
 	<div id="dialog_content">
 		<div id="preview_content"></div>
