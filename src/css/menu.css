@@ -140,7 +140,7 @@
 	width: 10px;
 	height: 10px;
 	margin-left: 5px;
-	background: var(--sprites-url) no-repeat -700px 0;
+	background: var(--sprites-url-active) no-repeat -700px 0;
 	opacity: 0.3;
 }
 .main_menu > ul.menu_dropdown > li > a > * {
