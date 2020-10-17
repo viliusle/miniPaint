@@ -43,6 +43,9 @@
 .grey{
 	color:grey;
 }
+.text_muted{
+	color: var(--text-color-muted);
+}
 .external{
 	padding-right: 15px;
 }
@@ -52,7 +55,7 @@
 	width:10px;
 	height:10px;
 	margin-left: 5px;
-	background: url(images/sprites.png) no-repeat -700px 0;
+	background: var(--sprites-url) no-repeat -700px 0;
 	opacity: 0.3;
 }
 .noselect {
@@ -66,7 +69,7 @@
 .block{
 	position: relative;
 	background-color: rgba(255, 255, 255, 0.2);
-	background-color: var(--background-color-area);
+	background-color: var(--area-background-color);
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	border: 1px solid var(--border-color);
 	margin-bottom: 10px;
@@ -74,7 +77,7 @@
 }
 .sidebar_right .block{
 	background-color: #68727b;
-	background-color: var(--background-color-section);
+	background-color: var(--area-background-color);
 }
 .block:last-child{
 	margin-bottom: 0;
@@ -85,7 +88,7 @@
 	margin: 0;
 	font-size: 110%;
 	background-color: rgba(255, 255, 255, 0.3);
-	background-color: var(--background-color-header);
+	background-color: var(--header-background-color);
 	border-bottom: #555;
 }
 .block.toggled h2, .block h2.toggled:after{
@@ -100,13 +103,13 @@
 	right: 10px;
 	top: 10px;
 	border-style: solid;
-	border-width: 0 5px 6px 5px;
-	border-color: transparent transparent #333333 transparent;
+	border-width: 0 4px 5px 4px;
+	border-color: transparent transparent var(--text-color-muted) transparent;
 }
 .block h2.toggled:before{
 	/* icon */
-	border-width: 6px 5px 0 5px;
-	border-color: #333333 transparent transparent transparent;
+	border-width: 5px 4px 0 4px;
+	border-color: var(--text-color-muted) transparent transparent transparent;
 }
 .block .content{
 	padding:5px;
@@ -152,7 +155,7 @@ body .sp-preview{
 	top: 0;
 	width: 31px;
 	height: 30px;
-	background: url(images/sprites.png) -50px -100px no-repeat;
+	background: var(--sprites-url) -50px -100px no-repeat;
 }
 .logo:hover:after{
 	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);
@@ -191,7 +194,7 @@ body .sp-preview{
 	flex-direction: row;
 	align-items: center;
 	background-color: rgba(255, 255, 255, 0.2);
-	background-color: var(--background-color-section);
+	background-color: var(--section-background-color);
 	overflow: hidden;
 	margin-bottom: 5px;
 }
@@ -217,9 +220,8 @@ body .sp-preview{
 .attributes button{
 	display: inline-block;
 	padding: 3px 10px;
-	border: 1px solid #444;
-	border-color: var(--border-color);
-	background-color: var(--background-color-button);
+	border: 1px solid var(--border-color);
+	background-color: var(--button-background-color);
 	margin-right: 5px;
 }
 .attributes button:hover{
@@ -229,6 +231,7 @@ body .sp-preview{
 .attributes button.active{
 	background-color: #419147;
 	background-color: var(--background-color-active);
+	color: var(--text-color-active);
 }
 
 /* ========== left sidebar ================================================== */
@@ -240,7 +243,7 @@ body .sp-preview{
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	background-color: var(--background-color-section);
+	background-color: var(--section-background-color);
 	padding: 0 5px 5px 0;
 	margin-right: 5px;
 	overflow: hidden;
@@ -252,8 +255,8 @@ body .sp-preview{
 .sidebar_left .item{
 	display:block;
 	background-color: rgba(255, 255, 255, 0.2);
-	background-color: var(--background-color-area);
-	background-image: url(images/sprites.png);
+	background-color: var(--area-background-color);
+	background-image: var(--sprites-url);
 	background-repeat: no-repeat;
 	height: 25px;
 	width: 30px;
@@ -266,8 +269,9 @@ body .sp-preview{
 	background-color: var(--background-color-hover);
 }
 .sidebar_left .item.active{
-	background-color: #419147;
 	background-color: var(--background-color-active);
+	background-image: var(--sprites-url-active);
+	color: var(--text-color-active);
 }
 
 .sidebar_left .select{ background-position: -342px 2px; }
@@ -374,10 +378,10 @@ body .sp-preview{
 .main_color_rgb input{
 	width: 70px;
 }
-.main_color_rgb .red{ color:#aa0000; }
-.main_color_rgb .green{ color:#00aa00; }
-.main_color_rgb .blue{ color:#0000aa; }
-.main_color_rgb .alpha{ color: #333333; }
+.main_color_rgb .red{ color: var(--text-color-red); }
+.main_color_rgb .green{ color: var(--text-color-green); }
+.main_color_rgb .blue{ color: var(--text-color-blue); }
+.main_color_rgb .alpha{ color: var(--text-color-muted); }
 
 .color_hex{
 	width: calc(100% - 60px);
@@ -399,7 +403,7 @@ body .sp-preview{
 	border:1px solid #444;
 	border-color: var(--border-color);
 	text-decoration:none;
-	color:#000000;
+	color:var(--text-color);
 	font-size:12px;
 }
 .layer_add{
@@ -409,6 +413,7 @@ body .sp-preview{
 	background-color: var(--background-color-active);
 	border:1px solid #444;
 	border-color: var(--border-color);
+	color: var(--text-color-active);
 	cursor:pointer;
 	text-decoration:none;
 }
@@ -421,19 +426,19 @@ body .sp-preview{
 	height:19px;
 	overflow:hidden;
 	background-color:#989898;
-	background-color: var(--background-color-area);
+	background-color: var(--area-background-color);
 	border:1px solid #393939;
 	border-color: var(--border-color);
 	border-radius:3px;
 	cursor:pointer;
 	overflow:hidden;
 	font-size: 12px;
-	color:#333333;
+	color:var(--text-color);
 	white-space: nowrap;
 }
 .layers_list .item.active .layer_name{
-	background-color: #419147;
 	background-color: var(--background-color-active);
+	color: var(--text-color-active);
 }
 .layers_list .visibility{
 	float:left;
@@ -442,7 +447,7 @@ body .sp-preview{
 	margin-right: 5px;
 	width:20px;
 	height:19px;
-	background: url('images/sprites.png') no-repeat -148px -99px;
+	background: var(--sprites-url) no-repeat -148px -99px;
 	opacity:0.1;
 	filter: drop-shadow(0px 0px 2px white);
 }
@@ -454,7 +459,7 @@ body .sp-preview{
 	width:12px;
 	height:19px;
 	margin-left: 5px;
-	background: url('images/sprites.png') no-repeat -100px -96px;
+	background: var(--sprites-url) no-repeat -100px -96px;
 }
 /* filters */
 .layers_list .filters{
@@ -502,14 +507,15 @@ body .sp-preview{
 .block.details button.reset{
 	width: 25px;
 	overflow: hidden;
-	opacity: 0.3;
-	background-image: url(images/sprites.png);
+	opacity: 0.5;
+	background-image: var(--sprites-url);
 	background-repeat: no-repeat;
 	background-position: -747px 2px;
 	color: transparent;
 }
 .block.details button.active{
-	background-color:  var(--background-color-active);
+	background-color: var(--background-color-active);
+	color: var(--text-color-active);
 }
 
 @media screen and (max-width:700px){
