@@ -158,31 +158,17 @@ body .sp-preview{
 	background: var(--sprites-url) -50px -100px no-repeat;
 }
 .logo:hover:after{
-	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+	left: 2px;
 }
 .about-logo{
 	margin-left:22%;
-	animation:shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);;
 }
 .about-name{
 	font-size:15px;
 	color:#006900;
 	font-weight:bold;
 }
-@keyframes shake{
-	10%, 90%{
-		transform: translate(2px, 0px);
-	}
-	20%, 80%{
-		transform: translate(5px 0px);
-	}
-	30%, 50%, 70%{
-		transform: translate(0px 0px);
-	}
-	40%, 60%{
-		transform: translate(6px 0px);
-	}
-}
+
 /* ========== sub-header ==================================================== */
 
 .submenu{
@@ -449,7 +435,6 @@ body .sp-preview{
 	height:19px;
 	background: var(--sprites-url) no-repeat -148px -99px;
 	opacity:0.1;
-	filter: drop-shadow(0px 0px 2px white);
 }
 .layers_list .visible{ opacity:0.4; }
 .layers_list .delete{
