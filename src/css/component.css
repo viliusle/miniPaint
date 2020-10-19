@@ -1,0 +1,306 @@
+/**************************\
+| UI Color Picker Gradient |
+\**************************/
+
+.ui_color_picker_gradient {
+    padding: 0 0 80% 0;
+    position: relative;
+    width: 100%;
+}
+
+.ui_color_picker_gradient .primary_pick {
+    position: absolute;
+    left: 86%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: white;
+}
+
+.ui_color_picker_gradient .secondary_pick {
+    position: absolute;
+    left: 0;
+    right: 17%;
+    top: 0;
+    bottom: 0;
+    border: 1px solid var(--border-color);
+    background: green;
+}
+
+.ui_color_picker_gradient .secondary_pick:focus {
+    outline: 0;
+    border: 1px solid var(--input-border-color-active);
+}
+
+.ui_color_picker_gradient .secondary_pick .saturation_gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to right, #fff, rgba(204, 154, 129, 0));
+}
+
+.ui_color_picker_gradient .secondary_pick .value_gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to top, #000, rgba(204, 154, 129, 0));
+}
+
+.ui_color_picker_gradient .secondary_pick .handle {
+    position: absolute;
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: auto;
+    pointer-events: none;
+}
+
+.ui_color_picker_gradient .secondary_pick .handle:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    height: 3px;
+    width: 3px;
+    border: 4px solid #999;
+    border-radius: 1000px;
+}
+
+.ui_color_picker_gradient .secondary_pick .handle:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    height: 5px;
+    width: 5px;
+    border: 2px solid white;
+    border-radius: 1000px;
+}
+
+/****************\
+| UI Input Group |
+\****************/
+
+.ui_input_group {
+    display: flex;
+    flex-direction: row;
+    min-height: 24px;
+    margin: 7.5px 0;
+    width: 100%;
+}
+.ui_input_group:first-child {
+    margin-top: 0;
+}
+.ui_input_group:last-child {
+    margin-bottom: 0;
+}
+.ui_input_group > input,
+.ui_input_group > .ui_range {
+    border-radius: 0;
+    height: auto;
+    min-width: 0;
+}
+.ui_input_group > :first-child {
+    border-radius: var(--input-border-radius) 0 0 var(--input-border-radius);
+}
+.ui_input_group > :last-child {
+    border-radius: 0 var(--input-border-radius) var(--input-border-radius) 0;
+}
+.ui_input_group > label {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--section-background-color);
+    border-right: 0;
+    margin: 0;
+    padding: 0 7.5px;
+}
+.ui_input_group > .ui_range + input {
+    margin-left: -1px;
+}
+
+.ui_input_grid {
+    margin: 7.5px auto;
+}
+.ui_input_grid:first-child {
+    margin-top: 0;
+}
+.ui_input_grid:last-child {
+    margin-bottom: 0;
+}
+.ui_input_grid > .ui_input_group {
+    margin: -1px 0;
+}
+.ui_input_grid > .ui_input_group > :first-child,
+.ui_input_grid > .ui_input_group > :last-child {
+    border-radius: 0;
+}
+.ui_input_grid > .ui_input_group:first-child {
+    margin-top: 0;
+}
+.ui_input_grid > .ui_input_group:first-child > :first-child {
+    border-radius: var(--input-border-radius) 0 0 0;
+}
+.ui_input_grid > .ui_input_group:first-child > :last-child {
+    border-radius: 0 var(--input-border-radius) 0 0;
+}
+.ui_input_grid > .ui_input_group:last-child {
+    margin-bottom: 0;
+}
+.ui_input_grid > .ui_input_group:last-child > :first-child {
+    border-radius: 0 0 0 var(--input-border-radius);
+}
+.ui_input_grid > .ui_input_group:last-child > :last-child {
+    border-radius: 0 0 var(--input-border-radius) 0;
+}
+
+/**********\
+| UI Range |
+\**********/
+
+:root {
+    --range-handle-width: 18px;
+}
+
+.ui_range {
+    display: flex;
+    flex-direction: row;
+    background: var(--input-background-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 1000px;
+    height: 18px;
+    overflow: visible;
+    outline: 0;
+    padding: 0 calc(var(--range-handle-width) / 2);
+    position: relative;
+    width: 100%;
+}
+.ui_range:focus {
+    border-color: var(--input-border-color-active);
+    z-index: 1;
+}
+
+.ui_range.active {
+    cursor: col-resize;
+}
+
+.ui_range .padded_track {
+    position: absolute;
+    left: calc(var(--range-handle-width) / 2);
+    right: calc(var(--range-handle-width) / 2);
+    top: 0;
+    bottom: 0;
+}
+
+.ui_range .bar {
+    overflow: visible;
+    position: relative;
+    width: 0%;
+}
+
+.ui_range .handle {
+    background: var(--input-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 1000px;
+    box-sizing: border-box;
+    cursor: col-resize;
+    display: block;
+    height: 18px;
+    width: var(--range-handle-width);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+}
+
+.ui_range.color_picker .handle {
+    background: none;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    top: 0;
+    bottom: 0;
+    transform: translateX(50%);
+}
+
+.ui_range.color_picker .handle::before {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid white;
+}
+.ui_range.color_picker .handle::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid black;
+}
+.ui_range.color_picker .handle:hover::before {
+    border-top-color: #eaeaea;
+}
+.ui_range.color_picker .handle:hover::after {
+    border-bottom-color: #222;
+}
+
+.ui_range.vertical {
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    width: 18px;
+    padding: calc(var(--range-handle-width) / 2) 0;
+}
+
+.ui_range.vertical.active {
+    cursor: row-resize;
+}
+
+.ui_range.vertical .padded_track {
+    left: 0;
+    right: 0;
+    top: calc(var(--range-handle-width) / 2);
+    bottom: calc(var(--range-handle-width) / 2);
+}
+
+.ui_range.vertical .bar {
+    width: 100%;
+    height: 0%;
+}
+
+.ui_range.vertical .handle {
+    transform: translate(50%, -50%);
+    top: 0;
+    right: 50%;
+    cursor: row-resize;
+}
+
+.ui_range.vertical.color_picker_thin {
+    padding: 1px 0;
+    border-radius: 0;
+    width: 100%;
+}
+
+.ui_range.vertical.color_picker_thin .padded_track {
+    top: 1px;
+    bottom: 1px;
+}
+
+.ui_range.vertical.color_picker_thin .handle  {
+    border-radius: 0;
+    width: 100%;
+    height: 5px;
+}

@@ -1,0 +1,16 @@
+
+.label_width_character {
+    width: 100%;
+    max-width: 1.8rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.label_width_small {
+    width: 100%;
+    max-width: 4rem;
+    overflow: hidden;
+}
+
+.text_red { color: var(--text-color-red); }
+.text_green { color: var(--text-color-green); }
+.text_blue { color: var(--text-color-blue); }

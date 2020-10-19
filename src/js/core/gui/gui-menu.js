@@ -99,7 +99,7 @@ class GUI_menu_class {
 	}
 
 	on_mouse_down_body(event) {
-		const target = event.touches ? event.touches[0].target : event.target;
+		const target = event.touches && event.touches.length > 0 ? event.touches[0].target : event.target;
 
 		// Clicked outside of menu; close dropdowns.
 		if (target && !this.menuContainer.contains(target)) {

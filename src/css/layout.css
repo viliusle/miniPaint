@@ -74,6 +74,7 @@
 	border: 1px solid var(--border-color);
 	margin-bottom: 10px;
 	user-select: none;
+	border-radius: 4px;
 }
 .sidebar_right .block{
 	background-color: #68727b;
@@ -84,12 +85,13 @@
 }
 .block h2{
 	position: relative;
-	padding: 2px 5px;
+	padding: 2px 5px 2px 8px;
 	margin: 0;
 	font-size: 110%;
 	background-color: rgba(255, 255, 255, 0.3);
 	background-color: var(--header-background-color);
 	border-bottom: #555;
+	border-radius: 4px 4px 0 0;
 }
 .block.toggled h2, .block h2.toggled:after{
 	border: none;
@@ -112,7 +114,7 @@
 	border-color: var(--text-color-muted) transparent transparent transparent;
 }
 .block .content{
-	padding:5px;
+	padding: 7.5px 5px;
 }
 .error{
 	padding:20px;
@@ -338,9 +340,6 @@ body .sp-preview{
 	cursor: pointer;
 	margin: 5px;
 }
-.colors .content{
-	margin-top: 10px;
-}
 .main_color_alt{
 	border:1px solid #393939;
 	margin-top:10px;
@@ -350,23 +349,11 @@ body .sp-preview{
 .main_color_rgb{
 	margin-top:10px;
 }
-.main_color_rgb div{
-	display: inline-block;
-	width: calc(50% - 3px);
-	vertical-align: top;
-}
 .main_color_rgb span, .hex{
 	display: inline-block;
 	font-weight: bold;
 	width: 50px;
 }
-.main_color_rgb input{
-	width: 70px;
-}
-.main_color_rgb .red{ color: var(--text-color-red); }
-.main_color_rgb .green{ color: var(--text-color-green); }
-.main_color_rgb .blue{ color: var(--text-color-blue); }
-.main_color_rgb .alpha{ color: var(--text-color-muted); }
 
 .color_hex{
 	width: calc(100% - 60px);

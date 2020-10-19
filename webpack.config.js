@@ -53,7 +53,7 @@ module.exports = {
 	],
 	devtool: "cheap-module-source-map",
 	devServer: {
-		//host: '0.0.0.0',
+		host: '0.0.0.0',
 		contentBase: "./",
 		compress: true,
 	}
