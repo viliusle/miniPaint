@@ -110,7 +110,10 @@ class Brush_class extends Base_tools_class {
 		//detect line size
 		var size = params.size;
 		var new_size = size;
-		if (params.smart_brush == true) {
+		/*if(typeof e.pressure !== "undefined"){ // needs testing !!!
+			new_size = size * e.pressure * 2; //e.pressure has range [0 - 1]
+		}
+		else*/ if (params.smart_brush == true) {
 			new_size = size + size / max_speed * mouse.speed_average * power;
 			new_size = Math.max(new_size, size / 4);
 			new_size = Math.round(new_size);
