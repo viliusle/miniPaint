@@ -137,22 +137,32 @@ class Helper_class {
 		return Math.round(px * 0.75);
 	}
 
+	hex(x) {
+		x = parseInt(x);
+		return ("0" + x.toString(16)).slice(-2);
+	}
+
+	hex_set_hsl(hex, newHsl) {
+		const rgb = this.hexToRgb(hex);
+		const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+		if ('h' in newHsl) {
+			hsl.h = newHsl.h;
+		}
+		if ('s' in newHsl) {
+			hsl.s = newHsl.s;
+		}
+		if ('l' in newHsl) {
+			hsl.l = newHsl.l;
+		}
+		return this.hslToHex(hsl.h, hsl.s, hsl.l);
+	}
+
 	rgbToHex(r, g, b) {
 		if (r > 255 || g > 255 || b > 255)
 			throw "Invalid color component";
 		var tmp = ((r << 16) | (g << 8) | b).toString(16);
 
 		return "#" + ("000000" + tmp).slice(-6);
-	}
-
-	rgb2hex_all(rgb) {
-		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-		return "#" + this.hex(rgb[1]) + this.hex(rgb[2]) + this.hex(rgb[3]);
-	}
-
-	hex(x) {
-		x = parseInt(x);
-		return ("0" + x.toString(16)).slice(-2);
 	}
 
 	hexToRgb(hex) {
@@ -174,21 +184,6 @@ class Helper_class {
 		};
 	}
 
-	hex_set_hsl(hex, newHsl) {
-		const rgb = this.hexToRgb(hex);
-		const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
-		if ('h' in newHsl) {
-			hsl.h = newHsl.h;
-		}
-		if ('s' in newHsl) {
-			hsl.s = newHsl.s;
-		}
-		if ('l' in newHsl) {
-			hsl.l = newHsl.l;
-		}
-		return this.hslToHex(hsl.h, hsl.s, hsl.l);
-	}
-
 	hslToHex(h, s, l) {
 		const rgb = this.hslToRgb(h, s, l);
 		return this.rgbToHex(rgb.r, rgb.g, rgb.b);
@@ -197,106 +192,6 @@ class Helper_class {
 	hsvToHex(h, s, v) {
 		const rgb = this.hsvToRgb(h, s, v);
 		return this.rgbToHex(rgb.r, rgb.g, rgb.b);
-	}
-
-	remove_selection() {
-		if (window.getSelection) {
-			if (window.getSelection().empty) // Chrome
-				window.getSelection().empty();
-			else if (window.getSelection().removeAllRanges) // Firefox
-				window.getSelection().removeAllRanges();
-		}
-		else if (document.selection) // IE?
-			document.selection.empty();
-	}
-
-	//credits: richard maloney 2006
-	darkenColor(color, v) {
-		if (color.length > 6) {
-			color = color.substring(1, color.length);
-		}
-		var rgb = parseInt(color, 16);
-		var r = Math.abs(((rgb >> 16) & 0xFF) + v);
-		if (r > 255)
-			r = r - (r - 255);
-		var g = Math.abs(((rgb >> 8) & 0xFF) + v);
-		if (g > 255)
-			g = g - (g - 255);
-		var b = Math.abs((rgb & 0xFF) + v);
-		if (b > 255)
-			b = b - (b - 255);
-		r = Number(r < 0 || isNaN(r)) ? 0 : ((r > 255) ? 255 : r).toString(16);
-		if (r.length == 1)
-			r = '0' + r;
-		g = Number(g < 0 || isNaN(g)) ? 0 : ((g > 255) ? 255 : g).toString(16);
-		if (g.length == 1)
-			g = '0' + g;
-		b = Number(b < 0 || isNaN(b)) ? 0 : ((b > 255) ? 255 : b).toString(16);
-		if (b.length == 1)
-			b = '0' + b;
-		return "#" + r + g + b;
-	}
-
-	/**
-	 * JavaScript Number Formatter, author: KPL, KHL
-	 * 
-	 * @param {int} n
-	 * @param {int} decPlaces
-	 * @param {string} thouSeparator
-	 * @param {string} decSeparator
-	 * @returns {string}
-	 */
-	number_format(n, decPlaces, thouSeparator, decSeparator) {
-		var decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces;
-		var decSeparator = decSeparator == undefined ? "." : decSeparator;
-		var thouSeparator = thouSeparator == undefined ? "," : thouSeparator;
-		var sign = n < 0 ? "-" : "";
-		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
-		var j = (j = i.length) > 3 ? j % 3 : 0;
-		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
-	}
-
-	check_input_color_support() {
-		var i = document.createElement("input");
-		i.setAttribute("type", "color");
-		return i.type !== "text";
-	}
-
-	b64toBlob(b64Data, contentType, sliceSize) {
-		contentType = contentType || '';
-		sliceSize = sliceSize || 512;
-
-		var byteCharacters = atob(b64Data);
-		var byteArrays = [];
-
-		for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-			var slice = byteCharacters.slice(offset, offset + sliceSize);
-
-			var byteNumbers = new Array(slice.length);
-			for (var i = 0; i < slice.length; i++) {
-				byteNumbers[i] = slice.charCodeAt(i);
-			}
-
-			var byteArray = new Uint8Array(byteNumbers);
-
-			byteArrays.push(byteArray);
-		}
-
-		var blob = new Blob(byteArrays, {type: contentType});
-		return blob;
-	}
-
-	escapeHtml(text) {
-		return text
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#039;");
-	}
-
-	isNumeric(n) {
-		return !isNaN(parseFloat(n)) && isFinite(n);
 	}
 
 	hue2rgb(p, q, t) {
@@ -447,6 +342,16 @@ class Helper_class {
 		return { r: r * 255, g: g * 255, b: b * 255 };
 	}
 
+	/**
+	 * Converts an HSV color value to HSL.
+	 * Assumes h, s, and v are contained in the set [0, 1] and
+	 * returns h, s, and l in the set [0, 1].
+	 *
+	 * @param Number h The hue
+	 * @param Number s The saturation
+	 * @param Number v The value
+	 * @return {object} The HSL representation
+	 */
 	hsvTohsl(h, s, v) {
 		return {
 			h,
@@ -455,6 +360,16 @@ class Helper_class {
 		};
 	}
 
+	/**
+	 * Converts an HSL color value to HSV.
+	 * Assumes h, s, and l are contained in the set [0, 1] and
+	 * returns h, s, and v in the set [0, 1].
+	 *
+	 * @param Number h The hue
+	 * @param Number s The saturation
+	 * @param Number l The value
+	 * @return {object} The HSV representation
+	 */
 	hslTohsv(h, s, l) {
 		s *= l < .5 ? l : 1 - l;
 		return {
@@ -462,6 +377,106 @@ class Helper_class {
 			s: 2 * s / Math.max(0.00000001, (l + s)),
 			v: l + s
 		};
+	}
+
+	remove_selection() {
+		if (window.getSelection) {
+			if (window.getSelection().empty) // Chrome
+				window.getSelection().empty();
+			else if (window.getSelection().removeAllRanges) // Firefox
+				window.getSelection().removeAllRanges();
+		}
+		else if (document.selection) // IE?
+			document.selection.empty();
+	}
+
+	//credits: richard maloney 2006
+	darkenColor(color, v) {
+		if (color.length > 6) {
+			color = color.substring(1, color.length);
+		}
+		var rgb = parseInt(color, 16);
+		var r = Math.abs(((rgb >> 16) & 0xFF) + v);
+		if (r > 255)
+			r = r - (r - 255);
+		var g = Math.abs(((rgb >> 8) & 0xFF) + v);
+		if (g > 255)
+			g = g - (g - 255);
+		var b = Math.abs((rgb & 0xFF) + v);
+		if (b > 255)
+			b = b - (b - 255);
+		r = Number(r < 0 || isNaN(r)) ? 0 : ((r > 255) ? 255 : r).toString(16);
+		if (r.length == 1)
+			r = '0' + r;
+		g = Number(g < 0 || isNaN(g)) ? 0 : ((g > 255) ? 255 : g).toString(16);
+		if (g.length == 1)
+			g = '0' + g;
+		b = Number(b < 0 || isNaN(b)) ? 0 : ((b > 255) ? 255 : b).toString(16);
+		if (b.length == 1)
+			b = '0' + b;
+		return "#" + r + g + b;
+	}
+
+	/**
+	 * JavaScript Number Formatter, author: KPL, KHL
+	 * 
+	 * @param {int} n
+	 * @param {int} decPlaces
+	 * @param {string} thouSeparator
+	 * @param {string} decSeparator
+	 * @returns {string}
+	 */
+	number_format(n, decPlaces, thouSeparator, decSeparator) {
+		var decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces;
+		var decSeparator = decSeparator == undefined ? "." : decSeparator;
+		var thouSeparator = thouSeparator == undefined ? "," : thouSeparator;
+		var sign = n < 0 ? "-" : "";
+		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
+		var j = (j = i.length) > 3 ? j % 3 : 0;
+		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
+	}
+
+	check_input_color_support() {
+		var i = document.createElement("input");
+		i.setAttribute("type", "color");
+		return i.type !== "text";
+	}
+
+	b64toBlob(b64Data, contentType, sliceSize) {
+		contentType = contentType || '';
+		sliceSize = sliceSize || 512;
+
+		var byteCharacters = atob(b64Data);
+		var byteArrays = [];
+
+		for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			var byteNumbers = new Array(slice.length);
+			for (var i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			var byteArray = new Uint8Array(byteNumbers);
+
+			byteArrays.push(byteArray);
+		}
+
+		var blob = new Blob(byteArrays, {type: contentType});
+		return blob;
+	}
+
+	escapeHtml(text) {
+		return text
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	}
+
+	isNumeric(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
 	}
 
 	ucfirst(string) {

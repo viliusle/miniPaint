@@ -5,7 +5,7 @@
 	left: calc(100vw / 2);
 	transform: translate(-50%, 0);
 	background-color: #7A838B;
-	background-color: var(--area-background-color);
+	background-color: var(--block-background-color);
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	border: 1px solid var(--border-color);
 	width: 90vw;

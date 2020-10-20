@@ -6,7 +6,7 @@ var Helper = new Helper_class();
 
     const template = `
         <div class="ui_color_picker_gradient">
-            <div class="secondary_pick" tabindex="0">
+            <div class="secondary_pick" tabindex="0" role="figure" aria-label="Saturation vs value selection. Use left/right arrow keys to control saturation. Use up/down arrow keys to control value.">
                 <div class="saturation_gradient"></div>
                 <div class="value_gradient"></div>
                 <div class="handle"></div>
@@ -16,6 +16,44 @@ var Helper = new Helper_class();
             </div>
         </div>
     `;
+
+    const on_key_down_secondary_pick = (event) => {
+        const $el = $(event.target.closest('.ui_color_picker_gradient'));
+        const { hsv } = $el.data();
+        const key = event.key;
+        if (['Left', 'ArrowLeft'].includes(key)) {
+            set_hsv($el, {
+                h: hsv.h,
+                s: hsv.s - 1/100,
+                v: hsv.v
+            });
+            $el.trigger('input');
+        }
+        else if (['Right', 'ArrowRight'].includes(key)) {
+            set_hsv($el, {
+                h: hsv.h,
+                s: hsv.s + 1/100,
+                v: hsv.v
+            });
+            $el.trigger('input');
+        }
+        else if (['Up', 'ArrowUp'].includes(key)) {
+            set_hsv($el, {
+                h: hsv.h,
+                s: hsv.s,
+                v: hsv.v + 1/100
+            });
+            $el.trigger('input');
+        }
+        else if (['Down', 'ArrowDown'].includes(key)) {
+            set_hsv($el, {
+                h: hsv.h,
+                s: hsv.s,
+                v: hsv.v - 1/100
+            });
+            $el.trigger('input');
+        }
+    };
 
     const on_mouse_down_secondary_pick = (event) => {
         const $el = $(event.target.closest('.ui_color_picker_gradient'));
@@ -59,8 +97,8 @@ var Helper = new Helper_class();
             const yRatio = (clientY - mouseDownSecondaryPickRect.top) / (mouseDownSecondaryPickRect.bottom - mouseDownSecondaryPickRect.top);
             set_hsv($el, {
                 h: hsv.h,
-                s: Math.max(0, Math.min(1, xRatio)),
-                v: Math.max(0, Math.min(1, 1 - yRatio))
+                s: xRatio,
+                v: 1 - yRatio
             });
             $el.trigger('input');
         };
@@ -77,6 +115,9 @@ var Helper = new Helper_class();
     // All hsv values range from 0 to 1.
     const set_hsv = ($el, hsv) => {
         const { secondaryPick, secondaryPickHandle, primaryRange } = $el.data();
+        hsv.h  = Math.max(0, Math.min(1, hsv.h));
+        hsv.s = Math.max(0, Math.min(1, hsv.s));
+        hsv.v = Math.max(0, Math.min(1, hsv.v));
         $el.data('hsv', hsv);
         $(primaryRange).uiRange('set_value', (1 - hsv.h) * 360);
         secondaryPick.style.background = Helper.hsvToHex(hsv.h, 1, 1);
@@ -124,6 +165,7 @@ var Helper = new Helper_class();
                     hsv: { h: 0, s: 0, v: 0 }
                 });
 
+                $(secondaryPick).on('keydown', on_key_down_secondary_pick);
                 $(secondaryPick).on('mousedown touchstart', on_mouse_down_secondary_pick);
                 $(secondaryPick).on('touchmove', on_touch_move_secondary_pick);
             }

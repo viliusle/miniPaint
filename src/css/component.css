@@ -1,3 +1,44 @@
+/*****************\
+| UI Button Group |
+\*****************/
+
+.ui_button_group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.ui_button_group.stacked {
+    margin: .75rem 0;
+}
+.ui_button_group.stacked:first-child {
+    margin-top: 0;
+}
+.ui_button_group.stacked:last-child {
+    margin-bottom: 0;
+}
+.ui_button_group > button,
+.ui_button_group > input[type="button"] {
+    border-radius: 0;
+}
+.ui_button_group > button:focus,
+.ui_button_group > input[type="button"]:focus {
+    z-index: 1;
+}
+.ui_button_group > button + button,
+.ui_button_group > button + input[type="button"],
+.ui_button_group > input[type="button"] + button,
+.ui_button_group > input[type="button"] + input[type="button"] {
+    margin-left: -1px;
+}
+.ui_button_group > button:first-child,
+.ui_button_group > input[type="button"]:first-child {
+    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
+}
+.ui_button_group > button:last-child,
+.ui_button_group > input[type="button"]:last-child {
+    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+}
+
 /**************************\
 | UI Color Picker Gradient |
 \**************************/
@@ -63,11 +104,11 @@
     content: '';
     display: block;
     position: absolute;
-    left: -6px;
-    top: -6px;
-    height: 3px;
-    width: 3px;
-    border: 4px solid #999;
+    left: -.6rem;
+    top: -.6rem;
+    height: .3rem;
+    width: .3rem;
+    border: .4rem solid #999;
     border-radius: 1000px;
 }
 
@@ -75,12 +116,95 @@
     content: '';
     display: block;
     position: absolute;
-    left: -5px;
-    top: -5px;
-    height: 5px;
-    width: 5px;
-    border: 2px solid white;
+    left: -.5rem;
+    top: -.5rem;
+    height: .5rem;
+    width: .5rem;
+    border: .2rem solid white;
     border-radius: 1000px;
+}
+
+.ui_color_picker_gradient .primary_pick .ui_range {
+    border-color: rgba(1, 1, 1, 0.1);
+}
+.ui_color_picker_gradient .primary_pick .ui_range:focus {
+    border-color: var(--input-border-color-active);
+}
+
+/*****************\
+| UI Color Sample |
+\*****************/
+
+.ui_color_sample {
+    border: 1px solid #999;
+    box-shadow: 0 0 0 1px #555 inset;
+    display: block;
+    height: 28px;
+    width: 28px;
+}
+
+/***************\
+| UI Flex Group |
+\***************/
+
+.ui_flex_group {
+    display: flex;
+    flex-direction: row;
+}
+.ui_flex_group.stacked {
+    margin: .75rem 0;
+}
+.ui_flex_group.stacked:first-child {
+    margin-top: 0;
+}
+.ui_flex_group.stacked:last-child {
+    margin-bottom: 0;
+}
+.ui_flex_group.column {
+    flex-direction: column;
+}
+.ui_flex_group.justify_content_center {
+    justify-content: center;
+}
+.ui_flex_group.justify_content_start {
+    justify-content: flex-start;
+}
+.ui_flex_group.justify_content_end {
+    justify-content: flex-end;
+}
+.ui_flex_group.justify_content_space_around {
+    justify-content: space-around;
+}
+.ui_flex_group.justify_content_space_between {
+    justify-content: space-between;
+}
+.ui_flex_group.align_items_baseline {
+    justify-content: baseline;
+}
+.ui_flex_group.align_items_center {
+    justify-content: center;
+}
+.ui_flex_group.align_items_start {
+    justify-content: flex-start;
+}
+.ui_flex_group.align_items_end {
+    justify-content: flex-end;
+}
+.ui_flex_group.align_items_stretch {
+    justify-content: stretch;
+}
+
+/****************\
+| UI Icon Button |
+\****************/
+
+.ui_icon_button {
+    height: 2.8rem;
+}
+
+.ui_icon_button > svg {
+    display: block;
+    font-size: 1.6rem;
 }
 
 /****************\
@@ -90,14 +214,16 @@
 .ui_input_group {
     display: flex;
     flex-direction: row;
-    min-height: 24px;
-    margin: 7.5px 0;
+    min-height: 2.4rem;
     width: 100%;
 }
-.ui_input_group:first-child {
+.ui_input_group.stacked {
+    margin: .75rem 0;
+}
+.ui_input_group.stacked:first-child {
     margin-top: 0;
 }
-.ui_input_group:last-child {
+.ui_input_group.stacked:last-child {
     margin-bottom: 0;
 }
 .ui_input_group > input,
@@ -115,23 +241,31 @@
 .ui_input_group > label {
     display: flex;
     align-items: center;
-    border: 1px solid var(--section-background-color);
+    border: 1px solid var(--input-group-border-color);
     border-right: 0;
     margin: 0;
-    padding: 0 7.5px;
+    padding: 0 .75rem;
 }
 .ui_input_group > .ui_range + input {
     margin-left: -1px;
 }
 
 .ui_input_grid {
-    margin: 7.5px auto;
+    border-radius: var(--input-border-radius);
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
 }
-.ui_input_grid:first-child {
+.ui_input_grid.stacked {
+    margin: .75rem 0;
+}
+.ui_input_grid.stacked:first-child {
     margin-top: 0;
 }
-.ui_input_grid:last-child {
+.ui_input_grid.stacked:last-child {
     margin-bottom: 0;
+}
+:not(.ui_input_grid) > .ui_input_group {
+    border-radius: var(--input-border-radius);
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
 }
 .ui_input_grid > .ui_input_group {
     margin: -1px 0;
@@ -173,7 +307,7 @@
     background: var(--input-background-color);
     border: 1px solid var(--input-border-color);
     border-radius: 1000px;
-    height: 18px;
+    height: 1.8rem;
     overflow: visible;
     outline: 0;
     padding: 0 calc(var(--range-handle-width) / 2);
@@ -210,7 +344,7 @@
     box-sizing: border-box;
     cursor: col-resize;
     display: block;
-    height: 18px;
+    height: 1.8rem;
     width: var(--range-handle-width);
     position: absolute;
     top: 50%;
@@ -237,18 +371,18 @@
     display: block;
     width: 0; 
     height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 7px solid white;
+    border-left: .5rem solid transparent;
+    border-right: .5rem solid transparent;
+    border-top: .7rem solid white;
 }
 .ui_range.color_picker .handle::after {
     content: '';
     display: block;
     width: 0; 
     height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 7px solid black;
+    border-left: .5rem solid transparent;
+    border-right: .5rem solid transparent;
+    border-bottom: .7rem solid black;
 }
 .ui_range.color_picker .handle:hover::before {
     border-top-color: #eaeaea;
@@ -261,7 +395,7 @@
     flex-direction: column;
     justify-content: flex-end;
     height: 100%;
-    width: 18px;
+    width: 1.8rem;
     padding: calc(var(--range-handle-width) / 2) 0;
 }
 
@@ -295,12 +429,12 @@
 }
 
 .ui_range.vertical.color_picker_thin .padded_track {
-    top: 1px;
-    bottom: 1px;
+    top: 0;
+    bottom: 0;
 }
 
 .ui_range.vertical.color_picker_thin .handle  {
     border-radius: 0;
     width: 100%;
-    height: 5px;
+    height: .5rem;
 }

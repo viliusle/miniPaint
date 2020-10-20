@@ -5,55 +5,89 @@
 
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
-import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import './../../../../node_modules/spectrum-colorpicker/spectrum.css';
-import spectrum from './../../../../node_modules/spectrum-colorpicker/spectrum.js';
 
 var Helper = new Helper_class();
 
 var template = `
-	<input id="color_picker_gradient" type="color" aria-label="Color Selection">
-	<div class="ui_input_group">
-		<label id="color_hex_label" title="Hex" class="label_width_small">Hex</label>
-		<input id="color_hex" aria-labelledby="color_hex_label" value="#000000" type="text" />
+	<div class="ui_flex_group justify_content_space_between stacked">
+		<div id="selected_color_sample" class="ui_color_sample" title="Color Preview"></div>
+		<div class="ui_button_group">
+			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Swatches">
+				<span class="sr_only">Toggle Swatches</span>
+				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-grid-3x2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-8zM1.5 3a.5.5 0 0 0-.5.5V7h4V3H1.5zM5 8H1v3.5a.5.5 0 0 0 .5.5H5V8zm1 0h4v4H6V8zm4-1H6V3h4v4zm1 1v4h3.5a.5.5 0 0 0 .5-.5V8h-4zm0-1V3h3.5a.5.5 0 0 1 .5.5V7h-4z"/>
+				</svg>
+			</button>
+			<button id="toggle_color_picker_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Color Picker">
+				<span class="sr_only">Toggle Color Picker</span>
+				<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<rect width="24" height="24" opacity="0" />
+					<path
+						d="M19.54 5.08A10.61 10.61 0 0 0 11.91 2a10 10 0 0 0-.05 20 2.58 2.58 0 0 0 2.53-1.89 2.52 2.52 0 0 0-.57-2.28.5.5 0 0 1 .37-.83h1.65A6.15 6.15 0 0 0 22 11.33a8.48 8.48 0 0 0-2.46-6.25zM15.88 15h-1.65a2.49 2.49 0 0 0-1.87 4.15.49.49 0 0 1 .12.49c-.05.21-.28.34-.59.36a8 8 0 0 1-7.82-9.11A8.1 8.1 0 0 1 11.92 4H12a8.47 8.47 0 0 1 6.1 2.48 6.5 6.5 0 0 1 1.9 4.77A4.17 4.17 0 0 1 15.88 15z" />
+					<circle cx="12" cy="6.5" r="1.5" />
+					<path d="M15.25 7.2a1.5 1.5 0 1 0 2.05.55 1.5 1.5 0 0 0-2.05-.55z" />
+					<path d="M8.75 7.2a1.5 1.5 0 1 0 .55 2.05 1.5 1.5 0 0 0-.55-2.05z" />
+					<path d="M6.16 11.26a1.5 1.5 0 1 0 2.08.4 1.49 1.49 0 0 0-2.08-.4z" />
+				</svg>
+			</button>
+			<button id="toggle_color_channels_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Color Channels">
+				<span class="sr_only">Toggle Color Channels</span>
+				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-list" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+					<path fill-rule="evenodd" d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/>
+					<circle cx="3.5" cy="5.5" r=".5"/>
+					<circle cx="3.5" cy="8" r=".5"/>
+					<circle cx="3.5" cy="10.5" r=".5"/>
+				</svg>
+			</button>
+		</div>
 	</div>
-	<div class="ui_input_grid">
-		<div class="ui_input_group">
-			<label id="rgb_r_label" title="Red" class="label_width_character text_red"><strong>R<span class="sr_only">ed</span></strong></label>
-			<input id="rgb_r_range" aria-labelledby="rgb_r_label" type="range" min="0" max="255" class="color_picker" />
-			<input id="rgb_r" min="0" aria-labelledby="rgb_r_label" max="255" type="number" />
-		</div>
-		<div class="ui_input_group">
-			<label id="rgb_g_label" title="Green" class="label_width_character text_green"><strong>G<span class="sr_only">reen</span></strong></label>
-			<input id="rgb_g_range" aria-labelledby="rgb_g_label" type="range" min="0" max="255" class="color_picker" />
-			<input id="rgb_g" min="0" aria-labelledby="rgb_g_label" max="255" type="number" />
-		</div>
-		<div class="ui_input_group">
-			<label id="rgb_b_label" title="Blue" class="label_width_character text_blue"><strong>B<span class="sr_only">lue</span></strong></label>
-			<input id="rgb_b_range" aria-labelledby="rgb_b_label" type="range" min="0" max="255" class="color_picker" />
-			<input id="rgb_b" min="0" aria-labelledby="rgb_b_label" max="255" type="number" />
-		</div>
-		<div class="ui_input_group">
-			<label id="rgb_a_label" title="Alpha" class="label_width_character text_muted"><strong>A<span class="sr_only">lpha</span></strong></label>
-			<input id="rgb_a_range" aria-labelledby="rgb_a_label" type="range" min="0" max="255" class="color_picker" />
-			<input id="rgb_a" min="0" aria-labelledby="rgb_a_label" max="255" type="number" />
-		</div>
+	<div id="color_section_picker" class="block_section">
+		<input id="color_picker_gradient" type="color" aria-label="Color Selection">
 	</div>
-	<div class="ui_input_grid">
-		<div class="ui_input_group">
-			<label id="hsl_h_label" title="Hue" class="label_width_character"><strong>H<span class="sr_only">ue</span></strong></label>
-			<input id="hsl_h_range" aria-labelledby="hsl_h_label" type="range" min="0" max="360" class="color_picker" />
-			<input id="hsl_h" min="0" aria-labelledby="hsl_h_label" max="360" type="number" />
+	<div id="color_section_channels" class="block_section">
+		<div class="ui_input_group stacked">
+			<label id="color_hex_label" title="Hex" class="label_width_small">Hex</label>
+			<input id="color_hex" aria-labelledby="color_hex_label" value="#000000" maxlength="7" type="text" />
 		</div>
-		<div class="ui_input_group">
-			<label id="hsl_s_label" title="Saturation" class="label_width_character"><strong>S<span class="sr_only">aturation</span></strong></label>
-			<input id="hsl_s_range" aria-labelledby="hsl_s_label" type="range" min="0" max="100" class="color_picker" />
-			<input id="hsl_s" min="0" aria-labelledby="hsl_s_label"max="100" type="number" />
+		<div class="ui_input_grid stacked">
+			<div class="ui_input_group">
+				<label id="rgb_r_label" title="Red" class="label_width_character text_red"><strong>R<span class="sr_only">ed</span></strong></label>
+				<input id="rgb_r_range" aria-labelledby="rgb_r_label" type="range" min="0" max="255" class="color_picker" />
+				<input id="rgb_r" min="0" aria-labelledby="rgb_r_label" max="255" type="number" />
+			</div>
+			<div class="ui_input_group">
+				<label id="rgb_g_label" title="Green" class="label_width_character text_green"><strong>G<span class="sr_only">reen</span></strong></label>
+				<input id="rgb_g_range" aria-labelledby="rgb_g_label" type="range" min="0" max="255" class="color_picker" />
+				<input id="rgb_g" min="0" aria-labelledby="rgb_g_label" max="255" type="number" />
+			</div>
+			<div class="ui_input_group">
+				<label id="rgb_b_label" title="Blue" class="label_width_character text_blue"><strong>B<span class="sr_only">lue</span></strong></label>
+				<input id="rgb_b_range" aria-labelledby="rgb_b_label" type="range" min="0" max="255" class="color_picker" />
+				<input id="rgb_b" min="0" aria-labelledby="rgb_b_label" max="255" type="number" />
+			</div>
+			<div class="ui_input_group">
+				<label id="rgb_a_label" title="Alpha" class="label_width_character text_muted"><strong>A<span class="sr_only">lpha</span></strong></label>
+				<input id="rgb_a_range" aria-labelledby="rgb_a_label" type="range" min="0" max="255" class="color_picker" />
+				<input id="rgb_a" min="0" aria-labelledby="rgb_a_label" max="255" type="number" />
+			</div>
 		</div>
-		<div class="ui_input_group">
-			<label id="hsl_l_label" title="Luminosity" class="label_width_character"><strong>L<span class="sr_only">uminosity</span></strong></label>
-			<input id="hsl_l_range" aria-labelledby="hsl_l_label" type="range" min="0" max="100" class="color_picker" />
-			<input id="hsl_l" min="0" aria-labelledby="hsl_l_label"max="100" type="number" />
+		<div class="ui_input_grid stacked">
+			<div class="ui_input_group">
+				<label id="hsl_h_label" title="Hue" class="label_width_character"><strong>H<span class="sr_only">ue</span></strong></label>
+				<input id="hsl_h_range" aria-labelledby="hsl_h_label" type="range" min="0" max="360" class="color_picker" />
+				<input id="hsl_h" min="0" aria-labelledby="hsl_h_label" max="360" type="number" />
+			</div>
+			<div class="ui_input_group">
+				<label id="hsl_s_label" title="Saturation" class="label_width_character"><strong>S<span class="sr_only">aturation</span></strong></label>
+				<input id="hsl_s_range" aria-labelledby="hsl_s_label" type="range" min="0" max="100" class="color_picker" />
+				<input id="hsl_s" min="0" aria-labelledby="hsl_s_label"max="100" type="number" />
+			</div>
+			<div class="ui_input_group">
+				<label id="hsl_l_label" title="Luminosity" class="label_width_character"><strong>L<span class="sr_only">uminosity</span></strong></label>
+				<input id="hsl_l_range" aria-labelledby="hsl_l_label" type="range" min="0" max="100" class="color_picker" />
+				<input id="hsl_l" min="0" aria-labelledby="hsl_l_label"max="100" type="number" />
+			</div>
 		</div>
 	</div>
 `;
@@ -72,13 +106,30 @@ class GUI_colors_class {
 		this.el = document.getElementById('toggle_colors');
 		this.el.innerHTML = template;
 		this.init_components();
-		this.set_events();
 		this.render_range_gradients = Helper.throttle(this.render_range_gradients, 50);
 	}
 
 	init_components() {
+		// Store buttons
+		this.buttons = {
+			toggleColorSwatches: $('#toggle_color_swatches_section_button'),
+			toggleColorPicker: $('#toggle_color_picker_section_button'),
+			toggleColorChannels: $('#toggle_color_channels_section_button')
+		};
+
+		// Store UI sections
+		this.sections = {
+			picker: $('#color_section_picker'),
+			pickerPlaceholder: document.createComment('Placeholder comment for color picker'),
+			channels: $('#color_section_channels'),
+			channelsPlaceholder: document.createComment('Placeholder comment for color channels')
+		};
+
+		// Store references to all inputs in DOM
 		this.inputs = {
+			sample: $('#selected_color_sample'),
 			pickerGradient: $('#color_picker_gradient'),
+			hex: $('#color_hex'),
 			rgb: {
 				r: {
 					range: $('#rgb_r_range'),
@@ -113,6 +164,42 @@ class GUI_colors_class {
 			}
 		};
 
+		// Handle toggle for color swatches section
+		this.buttons.toggleColorSwatches
+			.on('click', () => {
+				this.buttons.toggleColorSwatches.attr('aria-pressed', 'true' === this.buttons.toggleColorSwatches.attr('aria-pressed') ? 'false' : 'true');
+				const isPressed = this.buttons.toggleColorSwatches.attr('aria-pressed') === 'true';
+			});
+
+		// Handle toggle for color picker section
+		this.buttons.toggleColorPicker
+			.on('click', () => {
+				this.buttons.toggleColorPicker.attr('aria-pressed', 'true' === this.buttons.toggleColorPicker.attr('aria-pressed') ? 'false' : 'true');
+				const isPressed = this.buttons.toggleColorPicker.attr('aria-pressed') === 'true';
+				if (isPressed) {
+					this.sections.pickerPlaceholder.parentNode.insertBefore(this.sections.picker[0], this.sections.pickerPlaceholder.nextSibling);
+					this.sections.pickerPlaceholder.parentNode.removeChild(this.sections.pickerPlaceholder);
+				} else {
+					this.sections.picker[0].parentNode.insertBefore(this.sections.pickerPlaceholder, this.sections.picker[0].nextSibling);
+					this.sections.picker[0].parentNode.removeChild(this.sections.picker[0]);	
+				}
+			});
+
+		// Handle toggle for color channels section
+		this.buttons.toggleColorChannels
+			.on('click', () => {
+				this.buttons.toggleColorChannels.attr('aria-pressed', 'true' === this.buttons.toggleColorChannels.attr('aria-pressed') ? 'false' : 'true');
+				const isPressed = this.buttons.toggleColorChannels.attr('aria-pressed') === 'true';
+				if (isPressed) {
+					this.sections.channelsPlaceholder.parentNode.insertBefore(this.sections.channels[0], this.sections.channelsPlaceholder.nextSibling);
+					this.sections.channelsPlaceholder.parentNode.removeChild(this.sections.channelsPlaceholder);
+				} else {
+					this.sections.channels[0].parentNode.insertBefore(this.sections.channelsPlaceholder, this.sections.channels[0].nextSibling);
+					this.sections.channels[0].parentNode.removeChild(this.sections.channels[0]);	
+				}
+			});
+
+		// Initialize color picker gradient
 		this.inputs.pickerGradient
 			.uiColorPickerGradient()
 			.on('input', () => {
@@ -124,6 +211,26 @@ class GUI_colors_class {
 				});
 			});
 
+		// Initialize hex entry
+		this.inputs.hex
+			.on('input', () => {
+				const value = this.inputs.hex.val();
+				const trimmedValue = value.trim();
+				if (value !== trimmedValue) {
+					this.inputs.hex.val(trimmedValue);
+				}
+				this.inputs.hex[0].setCustomValidity(/^\#[0-9A-F]{6}$/gi.test(trimmedValue) ? '' : 'Invalid Hex Code');
+				this.set_color({ hex: this.inputs.hex.val() });
+			})
+			.on('blur', () => {
+				const value = this.inputs.hex.val();
+				if (!/^\#[0-9A-F]{6}$/gi.test(value)) {
+					this.inputs.hex.val(config.COLOR);
+					this.inputs.hex[0].setCustomValidity('');
+				}
+			});
+		
+		// Initialize the color sliders
 		const sliderInputs = [
 			...Object.entries(this.inputs.rgb),
 			...Object.entries(this.inputs.hsl)
@@ -139,51 +246,19 @@ class GUI_colors_class {
 					this.set_color({ [key]: input.number.val() });
 				})
 		}
+
+		// Update all inputs from config.COLOR
 		this.render_config_color();
-	}
-
-	set_events() {
-		var _this = this;
-
-		var changed = false;
-		var last_color = config.COLOR;
-		$("#main_color").spectrum({
-			move: function(color) {				
-				_this.change_color(color.toHexString());
-				_this.render_colors();
-			},
-			show: function() {
-				changed = false;
-				last_color = config.COLOR;
-			},
-			change: function(color) {
-				changed = true;
-			},
-			hide: function(color) {
-				if(changed == false) {
-					// revert
-					_this.change_color(last_color);
-					_this.render_colors();
-				}
-				else{
-					//changed
-					last_color = config.COLOR;
-				}
-			}
-		});
-
-		//colors
-		document.getElementById('color_hex').addEventListener('keyup', function (e) {
-			_this.set_color_manual(e);
-		}, false);
-		document.getElementById('main_color').addEventListener('change', function (e) {
-			_this.set_color_spectrum(this);
-		}, false);
 	}
 
 	/**
 	 * Changes the config.COLOR variable based on the given input.
-	 * @param {*} definition object contains the value of the color to change: "hex", "r", "g", "b", "a", "h", "s", "l", "v"
+	 * @param {*} definition object contains the value of the color to change:
+	 *                       hex   - set the color as a hex code
+	 *                       r,g,b - set the color as red, green, blue values [0-255]
+	 *                       a     - set the color alpha [0-255]
+	 *                       h,s,l - set the color as hue [0-360], saturation [0-100], luminosity [0-100]
+	 *                       h,s,v - set the color as hue [0-360], saturation [0-100], value [0-100]
 	 */
 	set_color(definition) {
 		let newColor = null;
@@ -193,8 +268,8 @@ class GUI_colors_class {
 		// Set new color by hex code
 		if ('hex' in definition) {
 			const hex = '#' + definition.hex.replace(/[^0-9A-F]*/gi, '');
-			if (/^\#[0-9A-F]{6}/gi.test(hex)) {
-				newColor = '#' + definition.hex.trim().replace('^\#', '');
+			if (/^\#[0-9A-F]{6}$/gi.test(hex)) {
+				newColor = '#' + definition.hex.trim().replace(/^\#/, '');
 			}
 		}
 		// Set new color by rgb
@@ -253,8 +328,11 @@ class GUI_colors_class {
 	render_config_color(options) {
 		options = options || {};
 
-		document.getElementById("color_hex").value = config.COLOR;
-		document.getElementById("main_color").value = config.COLOR;
+		this.inputs.sample.css('background', config.COLOR);
+
+		const hexInput = this.inputs.hex[0];
+		hexInput.value = config.COLOR;
+		hexInput.setCustomValidity('');
 
 		const rgb = Helper.hexToRgb(config.COLOR);
 		delete rgb.a;
@@ -278,7 +356,8 @@ class GUI_colors_class {
 	}
 
 	/**
-	 * Renders the color gradients in each channel's color range selection
+	 * Renders the color gradients in each channel's color range selection.
+	 * This function is throttled due to expensive operations on low-end systems.
 	 * @param {*} options additional options:
 	 *                    hsl - override for hsl values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 *                    hsv - override for hsv values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
@@ -339,154 +418,6 @@ class GUI_colors_class {
 		this.inputs.hsl.l.range.uiRange('set_background',
 			`linear-gradient(to right, #000000 0%, ${ Helper.hslToHex(rangeMid.h, rangeMid.s, rangeMid.l) } 50%, #ffffff 100%)`
 		);
-	}
-
-	/**
-	 * renders current color to all color fields
-	 * 
-	 * @param boolean can_change_hsl True by default
-	 */
-	render_colors(can_change_hsl) {
-		document.getElementById("color_hex").value = config.COLOR;
-		document.getElementById("main_color").value = config.COLOR;
-
-		var colors = Helper.hexToRgb(config.COLOR);
-		document.getElementById("rgb_r").value = colors.r;
-		document.getElementById("rgb_g").value = colors.g;
-		document.getElementById("rgb_b").value = colors.b;
-		document.getElementById("rgb_a").value = config.ALPHA;
-
-		if(can_change_hsl == undefined || can_change_hsl === true) {
-			var hsl = Helper.rgbToHsl(colors.r, colors.g, colors.b, false);
-			document.getElementById("hsl_h").value = Math.round(hsl.h * 360);
-			document.getElementById("hsl_s").value = Math.round(hsl.s * 100);
-			document.getElementById("hsl_l").value = Math.round(hsl.l * 100);
-		}
-	}
-
-	set_color_spectrum(object) {
-		if (object.id == 'main_color')
-			this.change_color(object.value);
-		else
-			this.change_color(Helper.rgb2hex_all(object.style.backgroundColor));
-
-		document.getElementById("main_color").value = config.COLOR;
-		document.getElementById("color_hex").value = config.COLOR;
-		var colors = Helper.hexToRgb(config.COLOR);
-		document.getElementById("rgb_r").value = colors.r;
-		document.getElementById("rgb_g").value = colors.g;
-		document.getElementById("rgb_b").value = colors.b;
-
-		//also set alpha to max
-		if (config.ALPHA == 0) {
-			this.change_alpha(255);
-		}
-
-		this.render_colors();
-	}
-
-	set_color_manual(event) {
-		var object = event.target;
-		if (object.value.length == 6 && object.value[0] != '#') {
-			this.change_color('#' + object.value);
-			this.render_colors();
-		}
-		if (object.value.length == 7) {
-			this.change_color(object.value);
-			this.render_colors();
-		}
-		else if (object.value.length > 7) {
-			object.value = config.COLOR;
-		}
-	}
-
-	set_color_rgb(object) {
-		var value = parseInt(object.value);
-		if (isNaN(value) || value < 0) {
-			object.value = 0;
-			alertify.error('Error: bad rgb value.');
-		}
-		if (value > 255) {
-			object.value = 255;
-			alertify.error('Error: bad rgb value.');
-		}
-		this.change_color(
-			null, 
-			document.getElementById("rgb_r").value,
-			document.getElementById("rgb_g").value,
-			document.getElementById("rgb_b").value
-		);
-		this.change_alpha(document.getElementById("rgb_a").value);
-
-		this.render_colors();
-	}
-
-	set_color_hsl(object) {
-		var value = parseInt(object.value);
-		if (isNaN(value) || value < 0) {
-			object.value = 0;
-			return false;
-		}
-		
-		var max = 100;
-		if(object.id == 'hsl_h'){
-			max = 360;
-		}
-		
-		if (value > max) {
-			object.value = max;
-			alertify.error('Error: bad hsl value.');
-		}
-		if (value < 0) {
-			object.value = 0;
-			alertify.error('Error: bad hsl value.');
-		}
-		var rgb = Helper.hslToRgb(
-			document.getElementById("hsl_h").value / 360,
-			document.getElementById("hsl_s").value / 100,
-			document.getElementById("hsl_l").value / 100
-		);
-		this.change_color(null, rgb.r, rgb.g, rgb.b);
-
-		this.render_colors(false);
-	}
-	
-	/**
-	 * change global color value
-	 * 
-	 * @param {type} hex can be null, but r/g/b/ must be provided then. Can be #ff0000 or ff0000
-	 * @param {type} r optional
-	 * @param {type} g optional
-	 * @param {type} b optional
-	 * @returns {undefined}
-	 */
-	change_color(hex, r, g, b) {
-		if(hex != '' && hex != null){
-			if(hex[0] != '#'){
-				hex = '#' + hex;
-			}
-			config.COLOR = hex;
-		}
-		else if(r != undefined && g != undefined && b != undefined){
-			config.COLOR = Helper.rgbToHex(r, g, b);
-		}
-		else{
-			alertify.error('Error: wrong color.');
-			return;
-		}
-		
-		$("#main_color").spectrum("set", config.COLOR);
-	}
-
-	/**
-	 * change global alpha value
-	 * 
-	 * @param {int} value
-	 */
-	change_alpha(value) {
-		value = Math.ceil(value);
-		config.ALPHA = parseInt(value);
-		document.getElementById("rgb_a").value = config.ALPHA;
 	}
 
 }

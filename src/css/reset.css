@@ -13,13 +13,20 @@
 	--link-color: #9ffda5;
 	--section-background-color: #323a3c;
 	--area-background-color: #464d4f;
+	--block-background-color: #464d4f;
 	--header-background-color: #373d3f;
 	--button-background-color: #2f3739;
+	--button-background-color-hover: #575f62;
+	--button-background-color-active: #4d5153;
+	--button-shadow-color: rgba(0, 0, 0, 0.3);
+	--button-text-color-active: #adecab;
+	--button-border-radius: .4rem;
 	--input-background-color: #2f3739;
 	--input-text-color: #f4f3f3;
 	--input-border-color: #0f0f0f;
 	--input-border-color-active: #70996e;
-	--input-border-radius: 4px;
+	--input-border-radius: .4rem;
+	--input-group-border-color:  #323a3c;
 	--menu-background-color: #222;
 	--menu-text-color: #cccccc;
 	--background-color-active: #adecab;
@@ -32,6 +39,9 @@
 	--sprites-url-active: url(images/sprites.png);
 	--mobile-menu-toggle-filter: none;
 }
+html {
+	font-size: 10px; /* Base is 10px for easy REM calculation */
+}
 body.theme-light{
 	/* light */
 	--background: #f9f9fa;
@@ -43,11 +53,17 @@ body.theme-light{
 	--link-color: #000080;
 	--section-background-color: #eaeaea;
 	--area-background-color: #d9d9d9;
-	--header-background-color: #c8c8c8;
+	--block-background-color: #eaeaea;
+	--header-background-color: #dbdbdb;
 	--button-background-color: #f9f9fa;
+	--button-background-color-hover: #c4c4c4;
+	--button-background-color-active: #f3f3f3;
+	--button-text-color-active: #70c4ee;
+	--button-shadow-color: rgba(0, 0, 0, 0.1);
 	--input-background-color: #ffffff;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
+	--input-group-border-color: #c4c4c4;
 	--menu-background-color: #eaeaea;
 	--menu-text-color: #333333;
 	--menu-dropdown-hover-background-color: #a3dbf7;
@@ -70,8 +86,12 @@ body.theme-green{
 	--link-color: #9ffda5;
 	--section-background-color: #1c2e04;
 	--area-background-color: #3b5f11;
+	--block-background-color: #3b5f11;
 	--header-background-color: #2b460f;
 	--button-background-color: #2e4a0d;
+	--button-background-color-hover: #58960e;
+	--button-background-color-active:#2b460f;
+	--button-text-color-active: #ccc;
 	--input-background-color: #ffffff;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
@@ -93,7 +113,7 @@ body{
 	padding-top: 30px;
 	background-color: #424F5A;
 	background: var(--background);
-	font-size: 13px;
+	font-size: 1.3rem;
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000000;
 	color: var(--text-color);
@@ -157,14 +177,26 @@ input[type="range"]{
 	width:100%;
 }
 button, input[type="button"]{
-	border-radius: 0;
+	border-radius: var(--button-border-radius);
+	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 0 0 rgba(255, 255, 255, 0.1) inset;
 	cursor: pointer;
 	border: 1px solid var(--border-color);
 	background-color: var(--button-background-color);
 	color: var(--color-text);
 }
+button:hover, input[type="button"]:hover{
+	background-color: var(--button-background-color-hover);
+}
 button:disabled, input[type="button"]:disabled{
 	visibility:hidden;
+}
+button[aria-pressed="true"], input[type="button"][aria-pressed="true"]{
+	background-color: var(--button-background-color-active);
+	color: var(--button-text-color-active);
+	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 1px 1.5px rgba(58, 40, 40, 0.1) inset, 0 -1px 0 0 var(--button-text-color-active) inset;
+}
+button[aria-pressed="true"]:hover, input[type="button"][aria-pressed="true"]:hover{
+	background-color: var(--button-background-color-hover);
 }
 label{
 	display: inline-block;
