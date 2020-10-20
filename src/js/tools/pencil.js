@@ -87,8 +87,8 @@ class Pencil_class extends Base_tools_class {
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
-				width: null,
-				height: null,
+				width: config.WIDTH,
+				height: config.HEIGHT,
 				rotate: null,
 				is_vector: true,
 			};
