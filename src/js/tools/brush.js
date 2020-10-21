@@ -10,6 +10,8 @@ class Brush_class extends Base_tools_class {
 		this.name = 'brush';
 		this.layer = {};
 		this.params_hash = false;
+		this.pressure_supported = false;
+		this.pointer_pressure = 0; // has range [0 - 1]
 	}
 
 	dragStart(event) {
@@ -41,6 +43,14 @@ class Brush_class extends Base_tools_class {
 	load() {
 		var _this = this;
 
+		//pointer events
+		document.addEventListener('pointerdown', function (event) {
+			_this.pointerdown(event);
+		});
+		document.addEventListener('pointermove', function (event) {
+			_this.pointermove(event);
+		});
+
 		//mouse events
 		document.addEventListener('mousedown', function (event) {
 			_this.dragStart(event);
@@ -62,6 +72,25 @@ class Brush_class extends Base_tools_class {
 		document.addEventListener('touchend', function (event) {
 			_this.dragEnd(event);
 		});
+	}
+
+	pointerdown(e) {
+		// Devices that don't actually support pen pressure can give 0.5 as a false reading.
+		// It is highly unlikely a real pen will read exactly 0.5 at the start of a stroke.
+		if (e.pressure && e.pressure !== 0 && e.pressure !== 0.5 && e.pressure <= 1) {
+			this.pressure_supported = true;
+			this.pointer_pressure = e.pressure;
+		} else {
+			this.pressure_supported = false;
+		}
+	}
+
+	pointermove(e) {
+		// Pressure of exactly 1 seems to be an input error, sometimes I see it when lifting the pen
+		// off the screen when pressure reading should be near 0.
+		if (this.pressure_supported && e.pressure < 1) { 
+			this.pointer_pressure = e.pressure;
+		}
 	}
 
 	mousedown(e) {
@@ -89,10 +118,6 @@ class Brush_class extends Base_tools_class {
 			this.Base_layers.insert(this.layer);
 			this.params_hash = params_hash;
 		}
-		else {
-			//continue adding layer data, just register break
-			config.layer.data.push(null);
-		}
 	}
 
 	mousemove(e) {
@@ -110,10 +135,11 @@ class Brush_class extends Base_tools_class {
 		//detect line size
 		var size = params.size;
 		var new_size = size;
-		/*if(typeof e.pressure !== "undefined"){ // needs testing !!!
-			new_size = size * e.pressure * 2; //e.pressure has range [0 - 1]
+
+		if (this.pressure_supported) {
+			new_size = size * this.pointer_pressure * 2;
 		}
-		else*/ if (params.smart_brush == true) {
+		else if (params.smart_brush == true) {
 			new_size = size + size / max_speed * mouse.speed_average * power;
 			new_size = Math.max(new_size, size / 4);
 			new_size = Math.round(new_size);
@@ -132,7 +158,14 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		var params = this.getParams();
+		var size = params.size;
+		var new_size = size;
+		if (this.pressure_supported) {
+			new_size = size * this.pointer_pressure * 2;
+		}
+		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		config.layer.data.push(null);
 		config.layer.status = null;
 		this.Base_layers.render();
 	}
@@ -167,12 +200,12 @@ class Brush_class extends Base_tools_class {
 				//line
 				ctx.lineWidth = data[i][2];
 
-				if (data[i - 1] == null) {
+				if (data[i - 1] == null && data[i + 1] == null) {
 					//exception - point
 					ctx.arc(data[i][0], data[i][1], size / 2, 0, 2 * Math.PI, false);
 					ctx.fill();
 				}
-				else {
+				else if (data[i - 1] != null) {
 					//lines
 					ctx.lineWidth = data[i][2];
 					ctx.beginPath();
