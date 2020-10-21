@@ -75,6 +75,8 @@ class Brush_class extends Base_tools_class {
 	}
 
 	pointerdown(e) {
+		// Devices that don't actually support pen pressure can give 0.5 as a false reading.
+		// It is highly unlikely a real pen will read exactly 0.5 at the start of a stroke.
 		if (e.pressure && e.pressure !== 0 && e.pressure !== 0.5 && e.pressure <= 1) {
 			this.pressure_supported = true;
 			this.pointer_pressure = e.pressure;
