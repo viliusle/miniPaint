@@ -43,9 +43,6 @@
 .grey{
 	color:grey;
 }
-.text_muted{
-	color: var(--text-color-muted);
-}
 .external{
 	padding-right: 15px;
 }
@@ -69,27 +66,31 @@
 .block{
 	position: relative;
 	background-color: rgba(255, 255, 255, 0.2);
-	background-color: var(--area-background-color);
+	background-color: var(--block-background-color);
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	border: 1px solid var(--border-color);
 	margin-bottom: 10px;
 	user-select: none;
+	border-radius: 4px;
 }
 .sidebar_right .block{
 	background-color: #68727b;
-	background-color: var(--area-background-color);
+	background-color: var(--block-background-color);
+	border-bottom: none;
+	box-shadow: 0 -2px 0 0 var(--header-background-color) inset;
 }
 .block:last-child{
 	margin-bottom: 0;
 }
 .block h2{
 	position: relative;
-	padding: 2px 5px;
+	padding: 2px 5px 2px 6px;
 	margin: 0;
 	font-size: 110%;
 	background-color: rgba(255, 255, 255, 0.3);
 	background-color: var(--header-background-color);
 	border-bottom: #555;
+	border-radius: 4px 4px 0 0;
 }
 .block.toggled h2, .block h2.toggled:after{
 	border: none;
@@ -112,7 +113,16 @@
 	border-color: var(--text-color-muted) transparent transparent transparent;
 }
 .block .content{
-	padding:5px;
+	padding: 7.5px 5px;
+}
+.block_section {
+    margin: .75rem 0;
+}
+.block_section:first-child {
+    margin-top: 0;
+}
+.block_section:last-child {
+    margin-bottom: 0;
 }
 .error{
 	padding:20px;
@@ -184,6 +194,7 @@ body .sp-preview{
 	margin-bottom: 5px;
 }
 .attributes{
+	background-color: var(--area-background-color);
 	width: calc(100% - 125px);
 	margin-top: 5px;
 	margin-bottom: 5px !important;
@@ -337,43 +348,6 @@ body .sp-preview{
 	height: 40px;
 	cursor: pointer;
 	margin: 5px;
-}
-.colors .content{
-	margin-top: 10px;
-}
-.main_color_alt{
-	border:1px solid #393939;
-	margin-top:10px;
-	width:100%;
-	height:40px;
-}
-.main_color_rgb{
-	margin-top:10px;
-}
-.main_color_rgb div{
-	display: inline-block;
-	width: calc(50% - 3px);
-	vertical-align: top;
-}
-.main_color_rgb span, .hex{
-	display: inline-block;
-	font-weight: bold;
-	width: 50px;
-}
-.main_color_rgb input{
-	width: 70px;
-}
-.main_color_rgb .red{ color: var(--text-color-red); }
-.main_color_rgb .green{ color: var(--text-color-green); }
-.main_color_rgb .blue{ color: var(--text-color-blue); }
-.main_color_rgb .alpha{ color: var(--text-color-muted); }
-
-.color_hex{
-	width: calc(100% - 60px);
-}
-#all_colors{
-	margin-top:10px;
-	padding:3px 0px 3px 3px;
 }
 
 /* layers */

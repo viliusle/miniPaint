@@ -55,7 +55,7 @@ class Tools_colorToAlpha_class {
 
 	change(data, color) {
 		var imgData = data.data;
-		var back_color = this.Helper.hex2rgb(color);
+		var back_color = this.Helper.hexToRgb(color);
 
 		for (var i = 0; i < imgData.length; i += 4) {
 			if (imgData[i + 3] == 0)

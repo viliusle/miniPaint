@@ -1,0 +1,590 @@
+/*****************\
+| UI Button Group |
+\*****************/
+
+.ui_button_group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.ui_button_group.stacked {
+    margin: .75rem 0;
+}
+.ui_button_group.stacked:first-child {
+    margin-top: 0;
+}
+.ui_button_group.stacked:last-child {
+    margin-bottom: 0;
+}
+.ui_button_group > button,
+.ui_button_group > input[type="button"] {
+    border-radius: 0;
+}
+.ui_button_group > button:focus,
+.ui_button_group > input[type="button"]:focus {
+    z-index: 1;
+}
+.ui_button_group > button + button,
+.ui_button_group > button + input[type="button"],
+.ui_button_group > input[type="button"] + button,
+.ui_button_group > input[type="button"] + input[type="button"] {
+    margin-left: -1px;
+}
+.ui_button_group > button:first-child,
+.ui_button_group > input[type="button"]:first-child {
+    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
+}
+.ui_button_group > button:last-child,
+.ui_button_group > input[type="button"]:last-child {
+    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+}
+
+/**************************\
+| UI Color Picker Gradient |
+\**************************/
+
+.ui_color_picker_gradient {
+    padding: 0 0 80% 0;
+    position: relative;
+    width: 100%;
+}
+
+.ui_color_picker_gradient .primary_pick {
+    position: absolute;
+    left: 86%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: white;
+}
+
+.ui_color_picker_gradient .secondary_pick {
+    position: absolute;
+    left: 0;
+    right: 17%;
+    top: 0;
+    bottom: 0;
+    border: 1px solid var(--border-color);
+    background: green;
+}
+
+.ui_color_picker_gradient .secondary_pick:focus {
+    outline: 0;
+    border: 1px solid var(--input-border-color-active);
+}
+
+.ui_color_picker_gradient .secondary_pick .saturation_gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to right, #fff, rgba(204, 154, 129, 0));
+}
+
+.ui_color_picker_gradient .secondary_pick .value_gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to top, #000, rgba(204, 154, 129, 0));
+}
+
+.ui_color_picker_gradient .secondary_pick .handle {
+    position: absolute;
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: auto;
+    pointer-events: none;
+}
+
+.ui_color_picker_gradient .secondary_pick .handle:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -.6rem;
+    top: -.6rem;
+    height: .3rem;
+    width: .3rem;
+    border: .4rem solid #999;
+    border-radius: 1000px;
+}
+
+.ui_color_picker_gradient .secondary_pick .handle:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -.5rem;
+    top: -.5rem;
+    height: .5rem;
+    width: .5rem;
+    border: .2rem solid white;
+    border-radius: 1000px;
+}
+
+.ui_color_picker_gradient .primary_pick .ui_range {
+    border-color: rgba(1, 1, 1, 0.1);
+}
+.ui_color_picker_gradient .primary_pick .ui_range:focus {
+    border-color: var(--input-border-color-active);
+}
+
+/*****************\
+| UI Color Sample |
+\*****************/
+
+.ui_color_sample {
+    border: 1px solid #999;
+    box-shadow: 0 0 0 1px #555 inset;
+    display: block;
+    height: 28px;
+    width: 28px;
+}
+
+/***************\
+| UI Flex Group |
+\***************/
+
+.ui_flex_group {
+    display: flex;
+    flex-direction: row;
+}
+.ui_flex_group.stacked {
+    margin: .75rem 0;
+}
+.ui_flex_group.stacked:first-child {
+    margin-top: 0;
+}
+.ui_flex_group.stacked:last-child {
+    margin-bottom: 0;
+}
+.ui_flex_group.column {
+    flex-direction: column;
+}
+.ui_flex_group.justify_content_center {
+    justify-content: center;
+}
+.ui_flex_group.justify_content_start {
+    justify-content: flex-start;
+}
+.ui_flex_group.justify_content_end {
+    justify-content: flex-end;
+}
+.ui_flex_group.justify_content_space_around {
+    justify-content: space-around;
+}
+.ui_flex_group.justify_content_space_between {
+    justify-content: space-between;
+}
+.ui_flex_group.align_items_baseline {
+    align-items: baseline;
+}
+.ui_flex_group.align_items_center {
+    align-items: center;
+}
+.ui_flex_group.align_items_start {
+    align-items: flex-start;
+}
+.ui_flex_group.align_items_end {
+    align-items: flex-end;
+}
+.ui_flex_group.align_items_stretch {
+    align-items: stretch;
+}
+
+/****************\
+| UI Icon Button |
+\****************/
+
+.ui_icon_button {
+    height: 2.8rem;
+}
+
+.ui_icon_button > svg {
+    display: block;
+    font-size: 1.6rem;
+}
+
+/****************\
+| UI Input Group |
+\****************/
+
+.ui_input_group {
+    display: flex;
+    flex-direction: row;
+    min-height: 2.4rem;
+    width: 100%;
+}
+.ui_input_group.stacked {
+    margin: .75rem 0;
+}
+.ui_input_group.stacked:first-child {
+    margin-top: 0;
+}
+.ui_input_group.stacked:last-child {
+    margin-bottom: 0;
+}
+.ui_input_group > input,
+.ui_input_group > .ui_number_input,
+.ui_input_group > .ui_range {
+    border-radius: 0;
+    height: auto;
+    min-width: 0;
+}
+.ui_input_group > :first-child {
+    border-radius: var(--input-border-radius) 0 0 var(--input-border-radius);
+}
+.ui_input_group > :last-child {
+    border-radius: 0 var(--input-border-radius) var(--input-border-radius) 0;
+}
+.ui_input_group > label {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--input-group-border-color);
+    border-right: 0;
+    margin: 0;
+    padding: 0 .75rem;
+}
+.ui_input_group > .ui_range + input,
+.ui_input_group > .ui_range + .ui_number_input {
+    margin-left: -1px;
+}
+
+.ui_input_grid {
+    border-radius: var(--input-border-radius);
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
+}
+.ui_input_grid.stacked {
+    margin: .75rem 0;
+}
+.ui_input_grid.stacked:first-child {
+    margin-top: 0;
+}
+.ui_input_grid.stacked:last-child {
+    margin-bottom: 0;
+}
+:not(.ui_input_grid) > .ui_input_group {
+    border-radius: var(--input-border-radius);
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
+}
+.ui_input_grid > .ui_input_group {
+    margin: -1px 0;
+}
+.ui_input_grid > .ui_input_group > :first-child,
+.ui_input_grid > .ui_input_group > :last-child {
+    border-radius: 0;
+}
+.ui_input_grid > .ui_input_group:first-child {
+    margin-top: 0;
+}
+.ui_input_grid > .ui_input_group:first-child > :first-child {
+    border-radius: var(--input-border-radius) 0 0 0;
+}
+.ui_input_grid > .ui_input_group:first-child > :last-child {
+    border-radius: 0 var(--input-border-radius) 0 0;
+}
+.ui_input_grid > .ui_input_group:last-child {
+    margin-bottom: 0;
+}
+.ui_input_grid > .ui_input_group:last-child > :first-child {
+    border-radius: 0 0 0 var(--input-border-radius);
+}
+.ui_input_grid > .ui_input_group:last-child > :last-child {
+    border-radius: 0 0 var(--input-border-radius) 0;
+}
+
+/*****************\
+| UI Number Input |
+\*****************/
+
+.ui_number_input {
+    border: 1px solid var(--input-border-color);
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.ui_number_input > input[type="number"]::-webkit-outer-spin-button,
+.ui_number_input > input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ui_number_input > input[type="number"] {
+    border: none;
+    border-radius: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    padding-right: 2.5rem;
+    padding-right: calc(var(--number-input-arrow-width) + .5rem);
+    width: 100%;
+}
+
+.ui_number_input > .increase_number,
+.ui_number_input > .decrease_number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 2rem;
+    width: var(--number-input-arrow-width);
+    border-radius: 0;
+    border: 1px solid var(--input-border-color);
+    border-right: none;
+    padding: 0;
+    margin: 0;
+}
+.ui_number_input > ::-moz-focus-inner {
+	border: 0;
+}
+.ui_number_input > .increase_number:focus,
+.ui_number_input > .decrease_number:focus {
+    outline: 0;
+}
+.ui_number_input > .increase_number {
+    right: 0;
+    top: 0;
+    bottom: 50%;
+    border-top: none;
+}
+.ui_number_input > .increase_number::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid var(--input-text-color);
+}
+.ui_number_input > .decrease_number {
+    right: 0;
+    top: calc(50% - 1px);
+    bottom: 0;
+    border-bottom: none;
+}
+.ui_number_input > .decrease_number::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid var(--input-text-color);
+}
+
+/**********\
+| UI Range |
+\**********/
+
+:root {
+    --range-handle-width: 18px;
+}
+
+.ui_range {
+    display: flex;
+    flex-direction: row;
+    background: var(--input-background-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 1000px;
+    height: 1.8rem;
+    overflow: visible;
+    outline: 0;
+    padding: 0 calc(var(--range-handle-width) / 2);
+    position: relative;
+    width: 100%;
+}
+.ui_range:focus {
+    border-color: var(--input-border-color-active);
+    z-index: 1;
+}
+
+.ui_range.active {
+    cursor: col-resize;
+}
+
+.ui_range .padded_track {
+    position: absolute;
+    left: calc(var(--range-handle-width) / 2);
+    right: calc(var(--range-handle-width) / 2);
+    top: 0;
+    bottom: 0;
+}
+
+.ui_range .bar {
+    overflow: visible;
+    position: relative;
+    width: 0%;
+}
+
+.ui_range .handle {
+    background: var(--input-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 1000px;
+    box-sizing: border-box;
+    cursor: col-resize;
+    display: block;
+    height: 1.8rem;
+    width: var(--range-handle-width);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+}
+
+.ui_range.color_picker .handle {
+    background: none;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    top: 0;
+    bottom: 0;
+    transform: translateX(50%);
+}
+
+.ui_range.color_picker .handle::before {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: .5rem solid transparent;
+    border-right: .5rem solid transparent;
+    border-top: .7rem solid white;
+}
+.ui_range.color_picker .handle::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: .5rem solid transparent;
+    border-right: .5rem solid transparent;
+    border-bottom: .7rem solid black;
+}
+.ui_range.color_picker .handle:hover::before {
+    border-top-color: #eaeaea;
+}
+.ui_range.color_picker .handle:hover::after {
+    border-bottom-color: #222;
+}
+
+.ui_range.vertical {
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    width: 1.8rem;
+    padding: calc(var(--range-handle-width) / 2) 0;
+}
+
+.ui_range.vertical.active {
+    cursor: row-resize;
+}
+
+.ui_range.vertical .padded_track {
+    left: 0;
+    right: 0;
+    top: calc(var(--range-handle-width) / 2);
+    bottom: calc(var(--range-handle-width) / 2);
+}
+
+.ui_range.vertical .bar {
+    width: 100%;
+    height: 0%;
+}
+
+.ui_range.vertical .handle {
+    transform: translate(50%, -50%);
+    top: 0;
+    right: 50%;
+    cursor: row-resize;
+}
+
+.ui_range.vertical.color_picker_thin {
+    padding: 1px 0;
+    border-radius: 0;
+    width: 100%;
+}
+
+.ui_range.vertical.color_picker_thin .padded_track {
+    top: 0;
+    bottom: 0;
+}
+
+.ui_range.vertical.color_picker_thin .handle  {
+    border-radius: 0;
+    width: 100%;
+    height: .5rem;
+}
+
+/*************\
+| UI Swatches |
+\*************/
+
+.ui_swatches {
+    display: flex;
+    justify-content: center;
+}
+
+.ui_swatches .swatch_group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: auto;
+    border-radius: var(--input-border-radius);
+    border: 1px solid var(--border-color);
+    border-right: transparent;
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
+    overflow: hidden;
+    max-height: calc(2.3rem);
+}
+.ui_swatches .swatch_group:focus {
+    outline: 0;
+    box-shadow: 0 0 0 1px var(--input-border-color-active);
+}
+
+.ui_swatches .swatch_group.rows_2 {
+    max-height: calc(4.6rem - 1px);
+}
+.ui_swatches .swatch_group.rows_3 {
+    max-height: calc(6.9rem - 2px);
+}
+
+.ui_swatches .swatch {
+    background: white;
+    display: inline-block;
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    box-shadow: 0 0 0 1px white inset;
+    margin: -1px 0 0 -1px;
+    padding: 0;
+    height: 2.3rem;
+    min-width: 2.3rem;
+    flex-grow: 1;
+}
+
+.ui_swatches .swatch:hover,
+.ui_swatches .swatch:focus {
+    background: white;
+    box-shadow: 0 0 0 2px white inset, 0 0 0 3px var(--border-color) inset;
+}
+.ui_swatches .swatch:hover:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0.1) 51%,  rgba(0, 0, 0, 0.1) 100%);   
+}
+
+.ui_swatches .swatch.active {
+    box-shadow: 0 0 0 3px var(--button-text-color-active) inset, 0 0 0 4px var(--border-color) inset;
+}
+

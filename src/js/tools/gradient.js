@@ -165,7 +165,7 @@ class Gradient_class extends Base_tools_class {
 		var color2 = params.color_2;
 		var radial = params.radial;
 
-		var color2_rgb = this.Helper.hex2rgb(color2);
+		var color2_rgb = this.Helper.hexToRgb(color2);
 
 		var width = layer.x + layer.width - 1;
 		var height = layer.y + layer.height - 1;

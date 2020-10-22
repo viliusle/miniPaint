@@ -42,7 +42,6 @@
     "hermite-resize": "git+https://github.com/viliusle/Hermite-resize.git",
     "jquery": "^3.5.1",
     "pica": "^5.3.0",
-    "spectrum-colorpicker": "^1.8.1",
     "terser": "^3.17.0"
   }
 }
