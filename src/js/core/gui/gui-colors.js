@@ -353,10 +353,10 @@ class GUI_colors_class {
 			config.COLOR = newColor != null ? newColor : config.COLOR;
 			config.ALPHA = newAlpha != null ? newAlpha : config.ALPHA;
 			if (hsl && !hsv) {
-				hsv = Helper.hslTohsv(hsl.h, hsl.s, hsl.l);
+				hsv = Helper.hslToHsv(hsl.h, hsl.s, hsl.l);
 			}
 			if (hsv && !hsl) {
-				hsl = Helper.hsvTohsl(hsv.h, hsv.s, hsv.v);
+				hsl = Helper.hsvToHsl(hsv.h, hsv.s, hsv.v);
 			}
 			this.render_config_color({ hsl, hsv });
 		}

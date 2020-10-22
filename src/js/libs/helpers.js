@@ -194,7 +194,7 @@ class Helper_class {
 		return this.rgbToHex(rgb.r, rgb.g, rgb.b);
 	}
 
-	hue2rgb(p, q, t) {
+	hueToRgb(p, q, t) {
 		if (t < 0)
 			t += 1;
 		if (t > 1)
@@ -229,9 +229,9 @@ class Helper_class {
 		else {
 			var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
 			var p = 2 * l - q;
-			r = this.hue2rgb(p, q, h + 1 / 3);
-			g = this.hue2rgb(p, q, h);
-			b = this.hue2rgb(p, q, h - 1 / 3);
+			r = this.hueToRgb(p, q, h + 1 / 3);
+			g = this.hueToRgb(p, q, h);
+			b = this.hueToRgb(p, q, h - 1 / 3);
 		}
 
 		return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
@@ -352,7 +352,7 @@ class Helper_class {
 	 * @param Number v The value
 	 * @return {object} The HSL representation
 	 */
-	hsvTohsl(h, s, v) {
+	hsvToHsl(h, s, v) {
 		return {
 			h,
 			s: s * v / Math.max(0.00000001, ((h = (2 - s) * v) < 1 ? h : 2 - h)), 
@@ -370,7 +370,7 @@ class Helper_class {
 	 * @param Number l The value
 	 * @return {object} The HSV representation
 	 */
-	hslTohsv(h, s, l) {
+	hslToHsv(h, s, l) {
 		s *= l < .5 ? l : 1 - l;
 		return {
 			h,
