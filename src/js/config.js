@@ -44,7 +44,7 @@ config.TOOLS = [
 		title: 'Brush',
 		attributes: {
 			size: 4,
-			smart_brush: true,
+			pressure: false,
 		},
 	},
 	{
