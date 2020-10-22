@@ -588,3 +588,11 @@
     box-shadow: 0 0 0 3px var(--button-text-color-active) inset, 0 0 0 4px var(--border-color) inset;
 }
 
+/* disabled arrow on input number fields */
+.color_section_channels input::-webkit-outer-spin-button,
+.color_section_channels input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.color_section_channels input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}

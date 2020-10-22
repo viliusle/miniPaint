@@ -48,7 +48,7 @@ var template = `
 	<div id="color_section_picker" class="block_section">
 		<input id="color_picker_gradient" type="color" aria-label="Color Selection">
 	</div>
-	<div id="color_section_channels" class="block_section">
+	<div id="color_section_channels" class="block_section color_section_channels">
 		<div class="ui_input_group stacked">
 			<label id="color_hex_label" title="Hex" class="label_width_small">Hex</label>
 			<input id="color_hex" aria-labelledby="color_hex_label" value="#000000" maxlength="7" type="text" />
