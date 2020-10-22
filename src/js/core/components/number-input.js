@@ -170,7 +170,7 @@ var Helper = new Helper_class();
                     el.setAttribute('id', id);
                 }
                 if (ariaLabeledBy) {
-                    el.setAttribute('aria-labelledby', ariaLabeledBy);
+                    input.setAttribute('aria-labelledby', ariaLabeledBy);
                 }
                 input.setAttribute('min', min);
                 input.setAttribute('max', max);
