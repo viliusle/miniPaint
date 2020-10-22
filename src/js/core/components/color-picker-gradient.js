@@ -22,6 +22,7 @@ var Helper = new Helper_class();
         const { hsv } = $el.data();
         const key = event.key;
         if (['Left', 'ArrowLeft'].includes(key)) {
+            event.preventDefault();
             set_hsv($el, {
                 h: hsv.h,
                 s: hsv.s - 1/100,
@@ -30,6 +31,7 @@ var Helper = new Helper_class();
             $el.trigger('input');
         }
         else if (['Right', 'ArrowRight'].includes(key)) {
+            event.preventDefault();
             set_hsv($el, {
                 h: hsv.h,
                 s: hsv.s + 1/100,
@@ -38,6 +40,7 @@ var Helper = new Helper_class();
             $el.trigger('input');
         }
         else if (['Up', 'ArrowUp'].includes(key)) {
+            event.preventDefault();
             set_hsv($el, {
                 h: hsv.h,
                 s: hsv.s,
@@ -46,6 +49,7 @@ var Helper = new Helper_class();
             $el.trigger('input');
         }
         else if (['Down', 'ArrowDown'].includes(key)) {
+            event.preventDefault();
             set_hsv($el, {
                 h: hsv.h,
                 s: hsv.s,
@@ -132,11 +136,23 @@ var Helper = new Helper_class();
 
             // Constructor
             if (Object.prototype.toString.call(behavior) !== '[object String]') {
+                const definition = behavior || {};
+
+                const id = definition.id != null ? definition.id : el.getAttribute('id'); 
+                const label = definition.label != null ? definition.label : el.getAttribute('aria-label');
+
                 $(el).after(template);
                 const oldEl = el;
                 el = el.nextElementSibling;
                 $(oldEl).remove();
                 this[i] = el;
+
+                if (id) {
+                    el.setAttribute('id', id);
+                }
+                if (label) {
+                    el.setAttribute('aria-label', label);
+                }
 
                 const $el = $(el);
 

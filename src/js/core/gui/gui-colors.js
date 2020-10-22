@@ -10,7 +10,7 @@ var Helper = new Helper_class();
 
 var template = `
 	<div class="ui_flex_group justify_content_space_between stacked">
-		<div id="selected_color_sample" class="ui_color_sample" title="Color Preview"></div>
+		<div id="selected_color_sample" class="ui_color_sample" title="Current Color Preview"></div>
 		<div class="ui_button_group">
 			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Swatches">
 				<span class="sr_only">Toggle Swatches</span>
@@ -42,6 +42,9 @@ var template = `
 			</button>
 		</div>
 	</div>
+	<div id="color_section_swatches" class="block_section">
+		<div id="color_swatches"></div>
+	</div>
 	<div id="color_section_picker" class="block_section">
 		<input id="color_picker_gradient" type="color" aria-label="Color Selection">
 	</div>
@@ -54,39 +57,39 @@ var template = `
 			<div class="ui_input_group">
 				<label id="rgb_r_label" title="Red" class="label_width_character text_red"><strong>R<span class="sr_only">ed</span></strong></label>
 				<input id="rgb_r_range" aria-labelledby="rgb_r_label" type="range" min="0" max="255" class="color_picker" />
-				<input id="rgb_r" min="0" aria-labelledby="rgb_r_label" max="255" type="number" />
+				<input id="rgb_r" min="0" aria-labelledby="rgb_r_label" max="255" type="number" class="input_cw_3" />
 			</div>
 			<div class="ui_input_group">
 				<label id="rgb_g_label" title="Green" class="label_width_character text_green"><strong>G<span class="sr_only">reen</span></strong></label>
 				<input id="rgb_g_range" aria-labelledby="rgb_g_label" type="range" min="0" max="255" class="color_picker" />
-				<input id="rgb_g" min="0" aria-labelledby="rgb_g_label" max="255" type="number" />
+				<input id="rgb_g" min="0" aria-labelledby="rgb_g_label" max="255" type="number" class="input_cw_3" />
 			</div>
 			<div class="ui_input_group">
 				<label id="rgb_b_label" title="Blue" class="label_width_character text_blue"><strong>B<span class="sr_only">lue</span></strong></label>
 				<input id="rgb_b_range" aria-labelledby="rgb_b_label" type="range" min="0" max="255" class="color_picker" />
-				<input id="rgb_b" min="0" aria-labelledby="rgb_b_label" max="255" type="number" />
+				<input id="rgb_b" min="0" aria-labelledby="rgb_b_label" max="255" type="number" class="input_cw_3" />
 			</div>
 			<div class="ui_input_group">
 				<label id="rgb_a_label" title="Alpha" class="label_width_character text_muted"><strong>A<span class="sr_only">lpha</span></strong></label>
 				<input id="rgb_a_range" aria-labelledby="rgb_a_label" type="range" min="0" max="255" class="color_picker" />
-				<input id="rgb_a" min="0" aria-labelledby="rgb_a_label" max="255" type="number" />
+				<input id="rgb_a" min="0" aria-labelledby="rgb_a_label" max="255" type="number" class="input_cw_3" />
 			</div>
 		</div>
 		<div class="ui_input_grid stacked">
 			<div class="ui_input_group">
 				<label id="hsl_h_label" title="Hue" class="label_width_character"><strong>H<span class="sr_only">ue</span></strong></label>
 				<input id="hsl_h_range" aria-labelledby="hsl_h_label" type="range" min="0" max="360" class="color_picker" />
-				<input id="hsl_h" min="0" aria-labelledby="hsl_h_label" max="360" type="number" />
+				<input id="hsl_h" min="0" aria-labelledby="hsl_h_label" max="360" type="number" class="input_cw_3" />
 			</div>
 			<div class="ui_input_group">
 				<label id="hsl_s_label" title="Saturation" class="label_width_character"><strong>S<span class="sr_only">aturation</span></strong></label>
 				<input id="hsl_s_range" aria-labelledby="hsl_s_label" type="range" min="0" max="100" class="color_picker" />
-				<input id="hsl_s" min="0" aria-labelledby="hsl_s_label"max="100" type="number" />
+				<input id="hsl_s" min="0" aria-labelledby="hsl_s_label"max="100" type="number" class="input_cw_3" />
 			</div>
 			<div class="ui_input_group">
 				<label id="hsl_l_label" title="Luminosity" class="label_width_character"><strong>L<span class="sr_only">uminosity</span></strong></label>
 				<input id="hsl_l_range" aria-labelledby="hsl_l_label" type="range" min="0" max="100" class="color_picker" />
-				<input id="hsl_l" min="0" aria-labelledby="hsl_l_label"max="100" type="number" />
+				<input id="hsl_l" min="0" aria-labelledby="hsl_l_label"max="100" type="number" class="input_cw_3" />
 			</div>
 		</div>
 	</div>
@@ -99,6 +102,8 @@ class GUI_colors_class {
 
 	constructor() {
 		this.el = null;
+		this.butons = null;
+		this.sections = null;
 		this.inputs = null;
 	}
 
@@ -110,15 +115,17 @@ class GUI_colors_class {
 	}
 
 	init_components() {
-		// Store buttons
+		// Store button references
 		this.buttons = {
 			toggleColorSwatches: $('#toggle_color_swatches_section_button'),
 			toggleColorPicker: $('#toggle_color_picker_section_button'),
 			toggleColorChannels: $('#toggle_color_channels_section_button')
 		};
 
-		// Store UI sections
+		// Store UI section references
 		this.sections = {
+			swatches: $('#color_section_swatches'),
+			swatchesPlaceholder: document.createComment('Placeholder comment for color swatches'),
 			picker: $('#color_section_picker'),
 			pickerPlaceholder: document.createComment('Placeholder comment for color picker'),
 			channels: $('#color_section_channels'),
@@ -128,6 +135,7 @@ class GUI_colors_class {
 		// Store references to all inputs in DOM
 		this.inputs = {
 			sample: $('#selected_color_sample'),
+			swatches: $('#color_swatches'),
 			pickerGradient: $('#color_picker_gradient'),
 			hex: $('#color_hex'),
 			rgb: {
@@ -169,7 +177,20 @@ class GUI_colors_class {
 			.on('click', () => {
 				this.buttons.toggleColorSwatches.attr('aria-pressed', 'true' === this.buttons.toggleColorSwatches.attr('aria-pressed') ? 'false' : 'true');
 				const isPressed = this.buttons.toggleColorSwatches.attr('aria-pressed') === 'true';
+				if (isPressed) {
+					this.sections.swatchesPlaceholder.parentNode.insertBefore(this.sections.swatches[0], this.sections.swatchesPlaceholder.nextSibling);
+					this.sections.swatchesPlaceholder.parentNode.removeChild(this.sections.swatchesPlaceholder);
+				} else {
+					this.sections.swatches[0].parentNode.insertBefore(this.sections.swatchesPlaceholder, this.sections.swatches[0].nextSibling);
+					this.sections.swatches[0].parentNode.removeChild(this.sections.swatches[0]);	
+				}
+				Helper.setCookie('toggle_color_swatches', isPressed ? 1 : 0);
 			});
+		// Restore toggle preference, default to hidden for swatches
+		const saved_toggle_color_swatches = Helper.getCookie('toggle_color_swatches');
+		if (saved_toggle_color_swatches === 0 || saved_toggle_color_swatches == null) {
+			this.buttons.toggleColorSwatches.trigger('click');
+		}
 
 		// Handle toggle for color picker section
 		this.buttons.toggleColorPicker
@@ -183,7 +204,13 @@ class GUI_colors_class {
 					this.sections.picker[0].parentNode.insertBefore(this.sections.pickerPlaceholder, this.sections.picker[0].nextSibling);
 					this.sections.picker[0].parentNode.removeChild(this.sections.picker[0]);	
 				}
+				Helper.setCookie('toggle_color_picker', isPressed ? 1 : 0);
 			});
+		// Restore toggle preference, default to visible for picker
+		const saved_toggle_color_picker = Helper.getCookie('toggle_color_picker');
+		if (saved_toggle_color_picker === 0) {
+			this.buttons.toggleColorPicker.trigger('click');
+		}
 
 		// Handle toggle for color channels section
 		this.buttons.toggleColorChannels
@@ -197,6 +224,21 @@ class GUI_colors_class {
 					this.sections.channels[0].parentNode.insertBefore(this.sections.channelsPlaceholder, this.sections.channels[0].nextSibling);
 					this.sections.channels[0].parentNode.removeChild(this.sections.channels[0]);	
 				}
+				Helper.setCookie('toggle_color_channels', isPressed ? 1 : 0);
+			});
+		// Restore toggle preference, default to hidden for swatches
+		const saved_toggle_color_channels = Helper.getCookie('toggle_color_channels');
+		if (saved_toggle_color_channels === 0 || saved_toggle_color_channels == null) {
+			this.buttons.toggleColorChannels.trigger('click');
+		}
+
+		// Initialize color swatches
+		this.inputs.swatches
+			.uiSwatches({ rows: 3, count: 21 })
+			.on('input', () => {
+				this.set_color({
+					hex: this.inputs.swatches.uiSwatches('get_selected_hex')
+				});
 			});
 
 		// Initialize color picker gradient
@@ -242,8 +284,9 @@ class GUI_colors_class {
 					this.set_color({ [key]: input.range.uiRange('get_value') });
 				});
 			input.number && input.number
+				.uiNumberInput()
 				.on('input', () => {
-					this.set_color({ [key]: input.number.val() });
+					this.set_color({ [key]: input.number.uiNumberInput('get_value') });
 				})
 		}
 
@@ -295,9 +338,9 @@ class GUI_colors_class {
 		// Set new color by hsl
 		else if ('h' in definition || 's' in definition || 'l' in definition) {
 			hsl = {
-				h: ('h' in definition ? Math.min(360, Math.max(0, parseInt(definition.h, 10) || 0)) : parseInt(this.inputs.hsl.h.number.val(), 10)) / 360,
-				s: ('s' in definition ? Math.min(100, Math.max(0, parseInt(definition.s, 10) || 0)) : parseInt(this.inputs.hsl.s.number.val(), 10)) / 100,
-				l: ('l' in definition ? Math.min(100, Math.max(0, parseInt(definition.l, 10) || 0)) : parseInt(this.inputs.hsl.l.number.val(), 10)) / 100
+				h: ('h' in definition ? Math.min(360, Math.max(0, parseInt(definition.h, 10) || 0)) : parseInt(this.inputs.hsl.h.number.uiNumberInput('get_value'), 10)) / 360,
+				s: ('s' in definition ? Math.min(100, Math.max(0, parseInt(definition.s, 10) || 0)) : parseInt(this.inputs.hsl.s.number.uiNumberInput('get_value'), 10)) / 100,
+				l: ('l' in definition ? Math.min(100, Math.max(0, parseInt(definition.l, 10) || 0)) : parseInt(this.inputs.hsl.l.number.uiNumberInput('get_value'), 10)) / 100
 			};
 			newColor = Helper.hslToHex(hsl.h, hsl.s, hsl.l);
 		}
@@ -330,6 +373,8 @@ class GUI_colors_class {
 
 		this.inputs.sample.css('background', config.COLOR);
 
+		this.inputs.swatches.uiSwatches('set_selected_hex', config.COLOR);
+
 		const hexInput = this.inputs.hex[0];
 		hexInput.value = config.COLOR;
 		hexInput.setCustomValidity('');
@@ -338,10 +383,10 @@ class GUI_colors_class {
 		delete rgb.a;
 		for (let rgbKey in rgb) {
 			this.inputs.rgb[rgbKey].range.uiRange('set_value', rgb[rgbKey]);
-			this.inputs.rgb[rgbKey].number.val(rgb[rgbKey]);
+			this.inputs.rgb[rgbKey].number.uiNumberInput('set_value', rgb[rgbKey]);
 		}
 		this.inputs.rgb.a.range.uiRange('set_value', config.ALPHA);
-		this.inputs.rgb.a.number.val(config.ALPHA);
+		this.inputs.rgb.a.number.uiNumberInput('set_value', config.ALPHA);
 
 		const hsv = options.hsv || Helper.rgbToHsv(rgb.r, rgb.g, rgb.b);
 
@@ -349,7 +394,7 @@ class GUI_colors_class {
 		for (let hslKey in hsl) {
 			const hslValue = Math.round(hsl[hslKey] * (hslKey === 'h' ? 360 : 100));
 			this.inputs.hsl[hslKey].range.uiRange('set_value', hslValue);
-			this.inputs.hsl[hslKey].number.val(hslValue);
+			this.inputs.hsl[hslKey].number.uiNumberInput('set_value', hslValue);
 		}
 
 		this.render_range_gradients({ hsl, hsv });

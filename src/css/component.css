@@ -179,19 +179,19 @@
     justify-content: space-between;
 }
 .ui_flex_group.align_items_baseline {
-    justify-content: baseline;
+    align-items: baseline;
 }
 .ui_flex_group.align_items_center {
-    justify-content: center;
+    align-items: center;
 }
 .ui_flex_group.align_items_start {
-    justify-content: flex-start;
+    align-items: flex-start;
 }
 .ui_flex_group.align_items_end {
-    justify-content: flex-end;
+    align-items: flex-end;
 }
 .ui_flex_group.align_items_stretch {
-    justify-content: stretch;
+    align-items: stretch;
 }
 
 /****************\
@@ -227,6 +227,7 @@
     margin-bottom: 0;
 }
 .ui_input_group > input,
+.ui_input_group > .ui_number_input,
 .ui_input_group > .ui_range {
     border-radius: 0;
     height: auto;
@@ -246,7 +247,8 @@
     margin: 0;
     padding: 0 .75rem;
 }
-.ui_input_group > .ui_range + input {
+.ui_input_group > .ui_range + input,
+.ui_input_group > .ui_range + .ui_number_input {
     margin-left: -1px;
 }
 
@@ -291,6 +293,87 @@
 }
 .ui_input_grid > .ui_input_group:last-child > :last-child {
     border-radius: 0 0 var(--input-border-radius) 0;
+}
+
+/*****************\
+| UI Number Input |
+\*****************/
+
+.ui_number_input {
+    border: 1px solid var(--input-border-color);
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.ui_number_input > input[type="number"]::-webkit-outer-spin-button,
+.ui_number_input > input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ui_number_input > input[type="number"] {
+    border: none;
+    border-radius: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    padding-right: 2.5rem;
+    padding-right: calc(var(--number-input-arrow-width) + .5rem);
+    width: 100%;
+}
+
+.ui_number_input > .increase_number,
+.ui_number_input > .decrease_number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 2rem;
+    width: var(--number-input-arrow-width);
+    border-radius: 0;
+    border: 1px solid var(--input-border-color);
+    border-right: none;
+    padding: 0;
+    margin: 0;
+}
+.ui_number_input > ::-moz-focus-inner {
+	border: 0;
+}
+.ui_number_input > .increase_number:focus,
+.ui_number_input > .decrease_number:focus {
+    outline: 0;
+}
+.ui_number_input > .increase_number {
+    right: 0;
+    top: 0;
+    bottom: 50%;
+    border-top: none;
+}
+.ui_number_input > .increase_number::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid var(--input-text-color);
+}
+.ui_number_input > .decrease_number {
+    right: 0;
+    top: calc(50% - 1px);
+    bottom: 0;
+    border-bottom: none;
+}
+.ui_number_input > .decrease_number::after {
+    content: '';
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid var(--input-text-color);
 }
 
 /**********\
@@ -438,3 +521,70 @@
     width: 100%;
     height: .5rem;
 }
+
+/*************\
+| UI Swatches |
+\*************/
+
+.ui_swatches {
+    display: flex;
+    justify-content: center;
+}
+
+.ui_swatches .swatch_group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: auto;
+    border-radius: var(--input-border-radius);
+    border: 1px solid var(--border-color);
+    border-right: transparent;
+    box-shadow: 0 1px 0 0 rgba(1, 1, 1, 0.1);
+    overflow: hidden;
+    max-height: calc(2.3rem);
+}
+.ui_swatches .swatch_group:focus {
+    outline: 0;
+    box-shadow: 0 0 0 1px var(--input-border-color-active);
+}
+
+.ui_swatches .swatch_group.rows_2 {
+    max-height: calc(4.6rem - 1px);
+}
+.ui_swatches .swatch_group.rows_3 {
+    max-height: calc(6.9rem - 2px);
+}
+
+.ui_swatches .swatch {
+    background: white;
+    display: inline-block;
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    box-shadow: 0 0 0 1px white inset;
+    margin: -1px 0 0 -1px;
+    padding: 0;
+    height: 2.3rem;
+    min-width: 2.3rem;
+    flex-grow: 1;
+}
+
+.ui_swatches .swatch:hover,
+.ui_swatches .swatch:focus {
+    background: white;
+    box-shadow: 0 0 0 2px white inset, 0 0 0 3px var(--border-color) inset;
+}
+.ui_swatches .swatch:hover:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0.1) 51%,  rgba(0, 0, 0, 0.1) 100%);   
+}
+
+.ui_swatches .swatch.active {
+    box-shadow: 0 0 0 3px var(--button-text-color-active) inset, 0 0 0 4px var(--border-color) inset;
+}
+

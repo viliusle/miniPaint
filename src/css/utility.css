@@ -1,4 +1,5 @@
 
+/* Common input label sizes */
 .label_width_character {
     width: 100%;
     max-width: 2.88rem;
@@ -11,7 +12,65 @@
     overflow: hidden;
 }
 
+/* Font color utility */
 .text_red { color: var(--text-color-red); }
 .text_green { color: var(--text-color-green); }
 .text_blue { color: var(--text-color-blue); }
 .text_muted { color: var(--text-color-muted); }
+
+/*
+    Size inputs based on the number of "w" characters that could fit in the input. "w" is usually the widest character.
+    This is a rough estimate since all characters vary in width. For example an input with numbers
+    usually fits way more characters than an input with letters.
+    "cw" means character width
+*/
+.input_cw_1, .input_cw_2, .input_cw_3, .input_cw_4, .input_cw_5,
+.input_cw_6, .input_cw_7, .input_cw_8, .input_cw_9, .input_cw_10
+.input_cw_11, .input_cw_12, .input_cw_13, .input_cw_14, .input_cw_15 {
+    width: 100%;
+}
+.input_cw_1 { max-width: 2.25rem; }
+.input_cw_2 { max-width: 3.25rem; }
+.input_cw_3 { max-width: 4.25rem; }
+.input_cw_4 { max-width: 5.25rem; }
+.input_cw_5 { max-width: 6.25rem; }
+.input_cw_6 { max-width: 7.25rem; }
+.input_cw_7 { max-width: 8.25rem; }
+.input_cw_8 { max-width: 9.25rem; }
+.input_cw_9 { max-width: 10.25rem; }
+.input_cw_10 { max-width: 11.25rem; }
+.input_cw_11 { max-width: 12.25rem; }
+.input_cw_12 { max-width: 13.25rem; }
+.input_cw_13 { max-width: 14.25rem; }
+.input_cw_14 { max-width: 15.25rem; }
+.input_cw_15 { max-width: 16.25rem; }
+input[type="number"].input_cw_1 { max-width: 4.25rem; }
+input[type="number"].input_cw_2 { max-width: 5.25rem; }
+input[type="number"].input_cw_3 { max-width: 6.25rem; }
+input[type="number"].input_cw_4 { max-width: 7.25rem; }
+input[type="number"].input_cw_5 { max-width: 8.25rem; }
+input[type="number"].input_cw_6 { max-width: 9.25rem; }
+input[type="number"].input_cw_7 { max-width: 10.25rem; }
+input[type="number"].input_cw_8 { max-width: 11.25rem; }
+input[type="number"].input_cw_9 { max-width: 12.25rem; }
+input[type="number"].input_cw_10 { max-width: 13.25rem; }
+input[type="number"].input_cw_11 { max-width: 14.25rem; }
+input[type="number"].input_cw_12 { max-width: 15.25rem; }
+input[type="number"].input_cw_13 { max-width: 16.25rem; }
+input[type="number"].input_cw_14 { max-width: 17.25rem; }
+input[type="number"].input_cw_15 { max-width: 18.25rem; }
+.ui_number_input.input_cw_1 { max-width: calc(2.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_2 { max-width: calc(3.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_3 { max-width: calc(4.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_4 { max-width: calc(5.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_5 { max-width: calc(6.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_6 { max-width: calc(7.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_7 { max-width: calc(8.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_8 { max-width: calc(9.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_9 { max-width: calc(10.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_10 { max-width: calc(11.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_11 { max-width: calc(12.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_12 { max-width: calc(13.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_13 { max-width: calc(14.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_14 { max-width: calc(15.25rem + var(--number-input-arrow-width)); }
+.ui_number_input.input_cw_15 { max-width: calc(16.25rem + var(--number-input-arrow-width)); }

@@ -176,6 +176,7 @@
                 el = el.nextElementSibling;
                 $(oldEl).remove();
                 this[i] = el;
+                const $el = $(el);
 
                 if (classList) {
                     el.classList.add(classList);
@@ -186,8 +187,6 @@
                 if (id) {
                     el.setAttribute('id', id);
                 }
-
-                const $el = $(el);
 
                 $el.data({
                     paddedTrack: $('.padded_track', el).get(0),
@@ -202,10 +201,11 @@
 
                 set_value($el, value);
 
-                $el.on('mousedown touchstart', on_mouse_down_range);
-                $el.on('touchmove', on_touch_move_range);
-                $el.on('keydown', on_keydown_range);
-                $el.on('wheel', on_wheel_range);
+                $el
+                    .on('mousedown touchstart', on_mouse_down_range)
+                    .on('touchmove', on_touch_move_range)
+                    .on('keydown', on_keydown_range)
+                    .on('wheel', on_wheel_range);
             }
             // Behaviors
             else if (behavior === 'set_background') {

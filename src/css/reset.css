@@ -29,6 +29,7 @@
 	--input-group-border-color:  #323a3c;
 	--menu-background-color: #222;
 	--menu-text-color: #cccccc;
+	--number-input-arrow-width: 2rem;
 	--background-color-active: #adecab;
 	--background-color-hover: #575f62;
 	--text-color-active: #215b2a;
@@ -58,11 +59,12 @@ body.theme-light{
 	--button-background-color: #f9f9fa;
 	--button-background-color-hover: #c4c4c4;
 	--button-background-color-active: #f3f3f3;
-	--button-text-color-active: #70c4ee;
+	--button-text-color-active: #59aed8;
 	--button-shadow-color: rgba(0, 0, 0, 0.1);
 	--input-background-color: #ffffff;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
+	--input-border-color-active: #59aed8;
 	--input-group-border-color: #c4c4c4;
 	--menu-background-color: #eaeaea;
 	--menu-text-color: #333333;
