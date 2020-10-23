@@ -235,38 +235,40 @@ class Brush_class extends Base_tools_class {
 				this.render_stabilized(ctx, group_data);
 			}
 			else {
-				ctx.beginPath();
-				ctx.moveTo(group_data[0][0], group_data[0][1]);
-				for (var i = 1; i < group_n; i++) {
-					if (group_data[i] === null) {
-						//break
-						ctx.beginPath();
-					}
-					else {
-						//line
-
-						ctx.lineWidth = group_data[i][2];
-
-						if (group_data[i - 1] == null && group_data[i + 1] == null) {
-							//exception - point
-							ctx.arc(group_data[i][0], group_data[i][1], size / 2, 0, 2 * Math.PI, false);
-							ctx.fill();
-						}
-						else if (group_data[i - 1] != null) {
-							//lines
-							ctx.lineWidth = group_data[i][2];
-							ctx.beginPath();
-							ctx.moveTo(group_data[i - 1][0], group_data[i - 1][1]);
-							ctx.lineTo(group_data[i][0], group_data[i][1]);
-							ctx.stroke();
-						}
-					}
-				}
-				if (n == 1 || group_data[1] == null) {
-					//point
+				if (group_data[0]) {
 					ctx.beginPath();
-					ctx.arc(group_data[0][0], group_data[0][1], size / 2, 0, 2 * Math.PI, false);
-					ctx.fill();
+					ctx.moveTo(group_data[0][0], group_data[0][1]);
+					for (var i = 1; i < group_n; i++) {
+						if (group_data[i] === null) {
+							//break
+							ctx.beginPath();
+						}
+						else {
+							//line
+
+							ctx.lineWidth = group_data[i][2];
+
+							if (group_data[i - 1] == null && group_data[i + 1] == null) {
+								//exception - point
+								ctx.arc(group_data[i][0], group_data[i][1], size / 2, 0, 2 * Math.PI, false);
+								ctx.fill();
+							}
+							else if (group_data[i - 1] != null) {
+								//lines
+								ctx.lineWidth = group_data[i][2];
+								ctx.beginPath();
+								ctx.moveTo(group_data[i - 1][0], group_data[i - 1][1]);
+								ctx.lineTo(group_data[i][0], group_data[i][1]);
+								ctx.stroke();
+							}
+						}
+					}
+					if (group_data[1] == null) {
+						//point
+						ctx.beginPath();
+						ctx.arc(group_data[0][0], group_data[0][1], size / 2, 0, 2 * Math.PI, false);
+						ctx.fill();
+					}
 				}
 			}
 		}
