@@ -40,6 +40,8 @@ class Base_gui_class {
 		//if grid is visible
 		this.grid = false;
 
+		this.canvas_offset = {x: 0, y: 0};
+
 		//common image dimensions
 		this.common_dimensions = [
 			[640, 480, '480p'],
@@ -120,35 +122,25 @@ class Base_gui_class {
 
 	set_events() {
 		var _this = this;
+
 		//menu events
-		var targets = document.querySelectorAll('#main_menu a');
-		for (var i = 0; i < targets.length; i++) {
-			if (targets[i].dataset.target == undefined)
-				continue;
-			targets[i].addEventListener('click', function (event) {
-				var parts = this.dataset.target.split('.');
-				var module = parts[0];
-				var function_name = parts[1];
-				var param = parts[2];
+		this.GUI_menu.on('select_target', (target) => {
+			var parts = target.split('.');
+			var module = parts[0];
+			var function_name = parts[1];
+			var param = parts[2];
 
-				//close menu
-				var menu = document.querySelector('#main_menu .selected');
-				if (menu != undefined) {
-					menu.click();
-				}
-
-				//call module
-				if (_this.modules[module] == undefined) {
-					alertify.error('Modules class not found: ' + module);
-					return;
-				}
-				if (_this.modules[module][function_name] == undefined) {
-					alertify.error('Module function not found. ' + module + '.' + function_name);
-					return;
-				}
-				_this.modules[module][function_name](param);
-			});
-		}
+			//call module
+			if (this.modules[module] == undefined) {
+				alertify.error('Modules class not found: ' + module);
+				return;
+			}
+			if (this.modules[module][function_name] == undefined) {
+				alertify.error('Module function not found. ' + module + '.' + function_name);
+				return;
+			}
+			this.modules[module][function_name](param);
+		});
 
 		//registerToggleAbility
 		var targets = document.querySelectorAll('.toggle');
@@ -175,6 +167,15 @@ class Base_gui_class {
 			_this.prepare_canvas();
 			config.need_render = true;
 		}, false);
+		this.check_canvas_offset();
+	}
+
+	check_canvas_offset() {
+		//calc canvas position offset
+		var bodyRect = document.body.getBoundingClientRect();
+		var canvas_el = document.getElementById('canvas_minipaint').getBoundingClientRect();
+		this.canvas_offset.x = canvas_el.left - bodyRect.left;
+		this.canvas_offset.y = canvas_el.top - bodyRect.top;
 	}
 
 	prepare_canvas() {
@@ -204,6 +205,8 @@ class Base_gui_class {
 		//change wrapper dimensions
 		document.getElementById('canvas_wrapper').style.width = w + 'px';
 		document.getElementById('canvas_wrapper').style.height = h + 'px';
+
+		this.check_canvas_offset();
 	}
 
 	load_saved_changes() {

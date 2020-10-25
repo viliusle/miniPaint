@@ -11,7 +11,7 @@ var instance = null;
 var template = `
 	<div class="canvas_preview_wrapper">
 		<div class="transparent-grid" id="canvas_preview_background"></div>
-		<canvas width="188" height="100" class="transparent" id="canvas_preview"></canvas>
+		<canvas width="176" height="100" class="transparent" id="canvas_preview"></canvas>
 	</div>
 	<div class="canvas_preview_details">
 		<div class="details">
@@ -38,7 +38,7 @@ class GUI_preview_class {
 		document.getElementById('toggle_preview').innerHTML = template;
 
 		// preview mini window size on right sidebar
-		this.PREVIEW_SIZE = {w: 188, h: 100};
+		this.PREVIEW_SIZE = {w: 176, h: 100};
 
 		this.zoom_data = {
 			x: 0,

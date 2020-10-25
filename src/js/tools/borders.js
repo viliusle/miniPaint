@@ -19,8 +19,17 @@ class Borders_class extends Base_tools_class {
 	render(ctx, layer) {
 		var params = layer.params;
 		var size = params.size;
-		var width = parseInt(config.WIDTH);
-		var height = parseInt(config.HEIGHT);
+
+		var x = layer.x;
+		var y = layer.y;
+		var width = parseInt(layer.width);
+		var height = parseInt(layer.height);
+
+		//legcy check
+		if(x == null) x = 0;
+		if(y == null) y = 0;
+		if(!width) width = config.WIDTH;
+		if(!height) height = config.HEIGHT;
 
 		ctx.save();
 
@@ -33,14 +42,14 @@ class Borders_class extends Base_tools_class {
 			ctx.beginPath();
 			ctx.shadowColor = layer.color;
 			ctx.shadowBlur = size * config.ZOOM;
-			ctx.rect(-size / 2, -size / 2, width + size, height + size);
+			ctx.rect(x -size / 2, y -size / 2, width + size, height + size);
 			ctx.stroke();
 			ctx.stroke();
 			ctx.stroke();
 		}
 		else {
 			ctx.beginPath();
-			ctx.rect(0, 0, width, height);
+			ctx.rect(x, y, width, height);
 			ctx.stroke();
 		}
 		ctx.restore();

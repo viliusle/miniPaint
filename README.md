@@ -20,9 +20,8 @@ or upload from computer (using menu or drag & drop). Nothing will be sent to any
 - Chrome
 - Firefox
 - Opera
+- Edge
 - Safari
-- Edge (missing few features)
-- IE 11 (only basic support)
 
 ## Features
 

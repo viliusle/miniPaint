@@ -69,10 +69,10 @@ class Tools_borders_class {
 			render_function: ['borders', 'render'],
 			params: {size: params.size, shadow: params.shadow},
 			color: params.color,
-			x: null,
-			y: null,
-			width: null,
-			height: null,
+			x: 0,
+			y: 0,
+			width: config.WIDTH,
+			height: config.HEIGHT,
 			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
