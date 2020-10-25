@@ -60,7 +60,7 @@
 	width: 130px;
 }
 #popup textarea{
-	color:#000000;
+	color: var(--input-text-color);
 	width:100%;
 	border:1px solid #393939;
 	padding-left:5px;
