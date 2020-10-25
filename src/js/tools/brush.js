@@ -110,8 +110,11 @@ class Brush_class extends Base_tools_class {
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
-				width: null,
-				height: null,
+				x: 0,
+				y: 0,
+				width: config.WIDTH,
+				height: config.HEIGHT,
+				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
 			};
@@ -119,10 +122,7 @@ class Brush_class extends Base_tools_class {
 			this.params_hash = params_hash;
 		}
 
-		config.layer.data.push({
-			pressure: this.pressure_supported,
-			data: [],
-		});
+		config.layer.data.push([]);
 	}
 
 	mousemove(e) {
@@ -154,7 +154,7 @@ class Brush_class extends Base_tools_class {
 			}
 		}
 
-		last_group.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		config.layer.status = 'draft';
 		this.Base_layers.render();
 	}
@@ -177,8 +177,11 @@ class Brush_class extends Base_tools_class {
 			new_size = size * this.pointer_pressure * 2;
 		}
 
-		last_group.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		config.layer.status = null;
+
+		this.check_dimensions();
+
 		this.Base_layers.render();
 	}
 
@@ -201,36 +204,14 @@ class Brush_class extends Base_tools_class {
 		var data = layer.data;
 
 		//check for legacy format
-		if(data.length > 0 && typeof data[0].data == "undefined"){
-			//convert
-			var legacy = JSON.parse(JSON.stringify(data));
-			data = [];
-			data.push({
-				pressure: true,
-				data: [],
-			});
-			var group_index = 0;
-			for(var i in legacy){
-				if(legacy[i][0] === null){
-					data.push({
-						pressure: false,
-						data: [],
-					});
-					group_index++;
-				}
-				else {
-					data[group_index].data.push([legacy[i][0], legacy[i][1], legacy[i][2]]);
-				}
-			}
-		}
+		data = this.check_legacy_format(data);
 
 		var n = data.length;
 		for (var k = 0; k < n; k++) {
-			var group = data[k]; //data from mouse down till mouse release
-			var group_data = group.data;
+			var group_data = data[k]; //data from mouse down till mouse release
 			var group_n = group_data.length;
 
-			if (group.pressure == false) {
+			if (params.pressure == false) {
 				//stabilized lines method does not support multiple line sizes
 				this.render_stabilized(ctx, group_data);
 			}
@@ -352,6 +333,77 @@ class Brush_class extends Base_tools_class {
 			tempdata[i+1][1]
 		);
 		ctx.stroke();
+	}
+
+	check_legacy_format(data) {
+		//check for legacy format
+		if(data.length > 0 && typeof data[0][0] == "number"){
+			//convert
+			var legacy = JSON.parse(JSON.stringify(data));
+			data = [];
+			data.push([]);
+			var group_index = 0;
+			for(var i in legacy){
+				if(legacy[i] === null){
+					data.push([]);
+					group_index++;
+				}
+				else {
+					data[group_index].push([legacy[i][0], legacy[i][1], legacy[i][2]]);
+				}
+			}
+		}
+
+		return data;
+	}
+
+	/**
+	 * recalculate layer x, y, width and height values.
+	 */
+	check_dimensions() {
+		var data = config.layer.data;
+		this.check_legacy_format(data);
+
+		if(config.layer.data.length == 0)
+			return;
+
+		//find bounds
+		var min_x = data[0][0][0];
+		var min_y = data[0][0][1];
+		var max_x = data[0][0][0];
+		var max_y = data[0][0][1];
+
+		var n = data.length;
+		for (var k = 0; k < n; k++) {
+			var group_data = data[k];
+			var group_n = group_data.length;
+
+			for (var i = 1; i < group_n; i++) {
+				min_x = Math.min(min_x, group_data[i][0]);
+				min_y = Math.min(min_y, group_data[i][1]);
+				max_x = Math.max(max_x, group_data[i][0]);
+				max_y = Math.max(max_y, group_data[i][1]);
+			}
+		}
+
+		//move current data
+		for (var k = 0; k < n; k++) {
+			var group_data = data[k];
+			var group_n = group_data.length;
+
+			for (var i = 0; i < group_n; i++) {
+				group_data[i][0] = group_data[i][0] - min_x;
+				group_data[i][1] = group_data[i][1] - min_y;
+			}
+		}
+
+		//change layers bounds
+		config.layer.x = config.layer.x + min_x;
+		config.layer.y = config.layer.y + min_y;
+		config.layer.width = max_x - min_x;
+		config.layer.height = max_y - min_y;
+
+		this.Base_layers.render();
 	}
 
 }
