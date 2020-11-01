@@ -284,7 +284,7 @@ body .sp-preview{
 .sidebar_left .circle:after{ background-image: url('images/icons/circle.svg'); }
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
 .sidebar_left .text:after{
-	background-image: url('../../images/icons/text.svg');
+	background-image: url('images/icons/text.svg');
 	background-size: 16px auto;
 }
 .sidebar_left .gradient:after{
