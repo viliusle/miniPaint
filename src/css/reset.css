@@ -28,6 +28,8 @@
 	--input-border-radius: .4rem;
 	--input-group-border-color:  #323a3c;
 	--menu-background-color: #222;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
 	--menu-text-color: #cccccc;
 	--number-input-arrow-width: 2rem;
 	--background-color-active: #adecab;
@@ -36,9 +38,7 @@
 	--border-color: #727677;
 	--scrollbar-track-color: #464d4f;
 	--scrollbar-thumb-color: #2f3739;
-	--sprites-url: url(images/sprites-light.png);
-	--sprites-url-active: url(images/sprites.png);
-	--mobile-menu-toggle-filter: none;
+	--mobile-menu-toggle-filter: invert(1);
 }
 html {
 	font-size: 10px; /* Base is 10px for easy REM calculation */
@@ -67,6 +67,8 @@ body.theme-light{
 	--input-border-color-active: #59aed8;
 	--input-group-border-color: #c4c4c4;
 	--menu-background-color: #eaeaea;
+	--menu-icons-filter: none;
+	--menu-icons-filter-active: invert(1);
 	--menu-text-color: #333333;
 	--menu-dropdown-hover-background-color: #a3dbf7;
 	--menu-dropdown-border-color: #15439b;
@@ -76,8 +78,6 @@ body.theme-light{
 	--border-color: #c1c1c1;
 	--scrollbar-track-color: #f9f9fa;
 	--scrollbar-thumb-color: #919090;
-	--sprites-url: url(images/sprites.png);
-	--sprites-url-active: url(images/sprites.png);
 	--mobile-menu-toggle-filter: none;
 }
 body.theme-green{
@@ -98,6 +98,8 @@ body.theme-green{
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
 	--menu-background-color: #1c2e04;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
 	--menu-text-color: #acc3a9;
 	--background-color-active: #58960e;
 	--background-color-hover: #58960e;
@@ -105,9 +107,7 @@ body.theme-green{
 	--border-color: #4d6b1e;
 	--scrollbar-track-color: #050702;
 	--scrollbar-thumb-color: #80937d;
-	--sprites-url: url(images/sprites.png);
-	--sprites-url-active: url(images/sprites.png);
-	--mobile-menu-toggle-filter: invert();
+	--mobile-menu-toggle-filter: invert(1);
 }
 body{
 	margin: 0px;
