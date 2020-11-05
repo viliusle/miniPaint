@@ -551,6 +551,17 @@ class Helper_class {
 		ctx.clearRect(0, 0, width, height);
 	}
 	
+	is_input(element) {
+		if (!element) {
+			return false;
+		}
+		if (element.type == 'text' || element.tagName == 'INPUT' || element.type == 'textarea') {
+			return true;
+		} else {
+			return element.closest('.ui_color_picker_gradient, .ui_number_input, .ui_range, .ui_swatches') != null;
+		}
+	}
+
 	//if IE 11 or Edge
 	is_edge_or_ie() {
 		//ie11

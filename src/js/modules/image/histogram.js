@@ -22,16 +22,14 @@ class Image_histogram_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 72) {
 				//H - trim
-				_this.histogram();
+				this.histogram();
 			}
 		}, false);
 	}

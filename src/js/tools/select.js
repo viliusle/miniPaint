@@ -2,6 +2,7 @@ import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_selection_class from './../core/base-selection.js';
+import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
 
 class Select_tool_class extends Base_tools_class {
@@ -10,6 +11,7 @@ class Select_tool_class extends Base_tools_class {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.POP = new Dialog_class();
+		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'select';
 		this.saved = false;
@@ -61,12 +63,12 @@ class Select_tool_class extends Base_tools_class {
 		});
 
 		//keyboard actions
-		document.addEventListener('keydown', function (e) {
+		document.addEventListener('keydown', (e) => {
 			if (config.TOOL.name != _this.name)
 				return;
 			if (_this.POP.active == true)
 				return;
-			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.tagName == 'SELECT')
+			if (this.Helper.is_input(e.target))
 				return;
 			var k = e.keyCode;
 

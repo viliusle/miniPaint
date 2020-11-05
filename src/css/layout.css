@@ -535,6 +535,7 @@ body .sp-preview{
 	position: absolute;
 	border: 1px solid var(--border-color);
 	box-sizing: content-box;
+	font-kerning: normal !important;
 }
 #mouse{
 	position:absolute;

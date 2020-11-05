@@ -31,16 +31,14 @@ class Image_resize_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 82 && event.ctrlKey != true && event.metaKey != true) {
 				//R - resize
-				_this.resize();
+				this.resize();
 				event.preventDefault();
 			}
 		}, false);
