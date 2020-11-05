@@ -1,8 +1,8 @@
 import Effects_common_class from './abstract/css.js';
 
-class Effects_negative_class extends Effects_common_class {
+class Effects_invert_class extends Effects_common_class {
 
-	negative() {
+	invert() {
 		var params = [
 			{name: "value", title: "Percentage:", value: 100, range: [0, 100]},
 		];
@@ -16,4 +16,4 @@ class Effects_negative_class extends Effects_common_class {
 
 }
 
-export default Effects_negative_class;
+export default Effects_invert_class;
