@@ -20,7 +20,7 @@ class Layer_duplicate_class {
 	}
 
 	set_events() {
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
 			if (this.Helper.is_input(event.target))
 				return;

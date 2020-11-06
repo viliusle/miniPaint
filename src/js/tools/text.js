@@ -1,6 +1,7 @@
 import config from './../config.js';
 import zoomView from './../libs/zoomView.js';
 import Base_tools_class from './../core/base-tools.js';
+import Base_selection_class from './../core/base-selection.js';
 import Base_layers_class from './../core/base-layers.js';
 import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
@@ -802,7 +803,7 @@ class Text_editor_class {
 	}
 	
 	trigger_cursor_move(layer, layerX, layerY) {
-        const isInsideCanvas = layerX > 0 && layerY > 0 && layerX < this.lastCalculatedLayerWidth && layerY < this.lastCalculatedLayerHeight;
+        const isInsideCanvas = true; // layerX > 0 && layerY > 0 && layerX < this.lastCalculatedLayerWidth && layerY < this.lastCalculatedLayerHeight;
         if (this.isMouseSelectionActive && isInsideCanvas) {
 			this.mouseSelectionMoveX = layerX;
 			this.mouseSelectionMoveY = layerY;
@@ -1068,8 +1069,8 @@ class Text_editor_class {
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'alphabetic';
 
-			let drawOffsetTop = layer.y;
-			let drawOffsetLeft = layer.x;
+			let drawOffsetTop = layer.y + 1;
+			let drawOffsetLeft = layer.x + 1;
 			const textDirection = layer.params.text_direction;
 			const wrapDirection = layer.params.wrap_direction;
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(textDirection);
@@ -1226,10 +1227,28 @@ class Text_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'text';
 		this.layer = {};
+		this.creating = false;
 		this.resizing = false;
 		this.mousedownX = 0;
 		this.mousedownY = 0;
 		this.is_fonts_loaded = false;
+		if (ctx) {
+			this.selection = {
+				x: null,
+				y: null,
+				width: null,
+				height: null,
+			};
+			var sel_config = {
+				enable_background: false,
+				enable_borders: true,
+				enable_controls: true,
+				data_function: () => {
+					return this.selection;
+				},
+			};
+			this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
+		}
 	}
 
 	dragStart(event) {
@@ -1279,16 +1298,24 @@ class Text_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
+		this.creating = false;
+		this.resizing = false;
+
 		this.mousedownX = mouse.x;
 		this.mousedownY = mouse.y;
+
+		if (this.Base_selection.mouse_lock !== null) {
+			this.resizing = true;
+			return;
+		}
 
 		const existingLayer = this.get_text_layer_at_mouse(e);
 		if (existingLayer) {
 			this.layer = existingLayer;
 			const editor = this.get_editor(this.layer);
 			this.Base_layers.select(existingLayer.id);
-			this.creating = false;
 			editor.trigger_cursor_start(this.layer, mouse.x - this.layer.x, mouse.y - this.layer.y);
+			this.Base_selection.set_selection(this.layer.x, this.layer.y, this.layer.width, this.layer.height);
 		}
 		else {
 			// Create a new text layer
@@ -1309,6 +1336,7 @@ class Text_class extends Base_tools_class {
 			this.Base_layers.insert(layer);
 			this.layer = config.layer;
 			this.creating = true;
+			this.Base_selection.set_selection(mouse.x, mouse.y, 0, 0);
 		}
 	}
 
@@ -1319,7 +1347,17 @@ class Text_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false) {
 			return;
 		}
-		if (this.creating) {
+
+		if (this.resizing) {
+			config.layer.x = this.selection.x;
+			config.layer.y = this.selection.y;
+			config.layer.width = this.selection.width;
+			config.layer.height = this.selection.height;
+			if (config.layer.params.boundary === 'dynamic') {
+				config.layer.params.boundary = 'box';
+			}
+		}
+		else if (this.creating) {
 			const width = Math.abs(mouse.x - this.mousedownX);
 			const height = Math.abs(mouse.y - this.mousedownY);
 
@@ -1344,7 +1382,11 @@ class Text_class extends Base_tools_class {
 		}
 		const editor = this.get_editor(this.layer);
 		const params = this.getParams();
-		if (this.creating) {
+
+		if (this.resizing) {
+			this.resizing = false;
+		}
+		else if (this.creating) {
 			let width = Math.abs(mouse.x - this.mousedownX);
 			let height = Math.abs(mouse.y - this.mousedownY);
 
@@ -1358,19 +1400,23 @@ class Text_class extends Base_tools_class {
 			config.layer.y = Math.min(mouse.y, this.mousedownY);
 			config.layer.width = width;
 			config.layer.height = height;
-		} else {
+		}
+		else {
 			editor.trigger_cursor_end();
 		}
+
+		// Resize layer based on text boundaries.
 		const isHorizontalTextDirection = ['ltr', 'rtl'].includes(params.textDirection);
 		if (this.layer.params.boundary !== 'dynamic') {
 			if (isHorizontalTextDirection) {
-				this.layer.width = Math.max(editor.textBoundaryWidth, this.layer.width);
+				this.layer.width = Math.max(editor.textBoundaryWidth + 1, this.layer.width);
 			} else {
-				this.layer.height = Math.max(editor.textBoundaryHeight, this.layer.height);
+				this.layer.height = Math.max(editor.textBoundaryHeight + 1, this.layer.height);
 			}
 			this.layer.width = Math.max(4, this.layer.width);
 			this.layer.height = Math.max(4, this.layer.height);
 		}
+
 		this.Base_layers.render();
 	}
 
@@ -1439,12 +1485,19 @@ class Text_class extends Base_tools_class {
 			return;
 		var params = layer.params;
 
+		const isActiveLayerAndTextTool = layer === config.layer && config.TOOL.name === 'text';
 		const editor = this.get_editor(layer);
-		editor.selection.set_visible(layer === config.layer && config.TOOL.name === 'text');
+		editor.selection.set_visible(isActiveLayerAndTextTool);
 		editor.render(ctx, layer);
 		if (layer.params.boundary === 'dynamic') {
-			layer.width = editor.textBoundaryWidth;
-			layer.height = editor.textBoundaryHeight;
+			layer.width = editor.textBoundaryWidth + 1;
+			layer.height = editor.textBoundaryHeight + 1;
+		}
+		if (!this.resizing && isActiveLayerAndTextTool) {
+			this.selection.x = layer.x;
+			this.selection.y = layer.y;
+			this.selection.width = layer.width;
+			this.selection.height = layer.height;
 		}
 
 		/*
