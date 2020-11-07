@@ -213,8 +213,9 @@ class Base_layers_class {
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
+	 * @param {boolean} is_preview
 	 */
-	render_object(ctx, object) {
+	render_object(ctx, object, is_preview) {
 		if (object.visible == false || object.type == null)
 			return;
 
@@ -277,7 +278,7 @@ class Base_layers_class {
 			var render_class = object.render_function[0];
 			var render_function = object.render_function[1];
 
-			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object);
+			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
 		}
 		ctx.filter = 'none';
 	}
@@ -815,8 +816,9 @@ class Base_layers_class {
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {int} layer_id Optional
+	 * @param {boolean} is_preview Optional
 	 */
-	convert_layers_to_canvas(ctx, layer_id) {
+	convert_layers_to_canvas(ctx, layer_id = null, is_preview = true) {
 		var layers_sorted = this.get_sorted_layers();
 		for (var i = layers_sorted.length - 1; i >= 0; i--) {
 			var value = layers_sorted[i];
@@ -824,14 +826,14 @@ class Base_layers_class {
 			if (value.visible == false || value.type == null) {
 				continue;
 			}
-			if (layer_id != undefined && value.id != layer_id) {
+			if (layer_id != null && value.id != layer_id) {
 				continue;
 			}
 
 			ctx.globalAlpha = value.opacity / 100;
 			ctx.globalCompositeOperation = value.composition;
 
-			this.render_object(ctx, value);
+			this.render_object(ctx, value, is_preview);
 		}
 	}
 	/**

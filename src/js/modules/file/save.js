@@ -134,7 +134,7 @@ class File_save_class {
 		this.disable_canvas_smooth(ctx);
 
 		//ask data
-		this.Base_layers.convert_layers_to_canvas(ctx);
+		this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		var data_url = canvas.toDataURL();
 
 		max = 1 * 1000 * 1000;
@@ -237,7 +237,7 @@ class File_save_class {
 					canvas.height = layer.height;
 				}
 
-				this.Base_layers.convert_layers_to_canvas(ctx, layer.id);
+				this.Base_layers.convert_layers_to_canvas(ctx, layer.id, false);
 
 				if (initial_x != null && initial_x != null) {
 					//restore position
@@ -246,7 +246,7 @@ class File_save_class {
 				}
 			}
 			else {
-				this.Base_layers.convert_layers_to_canvas(ctx);
+				this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 			}
 		}
 
@@ -374,7 +374,7 @@ class File_save_class {
 				canvas.height = config.HEIGHT;
 				this.disable_canvas_smooth(ctx);
 				
-				this.Base_layers.convert_layers_to_canvas(ctx);
+				this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 			}
 		}
 
@@ -475,7 +475,7 @@ class File_save_class {
 				if (config.TRANSPARENCY == false) {
 					this.fillCanvasBackground(ctx, '#ffffff');
 				}
-				this.Base_layers.convert_layers_to_canvas(ctx, config.layers[i].id);
+				this.Base_layers.convert_layers_to_canvas(ctx, config.layers[i].id, false);
 
 				gif.addFrame(ctx, {copy: true, delay: delay});
 			}
