@@ -118,7 +118,7 @@ class Base_tools_class {
 			this.mouse_valid = true;
 		}
 
-		if (event != undefined && event.changedTouches) {
+		if (event.changedTouches) {
 			//using touch events
 			event = event.changedTouches[0];
 		}

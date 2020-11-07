@@ -152,7 +152,7 @@ class Base_gui_class {
 				var target = document.getElementById(this.dataset.target);
 				target.classList.toggle('hidden');
 				//save
-				if (_this.Helper.strpos(target.classList, 'hidden') === false)
+				if (target.classList.contains('hidden') == false)
 					_this.Helper.setCookie(this.dataset.target, 1);
 				else
 					_this.Helper.setCookie(this.dataset.target, 0);
@@ -390,8 +390,8 @@ class Base_gui_class {
 	 * 
 	 * @param {string} theme_name
 	 */
-	change_theme(theme_name){
-		if(theme_name == undefined){
+	change_theme(theme_name = null){
+		if(theme_name == null){
 			//auto detect
 			var theme_cookie = this.Helper.getCookie('theme');
 			if (theme_cookie) {
