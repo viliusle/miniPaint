@@ -5,6 +5,7 @@ import Base_selection_class from './../core/base-selection.js';
 import Base_layers_class from './../core/base-layers.js';
 import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
+import { timers } from 'jquery';
 
 // Global map of font name to font metrics information.
 const fontMetricsMap = new Map();
@@ -656,16 +657,8 @@ class Text_editor_class {
 	constructor(options) {
 		options = options || {};
 
-		// Need a textarea in order to listen for keyboard inputs in an accessible, multi-platform independent way
-        this.textareaElement = document.createElement('textarea');
-        this.textareaElement.setAttribute('autocorrect', 'off');
-        this.textareaElement.setAttribute('autocapitalize', 'off');
-        this.textareaElement.setAttribute('autocomplete', 'off');
-        this.textareaElement.setAttribute('spellcheck', 'false');
-		
-		// Cache of previously calculated line and character offset sizes from the last render call
-        this.lineSizeMap = new Map();
-        this.lineCharacterOffsetMap = new Map();
+		this.editingCtx = document.getElementById('canvas_minipaint').getContext("2d");
+		this.hasValueChanged = false;
 
 		// Text boundary and offsets are precomputed before drawn
 		this.lineRenderInfo = null;
@@ -772,7 +765,8 @@ class Text_editor_class {
         }
         const position = this.selection.get_position();
         const newPosition = this.document.insert_text(text, position.line, position.character);
-        this.selection.set_position(newPosition.line, newPosition.character);
+		this.selection.set_position(newPosition.line, newPosition.character);
+		this.hasValueChanged = true;
         // this.render();
 	}
 	
@@ -789,7 +783,8 @@ class Text_editor_class {
                 this.selection.end.character
             );
         }
-        this.selection.set_position(newPosition.line, newPosition.character);
+		this.selection.set_position(newPosition.line, newPosition.character);
+		this.hasValueChanged = true;
         // this.render();
 	}
 
@@ -866,7 +861,7 @@ class Text_editor_class {
 			for (let characterNumber = 0; characterNumber < characterCount; characterNumber++) {
 				const leftPosition = characterOffsets[characterNumber];
 				const rightPosition = characterOffsets[characterNumber + 1];
-				if (characterPosition < leftPosition + (rightPosition - leftPosition) / 2) {
+				if (characterPosition <= leftPosition + ((rightPosition - leftPosition) * 0.5)) {
 					character = previousWrapCharacterCount + characterNumber;
 					break;
 				}
@@ -1055,7 +1050,7 @@ class Text_editor_class {
 	}
 
 	render(ctx, layer) {
-		if (layer.width != this.lastCalculatedLayerWidth || layer.height != this.lastCalculatedLayerHeight || !this.textBoundaryWidth || !this.textBoundaryHeight) {
+		if (this.hasValueChanged || layer.width != this.lastCalculatedLayerWidth || layer.height != this.lastCalculatedLayerHeight || !this.textBoundaryWidth || !this.textBoundaryHeight) {
 			this.calculate_text_placement(ctx, layer);
 		}
 
@@ -1109,6 +1104,8 @@ class Text_editor_class {
 								strokeStyle = '#' + strokeColor.hex;
 							}
 							ctx.lineWidth = strokeWidth;
+						} else {
+							ctx.lineWidth = 0;
 						}
 
 						// Loop through each letter in each span and draw it
@@ -1154,21 +1151,21 @@ class Text_editor_class {
 									}
 								}
 							}
-							if (isLetterSelected) {
+							if (isLetterSelected && this.editingCtx === ctx) {
 								const letterStartX = isHorizontalTextDirection ? textDirectionOffset : lineStart;
 								const letterStartY = isHorizontalTextDirection ? lineStart : textDirectionOffset;
 								const letterSizeX = isHorizontalTextDirection ? letterWidth : letterHeight;
 								const letterSizeY = isHorizontalTextDirection ? letterHeight : letterWidth;
-								ctx.fillStyle = this.selectionBackgroundColor;
-								ctx.fillRect(letterStartX, letterStartY, letterSizeX, letterSizeY);
+								ctx.strokeStyle = 'white';
+								ctx.lineWidth = 1;
+								ctx.strokeRect(letterStartX + .25, letterStartY + 0.5, letterSizeX - 0.5, letterSizeY - 0.5);
+								ctx.strokeStyle = this.selectionBackgroundColor;
+								ctx.lineWidth = 0.75;
+								ctx.strokeRect(letterStartX, letterStartY, letterSizeX, letterSizeY);
+								ctx.lineWidth = strokeWidth;
 							}
-							if (isLetterSelected) {
-								ctx.fillStyle = this.selectionTextColor;
-								ctx.strokeStyle = this.selectionTextColor;
-							} else {
-								ctx.fillStyle = fillStyle;
-								ctx.strokeStyle = strokeStyle;
-							}
+							ctx.fillStyle = fillStyle;
+							ctx.strokeStyle = strokeStyle;
 							ctx.fillText(letter, letterDrawX, letterDrawY);
 							if (strokeWidth) {
 								ctx.strokeText(letter, letterDrawX, letterDrawY);
@@ -1176,10 +1173,21 @@ class Text_editor_class {
 							characterIndex++;
 							lineLetterCount++;
 						}
+						if (span.text.length === 0) {
+							if (cursorLine === lineIndex && cursorCharacter === lineLetterCount) {
+								const lineStart = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset);
+								const textDirectionOffset = drawOffsetLeft + characterOffsets[0];
+								const letterWidth = 3;
+								const letterHeight = Math.round(wrapSizes[wrapIndex].size);
+								cursorStartX = (isHorizontalTextDirection ? textDirectionOffset : lineStart) - 0.5;
+								cursorStartY = (isHorizontalTextDirection ? lineStart : textDirectionOffset) - 0.5;
+								cursorSize = isHorizontalTextDirection ? letterHeight : letterWidth;
+							}
+						}
 					}
 
 					// Draw cursor
-					if (this.selection.isVisible /*&& this.selection.isBlinkVisible*/ && cursorStartX) {
+					if (this.selection.isVisible /*&& this.selection.isBlinkVisible*/ && cursorStartX && this.editingCtx == ctx) {
 						ctx.lineCap = 'butt';
 						ctx.strokeStyle = '#55555577';
 						ctx.lineWidth = 3;
@@ -1213,6 +1221,8 @@ class Text_editor_class {
 		} catch (error) {
 			console.warn(error);
 		}
+
+		this.hasValueChanged = false;
 	}
 }
 
@@ -1228,7 +1238,9 @@ class Text_class extends Base_tools_class {
 		this.name = 'text';
 		this.layer = {};
 		this.creating = false;
+		this.selecting = false;
 		this.resizing = false;
+		this.focused = false;
 		this.mousedownX = 0;
 		this.mousedownY = 0;
 		this.is_fonts_loaded = false;
@@ -1248,6 +1260,81 @@ class Text_class extends Base_tools_class {
 				},
 			};
 			this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
+
+			// Need a textarea in order to listen for keyboard inputs in an accessible, multi-platform independent way
+			this.textarea = document.createElement('textarea');
+			this.textarea.setAttribute('autocorrect', 'off');
+			this.textarea.setAttribute('autocapitalize', 'off');
+			this.textarea.setAttribute('autocomplete', 'off');
+			this.textarea.setAttribute('spellcheck', 'false');
+			this.textarea.style = `position: absolute; top: 0; left: 0; padding: 0; width: 1px; height: 1px; background: transparent; border: none; outline: none; color: transparent; opacity: 0.01; pointer-events: none;`;
+			document.body.appendChild(this.textarea);
+
+			this.textarea.addEventListener('focus', () => {
+				this.focused = true;
+			}, true);
+			this.textarea.addEventListener('blur', () => {
+				this.focused = false;
+				this.Base_layers.render();
+			}, true);
+			this.textarea.addEventListener('input', (e) => {
+				if (this.layer) {
+					const editor = this.get_editor(this.layer);
+					editor.insert_text_at_current_position(e.target.value);
+					e.target.value = '';
+					this.Base_layers.render();
+					this.extend_fixed_bounds(this.layer, editor);
+				}
+			}, true);
+			this.textarea.addEventListener('keydown', (e) => {
+				if (this.layer) {
+					let handled = true;
+					const editor = this.get_editor(this.layer);
+					switch (e.key) {
+						case 'Backspace':
+							editor.delete_character_at_current_position(false);
+							break;
+						case 'Delete':
+							editor.delete_character_at_current_position(true);
+							break;
+						case 'Home':
+							editor.selection.move_line_start(e.shiftKey);
+							break;
+						case 'End':
+							editor.selection.move_line_end(e.shiftKey);
+							break;
+						case 'Left': case 'ArrowLeft':
+							if (!e.shiftKey && !editor.selection.is_empty()) {
+								editor.selection.isActiveSideEnd = false;
+								editor.selection.move_character_previous(0, false);
+							} else {
+								editor.selection.move_character_previous(1, e.shiftKey);
+							}
+							break;
+						case 'Right': case 'ArrowRight':
+							if (!e.shiftKey && !editor.selection.is_empty()) {
+								editor.selection.isActiveSideEnd = true;
+								editor.selection.move_character_next(0, false);
+							} else {
+								editor.selection.move_character_next(1, e.shiftKey);
+							}
+							break;
+						case 'Up': case 'ArrowUp':
+							editor.selection.move_line_previous(1, e.shiftKey);
+							break;
+						case 'Down': case 'ArrowDown':
+							editor.selection.move_line_next(1, e.shiftKey);
+							break;
+						default:
+							handled = false;
+					}
+					if (handled) {
+						this.Base_layers.render();
+					}
+					this.extend_fixed_bounds(this.layer, editor);
+					return !handled;
+				}
+			}, true);
 		}
 	}
 
@@ -1299,6 +1386,7 @@ class Text_class extends Base_tools_class {
 			return;
 
 		this.creating = false;
+		this.selecting = false;
 		this.resizing = false;
 
 		this.mousedownX = mouse.x;
@@ -1311,14 +1399,16 @@ class Text_class extends Base_tools_class {
 
 		const existingLayer = this.get_text_layer_at_mouse(e);
 		if (existingLayer) {
+			this.selecting = true;
 			this.layer = existingLayer;
 			const editor = this.get_editor(this.layer);
 			this.Base_layers.select(existingLayer.id);
-			editor.trigger_cursor_start(this.layer, mouse.x - this.layer.x, mouse.y - this.layer.y);
+			editor.trigger_cursor_start(this.layer, -1 + mouse.x - this.layer.x, mouse.y - this.layer.y);
 			this.Base_selection.set_selection(this.layer.x, this.layer.y, this.layer.width, this.layer.height);
 		}
 		else {
 			// Create a new text layer
+			this.creating = true;
 			window.State.save();
 			const layer = {
 				type: this.name,
@@ -1335,7 +1425,6 @@ class Text_class extends Base_tools_class {
 			};
 			this.Base_layers.insert(layer);
 			this.layer = config.layer;
-			this.creating = true;
 			this.Base_selection.set_selection(mouse.x, mouse.y, 0, 0);
 		}
 	}
@@ -1370,7 +1459,7 @@ class Text_class extends Base_tools_class {
 			config.layer.width = width;
 			config.layer.height = height;
 		} else {
-			this.get_editor(this.layer).trigger_cursor_move(this.layer, mouse.x - this.layer.x, mouse.y - this.layer.y);
+			this.get_editor(this.layer).trigger_cursor_move(this.layer, -1 + mouse.x - this.layer.x, mouse.y - this.layer.y);
 		}
 		this.Base_layers.render();
 	}
@@ -1381,7 +1470,6 @@ class Text_class extends Base_tools_class {
 			return;
 		}
 		const editor = this.get_editor(this.layer);
-		const params = this.getParams();
 
 		if (this.resizing) {
 			this.resizing = false;
@@ -1400,23 +1488,17 @@ class Text_class extends Base_tools_class {
 			config.layer.y = Math.min(mouse.y, this.mousedownY);
 			config.layer.width = width;
 			config.layer.height = height;
+			this.textarea.focus();
+			this.creating = false;
 		}
 		else {
 			editor.trigger_cursor_end();
+			this.textarea.focus();
+			this.selecting = false;
 		}
 
 		// Resize layer based on text boundaries.
-		const isHorizontalTextDirection = ['ltr', 'rtl'].includes(params.textDirection);
-		if (this.layer.params.boundary !== 'dynamic') {
-			if (isHorizontalTextDirection) {
-				this.layer.width = Math.max(editor.textBoundaryWidth + 1, this.layer.width);
-			} else {
-				this.layer.height = Math.max(editor.textBoundaryHeight + 1, this.layer.height);
-			}
-			this.layer.width = Math.max(4, this.layer.width);
-			this.layer.height = Math.max(4, this.layer.height);
-		}
-
+		this.extend_fixed_bounds(this.layer, editor);
 		this.Base_layers.render();
 	}
 
@@ -1480,6 +1562,27 @@ class Text_class extends Base_tools_class {
 	}
 	*/
 
+	resize_to_dynamic_bounds(layer, editor) {
+		if (layer.params.boundary === 'dynamic') {
+			layer.width = editor.textBoundaryWidth + 1;
+			layer.height = editor.textBoundaryHeight + 1;
+		}
+	}
+
+	extend_fixed_bounds(layer, editor) {
+		if (layer.params.boundary !== 'dynamic') {
+			const params = this.getParams();
+			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(params.textDirection);
+			if (isHorizontalTextDirection) {
+				layer.width = Math.max(editor.textBoundaryWidth + 1, layer.width);
+			} else {
+				layer.height = Math.max(editor.textBoundaryHeight + 1, layer.height);
+			}
+			layer.width = Math.max(4, layer.width);
+			layer.height = Math.max(4, layer.height);
+		}
+	}
+
 	render(ctx, layer) {
 		if (layer.width == 0 && layer.height == 0)
 			return;
@@ -1487,12 +1590,9 @@ class Text_class extends Base_tools_class {
 
 		const isActiveLayerAndTextTool = layer === config.layer && config.TOOL.name === 'text';
 		const editor = this.get_editor(layer);
-		editor.selection.set_visible(isActiveLayerAndTextTool);
+		editor.selection.set_visible(isActiveLayerAndTextTool && (this.selecting || this.focused));
 		editor.render(ctx, layer);
-		if (layer.params.boundary === 'dynamic') {
-			layer.width = editor.textBoundaryWidth + 1;
-			layer.height = editor.textBoundaryHeight + 1;
-		}
+		this.resize_to_dynamic_bounds(layer, editor);
 		if (!this.resizing && isActiveLayerAndTextTool) {
 			this.selection.x = layer.x;
 			this.selection.y = layer.y;
