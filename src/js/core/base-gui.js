@@ -403,7 +403,7 @@ class Base_gui_class {
 		}
 
 		for(var i in config.themes){
-			document.querySelector('body').classList.remove('theme-' +  config.themes[i]);
+			document.querySelector('body').classList.remove('theme-' + config.themes[i]);
 		}
 		document.querySelector('body').classList.add('theme-' + theme_name);
 	}
