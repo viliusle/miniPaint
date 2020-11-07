@@ -101,10 +101,13 @@ class Select_tool_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
-		if (this.Base_selection.mouse_lock != null)
+		if (this.Base_selection.mouse_lock != null) {
+			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 			return;
+		}
 
 		this.auto_select_object(e);
+		this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 		this.saved = false;
 
 		this.last_post = {

@@ -1563,14 +1563,14 @@ class Text_class extends Base_tools_class {
 	*/
 
 	resize_to_dynamic_bounds(layer, editor) {
-		if (layer.params.boundary === 'dynamic') {
+		if (layer && layer.params && layer.params.boundary === 'dynamic') {
 			layer.width = editor.textBoundaryWidth + 1;
 			layer.height = editor.textBoundaryHeight + 1;
 		}
 	}
 
 	extend_fixed_bounds(layer, editor) {
-		if (layer.params.boundary !== 'dynamic') {
+		if (layer && layer.params && layer.params.boundary !== 'dynamic') {
 			const params = this.getParams();
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(params.textDirection);
 			if (isHorizontalTextDirection) {
