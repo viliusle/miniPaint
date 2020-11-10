@@ -90,7 +90,7 @@ class Fill_class extends Base_tools_class {
 		mouse_x = Math.round(mouse_x);
 		mouse_y = Math.round(mouse_y);
 
-		var color_to = this.Helper.hex2rgb(config.COLOR);
+		var color_to = this.Helper.hexToRgb(config.COLOR);
 		color_to.a = config.ALPHA;
 
 		//change

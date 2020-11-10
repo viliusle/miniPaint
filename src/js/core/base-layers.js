@@ -6,7 +6,6 @@
 import config from './../config.js';
 import Base_gui_class from './base-gui.js';
 import Base_selection_class from './base-selection.js';
-import Base_state_class from './base-state.js';
 import Image_trim_class from './../modules/image/trim.js';
 import zoomView from './../libs/zoomView.js';
 import Helper_class from './../libs/helpers.js';
@@ -29,6 +28,7 @@ var instance = null;
  * - height_original (int)
  * - visible (bool)
  * - is_vector (bool)
+ * - hide_selection_if_active (bool)
  * - opacity (0-100)
  * - order (int)
  * - composition (string)
@@ -52,16 +52,13 @@ class Base_layers_class {
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
 		this.Image_trim = new Image_trim_class();
-		this.Base_state = new Base_state_class();
 
 		this.canvas = document.getElementById('canvas_minipaint');
 		this.ctx = document.getElementById('canvas_minipaint').getContext("2d");
 		this.ctx_preview = document.getElementById('canvas_preview').getContext("2d");
 		this.last_zoom = 1;
-		this.zoomView = zoomView;
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
-		this.tempCanvas = document.createElement('canvas');
 	}
 
 	/**
@@ -216,8 +213,9 @@ class Base_layers_class {
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
+	 * @param {boolean} is_preview
 	 */
-	render_object(ctx, object) {
+	render_object(ctx, object, is_preview) {
 		if (object.visible == false || object.type == null)
 			return;
 
@@ -228,7 +226,16 @@ class Base_layers_class {
 
 			if (filter_code != '')
 				filter_code += ' ';
-			filter_code += filter.name + "(" + filter.params.value + ")";
+
+			//load filter lib
+			var filter_file = filter.name.replace(/-/g, '_') + '.js';
+			if(filter_file == 'drop_shadow.js')
+				filter_file = 'shadow.js';
+			var filter_include = require("./../modules/effects/"+filter_file);
+			var filter_class = new filter_include.default();
+
+			var params_values = filter_class.convert_value(filter.params.value, filter.params, 'save');
+			filter_code += filter.name + "(" + params_values + ")";
 		}
 		if (filter_code != '')
 			ctx.filter = filter_code;
@@ -240,7 +247,7 @@ class Base_layers_class {
 			//image - default behavior
 			var rotateSupport = true;
 			if (rotateSupport == false) {
-				if (object.link_canvas != undefined && object.link_canvas != null) {
+				if (object.link_canvas != null) {
 					//we have draft canvas - use it
 					ctx.drawImage(object.link_canvas, object.x, object.y, object.width, object.height);
 				}
@@ -253,7 +260,7 @@ class Base_layers_class {
 
 				ctx.translate(object.x + object.width / 2, object.y + object.height / 2);
 				ctx.rotate(object.rotate * Math.PI / 180);
-				if (object.link_canvas != undefined && object.link_canvas != null) {
+				if (object.link_canvas != null) {
 					//we have draft canvas - use it
 					ctx.drawImage(object.link_canvas, -object.width / 2, -object.height / 2,
 						object.width, object.height);
@@ -271,7 +278,7 @@ class Base_layers_class {
 			var render_class = object.render_function[0];
 			var render_function = object.render_function[1];
 
-			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object);
+			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
 		}
 		ctx.filter = 'none';
 	}
@@ -304,6 +311,7 @@ class Base_layers_class {
 				height_original: null,
 				visible: true,
 				is_vector: false,
+				hide_selection_if_active: false,
 				opacity: 100,
 				order: _this.auto_increment,
 				composition: 'source-over',
@@ -438,9 +446,6 @@ class Base_layers_class {
 		var _this = this;
 		var need_fit = false;
 
-		if (layer_id == undefined)
-			layer_id = config.layer;
-
 		//resize up
 		if (width > config.WIDTH || height > config.HEIGHT) {
 
@@ -470,7 +475,7 @@ class Base_layers_class {
 		//fit zoom when after short pause
 		//@todo - remove setTimeout
 		if (need_fit == true) {
-			var internal = window.setTimeout(myCallback, 100);
+			window.setTimeout(myCallback, 100);
 			function myCallback() {
 				_this.Base_gui.GUI_preview.zoom_auto();
 			}
@@ -624,11 +629,32 @@ class Base_layers_class {
 		id = parseInt(id);
 		var link = this.get_layer(id);
 
-		link.data = null;
+		if (link.type == 'image') {
+			//clean image
+			link.link = null;
+		}
+
+		for (var i in link) {
+			//remove private attributes
+			if (i[0] == '_')
+				delete link[i];
+		}
+
 		link.x = 0;
 		link.y = 0;
 		link.width = 0;
 		link.height = 0;
+		link.visible = true;
+		link.opacity = 100;
+		link.composition = null;
+		link.rotate = 0;
+		link.data = null;
+		link.params = {};
+		link.status = null;
+		link.render_function = null;
+		link.type = null;
+
+		config.need_render = true;
 	}
 
 	/**
@@ -790,8 +816,9 @@ class Base_layers_class {
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {int} layer_id Optional
+	 * @param {boolean} is_preview Optional
 	 */
-	convert_layers_to_canvas(ctx, layer_id) {
+	convert_layers_to_canvas(ctx, layer_id = null, is_preview = true) {
 		var layers_sorted = this.get_sorted_layers();
 		for (var i = layers_sorted.length - 1; i >= 0; i--) {
 			var value = layers_sorted[i];
@@ -799,14 +826,14 @@ class Base_layers_class {
 			if (value.visible == false || value.type == null) {
 				continue;
 			}
-			if (layer_id != undefined && value.id != layer_id) {
+			if (layer_id != null && value.id != layer_id) {
 				continue;
 			}
 
 			ctx.globalAlpha = value.opacity / 100;
 			ctx.globalCompositeOperation = value.composition;
 
-			this.render_object(ctx, value);
+			this.render_object(ctx, value, is_preview);
 		}
 	}
 	/**

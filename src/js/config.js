@@ -44,7 +44,7 @@ config.TOOLS = [
 		title: 'Brush',
 		attributes: {
 			size: 4,
-			smart_brush: true,
+			pressure: false,
 		},
 	},
 	{
@@ -123,7 +123,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'media',
-		title: 'Search images',
+		title: 'Search Images',
 		on_activate: 'on_activate',
 		attributes: {
 			size: 30,

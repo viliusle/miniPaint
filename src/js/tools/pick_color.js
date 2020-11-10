@@ -82,19 +82,18 @@ class Pick_color_class extends Base_tools_class {
 			var ctx = canvas.getContext("2d");
 			canvas.width = config.WIDTH;
 			canvas.height = config.HEIGHT;
-			this.Base_layers.convert_layers_to_canvas(ctx);
+			this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		}
 		//find color
 		var c = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
 		var hex = this.Helper.rgbToHex(c[0], c[1], c[2]);
-		this.Base_gui.GUI_colors.change_color(hex);
 
+		const newColorDefinition = { hex };
 		if (c[3] > 0) {
 			//set alpha
-			this.Base_gui.GUI_colors.change_alpha(c[3]);
+			newColorDefinition.a = c[3];
 		}
-
-		this.Base_gui.GUI_colors.render_colors();
+		this.Base_gui.GUI_colors.set_color(newColorDefinition);
 	}
 
 }

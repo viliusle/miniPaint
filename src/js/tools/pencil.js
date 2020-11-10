@@ -87,8 +87,11 @@ class Pencil_class extends Base_tools_class {
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
-				width: null,
-				height: null,
+				x: 0,
+				y: 0,
+				width: config.WIDTH,
+				height: config.HEIGHT,
+				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
 			};
@@ -112,7 +115,7 @@ class Pencil_class extends Base_tools_class {
 
 		//more data
 		if (params.antialiasing == false)
-			config.layer.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
+			config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
 		else
 			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
 		this.Base_layers.render();
@@ -128,9 +131,12 @@ class Pencil_class extends Base_tools_class {
 
 		//more data
 		if (params.antialiasing == false)
-			config.layer.data.push([Math.ceil(mouse.x), Math.ceil(mouse.y)]);
+			config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
 		else
 			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+
+		this.check_dimensions();
+
 		config.layer.status = null;
 		this.Base_layers.render();
 	}
@@ -161,7 +167,7 @@ class Pencil_class extends Base_tools_class {
 	/**
 	 * draw with antialiasing, nice mode
 	 *
-	 * @param {ctx} ctx
+	 * @param {object} ctx
 	 * @param {object} layer
 	 */
 	render_antialiased(ctx, layer) {
@@ -219,14 +225,13 @@ class Pencil_class extends Base_tools_class {
 	/**
 	 * draw without antialiasing, sharp, ugly mode.
 	 *
-	 * @param {ctx} ctx
+	 * @param {object} ctx
 	 * @param {object} layer
 	 */
 	render_aliased(ctx, layer) {
 		if (layer.data.length == 0)
 			return;
 
-		var params = layer.params;
 		var data = layer.data;
 		var n = data.length;
 
@@ -269,7 +274,7 @@ class Pencil_class extends Base_tools_class {
 	/**
 	 * draws line without aliasing
 	 *
-	 * @param {ctx} ctx
+	 * @param {object} ctx
 	 * @param {int} from_x
 	 * @param {int} from_y
 	 * @param {int} to_x
@@ -288,6 +293,45 @@ class Pencil_class extends Base_tools_class {
 		}
 	}
 
-};
+	/**
+	 * recalculate layer x, y, width and height values.
+	 */
+	check_dimensions() {
+		if(config.layer.data.length == 0)
+			return;
+
+		//find bounds
+		var data = config.layer.data;
+		var min_x = data[0][0];
+		var min_y = data[0][1];
+		var max_x = data[0][0];
+		var max_y = data[0][1];
+		for(var i in data){
+			if(data[i] === null)
+				continue;
+			min_x = Math.min(min_x, data[i][0]);
+			min_y = Math.min(min_y, data[i][1]);
+			max_x = Math.max(max_x, data[i][0]);
+			max_y = Math.max(max_y, data[i][1]);
+		}
+
+		//move current data
+		for(var i in data){
+			if(data[i] === null)
+				continue;
+			data[i][0] = data[i][0] - min_x;
+			data[i][1] = data[i][1] - min_y;
+		}
+
+		//change layers bounds
+		config.layer.x = config.layer.x + min_x;
+		config.layer.y = config.layer.y + min_y;
+		config.layer.width = max_x - min_x;
+		config.layer.height = max_y - min_y;
+
+		this.Base_layers.render();
+	}
+
+}
 
 export default Pencil_class;

@@ -10,6 +10,8 @@ class Brush_class extends Base_tools_class {
 		this.name = 'brush';
 		this.layer = {};
 		this.params_hash = false;
+		this.pressure_supported = false;
+		this.pointer_pressure = 0; // has range [0 - 1]
 	}
 
 	dragStart(event) {
@@ -41,6 +43,14 @@ class Brush_class extends Base_tools_class {
 	load() {
 		var _this = this;
 
+		//pointer events
+		document.addEventListener('pointerdown', function (event) {
+			_this.pointerdown(event);
+		});
+		document.addEventListener('pointermove', function (event) {
+			_this.pointermove(event);
+		});
+
 		//mouse events
 		document.addEventListener('mousedown', function (event) {
 			_this.dragStart(event);
@@ -64,6 +74,25 @@ class Brush_class extends Base_tools_class {
 		});
 	}
 
+	pointerdown(e) {
+		// Devices that don't actually support pen pressure can give 0.5 as a false reading.
+		// It is highly unlikely a real pen will read exactly 0.5 at the start of a stroke.
+		if (e.pressure && e.pressure !== 0 && e.pressure !== 0.5 && e.pressure <= 1) {
+			this.pressure_supported = true;
+			this.pointer_pressure = e.pressure;
+		} else {
+			this.pressure_supported = false;
+		}
+	}
+
+	pointermove(e) {
+		// Pressure of exactly 1 seems to be an input error, sometimes I see it when lifting the pen
+		// off the screen when pressure reading should be near 0.
+		if (this.pressure_supported && e.pressure < 1) { 
+			this.pointer_pressure = e.pressure;
+		}
+	}
+
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
@@ -81,18 +110,19 @@ class Brush_class extends Base_tools_class {
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
-				width: null,
-				height: null,
+				x: 0,
+				y: 0,
+				width: config.WIDTH,
+				height: config.HEIGHT,
+				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
 			};
 			this.Base_layers.insert(this.layer);
 			this.params_hash = params_hash;
 		}
-		else {
-			//continue adding layer data, just register break
-			config.layer.data.push(null);
-		}
+
+		config.layer.data.push([]);
 	}
 
 	mousemove(e) {
@@ -106,18 +136,26 @@ class Brush_class extends Base_tools_class {
 		var max_speed = 20;
 		var power = 2; //how speed affects size
 		var params = this.getParams();
+		var n = config.layer.data.length;
+		var last_group = config.layer.data[n-1];
 
 		//detect line size
 		var size = params.size;
 		var new_size = size;
-		if (params.smart_brush == true) {
-			new_size = size + size / max_speed * mouse.speed_average * power;
-			new_size = Math.max(new_size, size / 4);
-			new_size = Math.round(new_size);
+
+		if (params.pressure == true) {
+			if (this.pressure_supported) {
+				new_size = size * this.pointer_pressure * 2;
+			}
+			else {
+				new_size = size + size / max_speed * mouse.speed_average * power;
+				new_size = Math.max(new_size, size / 4);
+				new_size = Math.round(new_size);
+			}
 		}
 
-		//more data
-		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		config.layer.status = 'draft';
 		this.Base_layers.render();
 	}
 
@@ -129,8 +167,21 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//more data
-		config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		var params = this.getParams();
+		var n = config.layer.data.length;
+		var last_group = config.layer.data[n-1];
+		var size = params.size;
+		var new_size = size;
+
+		if (this.pressure_supported) {
+			new_size = size * this.pointer_pressure * 2;
+		}
+
+		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		config.layer.status = null;
+
+		this.check_dimensions();
+
 		this.Base_layers.render();
 	}
 
@@ -146,49 +197,215 @@ class Brush_class extends Base_tools_class {
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = params.size;
 		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
 
 		ctx.translate(layer.x, layer.y);
 
-		//draw
 		var data = layer.data;
+
+		//check for legacy format
+		data = this.check_legacy_format(data);
+
 		var n = data.length;
-		var size = params.size;
-		ctx.beginPath();
-		ctx.moveTo(data[0][0], data[0][1]);
-		for (var i = 1; i < n; i++) {
-			if (data[i] === null) {
-				//break
-				ctx.beginPath();
+		for (var k = 0; k < n; k++) {
+			var group_data = data[k]; //data from mouse down till mouse release
+			var group_n = group_data.length;
+
+			if (params.pressure == false) {
+				//stabilized lines method does not support multiple line sizes
+				this.render_stabilized(ctx, group_data);
 			}
 			else {
-				//line
-				ctx.lineWidth = data[i][2];
-
-				if (data[i - 1] == null) {
-					//exception - point
-					ctx.arc(data[i][0], data[i][1], size / 2, 0, 2 * Math.PI, false);
-					ctx.fill();
-				}
-				else {
-					//lines
-					ctx.lineWidth = data[i][2];
+				if (group_data[0]) {
 					ctx.beginPath();
-					ctx.moveTo(data[i - 1][0], data[i - 1][1]);
-					ctx.lineTo(data[i][0], data[i][1]);
-					ctx.stroke();
+					ctx.moveTo(group_data[0][0], group_data[0][1]);
+					for (var i = 1; i < group_n; i++) {
+						if (group_data[i] === null) {
+							//break
+							ctx.beginPath();
+						}
+						else {
+							//line
+
+							ctx.lineWidth = group_data[i][2];
+
+							if (group_data[i - 1] == null && group_data[i + 1] == null) {
+								//exception - point
+								ctx.arc(group_data[i][0], group_data[i][1], size / 2, 0, 2 * Math.PI, false);
+								ctx.fill();
+							}
+							else if (group_data[i - 1] != null) {
+								//lines
+								ctx.lineWidth = group_data[i][2];
+								ctx.beginPath();
+								ctx.moveTo(group_data[i - 1][0], group_data[i - 1][1]);
+								ctx.lineTo(group_data[i][0], group_data[i][1]);
+								ctx.stroke();
+							}
+						}
+					}
+					if (group_data[1] == null) {
+						//point
+						ctx.beginPath();
+						ctx.arc(group_data[0][0], group_data[0][1], size / 2, 0, 2 * Math.PI, false);
+						ctx.fill();
+					}
 				}
 			}
-		}
-		if (n == 1 || data[1] == null) {
-			//point
-			ctx.beginPath();
-			ctx.arc(data[0][0], data[0][1], size / 2, 0, 2 * Math.PI, false);
-			ctx.fill();
 		}
 
 		ctx.translate(-layer.x, -layer.y);
 	}
 
-};
+	/**
+	 * draw stabilized lines
+	 * author: Manoj Verma
+	 * source: https://stackoverflow.com/questions/7891740/drawing-smooth-lines-with-canvas/44810470#44810470
+	 *
+	 * @param ctx
+	 * @param queue
+	 */
+	render_stabilized(ctx, queue) {
+		var data = JSON.parse(JSON.stringify(queue));
+		var n = data.length;
+
+		if (data.length == 1) {
+			//point
+			var point = data[0];
+			ctx.beginPath();
+			ctx.arc(point[0], point[1], point[2] / 2, 0, 2 * Math.PI, false);
+			ctx.fill();
+			return;
+		}
+		else if (data.length <= 5) {
+			//not enough points yet
+
+			for (var i = 1; i < n; i++) {
+				ctx.beginPath();
+				ctx.moveTo(data[i - 1][0], data[i - 1][1]);
+				ctx.lineTo(data[i][0], data[i][1]);
+				ctx.stroke();
+			}
+			return;
+		}
+
+		//fix for loose ending, so lets duplicate last point
+		data.push([data[n - 1][0], data[n - 1][1]]);
+
+		ctx.beginPath();
+		ctx.moveTo(data[0][0], data[0][1]);
+
+		//prepare
+		var tempdata1 = [data[0]];
+		var c, d;
+		for (var i = 1; i < data.length - 1;  i = i+1) {
+			c = (data[i][0] + data[i + 1][0]) / 2;
+			d = (data[i][1] + data[i + 1][1]) / 2;
+			tempdata1.push([c, d]);
+		}
+
+		var tempdata2 = [tempdata1[0]];
+		for (var i = 1; i < tempdata1.length - 1;  i = i+1) {
+			c = (tempdata1[i][0] + tempdata1[i + 1][0]) / 2;
+			d = (tempdata1[i][1] + tempdata1[i + 1][1]) / 2;
+			tempdata2.push([c, d]);
+		}
+
+		var tempdata = [tempdata2[0]];
+		for (var i = 1; i < tempdata2.length - 1;  i = i+1) {
+			c = (tempdata2[i][0] + tempdata2[i + 1][0]) / 2;
+			d = (tempdata2[i][1] + tempdata2[i + 1][1]) / 2;
+			tempdata.push([c, d]);
+		}
+
+		//draw
+		for (var i = 1; i < tempdata.length - 2;  i = i+1) {
+			c = (tempdata[i][0] + tempdata[i + 1][0]) / 2;
+			d = (tempdata[i][1] + tempdata[i + 1][1]) / 2;
+			ctx.quadraticCurveTo(tempdata[i][0], tempdata[i][1], c, d);
+		}
+
+		// For the last 2 points
+		ctx.quadraticCurveTo(
+			tempdata[i][0],
+			tempdata[i][1],
+			tempdata[i+1][0],
+			tempdata[i+1][1]
+		);
+		ctx.stroke();
+	}
+
+	check_legacy_format(data) {
+		//check for legacy format
+		if(data.length > 0 && typeof data[0][0] == "number"){
+			//convert
+			var legacy = JSON.parse(JSON.stringify(data));
+			data = [];
+			data.push([]);
+			var group_index = 0;
+			for(var i in legacy){
+				if(legacy[i] === null){
+					data.push([]);
+					group_index++;
+				}
+				else {
+					data[group_index].push([legacy[i][0], legacy[i][1], legacy[i][2]]);
+				}
+			}
+		}
+
+		return data;
+	}
+
+	/**
+	 * recalculate layer x, y, width and height values.
+	 */
+	check_dimensions() {
+		var data = config.layer.data;
+		this.check_legacy_format(data);
+
+		if(config.layer.data.length == 0)
+			return;
+
+		//find bounds
+		var min_x = data[0][0][0];
+		var min_y = data[0][0][1];
+		var max_x = data[0][0][0];
+		var max_y = data[0][0][1];
+
+		var n = data.length;
+		for (var k = 0; k < n; k++) {
+			var group_data = data[k];
+			var group_n = group_data.length;
+
+			for (var i = 1; i < group_n; i++) {
+				min_x = Math.min(min_x, group_data[i][0]);
+				min_y = Math.min(min_y, group_data[i][1]);
+				max_x = Math.max(max_x, group_data[i][0]);
+				max_y = Math.max(max_y, group_data[i][1]);
+			}
+		}
+
+		//move current data
+		for (var k = 0; k < n; k++) {
+			var group_data = data[k];
+			var group_n = group_data.length;
+
+			for (var i = 0; i < group_n; i++) {
+				group_data[i][0] = group_data[i][0] - min_x;
+				group_data[i][1] = group_data[i][1] - min_y;
+			}
+		}
+
+		//change layers bounds
+		config.layer.x = config.layer.x + min_x;
+		config.layer.y = config.layer.y + min_y;
+		config.layer.width = max_x - min_x;
+		config.layer.height = max_y - min_y;
+
+		this.Base_layers.render();
+	}
+
+}
 
 export default Brush_class;

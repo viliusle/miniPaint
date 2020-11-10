@@ -6,11 +6,18 @@
 <div style="height:20vh;margin:10px;">
 	Click on image to edit.
 	<br /><br />
-	<button onclick="my_update()">Update</button>
-	<button onclick="my_save()">Save</button>
+	<button onclick="open_image()">Open image</button>
+	<button onclick="update_image()">Update image</button>
+	<button onclick="save_image()">Save image</button>
+	OR
+	<button onclick="open_json()">Open JSON</button>
+	<button onclick="save_json()">Save JSON</button>
 	<br /><br />
 	
-	<img style="max-height:100%" id="testImage" alt="" src="../images/logo.png" onclick="open_image(this)"  />
+	<img style="max-height:100%" id="testImage" alt="" src="../images/logo-colors.png" onclick="open_image(this)"  />
+
+	<textarea rows="8" style="width:500px;" id="testJson"></textarea>
+
 </div>
 
 <script>
@@ -20,6 +27,8 @@
  * @param {string|image} image image or image id
  */
 function open_image(image){
+	if(image == undefined)
+		image = document.getElementById('testImage');
 	if(typeof image == 'string'){
 		image = document.getElementById(image);
 	}
@@ -37,7 +46,20 @@ function open_image(image){
 	Layers.insert(new_layer);
 }
 
-function my_save(){
+function open_json(){
+	var miniPaint = document.getElementById('myFrame').contentWindow;
+	var miniPaint_FileOpen = miniPaint.FileOpen;
+
+	window.fetch("../images/test-collection.json").then(function(response) {
+		return response.json();
+	}).then(function(json) {
+		miniPaint_FileOpen.load_json(json, false);
+	}).catch(function(ex) {
+		alert('Sorry, image could not be loaded.');
+	});
+}
+
+function save_image(){
 	var Layers = document.getElementById('myFrame').contentWindow.Layers;
 	var tempCanvas = document.createElement("canvas");
 	var tempCtx = tempCanvas.getContext("2d");
@@ -61,7 +83,16 @@ function my_save(){
 	}
 }
 
-function my_update(){
+function save_json(){
+	var miniPaint = document.getElementById('myFrame').contentWindow;
+	var miniPaint_FileSave = miniPaint.FileSave;
+
+	var data_json = miniPaint_FileSave.export_as_json();
+
+	document.getElementById('testJson').value = data_json;
+}
+
+function update_image(){
 	var target = document.getElementById('testImage');
 	
 	var Layers = document.getElementById('myFrame').contentWindow.Layers;

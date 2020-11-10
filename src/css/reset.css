@@ -4,45 +4,110 @@
 }
 :root {
 	/* original - default */
-	--background: #424F5A;
-	--text-color: #000000;
-	--background-color-section: #68727b;
-	--background-color-area: #868e95;
-	--background-color-header: #a2a8ae;
-	--background-color-button: #959ca2;
-	--background-color-menu: #2D2D2D;
-	--text-color-menu: #cccccc;
-	--background-color-active: #419147;
-	--background-color-hover: #b4b9bd;
-	--border-color: #3c3c3c;
+	--background: radial-gradient(circle, #aaa 0%, #4d5355 100%);
+	--text-color: #f4f3f3;
+	--text-color-muted: #c1c1c1;
+	--text-color-red: #e38282;
+	--text-color-green: #8bdb8b;
+	--text-color-blue: #a4a4ff;
+	--link-color: #9ffda5;
+	--section-background-color: #323a3c;
+	--area-background-color: #464d4f;
+	--block-background-color: #464d4f;
+	--header-background-color: #373d3f;
+	--button-background-color: #2f3739;
+	--button-background-color-hover: #575f62;
+	--button-background-color-active: #4d5153;
+	--button-shadow-color: rgba(0, 0, 0, 0.3);
+	--button-text-color-active: #adecab;
+	--button-border-radius: .4rem;
+	--input-background-color: #2f3739;
+	--input-text-color: #f4f3f3;
+	--input-border-color: #0f0f0f;
+	--input-border-color-active: #70996e;
+	--input-border-radius: .4rem;
+	--input-group-border-color:  #323a3c;
+	--menu-background-color: #222;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
+	--menu-text-color: #cccccc;
+	--number-input-arrow-width: 2rem;
+	--background-color-active: #adecab;
+	--background-color-hover: #575f62;
+	--text-color-active: #215b2a;
+	--border-color: #727677;
+	--scrollbar-track-color: #464d4f;
+	--scrollbar-thumb-color: #2f3739;
+	--mobile-menu-toggle-filter: invert(1);
+}
+html {
+	font-size: 10px; /* Base is 10px for easy REM calculation */
 }
 body.theme-light{
 	/* light */
 	--background: #f9f9fa;
 	--text-color: #0c0c0d;
-	--background-color-section: #f1f1f1;
-	--background-color-area: #ccc;
-	--background-color-header: #dcdcdc;
-	--background-color-button: #f9f9fa;
-	--background-color-menu: #f1f1f1;
-	--text-color-menu: #333333;
-	--background-color-active: #0a84ff;
-	--background-color-hover: #e1e1e2;
+	--text-color-muted: #444444;
+	--text-color-red: #bb2424;
+	--text-color-green: #2b882b;
+	--text-color-blue: #5454ca;
+	--link-color: #000080;
+	--section-background-color: #eaeaea;
+	--area-background-color: #d9d9d9;
+	--block-background-color: #eaeaea;
+	--header-background-color: #dbdbdb;
+	--button-background-color: #f9f9fa;
+	--button-background-color-hover: #c4c4c4;
+	--button-background-color-active: #f3f3f3;
+	--button-text-color-active: #59aed8;
+	--button-shadow-color: rgba(0, 0, 0, 0.1);
+	--input-background-color: #ffffff;
+	--input-text-color: #0c0c0d;
+	--input-border-color: #ccc;
+	--input-border-color-active: #59aed8;
+	--input-group-border-color: #c4c4c4;
+	--menu-background-color: #eaeaea;
+	--menu-icons-filter: none;
+	--menu-icons-filter-active: invert(1);
+	--menu-text-color: #333333;
+	--menu-dropdown-hover-background-color: #a3dbf7;
+	--menu-dropdown-border-color: #15439b;
+	--background-color-active: #a3dbf7;
+	--background-color-hover: #c4c4c4;
+	--text-color-active: #15439b;
 	--border-color: #c1c1c1;
+	--scrollbar-track-color: #f9f9fa;
+	--scrollbar-thumb-color: #919090;
+	--mobile-menu-toggle-filter: none;
 }
 body.theme-green{
 	/* green */
 	--background: #050702;
 	--text-color: #acc3a9;
-	--background-color-section: #1c2e04;
-	--background-color-area: #3b5f11;
-	--background-color-header: #2b460f;
-	--background-color-button: #2e4a0d;
-	--background-color-menu: #1c2e04;
-	--text-color-menu: #acc3a9;
+	--text-color-muted: #80937d;
+	--link-color: #9ffda5;
+	--section-background-color: #1c2e04;
+	--area-background-color: #3b5f11;
+	--block-background-color: #3b5f11;
+	--header-background-color: #2b460f;
+	--button-background-color: #2e4a0d;
+	--button-background-color-hover: #58960e;
+	--button-background-color-active:#2b460f;
+	--button-text-color-active: #ccc;
+	--input-background-color: #ffffff;
+	--input-text-color: #0c0c0d;
+	--input-border-color: #ccc;
+	--menu-background-color: #1c2e04;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
+	--menu-text-color: #acc3a9;
 	--background-color-active: #58960e;
 	--background-color-hover: #58960e;
+	--text-color-active: #acc3a9;
 	--border-color: #4d6b1e;
+	--scrollbar-track-color: #050702;
+	--scrollbar-thumb-color: #80937d;
+	--mobile-menu-toggle-filter: invert(1);
 }
 body{
 	margin: 0px;
@@ -50,7 +115,7 @@ body{
 	padding-top: 30px;
 	background-color: #424F5A;
 	background: var(--background);
-	font-size: 13px;
+	font-size: 1.3rem;
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000000;
 	color: var(--text-color);
@@ -95,9 +160,11 @@ hr{
 	border-color: rgba(0,0,0,0.3);
 	border-bottom: 0;
 }
-input[type="text"], input[type="button"], select, input[type="number"], textarea{
-	border:1px solid #393939;
-	border-color: var(--border-color);
+input[type="text"], select, input[type="number"], textarea{
+	background: var(--input-background-color);
+	border: 1px solid var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	color: var(--input-text-color);
 	padding: 3px 5px;
 	font-size: 13px;
 }
@@ -111,17 +178,27 @@ input[type="range"]{
 	margin-left:0px;
 	width:100%;
 }
-input[type="button"]{
-	background: #dddddd;
+button, input[type="button"]{
+	border-radius: var(--button-border-radius);
+	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 0 0 rgba(255, 255, 255, 0.1) inset;
+	cursor: pointer;
+	border: 1px solid var(--border-color);
+	background-color: var(--button-background-color);
+	color: var(--color-text);
 }
-input[type="button"]:disabled{
+button:hover, input[type="button"]:hover{
+	background-color: var(--button-background-color-hover);
+}
+button:disabled, input[type="button"]:disabled{
 	visibility:hidden;
 }
-button{
-	border-radius: 0;
-	cursor: pointer;
-	background-color: var(--background-color-button);
-	color: var(--color-text);
+button[aria-pressed="true"], input[type="button"][aria-pressed="true"]{
+	background-color: var(--button-background-color-active);
+	color: var(--button-text-color-active);
+	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 1px 1.5px rgba(58, 40, 40, 0.1) inset, 0 -1px 0 0 var(--button-text-color-active) inset;
+}
+button[aria-pressed="true"]:hover, input[type="button"][aria-pressed="true"]:hover{
+	background-color: var(--button-background-color-hover);
 }
 label{
 	display: inline-block;

@@ -21,7 +21,7 @@ class Tools_colorToAlpha_class {
 		}
 
 		var settings = {
-			title: 'Color to alpha',
+			title: 'Color to Alpha',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);
@@ -55,7 +55,7 @@ class Tools_colorToAlpha_class {
 
 	change(data, color) {
 		var imgData = data.data;
-		var back_color = this.Helper.hex2rgb(color);
+		var back_color = this.Helper.hexToRgb(color);
 
 		for (var i = 0; i < imgData.length; i += 4) {
 			if (imgData[i + 3] == 0)

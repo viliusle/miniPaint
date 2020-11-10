@@ -30,11 +30,12 @@
 </head>
 <body>
 	<div class="wrapper">
+
+		<nav aria-label="Main Menu" class="main_menu" id="main_menu"></nav>
 		
 		<div class="submenu">
-			<a class="logo" href="">miniPaint</a>
+			<a class="logo" href="#">miniPaint</a>
 			<div class="block attributes" id="action_attributes"></div>
-			<div class="clear"></div>
 		</div>
 		
 		<div class="sidebar_left" id="tools_container"></div>
@@ -59,12 +60,6 @@
 			
 			<div class="colors block">
 				<h2 class="trn toggle" data-target="toggle_colors">Colors</h2>
-				<input
-					title="Click to change color" 
-					type="color" 
-					class="color_area" 
-					id="main_color" 
-					value="#0000ff"	/>
 				<div class="content" id="toggle_colors"></div>
 			</div>
 			
@@ -85,9 +80,10 @@
 		</div>
 	</div>
 	<div class="mobile_menu">
-		<button class="right_mobile_menu" id="mobile_menu_button" type="button"></button>
+		<button class="right_mobile_menu" id="mobile_menu_button" type="button">
+			<span class="sr_only">Toggle Menu</span>
+		</button>
 	</div>
-	<div class="ddsmoothmenu" id="main_menu"></div>
 	<div class="hidden" id="tmp"></div>
 	<div id="popup"></div>
 </body>

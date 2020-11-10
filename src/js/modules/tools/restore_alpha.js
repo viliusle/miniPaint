@@ -19,7 +19,7 @@ class Tools_restoreAlpha_class {
 		}
 
 		var settings = {
-			title: 'Restore alpha',
+			title: 'Restore Alpha',
 			preview: true,
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);
