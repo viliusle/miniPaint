@@ -25,7 +25,7 @@ class Effects_blur_class extends Effects_common_class {
 			value = value * diff;
 		}
 
-		return value + 'px';
+		return (value * config.ZOOM) + 'px';
 	}
 
 }

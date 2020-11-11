@@ -36,11 +36,12 @@ class Base_state_class {
 		var _this = this;
 
 		document.addEventListener('keydown', function (event) {
-			var code = event.keyCode;
+			var code = event.code;
+
 			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
 				return;
 
-			if (code == 90 && (event.ctrlKey == true || event.metaKey)) {
+			if (code == "KeyZ" && (event.ctrlKey == true || event.metaKey)) {
 				//undo
 				_this.undo();
 				event.preventDefault();

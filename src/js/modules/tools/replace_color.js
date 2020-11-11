@@ -65,11 +65,11 @@ class Tools_replaceColor_class {
 		var mode = params.mode;
 
 		var imgData = data.data;
-		var target_rgb = this.Helper.hex2rgb(target);
+		var target_rgb = this.Helper.hexToRgb(target);
 		var target_hsl = this.Helper.rgbToHsl(target_rgb.r, target_rgb.g, target_rgb.b);
 		var target_normalized = this.Helper.hslToRgb(target_hsl.h, target_hsl.s, 0.5);
 
-		var replacement_rgb = this.Helper.hex2rgb(replacement);
+		var replacement_rgb = this.Helper.hexToRgb(replacement);
 		var replacement_hsl = this.Helper.rgbToHsl(replacement_rgb.r, replacement_rgb.g, replacement_rgb.b);
 
 		for (var i = 0; i < imgData.length; i += 4) {
@@ -97,9 +97,9 @@ class Tools_replaceColor_class {
 				
 				var hsl = this.Helper.rgbToHsl(imgData[i], imgData[i + 1], imgData[i + 2]);
 				var normalized = this.Helper.hslToRgb(hsl.h, hsl.s, 0.5);
-				var diff = (Math.abs(normalized[0] - target_normalized[0])
-					+ Math.abs(normalized[1] - target_normalized[1])
-					+ Math.abs(normalized[2] - target_normalized[2])) / 3;
+				var diff = (Math.abs(normalized.r - target_normalized.r)
+					+ Math.abs(normalized.g - target_normalized.g)
+					+ Math.abs(normalized.b - target_normalized.b)) / 3;
 				if (diff > power)
 					continue;
 
@@ -110,9 +110,9 @@ class Tools_replaceColor_class {
 					hsl.l * (replacement_hsl.l)
 				);
 
-				imgData[i] = normalized_final[0];
-				imgData[i + 1] = normalized_final[1];
-				imgData[i + 2] = normalized_final[2];
+				imgData[i] = normalized_final.r;
+				imgData[i + 1] = normalized_final.g;
+				imgData[i + 2] = normalized_final.b;
 				if (alpha < 255)
 					imgData[i + 3] = alpha;
 			}

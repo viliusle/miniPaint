@@ -21,7 +21,7 @@ class Base_selection_class {
 	 * 
 	 * @param {ctx} ctx
 	 * @param {object} settings
-	 * @param {string} key
+	 * @param {string|null} key
 	 */
 	constructor(ctx, settings, key = null) {
 		if (key != null) {
@@ -117,7 +117,8 @@ class Base_selection_class {
 		var settings = this.find_settings();
 		var data = settings.data;
 
-		if (settings.data === null || settings.data.status == 'draft') {
+		if (settings.data === null || settings.data.status == 'draft'
+			|| (settings.data.hide_selection_if_active === true && settings.data.type == config.TOOL.name)) {
 			return;
 		}
 
@@ -246,7 +247,7 @@ class Base_selection_class {
 		var mouse = config.mouse;
 		var type = this.selected_object_drag_type;
 
-		if(e.type == 'mousedown'){
+		if(e.type == 'mousedown' && settings.data !== null){
 			this.click_details = {
 				x: settings.data.x,
 				y: settings.data.y,
@@ -269,9 +270,9 @@ class Base_selection_class {
 				var width = this.click_details.width + dx;
 				var height = this.click_details.height + dy;
 				if(type.indexOf("top") >= 0)
-					var height = this.click_details.height - dy;
+					height = this.click_details.height - dy;
 				if(type.indexOf("left") >= 0)
-					var width = this.click_details.width - dx;
+					width = this.click_details.width - dx;
 				
 				if(type.indexOf("_") >= 0 && (settings.keep_ratio == true && is_ctrl == false) 
 					|| (settings.keep_ratio !== true && is_ctrl == true)){

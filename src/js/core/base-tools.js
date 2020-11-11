@@ -5,6 +5,7 @@
 
 import config from './../config.js';
 import Base_layers_class from './base-layers.js';
+import Base_gui_class from './base-gui.js';
 
 /**
  * Base tools class, can be used for extending on tools like brush, provides various helping methods.
@@ -13,10 +14,10 @@ class Base_tools_class {
 
 	constructor(save_mouse) {
 		this.Base_layers = new Base_layers_class();
+		this.Base_gui = new Base_gui_class();
 		this.is_drag = false;
 		this.mouse_click_pos = [false, false];
 		this.mouse_move_last = [false, false];
-		this.canvas_offset = {x: null, y: null};
 		this.mouse_valid = false;
 		this.mouse_click_valid = false;
 		this.speed_average = 0;
@@ -90,12 +91,6 @@ class Base_tools_class {
 	 * do preparation
 	 */
 	prepare() {
-		//calc canvas position offset
-		var bodyRect = document.body.getBoundingClientRect();
-		var canvas_el = document.getElementById('canvas_minipaint').getBoundingClientRect();
-		this.canvas_offset.x = canvas_el.left - bodyRect.left;
-		this.canvas_offset.y = canvas_el.top - bodyRect.top;
-
 		this.is_drag = config.mouse.is_drag;
 	}
 
@@ -123,13 +118,13 @@ class Base_tools_class {
 			this.mouse_valid = true;
 		}
 
-		if (event != undefined && event.changedTouches) {
+		if (event.changedTouches) {
 			//using touch events
 			event = event.changedTouches[0];
 		}
 
-		var mouse_x = event.pageX - this.canvas_offset.x;
-		var mouse_y = event.pageY - this.canvas_offset.y;
+		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
+		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
 
 		//adapt coords to ZOOM
 		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);

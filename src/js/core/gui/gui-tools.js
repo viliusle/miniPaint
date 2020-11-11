@@ -7,6 +7,7 @@ import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 import Help_translate_class from './../../modules/help/translate.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import Base_gui_class from '../base-gui.js';
 
 var instance = null;
 
@@ -24,6 +25,7 @@ class GUI_tools_class {
 
 		this.Helper = new Helper_class();
 		this.Help_translate = new Help_translate_class();
+		this.Base_gui = new Base_gui_class();
 
 		//active tool
 		this.active_tool = 'brush';
@@ -56,6 +58,10 @@ class GUI_tools_class {
 		var target_id = "tools_container";
 		var _this = this;
 		var saved_tool = this.Helper.getCookie('active_tool');
+		if(saved_tool == 'media') {
+			//bringing this backby default gives bad UX
+			saved_tool = null
+		}
 		if (saved_tool != null) {
 			this.active_tool = saved_tool;
 		}
@@ -85,6 +91,7 @@ class GUI_tools_class {
 
 		this.show_action_attributes();
 		this.activate_tool(this.active_tool);
+		this.Base_gui.check_canvas_offset();
 	}
 
 	activate_tool(key) {
