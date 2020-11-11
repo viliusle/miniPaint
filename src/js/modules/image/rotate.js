@@ -56,7 +56,7 @@ class Image_rotate_class {
 				{name: "right_angle", title: "Right angle:", values: angles},
 			],
 			on_change: function (params, canvas_preview, w, h) {
-				_this.rotate_handler(params, false);
+				_this.rotate_handler(params);
 			},
 			on_finish: function (params) {
 				config.layer.rotate = initial_angle;
@@ -67,7 +67,7 @@ class Image_rotate_class {
 		this.Dialog.show(settings);
 	}
 
-	rotate_handler(data, can_resize = true) {
+	rotate_handler(data, can_resize = false) {
 		var value = parseInt(data.rotate);
 		if (data.right_angle != 'Custom') {
 			value = parseInt(data.right_angle);
