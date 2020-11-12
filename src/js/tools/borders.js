@@ -42,7 +42,7 @@ class Borders_class extends Base_tools_class {
 			ctx.beginPath();
 			ctx.shadowColor = layer.color;
 			ctx.shadowBlur = size * config.ZOOM;
-			ctx.rect(x -size / 2, y -size / 2, width + size, height + size);
+			ctx.rect(x - (size / 2), y - (size / 2), width + size, height + size);
 			ctx.stroke();
 			ctx.stroke();
 			ctx.stroke();
