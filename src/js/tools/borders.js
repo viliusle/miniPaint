@@ -36,6 +36,7 @@ class Borders_class extends Base_tools_class {
 		//set styles
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = size;
+		ctx.lineJoin = "miter";
 
 		if (params.shadow === true) {
 			//with shadow

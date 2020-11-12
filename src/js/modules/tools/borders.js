@@ -47,6 +47,7 @@ class Tools_borders_class {
 
 		ctx.save();
 		ctx.lineWidth = size;
+		ctx.lineJoin = "miter";
 		if (params.shadow === true) {
 			//with shadow
 			ctx.beginPath();
