@@ -7,10 +7,12 @@ import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Layer_rename_class from './../../modules/layer/rename.js';
+import Layer_duplicate_class from './../../modules/layer/duplicate.js';
 
 var template = `
 	<span class="trn">Insert:</span>
 	<button type="button" class="layer_add" id="insert_layer">+</button>
+	<button type="button" class="layer_dup" id="dup_layer">D</button>
 
 	<button type="button" class="layers_arrow" title="Move down" id="layer_down">&darr;</button>
 	<button type="button" class="layers_arrow" title="Move up" id="layer_up">&uarr;</button>
@@ -27,6 +29,7 @@ class GUI_layers_class {
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.Layer_rename = new Layer_rename_class();
+		this.Duplicate_layer = new Layer_duplicate_class();
 	}
 
 	render_main_layers() {
@@ -45,6 +48,11 @@ class GUI_layers_class {
 				//new layer
 				window.State.save();
 				_this.Base_layers.insert();
+			}
+			else if (target.id == 'dup_layer') {
+				//duplicate current layer
+				window.State.save();
+				_this.Duplicate_layer.duplicate();
 			}
 			else if (target.id == 'layer_up') {
 				//move layer up
