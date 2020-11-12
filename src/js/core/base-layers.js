@@ -335,17 +335,17 @@ class Base_layers_class {
 
 			//prepare image
 			if (layer.type == 'image') {
-				
+
 				if(layer.name.toLowerCase().indexOf('.svg') == layer.name.length - 4){
 					//we have svg
 					layer.is_vector = true;
 				}
 
-				if (config.layers.length == 1 && config.layer.width == 0
-					&& config.layer.height == 0 && config.layer.data == null) {
-					//remove first empty layer?
-					_this.delete(config.layer.id, true);
-				}
+//				if (config.layers.length == 1 && config.layer.width == 0
+//					&& config.layer.height == 0 && config.layer.data == null) {
+//					//remove first empty layer?
+//					_this.delete(config.layer.id, true);
+//				}
 
 				if (layer.link == null) {
 					if (typeof layer.data == 'object') {
