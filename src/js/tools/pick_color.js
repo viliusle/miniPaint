@@ -82,7 +82,7 @@ class Pick_color_class extends Base_tools_class {
 			var ctx = canvas.getContext("2d");
 			canvas.width = config.WIDTH;
 			canvas.height = config.HEIGHT;
-			this.Base_layers.convert_layers_to_canvas(ctx);
+			this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		}
 		//find color
 		var c = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;

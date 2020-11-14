@@ -55,7 +55,7 @@ class Helper_class {
 	 * @param {int} offset
 	 * @returns {Boolean|String}
 	 */
-	strpos(haystack, needle, offset) {
+	strpos(haystack, needle, offset = 0) {
 		var i = (haystack + '').indexOf(needle, (offset || 0));
 		return i === -1 ? false : i;
 	}
@@ -82,9 +82,8 @@ class Helper_class {
 	/**
 	 * sets cookie value to global cookie
 	 * 
-	 * @param {type} name
-	 * @param {type} value
-	 * @returns {undefined}
+	 * @param {string} name
+	 * @param {string|number} value
 	 */
 	setCookie(name, value) {
 		var cookie = this._getCookie('config');

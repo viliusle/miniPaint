@@ -341,7 +341,7 @@ const menuDefinition = [
 					{
 						name: 'Negative',
 						ellipsis: true,
-						target: 'effects/negative.negative'
+						target: 'effects/invert.invert'
 					},
 					{
 						name: 'Saturate',

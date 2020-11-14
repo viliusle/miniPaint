@@ -40,8 +40,6 @@ class Effects_common_class {
 	}
 
 	save(params, type) {
-		params.value = this.convert_value(params.value, params, 'save');
-
 		this.Base_layers.add_filter(null, type, params);
 	}
 

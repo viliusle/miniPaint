@@ -92,9 +92,13 @@ class File_new_class {
 		else
 			config.TRANSPARENCY = false;
 
-		config.ZOOM = 1;
 		config.WIDTH = parseInt(width);
 		config.HEIGHT = parseInt(height);
+		config.ALPHA = 255;
+		config.COLOR = '#008000';
+		config.mouse = {};
+		config.visible_width = null;
+		config.visible_height = null;
 		this.Base_gui.prepare_canvas();
 
 		//prepare layers
@@ -102,9 +106,6 @@ class File_new_class {
 		this.Base_layers.init_zoom_lib();
 		this.Base_layers.insert({});
 		config.need_render = true;
-
-		//reset EXIF
-		config.layer._exif = null;
 
 		//last resolution
 		var last_resolution = JSON.stringify([config.WIDTH, config.HEIGHT]);

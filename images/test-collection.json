@@ -231,9 +231,9 @@
 			"x": 50,
 			"y": 100,
 			"width": 300,
-			"width_original": 300,
 			"height": 239,
-			"height_original": 239,
+			"width_original": 400,
+			"height_original": 380,
 			"visible": true,
 			"is_vector": false,
 			"hide_selection_if_active": false,
@@ -252,7 +252,7 @@
 					"params": {
 						"x": 10,
 						"y": 10,
-						"value": "10px 10px 5px #000000",
+						"value": "5",
 						"color": "#000000"
 					}
 				}
