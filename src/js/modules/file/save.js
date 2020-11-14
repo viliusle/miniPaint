@@ -30,14 +30,17 @@ class File_save_class {
 		this.set_events();
 
 		//save types config
-		this.SAVE_TYPES = [
-			"PNG - Portable Network Graphics",
-			"JPG - JPG/JPEG Format",
-			"JSON - Full layers data", //aka PSD
-			"WEBP - Weppy File Format", //chrome only
-			"GIF - Graphics Interchange Format", //animated GIF
-			"BMP - Windows Bitmap", //firefox only
-		];
+		this.SAVE_TYPES = {
+			PNG: "Portable Network Graphics",
+			JPG: "JPG/JPEG Format",
+			AVIF: "AV1 Image File Format",
+			JSON: "Full layers data",
+			WEBP: "Weppy File Format",
+			GIF: "Graphics Interchange Format",
+			BMP: "Windows Bitmap",
+		};
+
+		this.default_extension = 'PNG';
 	}
 
 	set_events() {
@@ -60,9 +63,15 @@ class File_save_class {
 		var _this = this;
 
 		//find default format
-		var save_default = this.SAVE_TYPES[0];	//png
-		if (this.Helper.getCookie('save_default') == 'jpg')
-			save_default = this.SAVE_TYPES[1]; //jpg
+		var save_default = this.default_extension;
+		var save_default_cookie = this.Helper.getCookie('save_default');
+
+		for(var i in this.SAVE_TYPES) {
+			if(save_default_cookie == i){
+				save_default = i + " - " + this.SAVE_TYPES[i];
+				break;
+			}
+		}
 
 		var calc_size_value = false;
 		var calc_size = false;
@@ -77,11 +86,16 @@ class File_save_class {
 			file_name = parts[parts.length - 2];
 		file_name = file_name.replace(/ /g, "-");
 
+		var save_types = [];
+		for(var i in this.SAVE_TYPES) {
+			save_types.push(i + " - " + this.SAVE_TYPES[i]);
+		}
+
 		var settings = {
 			title: 'Save as',
 			params: [
 				{name: "name", title: "File name:", value: file_name},
-				{name: "type", title: "Save as type:", values: this.SAVE_TYPES, value: save_default},
+				{name: "type", title: "Save as type:", values: save_types, value: save_default},
 				{name: "quality", title: "Quality:", value: 90, range: [1, 100]},
 				{title: "File size:", html: '<span id="file_size">-</span>'},
 				{name: "calc_size", title: "Show file size:", value: calc_size_value},
@@ -271,8 +285,22 @@ class File_save_class {
 			}, "image/jpeg", quality);
 		}
 		else if (type == 'WEBP') {
-			//WEBP - new format for chrome only
+			//WEBP
 			var data_header = "image/webp";
+
+			//check support
+			if (this.check_format_support(canvas, data_header, false) == false) {
+				this.update_file_size('-');
+				return;
+			}
+
+			canvas.toBlob(function (blob) {
+				_this.update_file_size(blob.size);
+			}, data_header, quality);
+		}
+		else if (type == 'AVIF') {
+			//AVIF
+			var data_header = "image/avif";
 
 			//check support
 			if (this.check_format_support(canvas, data_header, false) == false) {
@@ -337,25 +365,17 @@ class File_save_class {
 		var parts = type.split(" ");
 		type = parts[0];
 
-		if (this.Helper.strpos(fname, '.png') !== false)
-			type = 'PNG';
-		else if (this.Helper.strpos(fname, '.jpg') !== false)
-			type = 'JPG';
-		else if (this.Helper.strpos(fname, '.json') !== false)
-			type = 'JSON';
-		else if (this.Helper.strpos(fname, '.bmp') !== false)
-			type = 'BMP';
-		else if (this.Helper.strpos(fname, '.webp') !== false)
-			type = 'WEBP';
+		//detect type from file name
+		for(var i in this.SAVE_TYPES) {
+			if (this.Helper.strpos(fname, '.' + i.toLowerCase()) !== false) {
+				type = i;
+			}
+		}
 
-		//save type as cookie
-		var save_default = this.SAVE_TYPES[0]; //png
-		if (this.Helper.getCookie('save_default') == 'jpg')
-			save_default = this.SAVE_TYPES[1]; //jpg
-		if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[0])
-			this.Helper.setCookie('save_default', 'png');
-		else if (user_response.type != save_default && user_response.type == this.SAVE_TYPES[1])
-			this.Helper.setCookie('save_default', 'jpg');
+		//save default type as cookie
+		if(this.Helper.getCookie('save_default') == '' || this.Helper.getCookie('save_default') != type){
+			this.Helper.setCookie('save_default', type);
+		}
 
 		if (type != 'JSON') {
 			//temp canvas
@@ -411,10 +431,24 @@ class File_save_class {
 			}, "image/jpeg", quality);
 		}
 		else if (type == 'WEBP') {
-			//WEBP - new format for chrome only
+			//WEBP
 			if (this.Helper.strpos(fname, '.webp') == false)
 				fname = fname + ".webp";
 			var data_header = "image/webp";
+
+			//check support
+			if (this.check_format_support(canvas, data_header) == false)
+				return false;
+
+			canvas.toBlob(function (blob) {
+				filesaver.saveAs(blob, fname);
+			}, data_header, quality);
+		}
+		else if (type == 'AVIF') {
+			//AVIF
+			if (this.Helper.strpos(fname, '.avif') == false)
+				fname = fname + ".avif";
+			var data_header = "image/avif";
 
 			//check support
 			if (this.check_format_support(canvas, data_header) == false)
