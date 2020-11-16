@@ -96,6 +96,9 @@ class Text_document_class {
 		*/
 		this.lines = [];
 		this.on_change = null;
+
+		// If user edits params while no selection, queue meta insertion for next type.
+		this.queuedMetaChanges = null;
 	}
 
 	/**
@@ -146,6 +149,46 @@ class Text_document_class {
         }
         return true;
 	}
+
+	/**
+	 * Inserts a span with empty text in the document at the specified line and character position
+	 * @param {number} line - The line number to insert at (0 indexed) 
+	 * @param {number} character - The character position to insert at (0 indexed)
+	 * @param {object} meta - Metadata to associate with span
+	 */
+	insert_empty_span(line, character, meta) {
+		const lineDef = this.lines[line];
+		let newLine = [];
+		let spanStartCharacter = 0;
+		let wasInserted = false;
+		for (let span of lineDef) {
+			if (!wasInserted && character > spanStartCharacter && character <= spanStartCharacter + span.text.length) {
+				let textBefore = span.text.slice(0, character - spanStartCharacter);
+				let textAfter = span.text.slice(character - spanStartCharacter);
+				if (textBefore.length > 0) {
+					newLine.push({
+						text: textBefore,
+						meta: JSON.parse(JSON.stringify(span.meta))
+					});
+				}
+				newLine.push({
+					text: '',
+					meta
+				});
+				if (textAfter.length > 0) {
+					newLine.push({
+						text: textAfter,
+						meta: JSON.parse(JSON.stringify(span.meta))
+					});
+				}
+				wasInserted = true;
+			} else {
+				newLine.push(span);
+			}
+			spanStartCharacter += span.text.length;
+		}
+		this.lines[line] = newLine;
+	}
 	
 	/**
 	 * Inserts a text string in the document at the specified line and character position
@@ -154,6 +197,12 @@ class Text_document_class {
 	 * @param {number} character - The character position to insert at (0 indexed)
 	 */
 	insert_text(text, line, character) {
+
+		if (this.queuedMetaChanges) {
+			this.insert_empty_span(line, character, this.queuedMetaChanges);
+			this.queuedMetaChanges = null;
+		}
+
         const insertLine = this.lines[line];
         const textHasNewline = text.includes('\n');
         let characterCount = 0;
@@ -168,9 +217,13 @@ class Text_document_class {
             const span = insertLine[i];
             const spanLength = span.text.length;
             if (!modifyingSpan && (character > characterCount || character === 0)  && character <= characterCount + spanLength) {
-                modifyingSpan = span;
+				if (insertLine[i + 1] && insertLine[i + 1].text === '') {
+					modifyingSpan = insertLine[i + 1];
+				} else {
+					modifyingSpan = span;
+				}
                 const textIdx = character - characterCount;
-                span.text = span.text.slice(0, textIdx) + text + span.text.slice(textIdx);
+                modifyingSpan.text = modifyingSpan.text.slice(0, textIdx) + text + modifyingSpan.text.slice(textIdx);
                 if (!textHasNewline) {
                     newCharacter = characterCount + textIdx + text.length;
                     break;
@@ -1681,7 +1734,16 @@ class Text_class extends Base_tools_class {
 			editor.trigger_cursor_end();
 			this.textarea.focus();
 			this.selecting = false;
-			this.update_tool_attributes(this.layer, editor);
+			if (editor.selection.is_empty() && editor.document.queuedMetaChanges) {
+				let meta = {};
+				const existingMeta = editor.document.get_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character);
+				for (let metaKey in existingMeta) {
+					meta[metaKey] = editor.document.queuedMetaChanges[metaKey] != null ? editor.document.queuedMetaChanges[metaKey] : existingMeta[metaKey][0];
+				}
+			} else {
+				editor.document.queuedMetaChanges = null;
+				this.update_tool_attributes(this.layer, editor);
+			}
 		}
 
 		// Resize layer based on text boundaries.
@@ -1785,9 +1847,19 @@ class Text_class extends Base_tools_class {
 				if (!isNaN(value)) meta.kerning = value;
 				break;
 		}
-		editor.document.set_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character, meta);
-		editor.hasValueChanged = true;
-		this.Base_layers.render();
+		if (editor.selection.is_empty()) {
+			if (!editor.document.queuedMetaChanges) {
+				editor.document.queuedMetaChanges = {};
+			}
+			for (let metaKey in meta) {
+				editor.document.queuedMetaChanges[metaKey] = meta[metaKey];
+			}
+		} else {
+			editor.document.queuedMetaChanges = null;
+			editor.document.set_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character, meta);
+			editor.hasValueChanged = true;
+			this.Base_layers.render();
+		}
 	}
 
 	update_tool_attributes(layer, editor) {

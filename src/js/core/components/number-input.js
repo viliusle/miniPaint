@@ -53,7 +53,7 @@ var Helper = new Helper_class();
         if (!disabled) {
             clearTimeout(buttonRepeatTimeout);
             clearInterval(buttonRepeatInterval);
-            set_value($el, (isNaN(value) ? 0 : value) + get_step_amount($el));
+            set_value($el, (isNaN(value) ? 0 : value) + get_step_amount($el, true));
             $el.trigger('input');
         }
     };
@@ -64,12 +64,12 @@ var Helper = new Helper_class();
         if (!disabled) {
             clearTimeout(buttonRepeatTimeout);
             clearInterval(buttonRepeatInterval);
-            set_value($el, (isNaN(value) ? 0 : value) + get_step_amount($el));
+            set_value($el, (isNaN(value) ? 0 : value) + get_step_amount($el, true));
             $el.trigger('input');
             $el.data('buttonRepeatTimeout', setTimeout(() => {
                 $el.data('buttonRepeatInterval', setInterval(() => {
                     const { value } = $el.data();
-                    set_value($el, value + get_step_amount($el));
+                    set_value($el, value + get_step_amount($el, true));
                     $el.trigger('input');
                 }, 50));
             }, 400));
@@ -89,7 +89,7 @@ var Helper = new Helper_class();
         if (!disabled) {
             clearTimeout(buttonRepeatTimeout);
             clearInterval(buttonRepeatInterval);
-            set_value($el, (isNaN(value) ? 0 : value) - get_step_amount($el));
+            set_value($el, (isNaN(value) ? 0 : value) - get_step_amount($el, false));
             $el.trigger('input');
         }
     };
@@ -100,12 +100,12 @@ var Helper = new Helper_class();
         if (!disabled) {
             clearTimeout(buttonRepeatTimeout);
             clearInterval(buttonRepeatInterval);
-            set_value($el, (isNaN(value) ? 0 : value) - get_step_amount($el));
+            set_value($el, (isNaN(value) ? 0 : value) - get_step_amount($el, false));
             $el.trigger('input');
             $el.data('buttonRepeatTimeout', setTimeout(() => {
                 $el.data('buttonRepeatInterval', setInterval(() => {
                     const { value } = $el.data();
-                    set_value($el, value - get_step_amount($el));
+                    set_value($el, value - get_step_amount($el, false));
                     $el.trigger('input');
                 }, 50));
             }, 400));
@@ -147,18 +147,18 @@ var Helper = new Helper_class();
         $el.data('disabled', disabled);
     };
 
-    const get_step_amount = ($el) => {
+    const get_step_amount = ($el, increasing) => {
         const { value, step, exponentialStepButtons } = $el.data();
         if (exponentialStepButtons) {
             let amount = step;
             let absValue = Math.abs((isNaN(value) ? 0 : value));
-            if (absValue >= 500)
+            if (absValue >= (increasing ? 500 : 501))
                 amount = 100;
-            else if (absValue >= 100)
+            else if (absValue >= (increasing ? 100 : 101))
                 amount = 50;
-            else if (absValue >= 10)
+            else if (absValue >= (increasing ? 10 : 11))
                 amount = 10;
-            else if (absValue >= 5)
+            else if (absValue >= (increasing ? 5 : 6))
                 amount = 5;
             else
                 amount = 1;

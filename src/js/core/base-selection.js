@@ -238,8 +238,10 @@ class Base_selection_class {
 
 	selected_object_actions(e) {
 		var settings = this.find_settings();
-		if (document.body.style.cursor != 'default') {
-			document.body.style.cursor = 'default';
+		const mainWrapper = document.getElementById('main_wrapper');
+		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
+		if (mainWrapper.style.cursor != defaultCursor) {
+			mainWrapper.style.cursor = defaultCursor;
 		}
 		if (e.type == 'mousedown' && config.mouse.valid == false || settings.enable_controls == false) {
 			return;
@@ -261,7 +263,7 @@ class Base_selection_class {
 			};
 		}
 		if (e.type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
-			document.body.style.cursor = "pointer";
+			mainWrapper.style.cursor = "pointer";
 			
 			var is_ctrl = false;
 			if (e.ctrlKey == true || e.metaKey) {
@@ -351,7 +353,7 @@ class Base_selection_class {
 						}
 					}
 					if (e.type == 'mousemove') {
-						document.body.style.cursor = "pointer";
+						mainWrapper.style.cursor = "pointer";
 					}
 				}
 			}

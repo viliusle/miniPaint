@@ -125,6 +125,13 @@ class GUI_tools_class {
 			this.tools_modules[moduleKey][functionName]();
 		}
 
+		//set default cursor
+		const mainWrapper = document.getElementById('main_wrapper');
+		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
+		if (mainWrapper.style.cursor != defaultCursor) {
+			mainWrapper.style.cursor = defaultCursor;
+		}
+
 		this.show_action_attributes();
 		this.Helper.setCookie('active_tool', this.active_tool);
 		config.need_render = true;
