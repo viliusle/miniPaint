@@ -7,6 +7,9 @@
     flex-direction: row;
     flex-wrap: wrap;
 }
+.ui_button_group.no_wrap {
+    flex-wrap: nowrap;
+}
 .ui_button_group.stacked {
     margin: .75rem 0;
 }
@@ -202,6 +205,10 @@
     height: 2.8rem;
 }
 
+.ui_icon_button.input_height {
+    height: 2.4rem;
+}
+
 .ui_icon_button > svg {
     display: block;
     font-size: 1.6rem;
@@ -301,11 +308,13 @@
 
 .ui_number_input {
     border: 1px solid var(--input-border-color);
+    border-radius: var(--input-border-radius);
     display: inline-block;
     padding: 0;
     margin: 0;
     position: relative;
     overflow: hidden;
+    vertical-align: middle;
 }
 
 .ui_number_input > input[type="number"]::-webkit-outer-spin-button,

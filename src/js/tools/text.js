@@ -3,9 +3,25 @@ import zoomView from './../libs/zoomView.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_selection_class from './../core/base-selection.js';
 import Base_layers_class from './../core/base-layers.js';
+import GUI_tools_class from './../core/gui/gui-tools.js';
 import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
 import { timers } from 'jquery';
+
+// Default text styling
+// WARNING - changing this could break backwards compatibility! Defaults aren't saved in text layer.
+const metaDefaults = {
+	size: 40,
+	family: 'Arial',
+	kerning: 0,
+	bold: false,
+	italic: false,
+	underline: false,
+	strikethrough: false,
+	fill_color: '#008800',
+	stroke_size: 0,
+	stroke_color: '#000000'
+};
 
 // Global map of font name to font metrics information.
 const fontMetricsMap = new Map();
@@ -66,19 +82,11 @@ class Text_document_class {
 						italic: false,
 						underline: false,
 						strikethrough: false,
-						align: 'left',
 						size: 12,
-						font: 'Arial',
-						fillColor: {
-							type: 'solid',
-							hex: '000000ff'
-						},
-						strokeColor: {
-							type: 'solid',
-							hex: '000000ff'
-						},
-						strokeWidth: 0,
-						shadow: null,
+						family: 'Arial',
+						fill_color: '#000000ff',
+						stroke_color: '#000000ff',
+						stroke_size: 0,
 						kerning: 0,
 						baseline: 0
 					}
@@ -86,7 +94,8 @@ class Text_document_class {
 			]
 		]
 		*/
-        this.lines = [];
+		this.lines = [];
+		this.on_change = null;
 	}
 
 	/**
@@ -201,6 +210,11 @@ class Text_document_class {
                 }
             }
         }
+
+		// Notify change
+		if (this.on_change) {
+			this.on_change(this.lines);
+		}
 
         // Return end position
         return {
@@ -328,6 +342,11 @@ class Text_document_class {
         // Delete lines in-between range
         this.lines.splice(startLine + 1, endLine - startLine);
 
+		// Notify change
+		if (this.on_change) {
+			this.on_change(this.lines);
+		}
+
         // Return new position
         return {
             line: startLine,
@@ -371,7 +390,188 @@ class Text_document_class {
         }
 
         return this.delete_range(startLine, startCharacter, endLine, endCharacter);
-    }
+	}
+	
+	/**
+	 * Retrieves a metadata summary object for the specified range of text. 
+	 * @param {number} startLine - The starting line of the text range
+	 * @param {number} startCharacter - The character position at the starting line of the text range
+	 * @param {number} endLine - The ending line of the text range
+	 * @param {number} endCharacter - The character position at the ending line of the text range
+	 */
+	get_meta_range(startLine, startCharacter, endLine, endCharacter) {
+		// Check bounds
+		startLine >= 0 || (startLine = 0);
+		startCharacter >= 0 || (startCharacter = 0);
+		endLine < this.lines.length || (endLine = this.lines.length - 1);
+		const endLineCharacterCount = this.get_line_character_count(endLine);
+		endCharacter <= endLineCharacterCount || (
+			endCharacter = endLineCharacterCount
+		);
+		const isEmpty = startLine === endLine && startCharacter === endCharacter;
+
+		// Loop through all spans in range and collect meta values
+		const metaCollection = {};
+		for (const metaKey in metaDefaults) {
+			metaCollection[metaKey] = [];
+		}
+		let isInsideRange = false;
+		for (let lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
+			const line = this.lines[lineIndex];
+			let spanStartCharacter = 0;
+			let startSpan = null;
+			let endSpan = null;
+			for (let spanIndex = 0; spanIndex < line.length; spanIndex++) {
+				const span = line[spanIndex];
+				if (lineIndex === startLine) {
+					if (
+						(!isEmpty && startCharacter >= spanStartCharacter && startCharacter < spanStartCharacter + span.text.length) ||
+						(isEmpty && startCharacter > spanStartCharacter && startCharacter <= spanStartCharacter + span.text.length) ||
+						(startCharacter === 0 && spanStartCharacter === 0)
+					) {
+						isInsideRange = true;
+						startSpan = span;
+					}
+				}
+				if (lineIndex === endLine && isInsideRange) {
+					if (
+						(!isEmpty && endCharacter <= spanStartCharacter + span.text.length) ||
+						(isEmpty && endCharacter < spanStartCharacter + span.text.length)
+					) {
+						endSpan = span;
+						isInsideRange = false;
+					}
+				}
+				if (isInsideRange || startSpan === span || (!isEmpty && endSpan === span)) {
+					for (const metaKey in metaCollection) {
+						let metaValue = span.meta[metaKey];
+						if (metaValue == null) {
+							metaValue = metaDefaults[metaKey];
+						}
+						if (!metaCollection[metaKey].includes(metaValue)) {
+							metaCollection[metaKey].push(metaValue);
+						}
+					}
+				}
+				spanStartCharacter += span.text.length;
+			}
+		}
+
+		// Fill in default values for undefined meta keys
+		for (const metaKey in metaDefaults) {
+			if (metaCollection[metaKey].length === 0) {
+				metaCollection[metaKey] = [metaDefaults[metaKey]];
+			}
+		}
+		return metaCollection;
+	}
+
+	/**
+	 * Sets styling metadata for the specified range of text. 
+	 * @param {number} startLine - The starting line of the text range
+	 * @param {number} startCharacter - The character position at the starting line of the text range
+	 * @param {number} endLine - The ending line of the text range
+	 * @param {number} endCharacter - The character position at the ending line of the text range
+	 * @param {object} meta - The meta to set
+	 */
+	set_meta_range(startLine, startCharacter, endLine, endCharacter, meta) {
+		// Check bounds
+		startLine >= 0 || (startLine = 0);
+		startCharacter >= 0 || (startCharacter = 0);
+		endLine < this.lines.length || (endLine = this.lines.length - 1);
+		const endLineCharacterCount = this.get_line_character_count(endLine);
+		endCharacter <= endLineCharacterCount || (
+			endCharacter = endLineCharacterCount
+		);
+
+		// Set meta of spans in selection
+		let isInsideRange = false;
+		for (let lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
+			const line = this.lines[lineIndex];
+			let newLine = [];
+			let spanStartCharacter = 0;
+			for (let span of line) {
+				const spanText = span.text;
+				const spanLength = spanText.length;
+				if (lineIndex === startLine) {
+					if (startCharacter <= spanStartCharacter) {
+						isInsideRange = true;
+					}
+				}
+				if (lineIndex === endLine) {
+					if (endCharacter < spanStartCharacter + spanLength) {
+						isInsideRange = false;
+					}
+				}
+				// Selection start splits the span it's inside of
+				let choppedStartCharacters = 0;
+				if (startCharacter > spanStartCharacter && startCharacter < spanStartCharacter + spanLength) {
+					choppedStartCharacters = startCharacter - spanStartCharacter;
+					newLine.push({
+						text: span.text.slice(0, startCharacter - spanStartCharacter),
+						meta: JSON.parse(JSON.stringify(span.meta))
+					});
+					span.text = span.text.slice(startCharacter - spanStartCharacter);
+					isInsideRange = true;
+				}
+				newLine.push(span);
+				// Selection end splits the span it's inside of
+				if (endCharacter > spanStartCharacter && endCharacter < spanStartCharacter + spanLength) {
+					newLine.push({
+						text: span.text.slice(endCharacter - spanStartCharacter - choppedStartCharacters),
+						meta: JSON.parse(JSON.stringify(span.meta))
+					});
+					span.text = span.text.slice(0, endCharacter - spanStartCharacter - choppedStartCharacters);
+					isInsideRange = true;
+				}
+				// Add meta to span
+				if (isInsideRange) {
+					for (const metaKey in meta) {
+						span.meta[metaKey] = meta[metaKey];
+					}
+				}
+				spanStartCharacter += spanLength;
+			}
+			this.lines[lineIndex] = newLine;
+		}
+
+		this.normalize(startLine, endLine);
+
+		// Notify change
+		if (this.on_change) {
+			this.on_change(this.lines);
+		}
+	}
+
+	/**
+	 * Merges sibling spans that have the same metadata, and removes empty spans. 
+	 * @param {number} startLine - The starting line of the text range
+	 * @param {number} endLine - The ending line of the text range
+	 */
+	normalize(startLine, endLine) {
+		for (let lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
+			const line = this.lines[lineIndex];
+			let spanIndex = 0;
+			for (spanIndex = 0; spanIndex < line.length; spanIndex++) {
+				const span1 = line[spanIndex];
+				const span2 = line[spanIndex + 1];
+				if (span1 && span2 && this.is_same_span_meta(span1.meta, span2.meta)) {
+					line[spanIndex] = {
+						text: span1.text + span2.text,
+						meta: span1.meta
+					};
+					line.splice(spanIndex + 1, 1);
+					spanIndex--;
+					continue;
+				}
+				if (span1.text === '' && line.length > 1) {
+					line.splice(spanIndex, 1);
+					spanIndex--;
+					continue;
+				}
+			}
+		}
+	}
 
 }
 
@@ -382,7 +582,8 @@ class Text_document_class {
 class Text_selection_class {
 	constructor(/* Text_editor_class */ editor) {
         this.editor = editor;
-        this.isVisible = false;
+		this.isVisible = false;
+		this.isCursorVisible = false;
         this.isActiveSideEnd = true;
         this.isBlinkVisible = true;
         this.blinkInterval = 500;
@@ -531,13 +732,22 @@ class Text_selection_class {
 	set_visible(isVisible) {
         if (this.isVisible != isVisible) {
             this.isVisible = isVisible;
-            if (isVisible) {
+        }
+	}
+
+	/**
+	 * Sets the visibility of the selection cursor in the editor.
+	 * @param {boolean} isVisible 
+	 */
+	set_cursor_visible(isVisible) {
+		if (this.isCursorVisible != isVisible) {
+            this.isCursorVisible = isVisible;
+            if (this.isCursorVisible) {
                 this.isBlinkVisible = true;
                 this.start_blinking();
             } else {
                 this.stop_blinking();
             }
-            // this.editor.render();
         }
 	}
 	
@@ -547,7 +757,6 @@ class Text_selection_class {
 	start_blinking() {
         clearInterval(this.blinkIntervalHandle);
         this.blinkIntervalHandle = setInterval(this.blink.bind(this), this.blinkInterval);
-        // this.editor.render();
 	}
 	
 	/**
@@ -686,54 +895,28 @@ class Text_editor_class {
         this.mouseSelectionMoveY = null;
         this.mouseSelectionEdgeScrollInterval = null;
         this.focused = false;
-        
-        this.metaDefaults = {
-            size: 16,
-            font: 'Arial',
-            kerning: 0,
-            fillColor: {
-                type: 'solid',
-                hex: '000000FF'
-            },
-            strokeWidth: 0,
-            strokeColor: {
-                type: 'solid',
-                hex: '000000FF'
-            }
-		};
 		
 		// Text document for this editor
 		this.document = new Text_document_class();
-		this.document.lines = [[{ text: 'Hello World!', meta: {} }]];
+		this.document.lines = [[{ text: '', meta: {} }]];
 		this.wrappedLines = [[]];
 
 		// Text selection for this editor
 		this.selection = new Text_selection_class(this);
 
-		/*
-        this.textareaElement.addEventListener('focus', this.onFocus.bind(this), false);
-        this.textareaElement.addEventListener('blur', this.onBlur.bind(this), false);
-        this.textareaElement.addEventListener('input', this.onInput.bind(this), false);
-        this.textareaElement.addEventListener('keydown', this.onKeydown.bind(this), false);
-        this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-        this.canvas.addEventListener('mouseleave', this.onMouseLeave.bind(this), false);
-        this.canvas.addEventListener('touchstart', this.onTouchStart.bind(this), false);
-        this.canvas.addEventListener('touchmove', this.onTouchMove.bind(this), false);
-        this.canvas.addEventListener('wheel', this.onWheel.bind(this), false);
+		// The layer associated with this editor (so data can be updated)
+		this.layer = null;
+		this.document.on_change = () => {
+			this.layer.data = this.document.lines;
+		};
+	}
 
-        this.globalEventListeners = {
-            onMouseUp: (e) => this.onMouseUp(e),
-            onMouseMove: (e) => this.onMouseMove(e),
-            onTouchEnd: (e) => this.onTouchEnd(e),
-            addKeyModifier: (e) => this.addKeyModifier(e),
-            removeKeyModfier: (e) => this.removeKeyModfier(e)
-        };
-        window.addEventListener('mouseup', this.globalEventListeners.onMouseUp, true);
-        window.addEventListener('mousemove', this.globalEventListeners.onMouseMove, true);
-        window.addEventListener('touchend', this.globalEventListeners.onTouchEnd, true);
-        document.addEventListener('keydown', this.globalEventListeners.addKeyModifier, true);
-		document.addEventListener('keyup', this.globalEventListeners.removeKeyModfier, true);
-		*/
+	/**
+	 * Sets the lines of the document (from layer data)
+	 * @param {array} lines 
+	 */
+	set_lines(lines) {
+		this.document.lines = lines || [[{ text: '', meta: {} }]];
 	}
 
 	/**
@@ -749,8 +932,8 @@ class Text_editor_class {
     }
 
 	get_span_font_metrics(span) {
-		const fontSize = (span.meta.size || this.metaDefaults.size);
-		const fontName = (span.meta.font || this.metaDefaults.font);
+		const fontSize = (span.meta.size || metaDefaults.size);
+		const fontName = (span.meta.family || metaDefaults.family);
 		let fontMetrics = fontMetricsMap.get(fontName + '_' + fontSize);
 		if (!fontMetrics) {
 			fontMetrics = new Font_metrics_class(fontName, fontSize);
@@ -900,14 +1083,14 @@ class Text_editor_class {
 			let s = 0;
 			for (s = 0; s < currentWrapSpans.length; s++) {
 				const span = currentWrapSpans[s];
-				const kerning = (span.meta.kerning || this.metaDefaults.kerning);
+				const kerning = (span.meta.kerning || metaDefaults.kerning);
 				let fontMetrics;
 				if (isHorizontalTextDirection) {
 					ctx.font =
 						' ' + (span.meta.italic ? 'italic' : '') +
 						' ' + (span.meta.bold ? 'bold' : '') +
-						' ' + (span.meta.size || this.metaDefaults.size) + 'px' +
-						' ' + (span.meta.font || this.metaDefaults.font);
+						' ' + (span.meta.size || metaDefaults.size) + 'px' +
+						' ' + (span.meta.family || metaDefaults.family);
 				}
 				else {
 					fontMetrics = this.get_span_font_metrics(span);
@@ -1025,8 +1208,8 @@ class Text_editor_class {
 						ctx.font =
 							' ' + (span.meta.italic ? 'italic' : '') +
 							' ' + (span.meta.bold ? 'bold' : '') +
-							' ' + (span.meta.size || this.metaDefaults.size) + 'px' +
-							' ' + (span.meta.font || this.metaDefaults.font);
+							' ' + (span.meta.size || metaDefaults.size) + 'px' +
+							' ' + (span.meta.family || metaDefaults.family);
 					}
 					let spanWrapSize = isHorizontalTextDirection ? fontMetrics.height : ctx.measureText(character).width;
 					let spanWrapBaseline = isHorizontalTextDirection ? fontMetrics.baseline : 0;
@@ -1064,6 +1247,7 @@ class Text_editor_class {
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'alphabetic';
 
+			const boundary = layer.params.boundary;
 			let drawOffsetTop = layer.y + 1;
 			let drawOffsetLeft = layer.x + 1;
 			const textDirection = layer.params.text_direction;
@@ -1085,25 +1269,26 @@ class Text_editor_class {
 					let characterIndex = 0;
 					const characterOffsets = wrap.characterOffsets;
 					for (let [spanIndex, span] of wrap.spans.entries()) {
+						const kerning = (span.meta.kerning || metaDefaults.kerning);
 						// Set styles for drawing
 						ctx.font =
 							' ' + (span.meta.italic ? 'italic' : '') +
 							' ' + (span.meta.bold ? 'bold' : '') +
-							' ' + Math.round(span.meta.size || this.metaDefaults.size) + 'px' +
-							' ' + (span.meta.font || this.metaDefaults.font);
-						const fillColor = span.meta.fillColor || this.metaDefaults.fillColor;
+							' ' + Math.round(span.meta.size || metaDefaults.size) + 'px' +
+							' ' + (span.meta.family || metaDefaults.family);
+						const fill_color = span.meta.fill_color || metaDefaults.fill_color;
 						let fillStyle;
-						if (fillColor.type === 'solid') {
-							fillStyle = '#' + fillColor.hex;
+						if (fill_color.startsWith('#')) {
+							fillStyle = fill_color;
 						}
-						const strokeWidth = ((span.meta.strokeWidth != null) ? span.meta.strokeWidth : this.metaDefaults.strokeWidth);
+						const stroke_size = ((span.meta.stroke_size != null) ? span.meta.stroke_size : metaDefaults.stroke_size);
 						let strokeStyle;
-						if (strokeWidth) {
-							const strokeColor = span.meta.strokeColor || this.metaDefaults.strokeColor;
-							if (strokeColor.type === 'solid') {
-								strokeStyle = '#' + strokeColor.hex;
+						if (stroke_size) {
+							const stroke_color = span.meta.stroke_color || metaDefaults.stroke_color;
+							if (stroke_color.startsWith('#')) {
+								strokeStyle = stroke_color;
 							}
-							ctx.lineWidth = strokeWidth;
+							ctx.lineWidth = stroke_size;
 						} else {
 							ctx.lineWidth = 0;
 						}
@@ -1116,8 +1301,8 @@ class Text_editor_class {
 							const letterHeight = Math.round(wrapSizes[wrapIndex].size);
 							const textDirectionOffset = drawOffsetLeft + characterOffsets[characterIndex];
 							const wrapDirectionOffset = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset + wrapSizes[wrapIndex].baseline);
-							const letterDrawX = isHorizontalTextDirection ? textDirectionOffset : wrapDirectionOffset;
-							const letterDrawY = isHorizontalTextDirection ? wrapDirectionOffset : textDirectionOffset;
+							const letterDrawX = isHorizontalTextDirection ? textDirectionOffset + kerning : wrapDirectionOffset;
+							const letterDrawY = isHorizontalTextDirection ? wrapDirectionOffset : textDirectionOffset + kerning;
 							let isLetterSelected = false;
 							if (this.selection.isVisible) {
 								if (!isSelectionEmpty) {
@@ -1156,18 +1341,17 @@ class Text_editor_class {
 								const letterStartY = isHorizontalTextDirection ? lineStart : textDirectionOffset;
 								const letterSizeX = isHorizontalTextDirection ? letterWidth : letterHeight;
 								const letterSizeY = isHorizontalTextDirection ? letterHeight : letterWidth;
-								ctx.strokeStyle = 'white';
-								ctx.lineWidth = 1;
-								ctx.strokeRect(letterStartX + .25, letterStartY + 0.5, letterSizeX - 0.5, letterSizeY - 0.5);
+								ctx.fillStyle = this.selectionBackgroundColor + '22';
+								ctx.fillRect(letterStartX, letterStartY, letterSizeX, letterSizeY);
 								ctx.strokeStyle = this.selectionBackgroundColor;
 								ctx.lineWidth = 0.75;
 								ctx.strokeRect(letterStartX, letterStartY, letterSizeX, letterSizeY);
-								ctx.lineWidth = strokeWidth;
+								ctx.lineWidth = stroke_size;
 							}
 							ctx.fillStyle = fillStyle;
 							ctx.strokeStyle = strokeStyle;
 							ctx.fillText(letter, letterDrawX, letterDrawY);
-							if (strokeWidth) {
+							if (stroke_size) {
 								ctx.strokeText(letter, letterDrawX, letterDrawY);
 							}
 							characterIndex++;
@@ -1176,7 +1360,7 @@ class Text_editor_class {
 						if (span.text.length === 0) {
 							if (cursorLine === lineIndex && cursorCharacter === lineLetterCount) {
 								const lineStart = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset);
-								const textDirectionOffset = drawOffsetLeft + characterOffsets[0];
+								const textDirectionOffset = drawOffsetLeft + characterOffsets[0] + (lineIndex === 0 ? (boundary === 'dynamic' ? 5 : 2) : 0);
 								const letterWidth = 3;
 								const letterHeight = Math.round(wrapSizes[wrapIndex].size);
 								cursorStartX = (isHorizontalTextDirection ? textDirectionOffset : lineStart) - 0.5;
@@ -1187,7 +1371,7 @@ class Text_editor_class {
 					}
 
 					// Draw cursor
-					if (this.selection.isVisible /*&& this.selection.isBlinkVisible*/ && cursorStartX && this.editingCtx == ctx) {
+					if (this.selection.isCursorVisible /*&& this.selection.isBlinkVisible*/ && cursorStartX && this.editingCtx == ctx) {
 						ctx.lineCap = 'butt';
 						ctx.strokeStyle = '#55555577';
 						ctx.lineWidth = 3;
@@ -1232,6 +1416,7 @@ class Text_class extends Base_tools_class {
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
+		this.GUI_tools = new GUI_tools_class();
 		this.Helper = new Helper_class();
 		this.POP = new Dialog_class();
 		this.ctx = ctx;
@@ -1329,6 +1514,7 @@ class Text_class extends Base_tools_class {
 							handled = false;
 					}
 					if (handled) {
+						this.update_tool_attributes(this.layer, editor);
 						this.Base_layers.render();
 					}
 					this.extend_fixed_bounds(this.layer, editor);
@@ -1495,6 +1681,7 @@ class Text_class extends Base_tools_class {
 			editor.trigger_cursor_end();
 			this.textarea.focus();
 			this.selecting = false;
+			this.update_tool_attributes(this.layer, editor);
 		}
 
 		// Resize layer based on text boundaries.
@@ -1562,24 +1749,84 @@ class Text_class extends Base_tools_class {
 	}
 	*/
 
+	on_params_update(param) {
+		const editor = this.get_editor(this.layer);
+		const value = param.value;
+		const meta = {};
+		switch (param.key) {
+			case 'font':
+				if (value) meta.family = value;
+				break;
+			case 'size':
+				if (value) meta.size = value;
+				break;
+			case 'bold':
+				meta.bold = value;
+				break;
+			case 'italic':
+				meta.italic = value;
+				break;
+			case 'underline':
+				meta.underline = value;
+				break;
+			case 'strikethrough':
+				meta.strikethrough = value;
+				break;
+			case 'fill':
+				if (value) meta.fill_color = value;
+				break;
+			case 'stroke':
+				if (value) meta.stroke_color = value;
+				break;
+			case 'stroke_size':
+				if (!isNaN(value)) meta.stroke_size = value;
+				break;
+			case 'kerning':
+				if (!isNaN(value)) meta.kerning = value;
+				break;
+		}
+		editor.document.set_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character, meta);
+		editor.hasValueChanged = true;
+		this.Base_layers.render();
+	}
+
+	update_tool_attributes(layer, editor) {
+		if (layer && layer.params) {
+			const meta = editor.document.get_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character);
+			const toolAttributes = this.GUI_tools.action_data().attributes;
+			toolAttributes.font.value = meta.family.length === 1 ? meta.family[0] : '';
+			toolAttributes.size = meta.size.length === 1 ? meta.size[0] : parseFloat(null);
+			toolAttributes.bold.value = meta.bold.includes(false) ? false : true;
+			toolAttributes.italic.value = meta.italic.includes(false) ? false : true;
+			toolAttributes.underline.value = meta.underline.includes(false) ? false : true;
+			toolAttributes.strikethrough.value = meta.strikethrough.includes(false) ? false : true;
+			toolAttributes.fill = meta.fill_color.length === 1 ? meta.fill_color[0] : '#ffffff';
+			toolAttributes.stroke = meta.stroke_color.length === 1 ? meta.stroke_color[0] : '#ffffff';
+			toolAttributes.stroke_size.value = meta.stroke_size.length === 1 ? meta.stroke_size[0] : parseFloat(null);
+			toolAttributes.kerning.value = meta.kerning.length === 1 ? meta.kerning[0] : parseFloat(null);
+			this.GUI_tools.show_action_attributes();
+		}
+	}
+
 	resize_to_dynamic_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary === 'dynamic') {
 			layer.width = editor.textBoundaryWidth + 1;
 			layer.height = editor.textBoundaryHeight + 1;
+			layer.width = Math.max(9, layer.width);
+			layer.height = Math.max(9, layer.height);
 		}
 	}
 
 	extend_fixed_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary !== 'dynamic') {
-			const params = this.getParams();
-			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(params.textDirection);
+			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(layer.params.textDirection);
 			if (isHorizontalTextDirection) {
 				layer.width = Math.max(editor.textBoundaryWidth + 1, layer.width);
 			} else {
 				layer.height = Math.max(editor.textBoundaryHeight + 1, layer.height);
 			}
-			layer.width = Math.max(4, layer.width);
-			layer.height = Math.max(4, layer.height);
+			layer.width = layer.width;
+			layer.height = layer.height;
 		}
 	}
 
@@ -1590,7 +1837,8 @@ class Text_class extends Base_tools_class {
 
 		const isActiveLayerAndTextTool = layer === config.layer && config.TOOL.name === 'text';
 		const editor = this.get_editor(layer);
-		editor.selection.set_visible(isActiveLayerAndTextTool && (this.selecting || this.focused));
+		editor.selection.set_visible(isActiveLayerAndTextTool);
+		editor.selection.set_cursor_visible(isActiveLayerAndTextTool && (this.selecting || this.focused));
 		editor.render(ctx, layer);
 		this.resize_to_dynamic_bounds(layer, editor);
 		if (!this.resizing && isActiveLayerAndTextTool) {
@@ -1598,6 +1846,11 @@ class Text_class extends Base_tools_class {
 			this.selection.y = layer.y;
 			this.selection.width = layer.width;
 			this.selection.height = layer.height;
+		} else if (config.layer.type !== 'text') {
+			this.selection.x = -100000;
+			this.selection.y = -100000;
+			this.selection.width = 0;
+			this.selection.height = 0;
 		}
 
 		/*
@@ -1676,7 +1929,39 @@ class Text_class extends Base_tools_class {
 		let editor = layerEditors.get(layer);
 		if (!editor) {
 			editor = new Text_editor_class();
-			// TODO - set value 
+
+			// Convert legacy to new format
+			if (layer.params.text) {
+				const params = layer.params;
+				let lines = [];
+				const textLines = layer.params.text.split('\n');
+				for (textLine of textLines) {
+					lines.push([
+						{
+							text: textLine,
+							meta: {
+								family: params.family,
+								size: params.size,
+								bold: params.bold,
+								italic: params.italic,
+								fill_color: params.stroke ? '#ffffff00' : layer.color,
+								stroke_color: params.stroke ? layer.color : '#ffffff00',
+								stroke_size: params.stroke ? params.stroke_size : 0
+							}
+						}
+					]);
+				}
+				delete params.text;
+				delete params.family;
+				delete params.size;
+				delete params.bold;
+				delete params.italic;
+				delete params.stroke;
+				delete params.stroke_size;
+				layer.data = lines;
+			}
+			editor.set_lines(layer.data);
+			editor.layer = layer;
 			layerEditors.set(layer, editor);
 		}
 		return editor;

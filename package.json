@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "server": "webpack-dev-server --mode development --open",
+    "serve": "webpack-dev-server --mode development",
     "dev": "webpack --mode development",
     "build": "webpack --mode production"
   },
