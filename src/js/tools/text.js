@@ -8,6 +8,18 @@ import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
 import { timers } from 'jquery';
 
+/**
+ * TODO
+ * - Font selection
+ * - Rendering underlines
+ * - Rendering strikethrough
+ * - Text horizontal alignment
+ * - Edit text button
+ * - Word/letter wrap setting
+ * - Fix decimal place in number input
+ * - Selection tool change dynamic to box
+ */
+
 // Default text styling
 // WARNING - changing this could break backwards compatibility! Defaults aren't saved in text layer.
 const metaDefaults = {
@@ -126,7 +138,84 @@ class Text_document_class {
             lineText += this.lines[lineNumber][i].text;
         }
         return lineText;
-    }
+	}
+	
+	/**
+	 * Returns the position of the end of the the word at the line/character provided
+	 * @param {number} line - The reference line number (0 indexed) 
+	 * @param {number} character - The reference character position (0 indexed)
+	 * @param {boolean} noJump - Dont jump to the next word if at the end of current one
+	 */
+	get_word_end_position(line, character, noJump) {
+		let newLine = line;
+		let newCharacter = character;
+		let fullText = this.get_line_text(newLine);
+		if (character === fullText.length && newLine < this.lines.length - 1) {
+			if (noJump) {
+				return { line, character };
+			}
+			newLine += 1;
+			character = 0;
+			fullText = this.get_line_text(newLine);
+		}
+		const text = fullText.slice(character);
+		if (noJump && text[0] === ' ') {
+			return { line, character };
+		}
+		for (let i = 1; i < text.length; i++) {
+			if (text[i] === ' ') {
+				newCharacter = character + i;
+				break;
+			}
+		}
+		if (newCharacter === character) {
+			newCharacter = fullText.length + 1;
+		}
+		return {
+			line: newLine,
+			character: newCharacter
+		}
+	}
+
+	/**
+	 * Returns the position of the start of the the word at the line/character provided
+	 * @param {number} line - The reference line number (0 indexed) 
+	 * @param {number} character - The reference character position (0 indexed)
+	 * @param {boolean} noJump - Dont jump to the next word if at the end of current one
+	 */
+	get_word_start_position(line, character, noJump) {
+		let newLine = line;
+		let newCharacter = character;
+		let isWrap = false;
+		if (character === 0 && newLine > 0) {
+			if (noJump) {
+				return { line, character };
+			}
+			isWrap = true;
+			newLine -= 1;
+		}
+		const fullText = this.get_line_text(newLine);
+		if (isWrap) {
+			character = fullText.length;
+		}
+		const text = fullText.slice(0, character);
+		if (noJump && text[text.length - 1] === ' ') {
+			return { line, character };
+		}
+		for (let i = -1; i >= -text.length; i--) {
+			if (text[i + text.length - 1] === ' ') {
+				newCharacter = character + i;
+				break;
+			}
+		}
+		if (newCharacter === character) {
+			newCharacter = 0;
+		}
+		return {
+			line: newLine,
+			character: newCharacter
+		}
+	}
 	
 	/**
 	 * Determine if the metadata (formatting) of two text spans is the same, usually used to determine if the spans can be merged together.
@@ -171,9 +260,13 @@ class Text_document_class {
 						meta: JSON.parse(JSON.stringify(span.meta))
 					});
 				}
+				const newMeta = JSON.parse(JSON.stringify(span.meta));
+				for (let metaKey in meta) {
+					newMeta[metaKey] = meta[metaKey];
+				}
 				newLine.push({
 					text: '',
-					meta
+					meta: newMeta
 				});
 				if (textAfter.length > 0) {
 					newLine.push({
@@ -777,6 +870,31 @@ class Text_selection_class {
             };
         }
 	}
+
+	/**
+	 * Gets the plain text value in the current selection range.
+	 * @returns {string}
+	 */
+	get_text() {
+		const positionCompare = this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character);
+		const firstLine = positionCompare === 1 ? this.end.line : this.start.line;
+		const lastLine = positionCompare === 1 ? this.start.line : this.end.line;
+		const firstCharacter = positionCompare === 1 ? this.end.character : this.start.character;
+		const lastCharacter = positionCompare === 1 ? this.start.character : this.end.character;
+		let textLines = [];
+		for (let i = firstLine; i <= lastLine; i++) {
+			if (i === firstLine && i === lastLine) {
+				textLines.push(this.editor.document.get_line_text(i).slice(firstCharacter, lastCharacter));
+			} else if (i === firstLine) {
+				textLines.push(this.editor.document.get_line_text(i).slice(firstCharacter));
+			} else if (i === lastLine) {
+				textLines.push(this.editor.document.get_line_text(i).slice(0, lastCharacter));
+			} else {
+				textLines.push(this.editor.document.get_line_text(i));
+			}
+		}
+		return textLines.join('\n');
+	}
 	
 	/**
 	 * Sets the visibility of the selection in the editor.
@@ -909,6 +1027,26 @@ class Text_selection_class {
             this.set_position(position.line, position.character + length, keepSelection);
         }
 	}
+
+	/**
+	 * Moves the cursor to the beginning of the current word or previous word, handles line wrapping.
+	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
+	 */
+	move_word_previous(keepSelection) {
+		const position = this.get_position();
+		const newPosition = this.editor.document.get_word_start_position(position.line, position.character);
+		this.set_position(newPosition.line, newPosition.character, keepSelection);
+	}
+
+	/**
+	 * Moves the cursor to the end of the current word or next word, handles line wrapping.
+	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
+	 */
+	move_word_next(keepSelection) {
+		const position = this.get_position();
+		const newPosition = this.editor.document.get_word_end_position(position.line, position.character);
+		this.set_position(newPosition.line, newPosition.character, keepSelection);
+	}
 }
 
 
@@ -1003,7 +1141,6 @@ class Text_editor_class {
         const newPosition = this.document.insert_text(text, position.line, position.character);
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
-        // this.render();
 	}
 	
 	delete_character_at_current_position(forward) {
@@ -1021,7 +1158,17 @@ class Text_editor_class {
         }
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
-        // this.render();
+	}
+
+	delete_selection() {
+		let newPosition = this.document.delete_range(
+			this.selection.start.line,
+			this.selection.start.character,
+			this.selection.end.line,
+			this.selection.end.character
+		);
+		this.selection.set_position(newPosition.line, newPosition.character);
+		this.hasValueChanged = true;
 	}
 
 	trigger_cursor_start(layer, layerX, layerY) {
@@ -1152,26 +1299,30 @@ class Text_editor_class {
 					const character = span.text[c];
 					const characterSize = isHorizontalTextDirection ? ctx.measureText(character).width : fontMetrics.height;
 					wrapAccumulativeSize += characterSize + kerning;
-					if (boundary !== 'dynamic' && wrapAccumulativeSize > textDirectionMaxSize && character != ' ') {
+					if (boundary !== 'dynamic' && wrapAccumulativeSize > textDirectionMaxSize && ![' ', '-'].includes(character)) {
 						// Find last span with space
-						let spacePosition = -1;
+						let dividerPosition = -1;
 						let bs = s;
 						for (; bs >= 0; bs--) {
 							const backwardsSpan = currentWrapSpans[bs];
 							const backwardsSpanText = (bs === s) ? backwardsSpan.text.substring(0, c) : backwardsSpan.text;
-							spacePosition = backwardsSpanText.lastIndexOf(' ');
-							if (spacePosition > -1) {
+							dividerPosition = backwardsSpanText.lastIndexOf(' ');
+							const dashPosition = backwardsSpanText.lastIndexOf('-');
+							if (dashPosition > dividerPosition) {
+								dividerPosition = dashPosition;
+							}
+							if (dividerPosition > -1) {
 								break;
 							}
 						}
 						let beforeSpans = [];
 						let afterSpans = [];
 						// Found a previous span on the current line wrap that contains a space, split the line
-						if (spacePosition > -1) {
+						if (dividerPosition > -1) {
 							beforeSpans = currentWrapSpans.slice(0, bs);
 							afterSpans = currentWrapSpans.slice(bs + 1);
-							const beforeText = currentWrapSpans[bs].text.substring(0, spacePosition + 1);
-							const afterText = currentWrapSpans[bs].text.substring(spacePosition + 1);
+							const beforeText = currentWrapSpans[bs].text.substring(0, dividerPosition + 1);
+							const afterText = currentWrapSpans[bs].text.substring(dividerPosition + 1);
 							if (beforeText.length > 0) {
 								beforeSpans.push({
 									text: beforeText,
@@ -1545,6 +1696,8 @@ class Text_class extends Base_tools_class {
 							if (!e.shiftKey && !editor.selection.is_empty()) {
 								editor.selection.isActiveSideEnd = false;
 								editor.selection.move_character_previous(0, false);
+							} else if (e.ctrlKey) {
+								editor.selection.move_word_previous(e.shiftKey);
 							} else {
 								editor.selection.move_character_previous(1, e.shiftKey);
 							}
@@ -1553,6 +1706,8 @@ class Text_class extends Base_tools_class {
 							if (!e.shiftKey && !editor.selection.is_empty()) {
 								editor.selection.isActiveSideEnd = true;
 								editor.selection.move_character_next(0, false);
+							} else if (e.ctrlKey) {
+								editor.selection.move_word_next(e.shiftKey);
 							} else {
 								editor.selection.move_character_next(1, e.shiftKey);
 							}
@@ -1562,6 +1717,40 @@ class Text_class extends Base_tools_class {
 							break;
 						case 'Down': case 'ArrowDown':
 							editor.selection.move_line_next(1, e.shiftKey);
+							break;
+						case 'a':
+							if (e.ctrlKey) {
+								editor.selection.set_position(0, 0);
+								const lastLine = editor.document.lines.length - 1;
+								editor.selection.set_position(lastLine, editor.document.get_line_character_count(lastLine), true);
+							} else {
+								handled = false;
+							}
+							break;
+						case 'c':
+							if (e.ctrlKey) {
+								e.preventDefault();
+								this.textarea.value = editor.selection.get_text();
+								this.textarea.select();
+								this.textarea.setSelectionRange(0, 99999);
+								document.execCommand('copy');
+								this.textarea.value = '';
+							} else {
+								handled = false;
+							}
+							break;
+						case 'x':
+							if (e.ctrlKey) {
+								e.preventDefault();
+								this.textarea.value = editor.selection.get_text();
+								this.textarea.select();
+								this.textarea.setSelectionRange(0, 99999);
+								document.execCommand('copy');
+								this.textarea.value = '';
+								editor.delete_selection();
+							} else {
+								handled = false;
+							}
 							break;
 						default:
 							handled = false;
@@ -1605,6 +1794,9 @@ class Text_class extends Base_tools_class {
 		});
 		document.addEventListener('mouseup', (event) => {
 			this.dragEnd(event);
+		});
+		document.addEventListener('dblclick', (event) => {
+			this.doubleClick(event);
 		});
 
 		// Touch events
@@ -1654,7 +1846,10 @@ class Text_class extends Base_tools_class {
 				params: {
 					boundary: 'dynamic',
 					text_direction: 'ltr',
-					wrap_direction: 'ttb'
+					wrap_direction: 'ttb',
+					halign: 'left',
+					valign: 'top',
+					wrap: 'letter'
 				},
 				render_function: [this.name, 'render'],
 				x: mouse.x,
@@ -1751,65 +1946,19 @@ class Text_class extends Base_tools_class {
 		this.Base_layers.render();
 	}
 
-		/*
-		//ask for text
-		var settings = {
-			title: 'Edit text',
-			params: [
-				{name: "text", title: "Text:", value: "Text example", type: "textarea"},
-				{name: "size", title: "Size:", value: 40},
-				{name: "family", title: "Custom font", value: "Verdana", values: this.get_fonts()},
-				{name: "bold", title: "Bold:", value: false},
-				{name: "italic", title: "Italic:", value: false},
-				{name: "align", title: "Align:", value: 'Left', values: ["Left", "Center", "Right"], type: 'select' },
-				{name: "stroke", title: "Stroke:", value: false},
-				{name: "stroke_size", title: "Stroke size:", value: 1},
-			],
-			on_load: function (params) {
-				config.layer.params = params;
-				config.need_render = true;
-				//add preview
-				var button = document.createElement('button');
-				button.innerHTML = 'Preview';
-				button.className = 'button trns';
-				document.querySelector('#popup .buttons').appendChild(button);
-				button.addEventListener('click', function (e) {
-					config.need_render = true;
-				});
-			},
-			on_change: function (params) {
-				config.layer.params = params;
-				config.need_render = true;
-			},
-			on_finish: function (params) {
-				config.layer.params = params;
-				config.need_render = true;
-			},
-		};
-		this.POP.show(settings);
-		*/
-	
-	/*
-	getLines(ctx, text, maxWidth) {
-		var words = text.split(" ");
-		var lines = [];
-		var currentLine = words[0];
 
-		for (var i = 1; i < words.length; i++) {
-			var word = words[i];
-			var width = ctx.measureText(currentLine + " " + word).width;
-			if (width < maxWidth) {
-				currentLine += " " + word;
-			} else {
-				lines.push(currentLine);
-				currentLine = word;
+	doubleClick(event) {
+		if (document.activeElement === this.textarea) {
+			const editor = this.get_editor(this.layer);
+			if (editor.selection.is_empty()) {
+				const position = editor.selection.get_position();
+				const wordStart = editor.document.get_word_start_position(position.line, position.character, true);
+				const wordEnd = editor.document.get_word_end_position(position.line, position.character, true);
+				editor.selection.set_position(wordStart.line, wordStart.character);
+				editor.selection.set_position(wordEnd.line, wordEnd.character, true);
 			}
 		}
-		lines.push(currentLine);
-		
-		return lines;
 	}
-	*/
 
 	on_params_update(param) {
 		const editor = this.get_editor(this.layer);
@@ -1912,7 +2061,9 @@ class Text_class extends Base_tools_class {
 		editor.selection.set_visible(isActiveLayerAndTextTool);
 		editor.selection.set_cursor_visible(isActiveLayerAndTextTool && (this.selecting || this.focused));
 		editor.render(ctx, layer);
-		this.resize_to_dynamic_bounds(layer, editor);
+		if (layer === config.layer) {
+			this.resize_to_dynamic_bounds(layer, editor);
+		}
 		if (!this.resizing && isActiveLayerAndTextTool) {
 			this.selection.x = layer.x;
 			this.selection.y = layer.y;
@@ -2003,7 +2154,7 @@ class Text_class extends Base_tools_class {
 			editor = new Text_editor_class();
 
 			// Convert legacy to new format
-			if (layer.params.text) {
+			if (layer.params && layer.params.text) {
 				const params = layer.params;
 				let lines = [];
 				const textLines = layer.params.text.split('\n');
@@ -2012,7 +2163,7 @@ class Text_class extends Base_tools_class {
 						{
 							text: textLine,
 							meta: {
-								family: params.family,
+								family: params.family && params.family.value? params.family.value : params.family,
 								size: params.size,
 								bold: params.bold,
 								italic: params.italic,
@@ -2031,7 +2182,34 @@ class Text_class extends Base_tools_class {
 				delete params.stroke;
 				delete params.stroke_size;
 				layer.data = lines;
+				params.boundary = 'box';
+				params.halign = 'left';
+				params.valign = 'top';
+				params.text_direction = 'ltr';
+				params.wrap_direction = 'ttb';
+				params.wrap = 'word';
 			}
+
+			// Create initial layer data if new layer
+			if (!layer.data) {
+				const params = this.getParams();
+				layer.data = [[{
+					text: '',
+					meta: {
+						family: params.font.value !== metaDefaults.family ? params.font.value : undefined,
+						size: params.size !== metaDefaults.size && !isNaN(params.size) ? params.size : undefined,
+						bold: params.bold.value !== metaDefaults.bold ? params.bold.value : undefined,
+						italic: params.italic.value !== metaDefaults.italic ? params.italic.value : undefined,
+						underline: params.underline.value !== metaDefaults.underline ? params.underline.value : undefined,
+						strikethrough: params.strikethrough.value !== metaDefaults.strikethrough ? params.strikethrough.value : undefined,
+						fill_color: params.fill !== metaDefaults.fill_color ? params.fill : undefined,
+						stroke_color: params.stroke !== metaDefaults.stroke_color ? params.stroke : undefined,
+						stroke_size: params.stroke_size !== metaDefaults.stroke_size && !isNaN(params.stroke_size) ? params.stroke_size : undefined,
+						kerning: params.kerning !== metaDefaults.kerning && !isNaN(params.kerning) ? params.kerning : undefined
+					}
+				}]];
+			}
+
 			editor.set_lines(layer.data);
 			editor.layer = layer;
 			layerEditors.set(layer, editor);

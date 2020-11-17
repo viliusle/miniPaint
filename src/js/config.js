@@ -159,7 +159,8 @@ config.TOOLS = [
 			stroke: '#000000',
 			stroke_size: {
 				value: 0,
-				min: 0
+				min: 0,
+				step: 0.1
 			},
 			kerning: {
 				value: 0,

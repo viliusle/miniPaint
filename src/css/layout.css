@@ -210,6 +210,7 @@ body .sp-preview{
 	margin-right: 5px;
 }
 .attributes input[type="color"] {
+	cursor: pointer;
 	padding: 0;
 	border: .2rem solid var(--input-background-color);
 	width: 3rem;

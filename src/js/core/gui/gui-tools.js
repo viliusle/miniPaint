@@ -275,7 +275,7 @@ class GUI_tools_class {
 						exponentialStepButtons: !step
 					})
 					.on('input', () => {
-						let value = parseInt($numberInput.uiNumberInput('get_value'), 10);
+						let value = $numberInput.uiNumberInput('get_value');
 						const id = $numberInput.uiNumberInput('get_id');
 						const actionData = this.action_data();
 						const attributes = actionData.attributes;

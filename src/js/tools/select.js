@@ -103,6 +103,9 @@ class Select_tool_class extends Base_tools_class {
 			return;
 		if (this.Base_selection.mouse_lock != null) {
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
+			if (config.layer.type === 'text' && config.layer.params && config.layer.params.boundary === 'dynamic') {
+				config.layer.params.boundary = 'box';
+			}
 			return;
 		}
 
