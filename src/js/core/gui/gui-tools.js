@@ -58,6 +58,10 @@ class GUI_tools_class {
 		var target_id = "tools_container";
 		var _this = this;
 		var saved_tool = this.Helper.getCookie('active_tool');
+		if(saved_tool == 'media') {
+			//bringing this backby default gives bad UX
+			saved_tool = null
+		}
 		if (saved_tool != null) {
 			this.active_tool = saved_tool;
 		}

@@ -36,11 +36,11 @@ class Base_state_class {
 
 	set_events() {
 		document.addEventListener('keydown', (event) => {
-			var code = event.keyCode;
+			var code = event.code;
 			if (this.Helper.is_input(event.target))
 				return;
 
-			if (code == 90 && (event.ctrlKey == true || event.metaKey)) {
+			if (code == "KeyZ" && (event.ctrlKey == true || event.metaKey)) {
 				//undo
 				this.undo();
 				event.preventDefault();

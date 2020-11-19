@@ -26,7 +26,7 @@ class Base_selection_class {
 	 * 
 	 * @param {ctx} ctx
 	 * @param {object} settings
-	 * @param {string} key
+	 * @param {string|null} key
 	 */
 	constructor(ctx, settings, key = null) {
 		if (key != null) {
@@ -254,7 +254,7 @@ class Base_selection_class {
 		var mouse = config.mouse;
 		const drag_type = this.selected_object_drag_type;
 
-		if (e.type == 'mousedown') {
+		if(e.type == 'mousedown' && settings.data !== null){
 			this.click_details = {
 				x: settings.data.x,
 				y: settings.data.y,
@@ -282,9 +282,9 @@ class Base_selection_class {
 				var width = this.click_details.width + dx;
 				var height = this.click_details.height + dy;
 				if (is_drag_type_top)
-					var height = this.click_details.height - dy;
+					height = this.click_details.height - dy;
 				if (is_drag_type_left)
-					var width = this.click_details.width - dx;
+					width = this.click_details.width - dx;
 
 				// Keep ratio - (if drag_type power of 2, only dragging on single axis)
 				if (drag_type && (drag_type & (drag_type - 1)) !== 0 && (settings.keep_ratio == true && is_ctrl == false) 
