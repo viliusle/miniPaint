@@ -139,6 +139,7 @@ class Image_resize_class {
 			for (let line of layer.data) {
 				for (let span of line) {
 					span.meta.size = Math.ceil((span.meta.size || textMetaDefaults.size) * xratio);
+					span.meta.stroke_size = parseFloat((0.1 * Math.round((span.meta.stroke_size != null ? span.meta.stroke_size : textMetaDefaults.stroke_size) * xratio / 0.1)).toFixed(1));
 					span.meta.kerning = Math.ceil((span.meta.kerning || textMetaDefaults.kerning) * xratio);
 				}
 			}

@@ -47,6 +47,17 @@ var Helper = new Helper_class();
         $el.trigger('change', event);
     };
 
+    const on_wheel_number_input = (event) => {
+        const $el = $(event.target.closest('.ui_number_input'));
+        const { value, disabled } = $el.data();
+        event.preventDefault();
+        const delta = (event.originalEvent.deltaY > 0 ? -1 : (event.originalEvent.deltaY < 0 ? 1 : 0));
+        if (!disabled && delta !== 0) {
+            set_value($el, (isNaN(value) ? 0 : value) + (get_step_amount($el, true) * delta));
+            $el.trigger('input');
+        }
+    }
+
     const on_touch_start_increase_button = (event) => {
         const $el = $(event.target.closest('.ui_number_input'));
         const { value, buttonRepeatTimeout, buttonRepeatInterval, disabled } = $el.data();
@@ -120,12 +131,12 @@ var Helper = new Helper_class();
     };
 
     const set_value = ($el, value) => {
-        const { min, max, step, input } = $el.data();
+        const { min, max, step, stepDecimalPlaces, input } = $el.data();
         if (typeof value === 'string') {
             value = parseFloat(value);
         }
         if (!isNaN(value)) {
-            value = step * Math.round(value / step);
+            value = parseFloat((step * Math.round(value / step)).toFixed(stepDecimalPlaces));
             value = Math.max(min, Math.min(max, value));
             if (value + '.' !== input.value) {
                 input.value = value;
@@ -220,7 +231,15 @@ var Helper = new Helper_class();
                 if (max != null) {
                     input.setAttribute('max', max);
                 }
-                input.setAttribute('step', step);
+                if (Math.floor(step) === step) {
+                    input.setAttribute('step', step);
+                } else {
+                    input.setAttribute('step', 'any');
+                }
+
+                let stepDecimalPlaces = 0;
+                if ((step % 1) != 0) 
+                    stepDecimalPlaces = step.toString().split(".")[1].length;  
 
                 $el.data({
                     id,
@@ -233,6 +252,7 @@ var Helper = new Helper_class();
                     min,
                     max,
                     step,
+                    stepDecimalPlaces,
                     exponentialStepButtons
                 });
 
@@ -240,7 +260,8 @@ var Helper = new Helper_class();
                     .on('focus', on_focus_number_input)
                     .on('blur', on_blur_number_input)
                     .on('input', on_input_number_input)
-                    .on('change', on_change_number_input);
+                    .on('change', on_change_number_input)
+                    .on('wheel', on_wheel_number_input);
                 $(increaseButton)
                     .on('touchstart', on_touch_start_increase_button)
                     .on('mousedown', on_mouse_down_increase_button)

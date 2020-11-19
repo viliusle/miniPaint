@@ -11,7 +11,6 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 /**
  * TODO
- * - Fix decimal place in number input
  * - Undo history
  */
 
@@ -1617,12 +1616,12 @@ class Text_editor_class {
 							if (strikethrough) {
 								ctx.fillStyle = fillStyle;
 								ctx.lineWidth = Math.max(1, fontMetrics.height / 20);
-								ctx.fillRect(letterDrawX - 0.25, letterDrawY - (fontMetrics.height * .28), letterWidth + 0.5, ctx.lineWidth);
+								ctx.fillRect(letterDrawX - 0.25 - kerning, letterDrawY - (fontMetrics.height * .28), letterWidth + 0.5, ctx.lineWidth);
 							}
 							if (underline) {
 								ctx.fillStyle = fillStyle;
 								ctx.lineWidth = Math.max(1, fontMetrics.height / 20);
-								ctx.fillRect(letterDrawX - 0.25, letterDrawY + (ctx.lineWidth), letterWidth + 0.5, ctx.lineWidth);
+								ctx.fillRect(letterDrawX - 0.25 - kerning, letterDrawY + (ctx.lineWidth), letterWidth + 0.5, ctx.lineWidth);
 							}
 							characterIndex++;
 							lineLetterCount++;

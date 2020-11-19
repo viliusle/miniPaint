@@ -127,9 +127,11 @@ class GUI_details_class {
 		//text - special case
 		if (config.layer != undefined && config.layer.type == 'text') {
 			document.getElementById('text_detail_params').style.display = 'block';
+			document.getElementById('detail_color').closest('.row').style.display = 'none';
 		}
 		else {
 			document.getElementById('text_detail_params').style.display = 'none';
+			document.getElementById('detail_color').closest('.row').style.display = 'block';
 		}
 		this.render_text(events);
 		this.render_general_select_param('boundary', events);
