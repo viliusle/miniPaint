@@ -49,11 +49,11 @@ var Helper = new Helper_class();
 
     const on_wheel_number_input = (event) => {
         const $el = $(event.target.closest('.ui_number_input'));
-        const { value, disabled } = $el.data();
+        const { value, step, disabled } = $el.data();
         event.preventDefault();
         const delta = (event.originalEvent.deltaY > 0 ? -1 : (event.originalEvent.deltaY < 0 ? 1 : 0));
         if (!disabled && delta !== 0) {
-            set_value($el, (isNaN(value) ? 0 : value) + (get_step_amount($el, true) * delta));
+            set_value($el, (isNaN(value) ? 0 : value) + (step * delta)); // Intentionally not using get_step_amount
             $el.trigger('input');
         }
     }

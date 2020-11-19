@@ -11,6 +11,10 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 /**
  * TODO
+ * - Add leading, superscript, subscript
+ * - Implement text direction (right to left, top to bottom, etc.); currently partial implementation
+ * - Allow search & add google fonts
+ * - Enable text layer rotation
  * - Undo history
  */
 
