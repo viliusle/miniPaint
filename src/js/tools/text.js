@@ -2179,7 +2179,7 @@ class Text_class extends Base_tools_class {
 				const params = layer.params;
 				let lines = [];
 				const textLines = layer.params.text.split('\n');
-				for (textLine of textLines) {
+				for (const textLine of textLines) {
 					lines.push([
 						{
 							text: textLine,
