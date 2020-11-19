@@ -16,6 +16,7 @@ config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
 config.layers = [];
 config.layer = null;
 config.need_render = false;
+config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
 
 //requires styles in reset.css
@@ -23,6 +24,45 @@ config.themes = [
 	'dark',
 	'light',
 	'green',
+];
+
+config.FONTS = [
+	"Arial",
+	"Courier",
+	"Impact", 
+	"Helvetica",
+	"Monospace", 
+	"Tahoma", 
+	"Times New Roman",
+	"Verdana",
+	"Amatic SC",
+	"Arimo",
+	"Codystar",
+	"Creepster",
+	"Indie Flower",
+	"Lato",
+	"Lora",
+	"Merriweather",
+	"Monoton",
+	"Montserrat",
+	"Mukta",
+	"Muli",
+	"Nosifer",
+	"Nunito",
+	"Oswald",
+	"Orbitron",
+	"Pacifico",
+	"PT Sans",
+	"PT Serif",
+	"Playfair Display",
+	"Poppins",
+	"Raleway",
+	"Roboto",
+	"Rubik",
+	"Special Elite",
+	"Tangerine",
+	"Titillium Web",
+	"Ubuntu"
 ];
 
 config.TOOLS = [
@@ -136,7 +176,7 @@ config.TOOLS = [
 		attributes: {
 			font: {
 				value: 'Arial',
-				values: ['Arial'],
+				values: ['', ...config.FONTS.sort()],
 			},
 			size: 40,
 			bold: {
@@ -248,6 +288,5 @@ config.TOOLS = [
 
 //link to active tool
 config.TOOL = config.TOOLS[2];
-
 	
 export default config;

@@ -479,6 +479,7 @@ body .sp-preview{
 	height: 23px;
 }
 .block.details button{
+	width: calc(100% - 70px);
 	height: 23px;
 	border: 1px solid #444;
 }

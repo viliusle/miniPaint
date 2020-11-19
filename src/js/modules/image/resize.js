@@ -7,6 +7,7 @@ import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Pica from './../../../../node_modules/pica/dist/pica.js';
 import Helper_class from './../../libs/helpers.js';
+import { metaDefaults as textMetaDefaults } from '../../tools/text.js';
 
 var instance = null;
 
@@ -134,10 +135,15 @@ class Image_resize_class {
 		
 		//is text
 		if(layer.type == 'text'){
-			var ratio = width / layer.width;
+			var xratio = width / layer.width;
+			for (let line of layer.data) {
+				for (let span of line) {
+					span.meta.size = Math.ceil((span.meta.size || textMetaDefaults.size) * xratio);
+					span.meta.kerning = Math.ceil((span.meta.kerning || textMetaDefaults.kerning) * xratio);
+				}
+			}
 			layer.width = width;
 			layer.height = height;
-			layer.params.size = Math.ceil(layer.params.size * ratio);
 			this.resize_gui();
 			config.need_render = true;
 			return true;
