@@ -51,38 +51,38 @@ fontLoadMap.set('Verdana', true);
  * The canvas's native font metrics implementation doesn't really give us enough information...
  */
 class Font_metrics_class {
-    constructor(family, size) {
-        this.family = family || (family = "Arial");
-        this.size = parseInt(size) || (size = 12);
+	constructor(family, size) {
+		this.family = family || (family = "Arial");
+		this.size = parseInt(size) || (size = 12);
 
-        // Preparing container
-        const line = document.createElement('div');
-        const body = document.body;
-        line.style.position = 'absolute';
-        line.style.whiteSpace = 'nowrap';
-        line.style.font = size + 'px ' + family;
-        body.appendChild(line);
+		// Preparing container
+		const line = document.createElement('div');
+		const body = document.body;
+		line.style.position = 'absolute';
+		line.style.whiteSpace = 'nowrap';
+		line.style.font = size + 'px ' + family;
+		body.appendChild(line);
 
-        // Now we can measure width and height of the letter
-        const text = 'wwwwwwwwww'; // 10 symbols to be more accurate with width
-        line.innerHTML = text;
-        this.width = line.offsetWidth / text.length;
-        this.height = line.offsetHeight;
+		// Now we can measure width and height of the letter
+		const text = 'wwwwwwwwww'; // 10 symbols to be more accurate with width
+		line.innerHTML = text;
+		this.width = line.offsetWidth / text.length;
+		this.height = line.offsetHeight;
 
-        // Now creating 1px sized item that will be aligned to baseline
-        // to calculate baseline shift
-        const baseline = document.createElement('span');
-        baseline.style.display = 'inline-block';
-        baseline.style.overflow = 'hidden';
-        baseline.style.width = '1px';
-        baseline.style.height = '1px';
-        line.appendChild(baseline);
+		// Now creating 1px sized item that will be aligned to baseline
+		// to calculate baseline shift
+		const baseline = document.createElement('span');
+		baseline.style.display = 'inline-block';
+		baseline.style.overflow = 'hidden';
+		baseline.style.width = '1px';
+		baseline.style.height = '1px';
+		line.appendChild(baseline);
 
-        // Baseline is important for positioning text on canvas
-        this.baseline = baseline.offsetTop + baseline.offsetHeight;
+		// Baseline is important for positioning text on canvas
+		this.baseline = baseline.offsetTop + baseline.offsetHeight;
 
-        document.body.removeChild(line);
-    }
+		document.body.removeChild(line);
+	}
 }
 
 /**
@@ -101,7 +101,7 @@ class Text_document_class {
 	 * Returns the number of lines in the document.
 	 */
 	get_line_count() {
-        return this.lines.length;
+		return this.lines.length;
 	}
 
 	/**
@@ -109,19 +109,19 @@ class Text_document_class {
 	 * @param {number} lineNumber - The number of the line to get the length of
 	 */
 	get_line_character_count(lineNumber) {
-        return this.get_line_text(lineNumber).length;
-    }
+		return this.get_line_text(lineNumber).length;
+	}
 	
 	/**
 	 * Returns the text string at a given line (ignores formatting).
 	 * @param {number} lineNumber - The number of the line to get the text from
 	 */
 	get_line_text(lineNumber) {
-        let lineText = '';
-        for (let i = 0; i < this.lines[lineNumber].length; i++) {
-            lineText += this.lines[lineNumber][i].text;
-        }
-        return lineText;
+		let lineText = '';
+		for (let i = 0; i < this.lines[lineNumber].length; i++) {
+			lineText += this.lines[lineNumber][i].text;
+		}
+		return lineText;
 	}
 	
 	/**
@@ -205,22 +205,22 @@ class Text_document_class {
 	 * Determine if the metadata (formatting) of two text spans is the same, usually used to determine if the spans can be merged together.
 	 */
 	is_same_span_meta(meta1, meta2) {
-        const meta1Keys = Object.keys(meta1).sort();
-        const meta2Keys = Object.keys(meta2).sort();
-        if (meta1Keys.length !== meta2Keys.length) {
-            return false;
-        }
-        for (let i = 0; i < meta1Keys.length; i++) {
-            if (meta1Keys[i] !== meta2Keys[i]) {
-                return false;
-            }
-            const meta1Value = meta1[meta1Keys[i]];
-            const meta2Value = meta2[meta2Keys[i]];
-            if (JSON.stringify(meta1Value) !== JSON.stringify(meta2Value)) {
-                return false;
-            }
-        }
-        return true;
+		const meta1Keys = Object.keys(meta1).sort();
+		const meta2Keys = Object.keys(meta2).sort();
+		if (meta1Keys.length !== meta2Keys.length) {
+			return false;
+		}
+		for (let i = 0; i < meta1Keys.length; i++) {
+			if (meta1Keys[i] !== meta2Keys[i]) {
+				return false;
+			}
+			const meta1Value = meta1[meta1Keys[i]];
+			const meta2Value = meta2[meta2Keys[i]];
+			if (JSON.stringify(meta1Value) !== JSON.stringify(meta2Value)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -284,18 +284,18 @@ class Text_document_class {
 			this.queuedMetaChanges = null;
 		}
 
-        const insertLine = this.lines[line];
-        const textHasNewline = text.includes('\n');
+		const insertLine = this.lines[line];
+		const textHasNewline = text.includes('\n');
 		let characterCount = 0;
 		let modifyingSpan = null;
-        let previousSpans = [];
-        let nextSpans = [];
-        let newLine = line;
-        let newCharacter = character;
+		let previousSpans = [];
+		let nextSpans = [];
+		let newLine = line;
+		let newCharacter = character;
 
-        // Insert text into span at specified line/character
-        for (let i = 0; i < insertLine.length; i++) {
-            const span = insertLine[i];
+		// Insert text into span at specified line/character
+		for (let i = 0; i < insertLine.length; i++) {
+			const span = insertLine[i];
 			const spanLength = span.text.length;
 			if (span === insertedSpan) {
 				console.log(
@@ -303,64 +303,64 @@ class Text_document_class {
 					character <= characterCount + spanLength
 				);
 			}
-            if (!modifyingSpan && (character > characterCount || character === 0) && character <= characterCount + spanLength) {
+			if (!modifyingSpan && (character > characterCount || character === 0) && character <= characterCount + spanLength) {
 				if (insertLine[i + 1] && insertLine[i + 1].text === '') {
 					modifyingSpan = insertLine[i + 1];
 				} else {
 					modifyingSpan = span;
 				}
-                const textIdx = character - characterCount;
-                modifyingSpan.text = modifyingSpan.text.slice(0, textIdx) + text + modifyingSpan.text.slice(textIdx);
-                if (!textHasNewline) {
-                    newCharacter = characterCount + textIdx + text.length;
-                    break;
-                }
-            } else if (textHasNewline) {
-                if (modifyingSpan) {
-                    nextSpans.push(span);
-                } else {
-                    previousSpans.push(span);
-                }
-            }
-            characterCount += spanLength;
-        }
+				const textIdx = character - characterCount;
+				modifyingSpan.text = modifyingSpan.text.slice(0, textIdx) + text + modifyingSpan.text.slice(textIdx);
+				if (!textHasNewline) {
+					newCharacter = characterCount + textIdx + text.length;
+					break;
+				}
+			} else if (textHasNewline) {
+				if (modifyingSpan) {
+					nextSpans.push(span);
+				} else {
+					previousSpans.push(span);
+				}
+			}
+			characterCount += spanLength;
+		}
 
-        // Create new lines if newline character was used
-        if (textHasNewline && modifyingSpan) {
-            const modifiedSpans = [];
-            const textLines = modifyingSpan.text.split('\n');
-            for (let i = 0; i < textLines.length; i++) {
-                modifiedSpans.push({
-                    meta: JSON.parse(JSON.stringify(modifyingSpan.meta)),
-                    text: textLines[i]
-                });
-            }
-            this.lines[line] = [...previousSpans, modifiedSpans.shift()];
-            for (let i = 0; i < modifiedSpans.length; i++) {
-                if (i === modifiedSpans.length - 1) {
-                    if (!modifiedSpans[i].text && nextSpans.length > 0) {
-                        this.lines.splice(line + i + 1, 0, nextSpans);
-                    } else {
-                        this.lines.splice(line + i + 1, 0, [modifiedSpans[i], ...nextSpans]);
-                    }
-                    newLine = line + i + 1;
-                    newCharacter = text.length - 1 - text.lastIndexOf('\n');
-                } else {
-                    this.lines.splice(line + i + 1, 0, [modifiedSpans[i]]);
-                }
-            }
-        }
+		// Create new lines if newline character was used
+		if (textHasNewline && modifyingSpan) {
+			const modifiedSpans = [];
+			const textLines = modifyingSpan.text.split('\n');
+			for (let i = 0; i < textLines.length; i++) {
+				modifiedSpans.push({
+					meta: JSON.parse(JSON.stringify(modifyingSpan.meta)),
+					text: textLines[i]
+				});
+			}
+			this.lines[line] = [...previousSpans, modifiedSpans.shift()];
+			for (let i = 0; i < modifiedSpans.length; i++) {
+				if (i === modifiedSpans.length - 1) {
+					if (!modifiedSpans[i].text && nextSpans.length > 0) {
+						this.lines.splice(line + i + 1, 0, nextSpans);
+					} else {
+						this.lines.splice(line + i + 1, 0, [modifiedSpans[i], ...nextSpans]);
+					}
+					newLine = line + i + 1;
+					newCharacter = text.length - 1 - text.lastIndexOf('\n');
+				} else {
+					this.lines.splice(line + i + 1, 0, [modifiedSpans[i]]);
+				}
+			}
+		}
 
 		// Notify change
 		if (this.on_change) {
 			this.on_change(this.lines);
 		}
 
-        // Return end position
-        return {
-            line: newLine,
-            character: newCharacter
-        };
+		// Return end position
+		return {
+			line: newLine,
+			character: newCharacter
+		};
 	}
 	
 	/**
@@ -371,127 +371,127 @@ class Text_document_class {
 	 * @param {number} endCharacter - The character position at the ending line of the text range
 	 */
 	delete_range(startLine, startCharacter, endLine, endCharacter) {
-        // Check bounds
-        startLine >= 0 || (startLine = 0);
-        startCharacter >= 0 || (startCharacter = 0);
-        endLine < this.lines.length || (endLine = this.lines.length - 1);
-        const endLineCharacterCount = this.get_line_character_count(endLine);
-        endCharacter <= endLineCharacterCount || (
-            endCharacter = endLineCharacterCount
-        );
+		// Check bounds
+		startLine >= 0 || (startLine = 0);
+		startCharacter >= 0 || (startCharacter = 0);
+		endLine < this.lines.length || (endLine = this.lines.length - 1);
+		const endLineCharacterCount = this.get_line_character_count(endLine);
+		endCharacter <= endLineCharacterCount || (
+			endCharacter = endLineCharacterCount
+		);
 
-        // Early return if there's nothing to delete
-        if (startLine === endLine && startCharacter === endCharacter) {
-            return {
-                line: startLine,
-                character: startCharacter
-            };
-        }
+		// Early return if there's nothing to delete
+		if (startLine === endLine && startCharacter === endCharacter) {
+			return {
+				line: startLine,
+				character: startCharacter
+			};
+		}
 
-        // Get spans in start line before range
-        const beforeSpans = [];
-        const afterSpans = [];
-        let characterCount = 0;
-        let startSpan = null;
-        let startSpanDeleteIndex = 0;
-        for (let i = 0; i < this.lines[startLine].length; i++) {
-            const span = this.lines[startLine][i];
-            const spanLength = span.text.length;
-            if (!startSpan && (startCharacter > characterCount || startCharacter === 0) && startCharacter <= characterCount + spanLength) {
-                startSpan = span;
-                startSpanDeleteIndex = Math.max(0, startCharacter - characterCount);
-                break;
-            }
-            if (!startSpan) {
-                beforeSpans.push(span);
-            }
-            characterCount += spanLength;
-        }
+		// Get spans in start line before range
+		const beforeSpans = [];
+		const afterSpans = [];
+		let characterCount = 0;
+		let startSpan = null;
+		let startSpanDeleteIndex = 0;
+		for (let i = 0; i < this.lines[startLine].length; i++) {
+			const span = this.lines[startLine][i];
+			const spanLength = span.text.length;
+			if (!startSpan && (startCharacter > characterCount || startCharacter === 0) && startCharacter <= characterCount + spanLength) {
+				startSpan = span;
+				startSpanDeleteIndex = Math.max(0, startCharacter - characterCount);
+				break;
+			}
+			if (!startSpan) {
+				beforeSpans.push(span);
+			}
+			characterCount += spanLength;
+		}
 
-        // Get spans in end line after range
-        characterCount = 0;
-        let endSpan = null;    
-        let endSpanDeleteIndex = 0;
-        for (let i = 0; i < this.lines[endLine].length; i++) {
-            const span = this.lines[endLine][i];
-            const spanLength = span.text.length;
-            if (!endSpan && (endCharacter > characterCount || endCharacter === 0) && endCharacter <= characterCount + spanLength) {
-                endSpan = span;
-                endSpanDeleteIndex = Math.max(0, endCharacter - characterCount);
-            }
-            else if (endSpan) {
-                afterSpans.push(span);
-            }
-            characterCount += spanLength;
-        }
+		// Get spans in end line after range
+		characterCount = 0;
+		let endSpan = null;    
+		let endSpanDeleteIndex = 0;
+		for (let i = 0; i < this.lines[endLine].length; i++) {
+			const span = this.lines[endLine][i];
+			const spanLength = span.text.length;
+			if (!endSpan && (endCharacter > characterCount || endCharacter === 0) && endCharacter <= characterCount + spanLength) {
+				endSpan = span;
+				endSpanDeleteIndex = Math.max(0, endCharacter - characterCount);
+			}
+			else if (endSpan) {
+				afterSpans.push(span);
+			}
+			characterCount += spanLength;
+		}
 
-        // Merge start and end lines
-        this.lines[startLine] = [...beforeSpans];
-        if (startSpan === endSpan || this.is_same_span_meta(startSpan.meta, endSpan.meta)) {
-            const combinedSpans = {
-                meta: startSpan.meta,
-                text: startSpan.text.slice(0, startSpanDeleteIndex) + endSpan.text.slice(endSpanDeleteIndex)
-            };
-            if (combinedSpans.text || (beforeSpans.length === 0 && afterSpans.length === 0)) {
-                this.lines[startLine].push(combinedSpans);
-            }
-        } else {
-            const middleSpans = [];
-            let isAddedStartSpan = false;
-            let isAddedEndSpan = false;
-            if (startSpan) {
-                startSpan.text = startSpan.text.slice(0, startSpanDeleteIndex);
-                if (startSpan.text) {
-                    middleSpans.push(startSpan);
-                    isAddedStartSpan = true;
-                }
-            }
-            if (endSpan) {
-                endSpan.text = endSpan.text.slice(endSpanDeleteIndex)
-                if (endSpan.text || middleSpans.length === 0) {
-                    middleSpans.push(endSpan);
-                    isAddedEndSpan = true;
-                }
-            }
-            if (isAddedStartSpan && !isAddedEndSpan) {
-                const afterSpan = afterSpans[0];
-                if (afterSpan && this.is_same_span_meta(startSpan.meta, afterSpan.meta)) {
-                    afterSpans.shift();
-                    startSpan.text += afterSpan.text;
-                }
-            }
-            else if (isAddedEndSpan && !isAddedStartSpan) {
-                const beforeSpan = beforeSpans[beforeSpans.length - 1];
-                if (beforeSpan && this.is_same_span_meta(beforeSpan.meta, endSpan.meta)) {
-                    beforeSpans.pop();
-                    beforeSpan.text += endSpan.text;
-                }
-            }
-            else if (middleSpans.length === 0) {
-                const beforeSpan = beforeSpans[beforeSpans.length - 1];
-                const afterSpan = afterSpans[0];
-                if (beforeSpan && afterSpan && this.is_same_span_meta(beforeSpan.meta, afterSpan.meta)) {
-                    afterSpans.shift();
-                    beforeSpan.text += afterSpan.text;
-                }
-            }
-            this.lines[startLine] = this.lines[startLine].concat(middleSpans);
-        }
-        this.lines[startLine] = this.lines[startLine].concat(afterSpans);
+		// Merge start and end lines
+		this.lines[startLine] = [...beforeSpans];
+		if (startSpan === endSpan || this.is_same_span_meta(startSpan.meta, endSpan.meta)) {
+			const combinedSpans = {
+				meta: startSpan.meta,
+				text: startSpan.text.slice(0, startSpanDeleteIndex) + endSpan.text.slice(endSpanDeleteIndex)
+			};
+			if (combinedSpans.text || (beforeSpans.length === 0 && afterSpans.length === 0)) {
+				this.lines[startLine].push(combinedSpans);
+			}
+		} else {
+			const middleSpans = [];
+			let isAddedStartSpan = false;
+			let isAddedEndSpan = false;
+			if (startSpan) {
+				startSpan.text = startSpan.text.slice(0, startSpanDeleteIndex);
+				if (startSpan.text) {
+					middleSpans.push(startSpan);
+					isAddedStartSpan = true;
+				}
+			}
+			if (endSpan) {
+				endSpan.text = endSpan.text.slice(endSpanDeleteIndex)
+				if (endSpan.text || middleSpans.length === 0) {
+					middleSpans.push(endSpan);
+					isAddedEndSpan = true;
+				}
+			}
+			if (isAddedStartSpan && !isAddedEndSpan) {
+				const afterSpan = afterSpans[0];
+				if (afterSpan && this.is_same_span_meta(startSpan.meta, afterSpan.meta)) {
+					afterSpans.shift();
+					startSpan.text += afterSpan.text;
+				}
+			}
+			else if (isAddedEndSpan && !isAddedStartSpan) {
+				const beforeSpan = beforeSpans[beforeSpans.length - 1];
+				if (beforeSpan && this.is_same_span_meta(beforeSpan.meta, endSpan.meta)) {
+					beforeSpans.pop();
+					beforeSpan.text += endSpan.text;
+				}
+			}
+			else if (middleSpans.length === 0) {
+				const beforeSpan = beforeSpans[beforeSpans.length - 1];
+				const afterSpan = afterSpans[0];
+				if (beforeSpan && afterSpan && this.is_same_span_meta(beforeSpan.meta, afterSpan.meta)) {
+					afterSpans.shift();
+					beforeSpan.text += afterSpan.text;
+				}
+			}
+			this.lines[startLine] = this.lines[startLine].concat(middleSpans);
+		}
+		this.lines[startLine] = this.lines[startLine].concat(afterSpans);
 
-        // Delete lines in-between range
-        this.lines.splice(startLine + 1, endLine - startLine);
+		// Delete lines in-between range
+		this.lines.splice(startLine + 1, endLine - startLine);
 
 		// Notify change
 		if (this.on_change) {
 			this.on_change(this.lines);
 		}
 
-        // Return new position
-        return {
-            line: startLine,
-            character: startCharacter
-        };
+		// Return new position
+		return {
+			line: startLine,
+			character: startCharacter
+		};
 	}
 	
 	/**
@@ -501,35 +501,35 @@ class Text_document_class {
 	 * @param {number} startCharacter - The character position to delete from
 	 */
 	delete_character(forward, startLine, startCharacter) {
-        let endLine = startLine;
-        let endCharacter = startCharacter;
-        
-        // Delete forwards
-        if (forward) {
-            // If there are characters after cursor on this line we remove one
-            if (startCharacter < this.get_line_character_count(startLine)) {
-                ++endCharacter;
-            }
-            // if there are Lines after this one we append it
-            else if (startLine < this.lines.length - 1) {
-                ++endLine;
-                endCharacter = 0;
-            }
-        }
-        // Delete backwards
-        else {
-            // If there are characters before the cursor on this line we remove one
-            if (startCharacter > 0) {
-                --startCharacter;
-            }
-            // if there are rows before we append current to previous one
-            else if (startLine > 0) {
-                --startLine;
-                startCharacter = this.get_line_character_count(startLine);
-            }
-        }
+		let endLine = startLine;
+		let endCharacter = startCharacter;
+		
+		// Delete forwards
+		if (forward) {
+			// If there are characters after cursor on this line we remove one
+			if (startCharacter < this.get_line_character_count(startLine)) {
+				++endCharacter;
+			}
+			// if there are Lines after this one we append it
+			else if (startLine < this.lines.length - 1) {
+				++endLine;
+				endCharacter = 0;
+			}
+		}
+		// Delete backwards
+		else {
+			// If there are characters before the cursor on this line we remove one
+			if (startCharacter > 0) {
+				--startCharacter;
+			}
+			// if there are rows before we append current to previous one
+			else if (startLine > 0) {
+				--startLine;
+				startCharacter = this.get_line_character_count(startLine);
+			}
+		}
 
-        return this.delete_range(startLine, startCharacter, endLine, endCharacter);
+		return this.delete_range(startLine, startCharacter, endLine, endCharacter);
 	}
 	
 	/**
@@ -721,24 +721,24 @@ class Text_document_class {
  */
 class Text_selection_class {
 	constructor(/* Text_editor_class */ editor) {
-        this.editor = editor;
+		this.editor = editor;
 		this.isVisible = false;
 		this.isCursorVisible = false;
-        this.isActiveSideEnd = true;
-        this.isBlinkVisible = true;
-        this.blinkInterval = 500;
+		this.isActiveSideEnd = true;
+		this.isBlinkVisible = true;
+		this.blinkInterval = 500;
 
-        this.start = {
-            line: 0,
-            character: 0
-        };
-        
-        this.end = {
-            line: 0,
-            character: 0
-        };
+		this.start = {
+			line: 0,
+			character: 0
+		};
+		
+		this.end = {
+			line: 0,
+			character: 0
+		};
 
-        this.set_position(0, 0);
+		this.set_position(0, 0);
 	}
 	
 	/**
@@ -746,7 +746,7 @@ class Text_selection_class {
 	 * @returns {boolean}
 	 */
 	is_empty() {
-        return this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) === 0;
+		return this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) === 0;
 	}
 	
 	/**
@@ -758,19 +758,19 @@ class Text_selection_class {
 	 * @returns {number} -1 if line1/character1 is less than line2/character2, 1 if greater, and 0 if equal
 	 */
 	compare_position(line1, character1, line2, character2) {
-        if (line1 < line2) {
-            return -1;
-        } else if (line1 > line2) {
-            return 1;
-        } else {
-            if (character1 < character2) {
-                return -1;
-            } else if (character1 > character2) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
+		if (line1 < line2) {
+			return -1;
+		} else if (line1 > line2) {
+			return 1;
+		} else {
+			if (character1 < character2) {
+				return -1;
+			} else if (character1 > character2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 	
 	/**
@@ -780,71 +780,71 @@ class Text_selection_class {
 	 * @param {boolean} [keepSelection] - If true, extends the current selection to the specified position. If false or undefined, sets an empty selection at that position. 
 	 */
 	set_position(line, character, keepSelection) {
-        if (line == null) {
-            line = this.end.line;
-        }
-        if (character == null) {
-            character = this.end.character;
-        }
+		if (line == null) {
+			line = this.end.line;
+		}
+		if (character == null) {
+			character = this.end.character;
+		}
 
-        // Check lower bounds
-        line >= 0 || (line = 0);
-        character >= 0 || (character = 0);
+		// Check lower bounds
+		line >= 0 || (line = 0);
+		character >= 0 || (character = 0);
 
-        // Check upper bounds
-        const lineCount = this.editor.document.get_line_count();
-        line < lineCount || (line = lineCount - 1);
-        const lineCharacterCount = this.editor.document.get_line_character_count(line);
-        character <= lineCharacterCount || (character = lineCharacterCount);
+		// Check upper bounds
+		const lineCount = this.editor.document.get_line_count();
+		line < lineCount || (line = lineCount - 1);
+		const lineCharacterCount = this.editor.document.get_line_character_count(line);
+		character <= lineCharacterCount || (character = lineCharacterCount);
 
-        // Add to selection
-        if (keepSelection) {
-            const positionCompare = this.compare_position(
-                line,
-                character,
-                this.start.line,
-                this.start.character
-            );
+		// Add to selection
+		if (keepSelection) {
+			const positionCompare = this.compare_position(
+				line,
+				character,
+				this.start.line,
+				this.start.character
+			);
 
-            // Determine whether we should make the start side of the range active, selection moving left or up.
-            if (positionCompare === -1 && (this.is_empty() || line < this.start.line)) {
-                this.isActiveSideEnd = false;
-            }
+			// Determine whether we should make the start side of the range active, selection moving left or up.
+			if (positionCompare === -1 && (this.is_empty() || line < this.start.line)) {
+				this.isActiveSideEnd = false;
+			}
 
-            // Assign new value to the side that is active
-            if (this.isActiveSideEnd) {
-                this.end.line = line;
-                this.end.character = character;
-            } else {
-                this.start.line = line;
-                this.start.character = character;
-            }
+			// Assign new value to the side that is active
+			if (this.isActiveSideEnd) {
+				this.end.line = line;
+				this.end.character = character;
+			} else {
+				this.start.line = line;
+				this.start.character = character;
+			}
 
-            // Making sure that end is greater than start and swap if necessary
-            if (this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) > 0) {
-                this.isActiveSideEnd = !this.isActiveSideEnd;
-                const temp = {
-                    line: this.start.line,
-                    character: this.start.character
-                }
-                this.start.line = this.end.line;
-                this.start.character = this.end.character;
-                this.end.line = temp.line;
-                this.end.character = temp.character;
-            }
-        }
-        // Empty cursor move
-        else {
-            this.isActiveSideEnd = true;
-            this.start.line = this.end.line = line;
-            this.start.character = this.end.character = character;
-        }
+			// Making sure that end is greater than start and swap if necessary
+			if (this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) > 0) {
+				this.isActiveSideEnd = !this.isActiveSideEnd;
+				const temp = {
+					line: this.start.line,
+					character: this.start.character
+				}
+				this.start.line = this.end.line;
+				this.start.character = this.end.character;
+				this.end.line = temp.line;
+				this.end.character = temp.character;
+			}
+		}
+		// Empty cursor move
+		else {
+			this.isActiveSideEnd = true;
+			this.start.line = this.end.line = line;
+			this.start.character = this.end.character = character;
+		}
 
-        // Reset cursor blink
-        this.isBlinkVisible = true;
-        if (this.isVisible) {
-            this.start_blinking();
-        }
+		// Reset cursor blink
+		this.isBlinkVisible = true;
+		if (this.isVisible) {
+			this.start_blinking();
+		}
 	}
 	
 	/**
@@ -852,17 +852,17 @@ class Text_selection_class {
 	 * @returns {object} - { line, character }
 	 */
 	get_position() {
-        if (this.isActiveSideEnd) {
-            return {
-                character: this.end.character,
-                line: this.end.line
-            };
-        } else {
-            return {
-                character: this.start.character,
-                line: this.start.line
-            };
-        }
+		if (this.isActiveSideEnd) {
+			return {
+				character: this.end.character,
+				line: this.end.line
+			};
+		} else {
+			return {
+				character: this.start.character,
+				line: this.start.line
+			};
+		}
 	}
 
 	/**
@@ -895,9 +895,9 @@ class Text_selection_class {
 	 * @param {boolean} isVisible 
 	 */
 	set_visible(isVisible) {
-        if (this.isVisible != isVisible) {
-            this.isVisible = isVisible;
-        }
+		if (this.isVisible != isVisible) {
+			this.isVisible = isVisible;
+		}
 	}
 
 	/**
@@ -906,42 +906,42 @@ class Text_selection_class {
 	 */
 	set_cursor_visible(isVisible) {
 		if (this.isCursorVisible != isVisible) {
-            this.isCursorVisible = isVisible;
-            if (this.isCursorVisible) {
-                this.isBlinkVisible = true;
-                this.start_blinking();
-            } else {
-                this.stop_blinking();
-            }
-        }
+			this.isCursorVisible = isVisible;
+			if (this.isCursorVisible) {
+				this.isBlinkVisible = true;
+				this.start_blinking();
+			} else {
+				this.stop_blinking();
+			}
+		}
 	}
 	
 	/**
 	 * Starts the selection cursor blinking.
 	 */
 	start_blinking() {
-        clearInterval(this.blinkIntervalHandle);
-        this.blinkIntervalHandle = setInterval(this.blink.bind(this), this.blinkInterval);
+		clearInterval(this.blinkIntervalHandle);
+		this.blinkIntervalHandle = setInterval(this.blink.bind(this), this.blinkInterval);
 	}
 	
 	/**
 	 * Stops the selection cursor blinking.
 	 */
 	stop_blinking() {
-        clearInterval(this.blinkIntervalHandle);
+		clearInterval(this.blinkIntervalHandle);
 	}
 	
 	/**
 	 * Toggles the visibility of the selection cursor.
 	 */
 	blink() {
-        this.isBlinkVisible = !this.isBlinkVisible;
-        const firstLine = Math.min(this.start.line, this.end.line);
+		this.isBlinkVisible = !this.isBlinkVisible;
+		const firstLine = Math.min(this.start.line, this.end.line);
 		const lastLine = Math.max(this.start.line, this.end.line);
 		/*
-        this.editor.render({
-            lineStart: firstLine,
-            lineEnd: lastLine
+		this.editor.render({
+			lineStart: firstLine,
+			lineEnd: lastLine
 		});
 		*/
 		// this.Base_layers.render();
@@ -953,9 +953,9 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection
 	 */
 	move_line_previous(length, keepSelection) {
-        length = length == null ? 1 : length;
-        const position = this.get_position();
-        this.set_position(position.line - length, null, keepSelection);
+		length = length == null ? 1 : length;
+		const position = this.get_position();
+		this.set_position(position.line - length, null, keepSelection);
 	}
 	
 	/**
@@ -964,9 +964,9 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection
 	 */
 	move_line_next(length, keepSelection) {
-        length = length == null ? 1 : length;
-        const position = this.get_position();
-        this.set_position(position.line + length, null, keepSelection);
+		length = length == null ? 1 : length;
+		const position = this.get_position();
+		this.set_position(position.line + length, null, keepSelection);
 	}
 		
 	/**
@@ -974,8 +974,8 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
 	 */
 	move_line_start(keepSelection) {
-        const position = this.get_position();
-        this.set_position(position.line, 0, keepSelection);
+		const position = this.get_position();
+		this.set_position(position.line, 0, keepSelection);
 	}
 
 	/**
@@ -983,9 +983,9 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
 	 */
 	move_line_end(keepSelection) {
-        const position = this.get_position();
-        this.set_position(position.line, this.editor.document.get_line_character_count(position.line), keepSelection);
-    }
+		const position = this.get_position();
+		this.set_position(position.line, this.editor.document.get_line_character_count(position.line), keepSelection);
+	}
 	
 	/**
 	 * Moves the cursor to a character behind in the document, handles line wrapping.
@@ -993,15 +993,15 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
 	 */
 	move_character_previous(length, keepSelection) {
-        length = length == null ? 1 : length;
-        const position = this.get_position();
-        if (position.character - length < 0) {
-            if (position.line > 0) {
-                this.set_position(position.line - 1, this.editor.document.get_line_character_count(position.line - 1), keepSelection);
-            }
-        } else {
-            this.set_position(position.line, position.character - length, keepSelection);
-        }
+		length = length == null ? 1 : length;
+		const position = this.get_position();
+		if (position.character - length < 0) {
+			if (position.line > 0) {
+				this.set_position(position.line - 1, this.editor.document.get_line_character_count(position.line - 1), keepSelection);
+			}
+		} else {
+			this.set_position(position.line, position.character - length, keepSelection);
+		}
 	}
 	
 	/**
@@ -1010,16 +1010,16 @@ class Text_selection_class {
 	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
 	 */
 	move_character_next(length, keepSelection) {
-        length = length == null ? 1 : length;
-        const position = this.get_position();
-        const characterCount = this.editor.document.get_line_character_count(position.line);
-        if (position.character + length > characterCount) {
-            if (position.line + 1 < this.editor.document.lines.length) {
-                this.set_position(position.line + 1, 0, keepSelection);
-            }
-        } else {
-            this.set_position(position.line, position.character + length, keepSelection);
-        }
+		length = length == null ? 1 : length;
+		const position = this.get_position();
+		const characterCount = this.editor.document.get_line_character_count(position.line);
+		if (position.character + length > characterCount) {
+			if (position.line + 1 < this.editor.document.lines.length) {
+				this.set_position(position.line + 1, 0, keepSelection);
+			}
+		} else {
+			this.set_position(position.line, position.character + length, keepSelection);
+		}
 	}
 
 	/**
@@ -1059,29 +1059,29 @@ class Text_editor_class {
 		this.lastCalculatedZoom = 0;
 		this.lastCalculatedLayerWidth = 0;
 		this.lastCalculatedLayerHeight = 0;
-        this.textBoundaryWidth = 0;
-        this.textBoundaryHeight = 0;
+		this.textBoundaryWidth = 0;
+		this.textBoundaryHeight = 0;
 
 		// Styling options during render
 		this.selectionBackgroundColor = options.selectionBackgroundColor || '#1C79C4';
-        this.selectionTextColor = options.selectionTextColor || '#FFFFFF';
+		this.selectionTextColor = options.selectionTextColor || '#FFFFFF';
 
 		// Offset from top/left of layer for cursor visibility
-        this.drawOffsetTop = options.paddingVertical != null ? options.paddingVertical : 6;
-        this.drawOffsetLeft = options.paddingHorizontal != null ? options.paddingHorizontal : 10;
+		this.drawOffsetTop = options.paddingVertical != null ? options.paddingVertical : 6;
+		this.drawOffsetLeft = options.paddingHorizontal != null ? options.paddingHorizontal : 10;
 
 		// Tracking internal state for keyboard/mouse/touch control
-        this.shiftPressed = false;
-        this.ctrlPressed = false;
-        this.isMouseSelectionActive = false;
-        this.mouseSelectionStartX = 0;
+		this.shiftPressed = false;
+		this.ctrlPressed = false;
+		this.isMouseSelectionActive = false;
+		this.mouseSelectionStartX = 0;
 		this.mouseSelectionStartY = 0;
 		this.mouseSelectionStartLine = null;
 		this.mouseSelectionStartCharacter = null;
-        this.mouseSelectionMoveX = null;
-        this.mouseSelectionMoveY = null;
-        this.mouseSelectionEdgeScrollInterval = null;
-        this.focused = false;
+		this.mouseSelectionMoveX = null;
+		this.mouseSelectionMoveY = null;
+		this.mouseSelectionEdgeScrollInterval = null;
+		this.focused = false;
 		
 		// Text document for this editor
 		this.document = new Text_document_class();
@@ -1112,11 +1112,11 @@ class Text_editor_class {
 	 */
 	get_wrap_text(wrap) {
 		let wrapText = '';
-        for (let i = 0; i < wrap.spans.length; i++) {
-            wrapText += wrap.spans[i].text;
-        }
-        return wrapText;
-    }
+		for (let i = 0; i < wrap.spans.length; i++) {
+			wrapText += wrap.spans[i].text;
+		}
+		return wrapText;
+	}
 
 	/**
 	 * Calculates font metrics for the given span and returns it. Caches by default.
@@ -1137,28 +1137,28 @@ class Text_editor_class {
 	}
 
 	insert_text_at_current_position(text) {
-        if (!this.selection.is_empty()) {
-            this.delete_character_at_current_position();
-        }
-        const position = this.selection.get_position();
-        const newPosition = this.document.insert_text(text, position.line, position.character);
+		if (!this.selection.is_empty()) {
+			this.delete_character_at_current_position();
+		}
+		const position = this.selection.get_position();
+		const newPosition = this.document.insert_text(text, position.line, position.character);
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
 	}
 	
 	delete_character_at_current_position(forward) {
-        let newPosition;
-        if (this.selection.is_empty()) {
-            const position = this.selection.get_position();
-            newPosition = this.document.delete_character(forward, position.line, position.character);
-        } else {
-            newPosition = this.document.delete_range(
-                this.selection.start.line,
-                this.selection.start.character,
-                this.selection.end.line,
-                this.selection.end.character
-            );
-        }
+		let newPosition;
+		if (this.selection.is_empty()) {
+			const position = this.selection.get_position();
+			newPosition = this.document.delete_character(forward, position.line, position.character);
+		} else {
+			newPosition = this.document.delete_range(
+				this.selection.start.line,
+				this.selection.start.character,
+				this.selection.end.line,
+				this.selection.end.character
+			);
+		}
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
 	}
@@ -1175,8 +1175,8 @@ class Text_editor_class {
 	}
 
 	trigger_cursor_start(layer, layerX, layerY) {
-        this.isMouseSelectionActive = true;
-        this.mouseSelectionStartX = layerX;
+		this.isMouseSelectionActive = true;
+		this.mouseSelectionStartX = layerX;
 		this.mouseSelectionStartY = layerY;
 		const cursorStart = this.get_cursor_position_from_absolute_position(layer, layerX, layerY);
 		this.mouseSelectionStartLine = cursorStart.line;
@@ -1185,24 +1185,24 @@ class Text_editor_class {
 	}
 	
 	trigger_cursor_move(layer, layerX, layerY) {
-        const isInsideCanvas = true; // layerX > 0 && layerY > 0 && layerX < this.lastCalculatedLayerWidth && layerY < this.lastCalculatedLayerHeight;
-        if (this.isMouseSelectionActive && isInsideCanvas) {
+		const isInsideCanvas = true; // layerX > 0 && layerY > 0 && layerX < this.lastCalculatedLayerWidth && layerY < this.lastCalculatedLayerHeight;
+		if (this.isMouseSelectionActive && isInsideCanvas) {
 			this.mouseSelectionMoveX = layerX;
 			this.mouseSelectionMoveY = layerY;
 			const cursorEnd = this.get_cursor_position_from_absolute_position(layer, layerX, layerY);
 			this.selection.set_position(this.mouseSelectionStartLine, this.mouseSelectionStartCharacter, false);
 			this.selection.set_position(cursorEnd.line, cursorEnd.character, true);
-        }
+		}
 	}
 	
 	trigger_cursor_end() {
-        this.isMouseSelectionActive = false;
-        this.mouseSelectionMoveX = null;
-        this.mouseSelectionMoveY = null;
-    }
+		this.isMouseSelectionActive = false;
+		this.mouseSelectionMoveX = null;
+		this.mouseSelectionMoveY = null;
+	}
 	
 	get_cursor_position_from_absolute_position(layer, x, y) {
-        let line = -1;
+		let line = -1;
 		let character = -1;
 
 		if (this.lineRenderInfo) {
@@ -1261,8 +1261,8 @@ class Text_editor_class {
 				character = this.document.get_line_character_count(line);
 			}
 		}
-        return { line, character };
-    }
+		return { line, character };
+	}
 
 	calculate_text_placement(ctx, layer) {
 		const boundary = layer.params.boundary;
