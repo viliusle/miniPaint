@@ -51,6 +51,21 @@ class Text_class extends Base_tools_class {
 		document.addEventListener('mouseup', function (event) {
 			_this.dragEnd(event);
 		});
+		//This event listener allows the user to double click a text-layer to bring up the editing dialogue
+		document.addEventListener('dblclick', function (e) {	//On double-click
+			var settings = {	//Build the editing dialogue (copied from gui-details.js)
+				title: 'Edit text',		//Title
+				params: [
+					{name: "text", title: "Text:", value: config.layer.params.text || "", type: "textarea"},
+				],
+				on_finish: function (params) {	//After getting edits, configure/render the edits
+					config.layer.params.text = params.text;
+					config.need_render = true;
+				},
+			};
+			_this.POP.show(settings);	//After building, show the editting dialogue
+		});
+
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
@@ -157,7 +172,7 @@ class Text_class extends Base_tools_class {
 		};
 		this.POP.show(settings);
 	}
-	
+
 	getLines(ctx, text, maxWidth) {
 		var words = text.split(" ");
 		var lines = [];
@@ -174,7 +189,7 @@ class Text_class extends Base_tools_class {
 			}
 		}
 		lines.push(currentLine);
-		
+
 		return lines;
 	}
 
@@ -190,14 +205,14 @@ class Text_class extends Base_tools_class {
 		var text = params.text;
 		var size = params.size;
 		var line_height = size;
-		
+
 		if(text == undefined){
 			//not defined yet
 			return;
 		}
-		
+
 		this.load_fonts();
-		
+
 		//set styles
 		if (params.bold && params.italic)
 			ctx.font = "Bold Italic " + size + "px " + font;
@@ -211,7 +226,7 @@ class Text_class extends Base_tools_class {
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = params.stroke_size;
 		ctx.textBaseline = 'top';
-		
+
 		var paragraphs = text.split("\n");
 		var offset_y = -line_height;
 		for(var i in paragraphs){
@@ -223,7 +238,7 @@ class Text_class extends Base_tools_class {
 			}
 		}
 	}
-	
+
 	render_text_line(ctx, layer, text, offset_y) {
 		var params = layer.params;
 		var stroke = params.stroke;
@@ -233,10 +248,10 @@ class Text_class extends Base_tools_class {
 		}
 		align = align.toLowerCase();
 		var text_width = ctx.measureText(text).width;
-		
+
 		//tabs
 		text = text.replace(/\t/g, '      ');
-		
+
 		var start_x = layer.x;
 		if (align == 'right') {
 			start_x = layer.x + layer.width - text_width;
@@ -250,12 +265,12 @@ class Text_class extends Base_tools_class {
 		else
 			ctx.strokeText(text, start_x, layer.y + offset_y);
 	}
-	
+
 	load_fonts(){
 		if(this.is_fonts_loaded == true){
 			return;
 		}
-		
+
 		var fonts = this.get_external_fonts();
 		var head = document.getElementsByTagName('head')[0];
 		for(var i in fonts) {
@@ -267,7 +282,7 @@ class Text_class extends Base_tools_class {
 			link.href = font_url;
 			head.appendChild(link);
 		}
-		
+
 		this.is_fonts_loaded = true;
 	}
 
@@ -275,24 +290,24 @@ class Text_class extends Base_tools_class {
 		var default_fonts = [
 			"Arial",
 			"Courier",
-			"Impact", 
+			"Impact",
 			"Helvetica",
-			"Monospace", 
-			"Tahoma", 
+			"Monospace",
+			"Tahoma",
 			"Times New Roman",
 			"Verdana",
 		];
-		
+
 		var external_fonts = this.get_external_fonts();
-		
+
 		//merge and sort
 		var merged = default_fonts.concat(external_fonts);
 		merged = merged.sort();
-		
+
 		return merged;
 	}
-	
-	get_external_fonts(){		
+
+	get_external_fonts(){
 		var google_fonts = [
 			"Amatic SC",
 			"Arimo",
@@ -323,10 +338,10 @@ class Text_class extends Base_tools_class {
 			"Titillium Web",
 			"Ubuntu",
 		];
-		
+
 		return google_fonts;
 	}
-	
+
 }
 
 export default Text_class;
