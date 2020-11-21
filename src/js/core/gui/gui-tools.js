@@ -215,6 +215,8 @@ class GUI_tools_class {
 					element.classList.add('input_height');
 					element.innerHTML = icon;
 					element.setAttribute('title', title);
+				} else {
+					element.classList.add('ui_toggle_button');
 				}
 				//event
 				element.addEventListener('click', (event) => {
