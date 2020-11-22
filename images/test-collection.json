@@ -1,11 +1,11 @@
 {
 	"info": {
 		"width": 1000,
-		"height": 600,
+		"height": 700,
 		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
 		"date": "2020-10-25",
 		"version": "4.2.5",
-		"layer_active": 6
+		"layer_active": 7
 	},
 	"layers": [
 		{
@@ -24,7 +24,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 21,
+			"order": 30,
 			"composition": "source-over",
 			"rotate": null,
 			"data": null,
@@ -54,15 +54,15 @@
 			"link": null,
 			"x": 490,
 			"y": 113,
-			"width": -26.600000000000023,
+			"width": -26,
 			"width_original": null,
-			"height": 228.60000000000002,
+			"height": 228,
 			"height_original": null,
 			"visible": true,
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 20,
+			"order": 29,
 			"composition": "source-over",
 			"rotate": null,
 			"data": null,
@@ -100,7 +100,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 50,
-			"order": 19,
+			"order": 28,
 			"composition": "source-over",
 			"rotate": -15,
 			"data": null,
@@ -133,7 +133,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 13,
+			"order": 27,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -166,7 +166,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 10,
+			"order": 26,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": {
@@ -202,7 +202,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 9,
+			"order": 25,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": {
@@ -238,7 +238,7 @@
 			"is_vector": false,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 23,
+			"order": 24,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -275,7 +275,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 26,
+			"order": 23,
 			"composition": "source-over",
 			"rotate": null,
 			"data": null,
@@ -331,7 +331,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 6,
+			"order": 22,
 			"composition": "source-over",
 			"rotate": null,
 			"data": {
@@ -369,7 +369,7 @@
 			"is_vector": false,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 5,
+			"order": 21,
 			"composition": "source-over",
 			"rotate": null,
 			"data": {
@@ -407,7 +407,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 24,
+			"order": 20,
 			"composition": "source-over",
 			"rotate": null,
 			"data": null,
@@ -457,13 +457,13 @@
 			"y": 0,
 			"width": 1000,
 			"width_original": null,
-			"height": 600,
+			"height": 700,
 			"height_original": null,
 			"visible": true,
 			"is_vector": false,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 1,
+			"order": 19,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -495,7 +495,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 16,
+			"order": 18,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -562,7 +562,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": true,
 			"opacity": 100,
-			"order": 1,
+			"order": 16,
 			"composition": "source-over",
 			"rotate": null,
 			"data": [
@@ -604,7 +604,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": true,
 			"opacity": 100,
-			"order": 0,
+			"order": 15,
 			"composition": "source-over",
 			"rotate": null,
 			"data": [
@@ -646,7 +646,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": true,
 			"opacity": 100,
-			"order": -1,
+			"order": 14,
 			"composition": "source-over",
 			"rotate": null,
 			"data": [
@@ -682,7 +682,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": true,
 			"opacity": 100,
-			"order": -2,
+			"order": 13,
 			"composition": "source-over",
 			"rotate": null,
 			"data": [
@@ -699,6 +699,321 @@
 			"filters": [],
 			"render_function": [
 				"pencil",
+				"render"
+			]
+		},
+		{
+			"id": 19,
+			"parent_id": 0,
+			"name": "Text types",
+			"type": "text",
+			"link": null,
+			"x": 300,
+			"y": 370,
+			"width": 300,
+			"width_original": null,
+			"height": 213,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 12,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					{
+						"meta": {
+							"size": 30,
+							"bold": true,
+							"fill_color": "#646464"
+						},
+						"text": "Bold "
+					},
+					{
+						"meta": {
+							"size": 30,
+							"italic": true,
+							"fill_color": "#646464"
+						},
+						"text": "italic "
+					},
+					{
+						"meta": {
+							"size": 30,
+							"underline": true,
+							"fill_color": "#646464"
+						},
+						"text": "underline"
+					}
+				],
+				[
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": true,
+							"fill_color": "#646464"
+						},
+						"text": "strikethrough"
+					},
+					{
+						"text": " ",
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464"
+						}
+					},
+					{
+						"meta": {
+							"size": 20,
+							"strikethrough": false,
+							"fill_color": "#646464"
+						},
+						"text": "small"
+					},
+					{
+						"text": " ",
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464"
+						}
+					},
+					{
+						"text": "big",
+						"meta": {
+							"size": 60,
+							"strikethrough": false,
+							"fill_color": "#646464"
+						}
+					},
+					{
+						"text": " red ",
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#ff0000"
+						}
+					},
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#c8c8c8",
+							"stroke_color": "#0000ff",
+							"stroke_size": 1
+						},
+						"text": "stroke"
+					}
+				],
+				[
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464",
+							"stroke_color": "#008800",
+							"stroke_size": 0
+						},
+						"text": "Arial "
+					},
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464",
+							"stroke_color": "#008800",
+							"stroke_size": 0,
+							"family": "Courier"
+						},
+						"text": "Courier "
+					},
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464",
+							"stroke_color": "#008800",
+							"stroke_size": 0,
+							"family": "Special Elite"
+						},
+						"text": "Elite"
+					}
+				],
+				[
+					{
+						"meta": {
+							"size": 30,
+							"strikethrough": false,
+							"fill_color": "#646464",
+							"stroke_color": "#008800",
+							"stroke_size": 0,
+							"family": "Tahoma",
+							"kerning": 15
+						},
+						"text": "Kerning"
+					}
+				]
+			],
+			"params": {
+				"boundary": "box",
+				"text_direction": "ltr",
+				"wrap_direction": "ttb",
+				"halign": "left",
+				"valign": "top",
+				"wrap": "letter"
+			},
+			"status": null,
+			"color": "#008000",
+			"filters": [],
+			"render_function": [
+				"text",
+				"render"
+			]
+		},
+		{
+			"id": 20,
+			"parent_id": 0,
+			"name": "Text - center",
+			"type": "text",
+			"link": null,
+			"x": 300,
+			"y": 591.5,
+			"width": 300,
+			"width_original": null,
+			"height": 41,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 11,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					{
+						"text": "Center",
+						"meta": {
+							"family": "Tahoma",
+							"size": 25,
+							"fill_color": "#646464",
+							"stroke_color": "#008800"
+						}
+					}
+				]
+			],
+			"params": {
+				"boundary": "box",
+				"text_direction": "ltr",
+				"wrap_direction": "ttb",
+				"halign": "center",
+				"valign": "top",
+				"wrap": "letter"
+			},
+			"status": null,
+			"color": "#008000",
+			"filters": [],
+			"render_function": [
+				"text",
+				"render"
+			]
+		},
+		{
+			"id": 21,
+			"parent_id": 0,
+			"name": "Text  - right",
+			"type": "text",
+			"link": null,
+			"x": 300,
+			"y": 633.5,
+			"width": 300,
+			"width_original": null,
+			"height": 43,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 10,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					{
+						"text": "Right side",
+						"meta": {
+							"family": "Tahoma",
+							"size": 25,
+							"fill_color": "#646464",
+							"stroke_color": "#008800"
+						}
+					}
+				]
+			],
+			"params": {
+				"boundary": "box",
+				"text_direction": "ltr",
+				"wrap_direction": "ttb",
+				"halign": "right",
+				"valign": "top",
+				"wrap": "letter"
+			},
+			"status": null,
+			"color": "#008000",
+			"filters": [],
+			"render_function": [
+				"text",
+				"render"
+			]
+		},
+		{
+			"id": 22,
+			"parent_id": 0,
+			"name": "Text - wrap",
+			"type": "text",
+			"link": null,
+			"x": 50,
+			"y": 520,
+			"width": 230,
+			"width_original": null,
+			"height": 134,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 9,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					{
+						"meta": {
+							"size": 16,
+							"fill_color": "#323232",
+							"stroke_color": "#0000ff",
+							"family": "Verdana"
+						},
+						"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dictum, ipsum sed bibendum posuere, eros erat blandit justo, quis convallis augue ipsum nec ligula."
+					}
+				]
+			],
+			"params": {
+				"boundary": "box",
+				"text_direction": "ltr",
+				"wrap_direction": "ttb",
+				"halign": "left",
+				"valign": "top",
+				"wrap": "letter"
+			},
+			"status": null,
+			"color": "#008000",
+			"filters": [],
+			"render_function": [
+				"text",
 				"render"
 			]
 		}
