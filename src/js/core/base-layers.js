@@ -386,6 +386,9 @@ class Base_layers_class {
 							};
 							resolve(true);
 						};
+						layer.link.onerror = function () {
+							alertify.error('Sorry, image could not be loaded.');
+						};
 						layer.link.src = layer.data;
 						layer.link.crossOrigin = "Anonymous";
 					}
