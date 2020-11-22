@@ -114,8 +114,8 @@ config.TOOLS = [
 		},
 	},
 	{
-		name: 'magic_wand',
-		title: 'Magic Wand Tool',
+		name: 'magic_erase',
+		title: 'Magic Eraser Tool',
 		attributes: {
 			power: 15,
 			anti_aliasing: true,

@@ -277,7 +277,7 @@ body .sp-preview{
 .sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }
 .sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }
 .sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }
-.sidebar_left .magic_wand:after{ background-image: url('images/icons/magic_wand.svg'); }
+.sidebar_left .magic_erase:after{ background-image: url('../../images/icons/magic_erase.svg'); }
 .sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }
 .sidebar_left .line:after{ background-image: url('images/icons/line.svg'); }
 .sidebar_left .rectangle:after{ background-image: url('images/icons/rectangle.svg'); }
