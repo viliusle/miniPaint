@@ -25,7 +25,7 @@ or upload from computer (using menu or drag & drop). Nothing will be sent to any
 
 ## Features
 
-- **Files**: open images, directories, URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, JSON (layers data), print.
+- **Files**: open images, directories, URL, data URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, JSON (layers data), print.
 - **Edit**: Undo, cut, copy, paste, selection, paste from clipboard.
 - **Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, color corrections (brightness, contrast, hue, saturation, luminance), auto adjust colors, grid, histogram, negative.
 - **Layers**: multiple layers system, differences, merge, flatten, Transparency support.

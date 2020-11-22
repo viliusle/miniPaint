@@ -33,7 +33,7 @@ class File_save_class {
 		this.SAVE_TYPES = {
 			PNG: "Portable Network Graphics",
 			JPG: "JPG/JPEG Format",
-			AVIF: "AV1 Image File Format",
+			//AVIF: "AV1 Image File Format", //just uncomment it in future to make it work
 			JSON: "Full layers data",
 			WEBP: "Weppy File Format",
 			GIF: "Graphics Interchange Format",
@@ -45,11 +45,11 @@ class File_save_class {
 
 	set_events() {
 		document.addEventListener('keydown', (event) => {
-			var code = event.keyCode;
+			var code = event.key.toLowerCase();
 			if (this.Helper.is_input(event.target))
 				return;
 
-			if (code == 83) {
+			if (code == "s") {
 				//save
 				this.save();
 				event.preventDefault();
@@ -66,10 +66,11 @@ class File_save_class {
 
 		for(var i in this.SAVE_TYPES) {
 			if(save_default_cookie == i){
-				save_default = i + " - " + this.SAVE_TYPES[i];
+				save_default = i;
 				break;
 			}
 		}
+		save_default = save_default + " - " + this.SAVE_TYPES[save_default];
 
 		var calc_size_value = false;
 		var calc_size = false;
@@ -149,7 +150,7 @@ class File_save_class {
 		this.Base_layers.convert_layers_to_canvas(ctx, null, false);
 		var data_url = canvas.toDataURL();
 
-		max = 1 * 1000 * 1000;
+		max = 1000 * 1000;
 		if (data_url.length > max) {
 			alertify.error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' bytes.');
 			return;
@@ -251,7 +252,7 @@ class File_save_class {
 
 				this.Base_layers.convert_layers_to_canvas(ctx, layer.id, false);
 
-				if (initial_x != null && initial_x != null) {
+				if (initial_x != null) {
 					//restore position
 					layer.x = initial_x;
 					layer.y = initial_y;
@@ -543,8 +544,6 @@ class File_save_class {
 	 * exports all layers to JSON
 	 */
 	export_as_json() {
-		var export_data = {};
-
 		//get date
 		var today = new Date();
 		var yyyy = today.getFullYear();
