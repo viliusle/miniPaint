@@ -213,6 +213,9 @@
     display: block;
     font-size: 1.6rem;
 }
+button img{
+    filter: var(--menu-icons-filter);
+}
 
 /****************\
 | UI Input Group |
