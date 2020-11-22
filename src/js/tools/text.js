@@ -2196,7 +2196,7 @@ class Text_class extends Base_tools_class {
 					]);
 				}
 				params.boundary = 'box';
-				params.halign = params.align ? params.align.toLowerCase() : 'left';
+				params.halign = params.align ? params.align.value.toLowerCase() : 'left';
 				params.valign = 'top';
 				params.text_direction = 'ltr';
 				params.wrap_direction = 'ttb';
