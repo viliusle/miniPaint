@@ -36,6 +36,12 @@ const zoomView = (() => {
 			}
 			ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
 		},
+		getPosition() {
+			return { x: pos.x, y: pos.y };
+		},
+		getBounds() {
+			return bounds;
+		},
 		getScale() {
 			return scale;
 		},

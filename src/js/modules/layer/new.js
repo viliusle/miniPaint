@@ -3,6 +3,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import GUI_tools_class from './../../core/gui/gui-tools.js';
 import Base_selection_class from './../../core/base-selection.js';
 import Selection_class from './../../tools/selection.js';
+import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Layer_new_class {
@@ -12,21 +13,20 @@ class Layer_new_class {
 		this.Selection = new Selection_class();
 		this.Base_selection = new Base_selection_class(this.Base_layers.ctx);
 		this.GUI_tools = new GUI_tools_class();
+		this.Helper = new Helper_class();
 
 		this.set_events();
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 78 && event.ctrlKey != true && event.metaKey != true) {
 				//N
-				_this.new();
+				this.new();
 			}
 		}, false);
 	}

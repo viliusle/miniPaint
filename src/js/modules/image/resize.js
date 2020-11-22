@@ -7,6 +7,7 @@ import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Pica from './../../../../node_modules/pica/dist/pica.js';
 import Helper_class from './../../libs/helpers.js';
+import { metaDefaults as textMetaDefaults } from '../../tools/text.js';
 
 var instance = null;
 
@@ -31,16 +32,14 @@ class Image_resize_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 82 && event.ctrlKey != true && event.metaKey != true) {
 				//R - resize
-				_this.resize();
+				this.resize();
 				event.preventDefault();
 			}
 		}, false);
@@ -136,10 +135,16 @@ class Image_resize_class {
 		
 		//is text
 		if(layer.type == 'text'){
-			var ratio = width / layer.width;
+			var xratio = width / layer.width;
+			for (let line of layer.data) {
+				for (let span of line) {
+					span.meta.size = Math.ceil((span.meta.size || textMetaDefaults.size) * xratio);
+					span.meta.stroke_size = parseFloat((0.1 * Math.round((span.meta.stroke_size != null ? span.meta.stroke_size : textMetaDefaults.stroke_size) * xratio / 0.1)).toFixed(1));
+					span.meta.kerning = Math.ceil((span.meta.kerning || textMetaDefaults.kerning) * xratio);
+				}
+			}
 			layer.width = width;
 			layer.height = height;
-			layer.params.size = Math.ceil(layer.params.size * ratio);
 			this.resize_gui();
 			config.need_render = true;
 			return true;

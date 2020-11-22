@@ -6,6 +6,7 @@
 import config from './../config.js';
 import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
+import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
@@ -24,6 +25,7 @@ class Base_state_class {
 
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
+		this.Helper = new Helper_class();
 		this.layers_archive = [];
 		this.levels = 3;
 		this.levels_optimal = 3;
@@ -33,17 +35,14 @@ class Base_state_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.code;
-
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == "KeyZ" && (event.ctrlKey == true || event.metaKey)) {
 				//undo
-				_this.undo();
+				this.undo();
 				event.preventDefault();
 			}
 		}, false);

@@ -3,6 +3,7 @@ import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_selection_class from './../core/base-selection.js';
 import GUI_tools_class from './../core/gui/gui-tools.js';
+import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
@@ -21,6 +22,7 @@ class Selection_class extends Base_tools_class {
 		var _this = this;
 
 		this.Base_layers = new Base_layers_class();
+		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'selection';
 		this.type = null;
@@ -92,9 +94,9 @@ class Selection_class extends Base_tools_class {
 			_this.dragEnd(event);
 		});
 
-		document.addEventListener('keydown', function (e) {
+		document.addEventListener('keydown', (e) => {
 			var code = e.keyCode;
-			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.type == 'textarea')
+			if (this.Helper.is_input(e.target))
 				return;
 
 			if (code == 27) {

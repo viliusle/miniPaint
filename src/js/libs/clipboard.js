@@ -1,3 +1,5 @@
+import Helper_class from './helpers.js';
+
 /**
  * image pasting into canvas
  * 
@@ -8,6 +10,8 @@ class Clipboard_class {
 
 	constructor(on_paste) {
 		var _self = this;
+
+		this.Helper = new Helper_class();
 
 		this.on_paste = on_paste;
 		this.ctrl_pressed = false;
@@ -68,14 +72,10 @@ class Clipboard_class {
 		var config = {attributes: true, childList: true, characterData: true};
 		observer.observe(target, config);
 	}
-	;
-		//default paste action
-		paste_auto(e) {
-		if (e.target.type == 'text')
-			return;
-		if (e.target.tagName.toUpperCase() == 'INPUT')
-			return;
-		if (e.target.tagName.toUpperCase() == 'TEXTAREA')
+
+	//default paste action
+	paste_auto(e) {
+		if (this.Helper.is_input(e.target))
 			return;
 
 		this.paste_mode = '';
@@ -115,8 +115,7 @@ class Clipboard_class {
 		}
 		//v
 		if (k == 86) {
-			if (document.activeElement != undefined && document.activeElement.type == 'text') {
-				//let user paste into some input
+			if (this.Helper.is_input(document.activeElement)) {
 				return false;
 			}
 

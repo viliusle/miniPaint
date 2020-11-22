@@ -184,6 +184,8 @@ body .sp-preview{
 	margin-bottom: 5px;
 }
 .attributes{
+	display: flex;
+	flex-wrap: nowrap;
 	background-color: var(--area-background-color);
 	width: calc(100% - 125px);
 	margin-top: 5px;
@@ -196,28 +198,26 @@ body .sp-preview{
 	min-height: 30px;
 }
 .attributes .item{
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	margin-right: 20px;
+}
+.attributes .item > label {
+	margin: 0 .5rem 0 0;
 }
 .attributes input[type="number"]{
 	width: 60px;
 	margin-right: 5px;
 }
-.attributes button{
+.attributes input[type="color"] {
+	cursor: pointer;
+	padding: 0;
+	border: .2rem solid var(--input-background-color);
+	width: 3rem;
+}
+.attributes .item > button:not(.ui_icon_button){
 	display: inline-block;
 	padding: 3px 10px;
-	border: 1px solid var(--border-color);
-	background-color: var(--button-background-color);
-	margin-right: 5px;
-}
-.attributes button:hover{
-	background-color: rgba(255, 255, 255, 0.3);
-	background-color: var(--background-color-hover);
-}
-.attributes button.active{
-	background-color: #419147;
-	background-color: var(--background-color-active);
-	color: var(--text-color-active);
 }
 
 /* ========== left sidebar ================================================== */
@@ -479,6 +479,7 @@ body .sp-preview{
 	height: 23px;
 }
 .block.details button{
+	width: calc(100% - 70px);
 	height: 23px;
 	border: 1px solid #444;
 }
@@ -535,6 +536,7 @@ body .sp-preview{
 	position: absolute;
 	border: 1px solid var(--border-color);
 	box-sizing: content-box;
+	font-kerning: normal !important;
 }
 #mouse{
 	position:absolute;

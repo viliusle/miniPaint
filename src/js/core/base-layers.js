@@ -98,6 +98,7 @@ class Base_layers_class {
 
 	after_render() {
 		config.need_render = false;
+		config.need_render_changed_params = false;
 		this.ctx.restore();
 		zoomView.canvasDefault();
 	}

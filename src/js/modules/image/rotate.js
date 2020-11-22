@@ -2,6 +2,7 @@ import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Base_gui_class from './../../core/base-gui.js';
+import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
@@ -17,22 +18,21 @@ class Image_rotate_class {
 
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
+		this.Helper = new Helper_class();
 		this.Dialog = new Dialog_class();
 
 		this.set_events();
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 76) {
 				//L - rotate left
-				_this.left();
+				this.left();
 				event.preventDefault();
 			}
 		}, false);
