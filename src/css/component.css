@@ -203,15 +203,21 @@
 
 .ui_icon_button {
     height: 2.8rem;
+    line-height: 2.8rem;
 }
 
 .ui_icon_button.input_height {
     height: 2.4rem;
+    line-height: 2.4rem;
 }
 
 .ui_icon_button > svg {
     display: block;
     font-size: 1.6rem;
+}
+.ui_icon_button > img {
+    display: block;
+    margin: 0 auto;
 }
 button img{
     filter: var(--menu-icons-filter);
