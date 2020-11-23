@@ -214,7 +214,7 @@ class GUI_tools_class {
 					element.classList.add('ui_icon_button');
 					element.classList.add('input_height');
 					element.innerHTML = icon;
-					element.innerHTML = '<img alt="" src="images/icons/'+icon+'" />';
+					element.innerHTML = '<img alt="'+title+'" src="images/icons/'+icon+'" />';
 				} else {
 					element.classList.add('ui_toggle_button');
 				}
