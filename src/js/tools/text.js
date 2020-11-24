@@ -1376,10 +1376,12 @@ class Text_editor_class {
 						if (largestOffset > totalTextDirectionSize) {
 							totalTextDirectionSize = largestOffset;
 						}
-						lineWraps.push({
+						const newWrap = {
 							characterOffsets: wrapCharacterOffsets,
 							spans: beforeSpans
-						});
+						};
+						newWrap.characterOffsets = newWrap.characterOffsets.slice(0, this.get_wrap_text(newWrap).length + 1);
+						lineWraps.push(newWrap);
 						currentWrapSpans = afterSpans;
 						wrapAccumulativeSize = 0;
 						wrapCharacterOffsets = [0];
@@ -1415,7 +1417,8 @@ class Text_editor_class {
 			for (let line of lineRenderInfo.lines) {
 				for (let wrap of line.wraps) {
 					const isCentered = (isHorizontalTextDirection && halign == 'center') || (!isHorizontalTextDirection && valign === 'middle');
-					const wrapSize = wrap.characterOffsets[wrap.characterOffsets.length - 1];
+					const lastSpan = wrap.spans[wrap.spans.length - 1];
+					const wrapSize = wrap.characterOffsets[wrap.characterOffsets.length - 1 - (lastSpan.text[lastSpan.text.length - 1] === ' ' ? 1 : 0)];
 					const startOffset = (isCentered ? maxTextDirectionSize / 2 : maxTextDirectionSize) - (isCentered ? wrapSize / 2 : wrapSize);
 					if (startOffset > 0) {
 						for (let oi = 0; oi < wrap.characterOffsets.length; oi++) {
