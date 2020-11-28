@@ -373,47 +373,38 @@ const menuDefinition = [
 				children: [
 					{
 						name: '1977',
-						ellipsis: true,
 						target: 'effects/instagram/1977.1977'
 					},
 					{
 						name: 'Aden',
-						ellipsis: true,
 						target: 'effects/instagram/aden.aden'
 					},
 					{
 						name: 'Clarendon',
-						ellipsis: true,
 						target: 'effects/instagram/clarendon.clarendon'
 					},
 					{
 						name: 'Gingham',
-						ellipsis: true,
 						target: 'effects/instagram/gingham.gingham'
 					},
 					{
 						name: 'Inkwell',
-						ellipsis: true,
 						target: 'effects/instagram/inkwell.inkwell'
 					},
 					{
 						name: 'Lo-fi',
-						ellipsis: true,
 						target: 'effects/instagram/lofi.lofi'
 					},
 					{
 						name: 'Toaster',
-						ellipsis: true,
 						target: 'effects/instagram/toaster.toaster'
 					},
 					{
 						name: 'Valencia',
-						ellipsis: true,
 						target: 'effects/instagram/valencia.valencia'
 					},
 					{
 						name: 'X-Pro II',
-						ellipsis: true,
 						target: 'effects/instagram/xpro2.xpro2'
 					}
 				]
@@ -425,7 +416,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Blueprint',
-				ellipsis: true,
 				target: 'effects/blueprint.blueprint'
 			},
 			{
@@ -450,12 +440,10 @@ const menuDefinition = [
 			},
 			{
 				name: 'Edge',
-				ellipsis: true,
 				target: 'effects/edge.edge'
 			},
 			{
 				name: 'Emboss',
-				ellipsis: true,
 				target: 'effects/emboss.emboss'
 			},
 			{
@@ -470,7 +458,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Heatmap',
-				ellipsis: true,
 				target: 'effects/heatmap.heatmap'
 			},
 			{
@@ -480,7 +467,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Night Vision',
-				ellipsis: true,
 				target: 'effects/night_vision.night_vision'
 			},
 			{
@@ -490,7 +476,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Pencil',
-				ellipsis: true,
 				target: 'effects/pencil.pencil'
 			},
 			{
@@ -500,7 +485,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Solarize',
-				ellipsis: true,
 				target: 'effects/solarize.solarize'
 			},
 			{

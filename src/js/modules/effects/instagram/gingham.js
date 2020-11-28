@@ -11,32 +11,13 @@ class Effects_gingham_class {
 	}
 
 	gingham() {
-		var _this = this;
-
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
 
-		var settings = {
-			title: 'Gingham',
-			preview: true,
-			effects: true,
-			params: [],
-			on_change: function (params, canvas_preview, w, h, canvas_) {
-				var data = _this.change(canvas_, canvas_.width, canvas_.height);
-				canvas_preview.clearRect(0, 0, canvas_.width, canvas_.height);
-				canvas_preview.drawImage(data, 0, 0);
-			},
-			on_finish: function (params) {
-				window.State.save();
-				_this.save(params);
-			},
-		};
-		this.POP.show(settings);
-	}
+		window.State.save();
 
-	save(params) {
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");

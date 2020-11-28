@@ -11,46 +11,27 @@ class Effects_heatmap_class {
 	}
 
 	heatmap() {
-		var _this = this;
-
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
 
-		var settings = {
-			title: 'Heatmap',
-			preview: true,
-			effects: true,
-			params: [],
-			on_change: function (params, canvas_preview, w, h) {
-				var img = canvas_preview.getImageData(0, 0, w, h);
-				var data = _this.change(img, params);
-				canvas_preview.putImageData(data, 0, 0);
-			},
-			on_finish: function (params) {
-				window.State.save();
-				_this.save(params);
-			},
-		};
-		this.POP.show(settings);
-	}
+		window.State.save();
 
-	save(params) {
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");
 
 		//change data
 		var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var data = this.change(img, params);
+		var data = this.change(img);
 		ctx.putImageData(data, 0, 0);
 
 		//save
 		this.Base_layers.update_layer_image(canvas);
 	}
 
-	change(data, params) {
+	change(data) {
 		var imgData = data.data;
 		var grey, RGB;
 
@@ -120,8 +101,7 @@ class Effects_heatmap_class {
 
 		//now update
 		var img = ctx.getImageData(0, 0, canvas_thumb.width, canvas_thumb.height);
-		var params = {}
-		var data = this.change(img, params);
+		var data = this.change(img);
 		ctx.putImageData(data, 0, 0);
 	}
 
