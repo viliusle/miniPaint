@@ -161,7 +161,7 @@ class Dialog_class {
 		var params = this.get_params();
 
 		var hash = JSON.stringify(params);
-		if (this.last_params_hash == hash) {
+		if (this.last_params_hash == hash && this.onchange == false) {
 			//nothing changed
 			return;
 		}
