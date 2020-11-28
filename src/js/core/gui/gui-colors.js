@@ -105,9 +105,14 @@ class GUI_colors_class {
 		this.butons = null;
 		this.sections = null;
 		this.inputs = null;
+		this.Helper = new Helper_class();
 	}
 
 	render_main_colors() {
+		var saved_color = this.Helper.getCookie('color');
+		if(saved_color != null)
+			config.COLOR = saved_color;
+
 		this.el = document.getElementById('toggle_colors');
 		this.el.innerHTML = template;
 		this.init_components();
@@ -360,6 +365,8 @@ class GUI_colors_class {
 			}
 			this.render_config_color({ hsl, hsv });
 		}
+
+		this.Helper.setCookie('color', config.COLOR);
 	}
 
 	/**
