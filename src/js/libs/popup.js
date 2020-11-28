@@ -80,7 +80,6 @@ class Dialog_class {
 		this.onchange = false;
 		this.width_mini = 225;
 		this.height_mini = 200;
-		this.effects = false;
 		this.id = 0;
 		this.parameters = [];
 		this.Base_layers = new Base_layers_class();
@@ -89,9 +88,7 @@ class Dialog_class {
 		this.last_params_hash = '';
 		this.layer_active_small = document.createElement("canvas");
 		this.layer_active_small_ctx = this.layer_active_small.getContext("2d");
-		this.ef_index = null; //current effect list key
-		this.ef_prev_index = null;
-		this.ef_next_index = null;
+		this.caller = null;
 
 		this.set_events();
 	}
@@ -114,7 +111,6 @@ class Dialog_class {
 		this.preview = config.preview || false;
 		this.onchange = config.on_change || false;
 		this.onload = config.on_load || false;
-		this.effects = config.effects || false;
 		this.className = config.className || '';
 		this.comment = config.comment || '';
 
@@ -139,7 +135,6 @@ class Dialog_class {
 		this.preview = false;
 		this.onload = false;
 		this.onchange = false;
-		this.effects = false;
 		this.title = null;
 		this.className = '';
 		this.comment = '';
@@ -153,9 +148,9 @@ class Dialog_class {
 		var _this = this;
 
 		document.addEventListener('keydown', function (event) {
-			var code = event.keyCode;
+			var code = event.code;
 
-			if (code == 27) {
+			if (code == "Escape") {
 				//escape
 				_this.hide(false);
 			}
@@ -249,16 +244,14 @@ class Dialog_class {
 		for (var i = 0; i < selects.length; i++) {
 			if (selects[i].id.substr(0, 9) == 'pop_data_') {
 				var key = selects[i].id.substr(9);
-				var value = selects[i].value;
-				response[key] = value;
+				response[key] = selects[i].value;
 			}
 		}
 		var textareas = document.getElementsByTagName('textarea');
 		for (var i = 0; i < textareas.length; i++) {
 			if (textareas[i].id.substr(0, 9) == 'pop_data_') {
 				var key = textareas[i].id.substr(9);
-				var value = textareas[i].value;
-				response[key] = value;
+				response[key] = textareas[i].value;
 			}
 		}
 
@@ -278,7 +271,7 @@ class Dialog_class {
 		this.active = true;
 
 		//build content
-		var html_pretitle_area = this.render_effect_browser();
+		var html_pretitle_area = '';
 		var html_preview_content = '';
 		var html_params = '';
 
@@ -337,9 +330,6 @@ class Dialog_class {
 			this.onload(params);
 		}
 
-		//some events for effects browser
-		this.add_effects_browser_events();
-
 		//load preview
 		if (this.preview !== false) {
 			//get canvas from layer
@@ -384,6 +374,7 @@ class Dialog_class {
 
 	generateParamsHtml() {
 		var html = '<table style="width:99%;">';
+		var title = null;
 		for (var i in this.parameters) {
 			var parameter = this.parameters[i];
 
@@ -466,7 +457,7 @@ class Dialog_class {
 						}
 						else {
 							var input_type = "text";
-							if (parameter.placeholder != undefined && parameter.placeholder != '' && !isNaN(parameter.placeholder))
+							if (parameter.placeholder != '' && !isNaN(parameter.placeholder))
 								input_type = 'number';
 							if (parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
@@ -496,7 +487,7 @@ class Dialog_class {
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '" style="padding: 2px 0px;">' + parameter.value + '</div></td>';
+					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '" style="padding: 2px 0;">' + parameter.value + '</div></td>';
 				else
 					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
 			}
@@ -594,114 +585,6 @@ class Dialog_class {
 		}
 	}
 
-	ucfirst(string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	}
-
-	get_effects_list() {
-		var list = [];
-
-		for (var i in this.Base_gui.modules) {
-			if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
-				continue;
-
-			list[i] = this.Base_gui.modules[i];
-		}
-
-		return list;
-	}
-
-	render_effect_browser() {
-		if (this.effects == false)
-			return '';
-
-		var html = '';
-		var filters_config = this.get_effects_list();
-		var breaking = false;
-		this.ef_index = null;
-		this.ef_next_index = null;
-		this.ef_prev_index = null;
-		for (var key in filters_config) {
-			if (breaking == true) {
-				this.ef_next_index = key;
-				break;
-			}
-			var title = this.get_filter_title(key);
-			if (title.toLowerCase() == this.title.toLowerCase()) {
-				this.ef_index = key;
-				breaking = true;
-				continue;
-			}
-			this.ef_prev_index = key;
-		}
-
-		html += '<span style="float:right;">';
-		html += '<input id="previous_filter" type="button" value="&lt;"> ';
-		html += '<select id="effect_browser">';
-		html += '<option class="trn" value="">--- Select effect ---</option>';
-		for (var key in filters_config) {
-			var title = this.get_filter_title(key);
-			title = this.ucfirst(title);
-			var selected = '';
-			if (title.toLowerCase() == this.title.toLowerCase())
-				var selected = 'selected';
-			html += ' <option ' + selected + ' value="' + key + '">' + title + '</option>';
-		}
-		html += '</select>';
-		html += ' <input id="next_filter" onclick="" type="button" value="&gt;"> ';
-		html += '</span>';
-
-		return html;
-	}
-
-	add_effects_browser_events() {
-		if (this.effects == false)
-			return;
-
-		var _this = this;
-		var filters_config = this.get_effects_list();
-		var prev_index = this.ef_prev_index;
-		var next_index = this.ef_next_index;
-
-		document.getElementById('previous_filter').disabled = false;
-		document.getElementById('next_filter').disabled = false;
-		if (prev_index == null) {
-			document.getElementById('previous_filter').disabled = true;
-		}
-		if (next_index == null) {
-			document.getElementById('next_filter').disabled = true;
-		}
-		//previous
-		document.getElementById('previous_filter').addEventListener('click', function (event) {
-			_this.hide(false);
-			var function_name = prev_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[prev_index][function_name]();
-		});
-		//next
-		document.getElementById('next_filter').addEventListener('click', function (event) {
-			_this.hide(false);
-			var function_name = next_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[next_index][function_name]();
-		});
-		//onchange
-		var effect_browser = document.getElementById('effect_browser');
-		effect_browser.addEventListener('change', function (event) {
-			_this.hide(false);
-			var value = effect_browser.options[effect_browser.selectedIndex].value;
-			var function_name = value.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[value][function_name]();
-		});
-	}
-
-	get_filter_title(key) {
-		var title = key.replace('effects/', '').replace(/_/g, ' ');
-
-		//exceptions
-		if (title == 'negative')
-			title = 'invert';
-
-		return title;
-	}
 }
 
 export default Dialog_class;

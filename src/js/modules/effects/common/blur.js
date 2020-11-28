@@ -1,6 +1,6 @@
-import config from './../../config.js';
-import Effects_common_class from './abstract/css.js';
-import Dialog_class from './../../libs/popup.js';
+import config from '../../../config.js';
+import Effects_common_class from '../abstract/css.js';
+import Dialog_class from '../../../libs/popup.js';
 
 class Effects_blur_class extends Effects_common_class {
 
@@ -26,6 +26,17 @@ class Effects_blur_class extends Effects_common_class {
 		}
 
 		return (value * config.ZOOM) + 'px';
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//draw
+		var size = this.convert_value(5, null, 'preview');
+		ctx.filter = "blur("+size+")";
+		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.filter = 'none';
 	}
 
 }

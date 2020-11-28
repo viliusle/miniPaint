@@ -22,6 +22,9 @@
 .hidden{
 	display:none;
 }
+.center{
+	text-align: center;
+}
 .pointer{
 	cursor: pointer;
 }
@@ -609,6 +612,10 @@ canvas{
 }
 .alertify-notifier{
 	color: black;
+}
+.effectsPreview{
+	cursor: pointer;
+	background-color: #ddd;
 }
 
 @media screen and (max-width:700px){

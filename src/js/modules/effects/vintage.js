@@ -58,6 +58,18 @@ class Effects_vintage_class {
 		this.Vintage.apply_all(canvas, level);
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var params = {
+			level: 50,
+		};
+		this.change(canvas, params);
+	}
+
 }
 
 export default Effects_vintage_class;

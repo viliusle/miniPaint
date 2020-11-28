@@ -83,6 +83,18 @@ class Effects_nightVision_class {
 		return canvas2;
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//modify
+		var params = {};
+		var data = this.change(canvas_thumb, canvas_thumb.width, canvas_thumb.height);
+
+		//draw
+		ctx.drawImage(data, 0, 0);
+	}
+
 }
 
 export default Effects_nightVision_class;

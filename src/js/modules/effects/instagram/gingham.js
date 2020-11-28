@@ -1,16 +1,16 @@
-import config from './../../config.js';
-import Dialog_class from './../../libs/popup.js';
-import Base_layers_class from './../../core/base-layers.js';
-import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import config from '../../../config.js';
+import Dialog_class from '../../../libs/popup.js';
+import Base_layers_class from '../../../core/base-layers.js';
+import alertify from 'alertifyjs/build/alertify.min.js';
 
-class Effects_pencil_class {
+class Effects_gingham_class {
 
 	constructor() {
 		this.POP = new Dialog_class();
 		this.Base_layers = new Base_layers_class();
 	}
 
-	pencil() {
+	gingham() {
 		var _this = this;
 
 		if (config.layer.type != 'image') {
@@ -19,7 +19,7 @@ class Effects_pencil_class {
 		}
 
 		var settings = {
-			title: 'Pencil',
+			title: 'Gingham',
 			preview: true,
 			effects: true,
 			params: [],
@@ -51,26 +51,25 @@ class Effects_pencil_class {
 	}
 
 	change(canvas, width, height) {
-		var offset = Math.min(width, height) / 1000;
-		offset = Math.ceil(offset);
-		
-		//create second copy
+
+		//create temp canvas
 		var canvas2 = document.createElement('canvas');
 		var ctx2 = canvas2.getContext("2d");
 		canvas2.width = width;
 		canvas2.height = height;
-		ctx2.drawImage(canvas, -offset, -offset);
-		
-		//merge
-		ctx2.globalCompositeOperation = "difference";
 		ctx2.drawImage(canvas, 0, 0);
+
+		//merge
+		ctx2.globalCompositeOperation = "soft-light";
+		ctx2.fillStyle = '#e6e6fa';
+		ctx2.fillRect(0, 0, width, height);
 		ctx2.globalCompositeOperation = "source-over";
-		
+
 		//apply more effects
-		ctx2.filter = 'brightness(2) invert(1) grayscale(1)';
+		ctx2.filter = 'brightness(1.05) hue-rotate(-10deg)';
 		ctx2.drawImage(canvas2, 0, 0);
 		ctx2.filter = 'none';
-		
+
 		return canvas2;
 	}
 
@@ -79,7 +78,6 @@ class Effects_pencil_class {
 		var ctx = canvas.getContext("2d");
 
 		//modify
-		var params = {};
 		var data = this.change(canvas_thumb, canvas_thumb.width, canvas_thumb.height);
 
 		//draw
@@ -88,4 +86,4 @@ class Effects_pencil_class {
 
 }
 
-export default Effects_pencil_class;
+export default Effects_gingham_class;

@@ -311,53 +311,111 @@ const menuDefinition = [
 		name: 'Effects',
 		children: [
 			{
-				name: 'CSS Filters',
+				name: 'Effect browser',
+				ellipsis: true,
+				target: 'effects/browser.browser'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Common Filters',
 				children: [
 					{
 						name: 'Gaussian Blur',
 						ellipsis: true,
-						target: 'effects/blur.blur'
+						target: 'effects/common/blur.blur'
 					},
 					{
 						name: 'Brightness',
 						ellipsis: true,
-						target: 'effects/brightness.brightness'
+						target: 'effects/common/brightness.brightness'
 					},
 					{
 						name: 'Contrast',
 						ellipsis: true,
-						target: 'effects/contrast.contrast'
+						target: 'effects/common/contrast.contrast'
 					},
 					{
 						name: 'Grayscale',
 						ellipsis: true,
-						target: 'effects/grayscale.grayscale'
+						target: 'effects/common/grayscale.grayscale'
 					},
 					{
 						name: 'Hue Rotate',
 						ellipsis: true,
-						target: 'effects/hue_rotate.hue_rotate'
+						target: 'effects/common/hue_rotate.hue_rotate'
 					},
 					{
 						name: 'Negative',
 						ellipsis: true,
-						target: 'effects/invert.invert'
+						target: 'effects/common/invert.invert'
 					},
 					{
 						name: 'Saturate',
 						ellipsis: true,
-						target: 'effects/saturate.saturate'
+						target: 'effects/common/saturate.saturate'
 					},
 					{
 						name: 'Sepia',
 						ellipsis: true,
-						target: 'effects/sepia.sepia'
+						target: 'effects/common/sepia.sepia'
 					},
 					{
 						name: 'Shadow',
 						ellipsis: true,
-						target: 'effects/shadow.shadow'
+						target: 'effects/common/shadow.shadow'
 					},
+				]
+			},
+			{
+				name: 'Instagram Filters',
+				children: [
+					{
+						name: '1977',
+						ellipsis: true,
+						target: 'effects/instagram/1977.1977'
+					},
+					{
+						name: 'Aden',
+						ellipsis: true,
+						target: 'effects/instagram/aden.aden'
+					},
+					{
+						name: 'Clarendon',
+						ellipsis: true,
+						target: 'effects/instagram/clarendon.clarendon'
+					},
+					{
+						name: 'Gingham',
+						ellipsis: true,
+						target: 'effects/instagram/gingham.gingham'
+					},
+					{
+						name: 'Inkwell',
+						ellipsis: true,
+						target: 'effects/instagram/inkwell.inkwell'
+					},
+					{
+						name: 'Lo-fi',
+						ellipsis: true,
+						target: 'effects/instagram/lofi.lofi'
+					},
+					{
+						name: 'Toaster',
+						ellipsis: true,
+						target: 'effects/instagram/toaster.toaster'
+					},
+					{
+						name: 'Valencia',
+						ellipsis: true,
+						target: 'effects/instagram/valencia.valencia'
+					},
+					{
+						name: 'X-Pro II',
+						ellipsis: true,
+						target: 'effects/instagram/xpro2.xpro2'
+					}
 				]
 			},
 			{

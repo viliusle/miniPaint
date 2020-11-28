@@ -83,14 +83,14 @@ class Effects_blueprint_class {
 		var img = ctx.getImageData(0, 0, width, height);
 		var img = this.ImageFilters.BrightnessContrastPhotoshop(img, 80, 0);
 		ctx.putImageData(img, 0, 0);
-		
+
 		//merge
 		ctx2.globalCompositeOperation = "screen";
 		ctx2.filter = 'grayscale(1)';
 		ctx2.drawImage(canvas, 0, 0);
 		ctx2.globalCompositeOperation = "source-over";
 		ctx2.filter = 'none';
-		
+
 		//draw lines
 		this.draw_grid(ctx2, 20);
 		
@@ -161,6 +161,15 @@ class Effects_blueprint_class {
 		}
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var data = this.change(canvas, canvas_thumb.width, canvas_thumb.height);
+		ctx.drawImage(data, 0, 0);
+	}
 }
 
 export default Effects_blueprint_class;

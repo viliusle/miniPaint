@@ -1,4 +1,4 @@
-import Effects_common_class from './abstract/css.js';
+import Effects_common_class from '../abstract/css.js';
 
 class Effects_contrast_class extends Effects_common_class {
 
@@ -22,6 +22,17 @@ class Effects_contrast_class extends Effects_common_class {
 		}
 
 		return system_value;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//draw
+		var size = this.convert_value(40, null, 'preview');
+		ctx.filter = "contrast("+size+")";
+		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.filter = 'none';
 	}
 
 }

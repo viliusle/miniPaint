@@ -118,6 +118,25 @@ class Effects_tiltShift_class {
 		ctx.putImageData(data, 0, 0);
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var params = {
+			param7: 3,
+			param8: 1,
+			param1: 10,
+			param2: 70,
+			param3: 0,
+			param4: 50,
+			param5: 100,
+			param6: 50,
+		}
+		var data = this.change(canvas, params);
+	}
+
 }
 
 export default Effects_tiltShift_class;

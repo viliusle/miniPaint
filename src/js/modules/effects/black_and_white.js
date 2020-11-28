@@ -196,6 +196,22 @@ class Effects_backAndWhite_class {
 		return threshold;
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var img = ctx.getImageData(0, 0, canvas_thumb.width, canvas_thumb.height);
+		var default_level = this.thresholding(ctx, canvas_thumb.width, canvas_thumb.height, true);
+		var params = {
+			level: default_level,
+			dithering: false,
+		}
+		var data = this.change(img, params);
+		ctx.putImageData(data, 0, 0);
+	}
+
 }
 
 export default Effects_backAndWhite_class;

@@ -210,7 +210,7 @@ class Base_layers_class {
 	}
 
 	/**
-	 * export current 1ayers to given canvas
+	 * export current layers to given canvas
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
@@ -232,9 +232,10 @@ class Base_layers_class {
 			var filter_file = filter.name.replace(/-/g, '_') + '.js';
 			if(filter_file == 'drop_shadow.js')
 				filter_file = 'shadow.js';
-			var filter_include = require("./../modules/effects/"+filter_file);
+			var filter_include = require("./../modules/effects/common/"+filter_file);
 			var filter_class = new filter_include.default();
 
+			//Common (CSS) filters
 			var params_values = filter_class.convert_value(filter.params.value, filter.params, 'save');
 			filter_code += filter.name + "(" + params_values + ")";
 		}

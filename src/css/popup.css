@@ -20,7 +20,7 @@
 	overflow-y: scroll;
 }
 #popup.wide{
-	max-width: 800px;
+	max-width: 840px;
 }
 #popup a{
 	color: var(--link-color);

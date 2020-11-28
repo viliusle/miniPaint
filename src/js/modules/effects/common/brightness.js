@@ -1,10 +1,10 @@
-import Effects_common_class from './abstract/css.js';
+import Effects_common_class from '../abstract/css.js';
 
 class Effects_brightness_class extends Effects_common_class {
 
 	brightness() {
 		var params = [
-			{name: "value", title: "Percentage:", value: 30, range: [-100, 100]},
+			{name: "value", title: "Percentage:", value: 50, range: [-100, 100]},
 		];
 		this.show_dialog('brightness', params);
 	}
@@ -22,6 +22,17 @@ class Effects_brightness_class extends Effects_common_class {
 		}
 
 		return system_value;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//draw
+		var size = this.convert_value(30, null, 'preview');
+		ctx.filter = "brightness("+size+")";
+		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.filter = 'none';
 	}
 
 }

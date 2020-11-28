@@ -68,6 +68,20 @@ class Effects_dotScreen_class {
 		return this.fx_filter;
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//modify
+		var params = {
+			size: 3,
+		};
+		var data = this.change(canvas_thumb, params);
+
+		//draw
+		ctx.drawImage(data, 0, 0);
+	}
+
 }
 
 export default Effects_dotScreen_class;
