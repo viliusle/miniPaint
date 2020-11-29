@@ -263,6 +263,7 @@ class Base_selection_class {
 			};
 		}
 		if (e.type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
+			const allowNegativeDimensions = settings.data.render_function && ['line', 'gradient'].includes(settings.data.render_function[0]);
 			mainWrapper.style.cursor = "pointer";
 			
 			var is_ctrl = false;
@@ -313,21 +314,23 @@ class Base_selection_class {
 				if (is_drag_type_top || is_drag_type_bottom)
 					settings.data.height = height;
 				
-				// Don't allow negative width/height
-				if (settings.data.width <= 0) {
-					settings.data.width = Math.abs(settings.data.width);
-					if (is_drag_type_left) {
-						settings.data.x -= settings.data.width;
-					} else {
-						settings.data.x = this.click_details.x - settings.data.width;
+				// Don't allow negative width/height on most layers
+				if (!allowNegativeDimensions) {
+					if (settings.data.width <= 0) {
+						settings.data.width = Math.abs(settings.data.width);
+						if (is_drag_type_left) {
+							settings.data.x -= settings.data.width;
+						} else {
+							settings.data.x = this.click_details.x - settings.data.width;
+						}
 					}
-				}
-				if (settings.data.height <= 0) {
-					settings.data.height = Math.abs(settings.data.height);
-					if (is_drag_type_top) {
-						settings.data.y -= settings.data.height;
-					} else {
-						settings.data.y = this.click_details.y - settings.data.height;
+					if (settings.data.height <= 0) {
+						settings.data.height = Math.abs(settings.data.height);
+						if (is_drag_type_top) {
+							settings.data.y -= settings.data.height;
+						} else {
+							settings.data.y = this.click_details.y - settings.data.height;
+						}
 					}
 				}
 				config.need_render = true;
