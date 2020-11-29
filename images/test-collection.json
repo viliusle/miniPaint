@@ -979,7 +979,7 @@
 			"y": 520,
 			"width": 230,
 			"width_original": null,
-			"height": 134,
+			"height": 162,
 			"height_original": null,
 			"visible": true,
 			"is_vector": true,
@@ -995,7 +995,8 @@
 							"size": 16,
 							"fill_color": "#323232",
 							"stroke_color": "#0000ff",
-							"family": "Verdana"
+							"family": "Verdana",
+							"leading": 4
 						},
 						"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dictum, ipsum sed bibendum posuere, eros erat blandit justo, quis convallis augue ipsum nec ligula."
 					}
