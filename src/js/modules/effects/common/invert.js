@@ -25,6 +25,20 @@ class Effects_invert_class extends Effects_common_class {
 		ctx.filter = 'none';
 	}
 
+	render_pre(ctx, data) {
+		var value = this.convert_value(data.params.value, data.params, 'save');
+		var filter = 'invert(' + value + ')';
+
+		if(ctx.filter == 'none')
+			ctx.filter = filter;
+		else
+			ctx.filter += ' ' + filter;
+	}
+
+	render_post(ctx, data){
+		ctx.filter = 'none';
+	}
+
 }
 
 export default Effects_invert_class;

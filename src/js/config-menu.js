@@ -344,7 +344,7 @@ const menuDefinition = [
 					{
 						name: 'Hue Rotate',
 						ellipsis: true,
-						target: 'effects/common/hue_rotate.hue_rotate'
+						target: 'effects/common/hue-rotate.hue_rotate'
 					},
 					{
 						name: 'Negative',

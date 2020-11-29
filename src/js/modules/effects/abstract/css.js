@@ -16,8 +16,6 @@ class Effects_common_class {
 		var _this = this;
 		var title = this.Helper.ucfirst(type);
 		title = title.replace(/-/g, ' ');
-		if (type == 'shadow')
-			type = 'drop-shadow';
 
 		var settings = {
 			title: title,
