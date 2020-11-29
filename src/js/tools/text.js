@@ -1735,6 +1735,7 @@ class Text_editor_class {
 							ctx.strokeStyle = strokeStyle;
 							ctx.fillText(letter, letterDrawX, letterDrawY);
 							if (stroke_size) {
+								ctx.lineWidth = stroke_size;
 								ctx.strokeText(letter, letterDrawX, letterDrawY);
 							}
 							if (strikethrough) {
