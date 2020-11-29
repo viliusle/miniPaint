@@ -53,6 +53,13 @@ var template = `
 				<option value="dynamic">Dynamic</option>
 			</select>
 		</div>
+		<div class="row">
+			<span class="trn label" title="Auto Kerning">Kerning:</span>
+			<select id="detail_param_kerning">
+				<option value="none">None</option>
+				<option value="metrics">Metrics</option>
+			</select>
+		</div>
 		<div class="row" hidden> <!-- Future implementation -->
 			<span class="trn label">Direction:</span>
 			<select id="detail_param_text_direction">
@@ -135,6 +142,7 @@ class GUI_details_class {
 		}
 		this.render_text(events);
 		this.render_general_select_param('boundary', events);
+		this.render_general_select_param('kerning', events);
 		this.render_general_select_param('text_direction', events);
 		this.render_general_select_param('wrap', events);
 		this.render_general_select_param('wrap_direction', events);

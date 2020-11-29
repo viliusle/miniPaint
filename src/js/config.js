@@ -207,6 +207,12 @@ config.TOOLS = [
 				min: -999,
 				max: 999,
 				step: 1
+			},
+			leading: {
+				value: 0,
+				min: -999,
+				max: 999,
+				step: 1
 			}
 		},
 	},
