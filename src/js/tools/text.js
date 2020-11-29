@@ -25,6 +25,7 @@ export const metaDefaults = {
 	size: 40,
 	family: 'Arial',
 	kerning: 0,
+	leading: 0,
 	bold: false,
 	italic: false,
 	underline: false,
@@ -37,6 +38,7 @@ export const metaDefaults = {
 // Global map of font name to font metrics information.
 const fontMetricsMap = new Map();
 const layerEditors = new WeakMap();
+const fontLoadPromiseMap = new Map();
 const fontLoadMap = new Map();
 fontLoadMap.set('Arial', true);
 fontLoadMap.set('Courier', true);
@@ -50,10 +52,16 @@ fontLoadMap.set('Verdana', true);
 /**
  * The canvas's native font metrics implementation doesn't really give us enough information...
  */
+const kerningTestCanvas = document.createElement('canvas');
+kerningTestCanvas.width = 10;
+kerningTestCanvas.height = 10;
+kerningTestCanvas.style = 'font-kerning: normal; text-rendering: optimizeLegibility;';
+const kerningTestCtx = kerningTestCanvas.getContext('2d');
 class Font_metrics_class {
 	constructor(family, size) {
 		this.family = family || (family = "Arial");
 		this.size = parseInt(size) || (size = 12);
+		this.kerningMap = new Map();
 
 		// Preparing container
 		const line = document.createElement('div');
@@ -64,7 +72,7 @@ class Font_metrics_class {
 		body.appendChild(line);
 
 		// Now we can measure width and height of the letter
-		const text = 'wwwwwwwwww'; // 10 symbols to be more accurate with width
+		const text = '——————————'; // 10 symbols to be more accurate with width
 		line.innerHTML = text;
 		this.width = line.offsetWidth / text.length;
 		this.height = line.offsetHeight;
@@ -82,6 +90,67 @@ class Font_metrics_class {
 		this.baseline = baseline.offsetTop + baseline.offsetHeight;
 
 		document.body.removeChild(line);
+	}
+
+	/**
+	 * Attempts to determine the height of a letter via pixel comparison
+	 * @param {string} letter - The letter to check
+	 * @param {string} [baseline] - Baseline position override
+	 */
+	calculate_letter_bounds(letter, baseline) {
+		baseline = baseline || 'alphabetic'
+		kerningTestCanvas.width = this.width;
+		kerningTestCanvas.height = this.height;
+		kerningTestCtx.clearRect(0, 0, this.width, this.height);
+		kerningTestCtx.font =
+		' ' + (this.size) + 'px' +
+		' ' + this.family;
+		kerningTestCtx.textAlign = 'left';
+		kerningTestCtx.textBaseline = baseline;
+		kerningTestCtx.fillStyle = '#000000';
+		kerningTestCtx.fillText(letter, 0, baseline === 'alphabetic' ? this.baseline : 0);
+		const pixels = kerningTestCtx.getImageData(0, 0, this.width, this.height).data;
+		const pixelLength = pixels.length;
+		let start = 0;
+		let end = this.height;
+		for (let i = 0; i < pixelLength; i += 4) {
+			if (pixels[i + 3] !== 0) {
+				start = Math.floor(i / 4 / this.width);
+				break;
+			}
+		}
+		for (let i = pixelLength - 4; i >= 0; i -= 4) {
+			if (pixels[i + 3] !== 0) {
+				end = Math.floor(i / 4 / this.width);
+				break;
+			}
+		}
+		kerningTestCanvas.width = 10;
+		kerningTestCanvas.height = 10;
+		return {
+			top: start,
+			bottom: end,
+			height: end - start
+		}
+	}
+
+	/**
+	 * Calculate the kerning offset between two letters.
+	 * @param {string} letters - a two character string of the two letters to determine font kerning from. Returns the kerning offset that should be used to draw the 2nd letter. 
+	 * @param {object} flags - font style, such as bold or italic
+	 */
+	get_kerning_offset(letters, flags = {}) {
+		let offset = this.kerningMap.get(letters);
+		if (offset == null) {
+			kerningTestCtx.font =
+			' ' + (flags.italic ? 'italic' : '') +
+			' ' + (flags.bold ? 'bold' : '') +
+			' ' + (this.size) + 'px' +
+			' ' + this.family;
+			offset = kerningTestCtx.measureText(letters).width - (kerningTestCtx.measureText(letters[0]).width + kerningTestCtx.measureText(letters[1]).width);
+			this.kerningMap.set(letters, offset);
+		}
+		return offset;
 	}
 }
 
@@ -1200,6 +1269,40 @@ class Text_editor_class {
 		this.mouseSelectionMoveX = null;
 		this.mouseSelectionMoveY = null;
 	}
+
+	load_font_family(family, successCallback) {
+		if (fontLoadMap.get(family) == null) {
+			fontLoadMap.set(family, false);
+			const loadPromise = new Promise((resolve, reject) => {
+				WebFont.load({
+					google: {
+						families: [family]
+					},
+					fontactive: (family) => {
+						fontLoadMap.set(family, true);
+						fontLoadPromiseMap.delete(family);
+						resolve();
+					},
+					fontinactive: (family) => {
+						alertify.error('Font ' + family + ' could not be loaded.');
+						fontLoadPromiseMap.delete(family);
+						reject();
+					}
+				});
+			});
+			fontLoadPromiseMap.set(family, loadPromise);
+		}
+		if (successCallback) {
+			const loadPromise = fontLoadPromiseMap.get(family);
+			if (loadPromise) {
+				loadPromise.then(successCallback);
+			} else if (fontLoadMap.get(family) == true) {
+				requestAnimationFrame(() => {
+					successCallback();
+				});
+			}
+		}
+	}
 	
 	get_cursor_position_from_absolute_position(layer, x, y) {
 		let line = -1;
@@ -1288,25 +1391,37 @@ class Text_editor_class {
 			let lineWraps = [];
 			let currentWrapSpans = [...line];
 			let s = 0;
+			let fontMetrics = null;
+			let character = null;
+			let nextCharacter = null;
+			let fontKerning = 0;
 			for (s = 0; s < currentWrapSpans.length; s++) {
 				const span = currentWrapSpans[s];
 				const kerning = span.meta.kerning || metaDefaults.kerning;
 				const family = span.meta.family || metaDefaults.family;
-				let fontMetrics;
+				const size = span.meta.size || metaDefaults.size;
+				fontMetrics = this.get_span_font_metrics(span, !fontLoadMap.get(family));
 				if (isHorizontalTextDirection) {
 					ctx.font =
 						' ' + (span.meta.italic ? 'italic' : '') +
 						' ' + (span.meta.bold ? 'bold' : '') +
-						' ' + (span.meta.size || metaDefaults.size) + 'px' +
+						' ' + size + 'px' +
 						' ' + family;
 				}
-				else {
-					fontMetrics = this.get_span_font_metrics(span, !fontLoadMap.get(family));
-				}
 				for (let c = 0; c < span.text.length; c++) {
-					const character = span.text[c];
+					character = span.text[c];
+					if (layer.params.kerning === 'metrics') {
+						nextCharacter = span.text[c + 1];
+						if (!nextCharacter && c === span.text.length - 1 && currentWrapSpans[s + 1]) {
+							const nextSpan = currentWrapSpans[s + 1];
+							if (family === (nextSpan.meta.family || metaDefaults.family) && size === (nextSpan.meta.size || metaDefaults.size)) {
+								nextCharacter = nextSpan.text[0];
+							}
+						}
+						fontKerning = isHorizontalTextDirection && nextCharacter ? fontMetrics.get_kerning_offset(character + nextCharacter) : 0;
+					}
 					const characterSize = isHorizontalTextDirection ? ctx.measureText(character).width : fontMetrics.height;
-					wrapAccumulativeSize += characterSize + kerning;
+					wrapAccumulativeSize += characterSize + fontKerning + kerning;
 					if (boundary !== 'dynamic' && wrapAccumulativeSize > textDirectionMaxSize && ![' ', '-'].includes(character)) {
 						// Find last span with space
 						let dividerPosition = -1;
@@ -1435,11 +1550,12 @@ class Text_editor_class {
 		for (let line of lineRenderInfo.lines) {
 			line.firstWrapIndex = wrapCounter;
 			for (let wrap of line.wraps) {
-				let wrapSize = 0;
-				let wrapBaseline = 0;
+				let ascenderSize = 0;
+				let descenderSize = 0;
 				for (let span of wrap.spans) {
 					let fontMetrics;
 					const family = span.meta.family || metaDefaults.family;
+					const leading = span.meta.leading != null ? span.meta.leading : metaDefaults.leading;
 					if (isHorizontalTextDirection) {
 						fontMetrics = this.get_span_font_metrics(span, !fontLoadMap.get(family));
 					} else {
@@ -1449,15 +1565,28 @@ class Text_editor_class {
 							' ' + (span.meta.size || metaDefaults.size) + 'px' +
 							' ' + family;
 					}
-					let spanWrapSize = isHorizontalTextDirection ? fontMetrics.height : ctx.measureText(character).width;
-					let spanWrapBaseline = isHorizontalTextDirection ? fontMetrics.baseline : 0;
-					if (spanWrapSize > wrapSize) {
-						wrapSize = spanWrapSize;
-						wrapBaseline = spanWrapBaseline;
+					let spanAscenderSize = isHorizontalTextDirection ? fontMetrics.baseline : ctx.measureText(character).width;
+					let spanDescenderSize = isHorizontalTextDirection ? Math.abs(fontMetrics.baseline - fontMetrics.height) : ctx.measureText(character).width;
+					if (leading) {
+						spanAscenderSize += leading;
+						if (spanAscenderSize < 0) {
+							spanDescenderSize += spanAscenderSize;
+							spanAscenderSize = 0;
+							if (spanDescenderSize < 0) {
+								spanDescenderSize = 0;
+							}
+						}
+					}
+					if (spanAscenderSize > ascenderSize) {
+						ascenderSize = spanAscenderSize;
+					}
+					if (spanDescenderSize > descenderSize) {
+						descenderSize = spanDescenderSize;
 					}
 				}
-				lineRenderInfo.wrapSizes.push({ size: wrapSize, offset: wrapSizeAccumulator, baseline: wrapBaseline });
-				wrapSizeAccumulator += wrapSize;
+				let lineSize = ascenderSize + descenderSize;
+				lineRenderInfo.wrapSizes.push({ size: lineSize, offset: wrapSizeAccumulator, baseline: ascenderSize });
+				wrapSizeAccumulator += lineSize;
 				wrapCounter++;
 			}
 		}
@@ -1514,22 +1643,10 @@ class Text_editor_class {
 						const strikethrough = span.meta.strikethrough != null ? span.meta.strikethrough : metaDefaults.strikethrough;
 						const family = span.meta.family || metaDefaults.family;
 
-						if (fontLoadMap.get(family) == null) {
-							fontLoadMap.set(family, false);
-							WebFont.load({
-								google: {
-									families: [family]
-								},
-								fontactive: (family) => {
-									fontLoadMap.set(family, true);
-									this.hasValueChanged = true;
-									this.Base_layers.render();
-								},
-								fontinactive: (family) => {
-									alertify.error('Font ' + family + ' could not be loaded.');
-								}
-							});
-						}
+						this.load_font_family(family, () => {
+							this.hasValueChanged = true;
+							this.Base_layers.render();
+						});
 
 						let fontMetrics;
 						if (underline || strikethrough) {
@@ -1931,6 +2048,7 @@ class Text_class extends Base_tools_class {
 				type: this.name,
 				params: {
 					boundary: 'dynamic',
+					kerning: 'metrics',
 					text_direction: 'ltr',
 					wrap_direction: 'ttb',
 					halign: 'left',
@@ -2090,6 +2208,9 @@ class Text_class extends Base_tools_class {
 			case 'kerning':
 				if (!isNaN(value)) meta.kerning = value;
 				break;
+			case 'leading':
+				if (!isNaN(value)) meta.leading = value;
+				break;
 		}
 		if (editor.selection.is_empty()) {
 			if (!editor.document.queuedMetaChanges) {
@@ -2120,6 +2241,7 @@ class Text_class extends Base_tools_class {
 			toolAttributes.stroke = meta.stroke_color.length === 1 ? meta.stroke_color[0] : '#000000';
 			toolAttributes.stroke_size.value = meta.stroke_size.length === 1 ? meta.stroke_size[0] : parseFloat(null);
 			toolAttributes.kerning.value = meta.kerning.length === 1 ? meta.kerning[0] : parseFloat(null);
+			toolAttributes.leading.value = meta.leading.length === 1 ? meta.leading[0] : parseFloat(null);
 			this.GUI_tools.show_action_attributes();
 		}
 	}
@@ -2182,23 +2304,26 @@ class Text_class extends Base_tools_class {
 				const params = layer.params;
 				let lines = [];
 				const textLines = layer.params.text.split('\n');
+				const family = params.family && params.family.value? params.family.value : params.family;
 				for (const textLine of textLines) {
 					lines.push([
 						{
 							text: textLine,
 							meta: {
-								family: params.family && params.family.value? params.family.value : params.family,
+								family,
 								size: params.size,
 								bold: params.bold,
 								italic: params.italic,
 								fill_color: params.stroke ? '#ffffff00' : layer.color,
 								stroke_color: params.stroke ? layer.color : '#ffffff00',
-								stroke_size: params.stroke ? params.stroke_size : 0
+								stroke_size: params.stroke ? params.stroke_size : 0,
+								leading: 0
 							}
 						}
 					]);
 				}
 				params.boundary = 'box';
+				params.kerning = 'metrics';
 				params.halign = params.align ? (params.align.value ? params.align.value : params.align).toLowerCase() : 'left';
 				params.valign = 'top';
 				params.text_direction = 'ltr';
@@ -2213,6 +2338,22 @@ class Text_class extends Base_tools_class {
 				delete params.stroke_size;
 				delete params.align;
 				layer.data = lines;
+				layer.x -= 1;
+
+				// Change leading offset so line height matches legacy line height calculation... need to load the font first to do this.
+				// This is an approximate calculation, but seems to be pretty close.
+				editor.load_font_family(family, () => {
+					const line = layer.data[0];
+					if (!line) return;
+					const span = line[0];
+					if (!span) return;
+					const fontMetrics = editor.get_span_font_metrics(span, !fontLoadMap.get(span.meta.family || metaDefaults.family));
+					const topBounds = fontMetrics.calculate_letter_bounds('M', 'top');
+					span.meta.leading = (span.meta.size || metaDefaults.size) - fontMetrics.height;
+					layer.y += Math.abs(span.meta.leading) - (fontMetrics.baseline - topBounds.bottom);
+					editor.hasValueChanged = true;
+					editor.Base_layers.render();
+				});
 			}
 
 			// Create initial layer data if new layer
@@ -2230,7 +2371,8 @@ class Text_class extends Base_tools_class {
 						fill_color: params.fill !== metaDefaults.fill_color ? params.fill : undefined,
 						stroke_color: params.stroke !== metaDefaults.stroke_color ? params.stroke : undefined,
 						stroke_size: params.stroke_size !== metaDefaults.stroke_size && !isNaN(params.stroke_size) ? params.stroke_size : undefined,
-						kerning: params.kerning !== metaDefaults.kerning && !isNaN(params.kerning) ? params.kerning : undefined
+						kerning: params.kerning !== metaDefaults.kerning && !isNaN(params.kerning) ? params.kerning : undefined,
+						leading: params.leading !== metaDefaults.leading && !isNaN(params.leading) ? params.leading : undefined
 					}
 				}]];
 			}
