@@ -63,6 +63,10 @@ class Image_rotate_class {
 				window.State.save();
 				_this.rotate_handler(params);
 			},
+			on_cancel: function (params) {
+				config.layer.rotate = initial_angle;
+				config.need_render = true;
+			},
 		};
 		this.Dialog.show(settings);
 	}

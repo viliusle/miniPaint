@@ -64,6 +64,10 @@ class Layer_composition_class {
 				config.layer.composition = params.composition;
 				config.need_render = true;
 			},
+			on_cancel: function (params) {
+				config.layer.composition = initial_composition;
+				config.need_render = true;
+			},
 		};
 		this.POP.show(settings);
 	}

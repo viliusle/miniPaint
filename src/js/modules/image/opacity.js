@@ -24,6 +24,10 @@ class Image_opacity_class {
 				window.State.save();
 				_this.opacity_handler(params);
 			},
+			on_cancel: function (params) {
+				config.layer.opacity = initial_opacity;
+				config.need_render = true;
+			},
 		};
 		this.POP.show(settings);
 	}

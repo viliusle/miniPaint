@@ -172,6 +172,7 @@ class Gradient_class extends Base_tools_class {
 
 		if (radial == false) {
 			//linear
+			ctx.beginPath();
 			ctx.rect(0, 0, config.WIDTH, config.HEIGHT);
 			var grd = ctx.createLinearGradient(
 				layer.x, layer.y,
