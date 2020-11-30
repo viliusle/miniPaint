@@ -40,8 +40,8 @@ class Pick_color_class extends Base_tools_class {
 			_this.dragMove(event);
 		});
 		document.addEventListener('mouseup', function (event) {
-			var _this = this;
-			if (config.TOOL.name != _this.name)
+			var mouse = _this.get_mouse_info(event);
+			if (config.TOOL.name != _this.name || mouse.click_valid == false)
 				return;
 			_this.copy_color_to_clipboard();
 		});
