@@ -346,27 +346,28 @@ class GUI_tools_class {
 				elementTitle.innerHTML = title + ': ';
 				elementTitle.for = k;
 
-				var elementInput = document.createElement('input');
-				elementInput.type = 'color';
-				elementInput.id = k;
-				elementInput.value = item;
-
-				elementInput.addEventListener('keyup', (event) => {
-					this.action_data().attributes[event.target.id] = event.target.value;
-				});
-				elementInput.addEventListener('change', (event) => {
-					const actionData = this.action_data();
-					actionData.attributes[event.target.id] = event.target.value;
-					if (actionData.on_update != undefined) {
-						//send event
-						var moduleKey = actionData.name;
-						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey][functionName]({ key: event.target.id, value: event.target.value });
-					}
-				});
+				var colorInput = document.createElement('input');
+				colorInput.type = 'color';
+				const $colorInput = $(colorInput)
+					.uiColorInput({
+						id: k,
+						value: item
+					})
+					.on('change', () => {
+						let value = $colorInput.uiColorInput('get_value');
+						const id = $colorInput.uiColorInput('get_id');
+						const actionData = this.action_data();
+						actionData.attributes[id] = value;
+						if (actionData.on_update != undefined) {
+							//send event
+							var moduleKey = actionData.name;
+							var functionName = actionData.on_update;
+							this.tools_modules[moduleKey][functionName]({ key: id, value: value });
+						}
+					});
 
 				itemDom.appendChild(elementTitle);
-				itemDom.appendChild(elementInput);
+				itemDom.appendChild($colorInput[0]);
 			}
 			else {
 				alertify.error('Error: unsupported attribute type:' + typeof item + ', ' + k);
