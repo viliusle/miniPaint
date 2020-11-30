@@ -6,9 +6,9 @@
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 
-var Helper = new Helper_class();
+const Helper = new Helper_class();
 
-var template = `
+const sidebarTemplate = `
 	<div class="ui_flex_group justify_content_space_between stacked">
 		<div id="selected_color_sample" class="ui_color_sample" title="Current Color Preview"></div>
 		<div class="ui_button_group">
@@ -95,6 +95,74 @@ var template = `
 	</div>
 `;
 
+const dialogTemplate = `
+	<div class="ui_flex_group">
+		<div id="dialog_color_picker_group" class="ui_flex_group column">
+			<input id="dialog_color_picker_gradient" type="color" aria-label="Color Selection">
+			<div class="block_section">
+				<div class="ui_input_grid stacked">
+					<div class="ui_input_group">
+						<label class="label_width_medium">Current</label>
+						<div id="dialog_selected_color_sample" class="ui_color_sample"></div>
+					</div>
+					<div class="ui_input_group">
+						<label class="label_width_medium">Previous</label>
+						<div id="dialog_previous_color_sample" class="ui_color_sample"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="dialog_color_channel_group">
+			<div class="ui_input_group stacked">
+				<label id="dialog_color_hex_label" title="Hex" class="label_width_small">Hex</label>
+				<input id="dialog_color_hex" aria-labelledby="dialog_color_hex_label" value="#000000" maxlength="7" type="text" />
+			</div>
+			<div class="ui_input_grid stacked">
+				<div class="ui_input_group">
+					<label id="dialog_rgb_r_label" title="Red" class="label_width_character text_red"><strong>R<span class="sr_only">ed</span></strong></label>
+					<input id="dialog_rgb_r_range" aria-labelledby="dialog_rgb_r_label" type="range" min="0" max="255" class="color_picker" />
+					<input id="dialog_rgb_r" min="0" aria-labelledby="dialog_rgb_r_label" max="255" type="number" class="input_cw_3" />
+				</div>
+				<div class="ui_input_group">
+					<label id="dialog_rgb_g_label" title="Green" class="label_width_character text_green"><strong>G<span class="sr_only">reen</span></strong></label>
+					<input id="dialog_rgb_g_range" aria-labelledby="dialog_rgb_g_label" type="range" min="0" max="255" class="color_picker" />
+					<input id="dialog_rgb_g" min="0" aria-labelledby="dialog_rgb_g_label" max="255" type="number" class="input_cw_3" />
+				</div>
+				<div class="ui_input_group">
+					<label id="dialog_rgb_b_label" title="Blue" class="label_width_character text_blue"><strong>B<span class="sr_only">lue</span></strong></label>
+					<input id="dialog_rgb_b_range" aria-labelledby="dialog_rgb_b_label" type="range" min="0" max="255" class="color_picker" />
+					<input id="dialog_rgb_b" min="0" aria-labelledby="dialog_rgb_b_label" max="255" type="number" class="input_cw_3" />
+				</div>
+				<div class="ui_input_group">
+					<label id="dialog_rgb_a_label" title="Alpha" class="label_width_character text_muted"><strong>A<span class="sr_only">lpha</span></strong></label>
+					<input id="dialog_rgb_a_range" aria-labelledby="dialog_rgb_a_label" type="range" min="0" max="255" class="color_picker" />
+					<input id="dialog_rgb_a" min="0" aria-labelledby="dialog_rgb_a_label" max="255" type="number" class="input_cw_3" />
+				</div>
+			</div>
+			<div class="ui_input_grid stacked">
+				<div class="ui_input_group">
+					<label id="dialog_hsl_h_label" title="Hue" class="label_width_character"><strong>H<span class="sr_only">ue</span></strong></label>
+					<input id="dialog_hsl_h_range" aria-labelledby="dialog_hsl_h_label" type="range" min="0" max="360" class="color_picker" />
+					<input id="dialog_hsl_h" min="0" aria-labelledby="dialog_hsl_h_label" max="360" type="number" class="input_cw_3" />
+				</div>
+				<div class="ui_input_group">
+					<label id="dialog_hsl_s_label" title="Saturation" class="label_width_character"><strong>S<span class="sr_only">aturation</span></strong></label>
+					<input id="dialog_hsl_s_range" aria-labelledby="dialog_hsl_s_label" type="range" min="0" max="100" class="color_picker" />
+					<input id="dialog_hsl_s" min="0" aria-labelledby="dialog_hsl_s_label"max="100" type="number" class="input_cw_3" />
+				</div>
+				<div class="ui_input_group">
+					<label id="dialog_hsl_l_label" title="Luminosity" class="label_width_character"><strong>L<span class="sr_only">uminosity</span></strong></label>
+					<input id="dialog_hsl_l_range" aria-labelledby="dialog_hsl_l_label" type="range" min="0" max="100" class="color_picker" />
+					<input id="dialog_hsl_l" min="0" aria-labelledby="dialog_hsl_l_label"max="100" type="number" class="input_cw_3" />
+				</div>
+			</div>
+			<div class="block_section">
+				<div id="dialog_color_swatches"></div>
+			</div>
+		</div>
+	</div>
+`;
+
 /**
  * GUI class responsible for rendering colors block on right sidebar
  */
@@ -102,77 +170,86 @@ class GUI_colors_class {
 
 	constructor() {
 		this.el = null;
+		this.COLOR = '#000000';
+		this.ALPHA = 255;
+		this.colorNotSet = true;
+		this.uiType = null;
 		this.butons = null;
 		this.sections = null;
 		this.inputs = null;
 		this.Helper = new Helper_class();
 	}
 
-	render_main_colors() {
-		var saved_color = this.Helper.getCookie('color');
-		if(saved_color != null)
-			config.COLOR = saved_color;
-
-		this.el = document.getElementById('toggle_colors');
-		this.el.innerHTML = template;
+	render_main_colors(uiType) {
+		this.uiType = uiType || 'sidebar';
+		if (this.uiType === 'dialog') {
+			this.el = document.getElementById('dialog_color_picker');
+			this.el.innerHTML = dialogTemplate;
+		} else {
+			var saved_color = this.Helper.getCookie('color');
+			if (saved_color != null) config.COLOR = saved_color;
+			this.el = document.getElementById('toggle_colors');
+			this.el.innerHTML = sidebarTemplate;
+		}
 		this.init_components();
-		this.render_range_gradients = Helper.throttle(this.render_range_gradients, 50);
+		this.render_ui_deferred = Helper.throttle(this.render_ui_deferred, 50);
 	}
 
 	init_components() {
 		// Store button references
 		this.buttons = {
-			toggleColorSwatches: $('#toggle_color_swatches_section_button'),
-			toggleColorPicker: $('#toggle_color_picker_section_button'),
-			toggleColorChannels: $('#toggle_color_channels_section_button')
+			toggleColorSwatches: $('#toggle_color_swatches_section_button', this.el),
+			toggleColorPicker: $('#toggle_color_picker_section_button', this.el),
+			toggleColorChannels: $('#toggle_color_channels_section_button', this.el)
 		};
 
 		// Store UI section references
 		this.sections = {
-			swatches: $('#color_section_swatches'),
+			swatches: $('#color_section_swatches', this.el),
 			swatchesPlaceholder: document.createComment('Placeholder comment for color swatches'),
-			picker: $('#color_section_picker'),
+			picker: $('#color_section_picker', this.el),
 			pickerPlaceholder: document.createComment('Placeholder comment for color picker'),
-			channels: $('#color_section_channels'),
+			channels: $('#color_section_channels', this.el),
 			channelsPlaceholder: document.createComment('Placeholder comment for color channels')
 		};
 
 		// Store references to all inputs in DOM
+		const idPrefix = this.uiType === 'dialog' ? 'dialog_' : '';
 		this.inputs = {
-			sample: $('#selected_color_sample'),
-			swatches: $('#color_swatches'),
-			pickerGradient: $('#color_picker_gradient'),
-			hex: $('#color_hex'),
+			sample: $(`#${idPrefix}selected_color_sample`, this.el),
+			swatches: $(`#${idPrefix}color_swatches`, this.el),
+			pickerGradient: $(`#${idPrefix}color_picker_gradient`, this.el),
+			hex: $(`#${idPrefix}color_hex`, this.el),
 			rgb: {
 				r: {
-					range: $('#rgb_r_range'),
-					number: $('#rgb_r')
+					range: $(`#${idPrefix}rgb_r_range`, this.el),
+					number: $(`#${idPrefix}rgb_r`, this.el)
 				},
 				g: {
-					range: $('#rgb_g_range'),
-					number: $('#rgb_g')
+					range: $(`#${idPrefix}rgb_g_range`, this.el),
+					number: $(`#${idPrefix}rgb_g`, this.el)
 				},
 				b: {
-					range: $('#rgb_b_range'),
-					number: $('#rgb_b')
+					range: $(`#${idPrefix}rgb_b_range`, this.el),
+					number: $(`#${idPrefix}rgb_b`, this.el)
 				},
 				a: {
-					range: $('#rgb_a_range'),
-					number: $('#rgb_a')
+					range: $(`#${idPrefix}rgb_a_range`, this.el),
+					number: $(`#${idPrefix}rgb_a`, this.el)
 				}
 			},
 			hsl: {
 				h: {
-					range: $('#hsl_h_range'),
-					number: $('#hsl_h')
+					range: $(`#${idPrefix}hsl_h_range`, this.el),
+					number: $(`#${idPrefix}hsl_h`, this.el)
 				},
 				s: {
-					range: $('#hsl_s_range'),
-					number: $('#hsl_s')
+					range: $(`#${idPrefix}hsl_s_range`, this.el),
+					number: $(`#${idPrefix}hsl_s`, this.el)
 				},
 				l: {
-					range: $('#hsl_l_range'),
-					number: $('#hsl_l')
+					range: $(`#${idPrefix}hsl_l_range`, this.el),
+					number: $(`#${idPrefix}hsl_l`, this.el)
 				}
 			}
 		};
@@ -239,12 +316,15 @@ class GUI_colors_class {
 
 		// Initialize color swatches
 		this.inputs.swatches
-			.uiSwatches({ rows: 3, count: 21 })
+			.uiSwatches({ rows: 3, cols: 7, count: 21, readonly: this.uiType === 'dialog' })
 			.on('input', () => {
 				this.set_color({
 					hex: this.inputs.swatches.uiSwatches('get_selected_hex')
 				});
 			});
+		if (this.uiType === 'dialog') {
+			this.inputs.swatches.uiSwatches('set_all_hex', config.swatches.default);
+		}
 
 		// Initialize color picker gradient
 		this.inputs.pickerGradient
@@ -260,7 +340,8 @@ class GUI_colors_class {
 
 		// Initialize hex entry
 		this.inputs.hex
-			.on('input', () => {
+			.on('input', (event) => {
+				console.log(event);
 				const value = this.inputs.hex.val();
 				const trimmedValue = value.trim();
 				if (value !== trimmedValue) {
@@ -272,7 +353,7 @@ class GUI_colors_class {
 			.on('blur', () => {
 				const value = this.inputs.hex.val();
 				if (!/^\#[0-9A-F]{6}$/gi.test(value)) {
-					this.inputs.hex.val(config.COLOR);
+					this.inputs.hex.val(this.uiType === 'dialog' ? this.COLOR : config.COLOR);
 					this.inputs.hex[0].setCustomValidity('');
 				}
 			});
@@ -296,7 +377,7 @@ class GUI_colors_class {
 		}
 
 		// Update all inputs from config.COLOR
-		this.render_config_color();
+		this.render_selected_color();
 	}
 
 	/**
@@ -322,7 +403,7 @@ class GUI_colors_class {
 		}
 		// Set new color by rgb
 		else if ('r' in definition || 'b' in definition || 'g' in definition) {
-			const previousRgb = Helper.hexToRgb(config.COLOR);
+			const previousRgb = Helper.hexToRgb(this.uiType === 'dialog' ? this.COLOR : config.COLOR);
 			newColor = Helper.rgbToHex(
 				'r' in definition ? Math.min(255, Math.max(0, parseInt(definition.r, 10) || 0)) : previousRgb.r,
 				'g' in definition ? Math.min(255, Math.max(0, parseInt(definition.g, 10) || 0)) : previousRgb.g,
@@ -331,7 +412,7 @@ class GUI_colors_class {
 		}
 		// Set new color by hsv
 		else if ('v' in definition) {
-			const previousRgb = Helper.hexToRgb(config.COLOR);
+			const previousRgb = Helper.hexToRgb(this.uiType === 'dialog' ? this.COLOR : config.COLOR);
 			const previousHsv = Helper.rgbToHsv(previousRgb.r, previousRgb.g, previousRgb.b);
 			hsv = {
 				h: 'h' in definition ? Math.min(360, Math.max(0, parseInt(definition.h, 10) || 0)) / 360 : previousHsv.h,
@@ -355,18 +436,29 @@ class GUI_colors_class {
 		}
 		// Re-render UI if changes made
 		if (newColor != null || newAlpha != null) {
-			config.COLOR = newColor != null ? newColor : config.COLOR;
-			config.ALPHA = newAlpha != null ? newAlpha : config.ALPHA;
+			if (this.uiType === 'dialog') {
+				this.COLOR = newColor != null ? newColor : this.COLOR;
+				this.ALPHA = newAlpha != null ? newAlpha : this.ALPHA;
+				if (this.colorNotSet) {
+					this.colorNotSet = false;
+					$('#dialog_previous_color_sample', this.el)[0].style.background = this.COLOR;
+				}
+			} else {
+				config.COLOR = newColor != null ? newColor : config.COLOR;
+				config.ALPHA = newAlpha != null ? newAlpha : config.ALPHA;
+			}
 			if (hsl && !hsv) {
 				hsv = Helper.hslToHsv(hsl.h, hsl.s, hsl.l);
 			}
 			if (hsv && !hsl) {
 				hsl = Helper.hsvToHsl(hsv.h, hsv.s, hsv.v);
 			}
-			this.render_config_color({ hsl, hsv });
+			this.render_selected_color({ hsl, hsv });
 		}
 
-		this.Helper.setCookie('color', config.COLOR);
+		if (this.uiType === 'sidebar') {
+			this.Helper.setCookie('color', config.COLOR);
+		}
 	}
 
 	/**
@@ -375,25 +467,29 @@ class GUI_colors_class {
 	 *                    hsl - override for hsl values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 *                    hsv - override for hsv values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 */
-	render_config_color(options) {
+	render_selected_color(options) {
 		options = options || {};
+		const COLOR = this.uiType === 'dialog' ? this.COLOR : config.COLOR;
+		const ALPHA = this.uiType === 'dialog' ? this.ALPHA : config.ALPHA;
 
-		this.inputs.sample.css('background', config.COLOR);
+		this.inputs.sample.css('background', COLOR);
 
-		this.inputs.swatches.uiSwatches('set_selected_hex', config.COLOR);
+		if (this.uiType !== 'dialog') {
+			this.inputs.swatches.uiSwatches('set_selected_hex', COLOR);
+		}
 
 		const hexInput = this.inputs.hex[0];
-		hexInput.value = config.COLOR;
+		hexInput.value = COLOR;
 		hexInput.setCustomValidity('');
 
-		const rgb = Helper.hexToRgb(config.COLOR);
+		const rgb = Helper.hexToRgb(COLOR);
 		delete rgb.a;
 		for (let rgbKey in rgb) {
 			this.inputs.rgb[rgbKey].range.uiRange('set_value', rgb[rgbKey]);
 			this.inputs.rgb[rgbKey].number.uiNumberInput('set_value', rgb[rgbKey]);
 		}
-		this.inputs.rgb.a.range.uiRange('set_value', config.ALPHA);
-		this.inputs.rgb.a.number.uiNumberInput('set_value', config.ALPHA);
+		this.inputs.rgb.a.range.uiRange('set_value', ALPHA);
+		this.inputs.rgb.a.number.uiNumberInput('set_value', ALPHA);
 
 		const hsv = options.hsv || Helper.rgbToHsv(rgb.r, rgb.g, rgb.b);
 
@@ -404,7 +500,7 @@ class GUI_colors_class {
 			this.inputs.hsl[hslKey].number.uiNumberInput('set_value', hslValue);
 		}
 
-		this.render_range_gradients({ hsl, hsv });
+		this.render_ui_deferred({ hsl, hsv });
 	}
 
 	/**
@@ -414,11 +510,12 @@ class GUI_colors_class {
 	 *                    hsl - override for hsl values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 *                    hsv - override for hsv values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 */
-	render_range_gradients(options) {
+	render_ui_deferred(options) {
 		options = options || {};
+		const COLOR = this.uiType === 'dialog' ? this.COLOR : config.COLOR;
 
 		// RGB
-		const rgb = Helper.hexToRgb(config.COLOR);
+		const rgb = Helper.hexToRgb(COLOR);
 		delete rgb.a;
 		for (let rgbKey in rgb) {
 			const rangeMin = JSON.parse(JSON.stringify(rgb));
@@ -431,7 +528,7 @@ class GUI_colors_class {
 		}
 		// A
 		this.inputs.rgb.a.range.uiRange('set_background',
-			`linear-gradient(to right, transparent, ${ config.COLOR })`
+			`linear-gradient(to right, transparent, ${ COLOR })`
 		);
 		// HSV
 		const hsv = options.hsv || Helper.rgbToHsv(rgb.r, rgb.g, rgb.b);
@@ -470,6 +567,11 @@ class GUI_colors_class {
 		this.inputs.hsl.l.range.uiRange('set_background',
 			`linear-gradient(to right, #000000 0%, ${ Helper.hslToHex(rangeMid.h, rangeMid.s, rangeMid.l) } 50%, #ffffff 100%)`
 		);
+
+		// Store swatch values
+		if (this.uiType === 'sidebar') {
+			config.swatches.default = this.inputs.swatches.uiSwatches('get_all_hex');
+		}
 	}
 
 }

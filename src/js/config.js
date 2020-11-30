@@ -18,6 +18,9 @@ config.layer = null;
 config.need_render = false;
 config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
+config.swatches = {
+	default: [] // Only default used right now, object format for swatch swapping in future.
+};
 
 //requires styles in reset.css
 config.themes = [
