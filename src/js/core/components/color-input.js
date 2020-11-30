@@ -26,7 +26,7 @@ let POP;
 		if (!POP) {
 			POP = new Dialog_class();
 		}
-		let colorsDialog = new GUI_colors_class('dialog');
+		let colorsDialog = new GUI_colors_class();
 		var settings = {
 			title: 'Color Picker',
 			on_finish() {
@@ -38,7 +38,7 @@ let POP;
 			params: [
 				{
 					function() {
-						var html = '<div id="color_picker_dialog_container"></div>';
+						var html = '<div id="dialog_color_picker"></div>';
 						return html;
 					}
 				}
@@ -57,7 +57,7 @@ let POP;
 			colorValue = '#000000';
 		}
 		POP.show(settings);
-		colorsDialog.render_main_colors();
+		colorsDialog.render_main_colors('dialog');
 		colorsDialog.set_color({ hex: colorValue, a: alpha });
 	};
 

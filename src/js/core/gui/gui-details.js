@@ -293,14 +293,21 @@ class GUI_details_class {
 	render_color(events) {
 		var layer = config.layer;
 
+		let $colorInput;
+		if (events) {
+			$colorInput = $(document.getElementById('detail_color')).uiColorInput();
+		} else {
+			$colorInput = $(document.getElementById('detail_color'));
+		}
+
 		if (layer != undefined) {
-			document.getElementById('detail_color').value = layer.color;
+			$colorInput.uiColorInput('set_value', layer.color);
 		}
 
 		if (events) {
 			//events
-			document.getElementById('detail_color').addEventListener('change', function (e) {
-				var value = this.value;
+			$colorInput.on('change', function (e) {
+				const value = $colorInput.uiColorInput('get_value');
 				config.layer.color = value;
 				config.need_render = true;
 				config.need_render_changed_params = true;

@@ -473,7 +473,7 @@ body .sp-preview{
 	clear:both;
 	margin-bottom: 2px;
 }
-.block.details input{
+.block.details input[type="number"]{
 	width: 70px;
 	padding: 3px 5px;
 }
@@ -636,5 +636,29 @@ canvas{
 @media screen and (max-height:450px){
 	.sidebar_left{
 		width: 88px;
+	}
+}
+
+/* ========== dialogs ======================================================= */
+
+#dialog_color_picker_group {
+	width: 60%;
+}
+#dialog_color_channel_group {
+	width: 40%;
+	margin-left: 1rem;
+}
+
+@media screen and (max-width: 450px) {
+	#dialog_color_picker .ui_flex_group {
+		flex-wrap: wrap;
+	}
+	#dialog_color_picker_group {
+		width: 100%;
+	}
+	#dialog_color_channel_group {
+		width: 100%;
+		margin-left: 0;
+		margin-top: 1rem;
 	}
 }

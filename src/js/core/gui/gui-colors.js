@@ -97,10 +97,22 @@ const sidebarTemplate = `
 
 const dialogTemplate = `
 	<div class="ui_flex_group">
-		<div class="ui_flex_group column" style="width: 60%">
+		<div id="dialog_color_picker_group" class="ui_flex_group column">
 			<input id="dialog_color_picker_gradient" type="color" aria-label="Color Selection">
+			<div class="block_section">
+				<div class="ui_input_grid stacked">
+					<div class="ui_input_group">
+						<label class="label_width_medium">Current</label>
+						<div id="dialog_selected_color_sample" class="ui_color_sample"></div>
+					</div>
+					<div class="ui_input_group">
+						<label class="label_width_medium">Previous</label>
+						<div id="dialog_previous_color_sample" class="ui_color_sample"></div>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="ui_flex_group column" style="width: 40%; margin-left: 1rem">
+		<div id="dialog_color_channel_group">
 			<div class="ui_input_group stacked">
 				<label id="dialog_color_hex_label" title="Hex" class="label_width_small">Hex</label>
 				<input id="dialog_color_hex" aria-labelledby="dialog_color_hex_label" value="#000000" maxlength="7" type="text" />
@@ -156,20 +168,22 @@ const dialogTemplate = `
  */
 class GUI_colors_class {
 
-	constructor(uiType) {
+	constructor() {
 		this.el = null;
 		this.COLOR = '#000000';
 		this.ALPHA = 255;
-		this.uiType = uiType || 'sidebar';
+		this.colorNotSet = true;
+		this.uiType = null;
 		this.butons = null;
 		this.sections = null;
 		this.inputs = null;
 		this.Helper = new Helper_class();
 	}
 
-	render_main_colors() {
+	render_main_colors(uiType) {
+		this.uiType = uiType || 'sidebar';
 		if (this.uiType === 'dialog') {
-			this.el = document.getElementById('color_picker_dialog_container');
+			this.el = document.getElementById('dialog_color_picker');
 			this.el.innerHTML = dialogTemplate;
 		} else {
 			var saved_color = this.Helper.getCookie('color');
@@ -178,7 +192,7 @@ class GUI_colors_class {
 			this.el.innerHTML = sidebarTemplate;
 		}
 		this.init_components();
-		this.render_range_gradients = Helper.throttle(this.render_range_gradients, 50);
+		this.render_ui_deferred = Helper.throttle(this.render_ui_deferred, 50);
 	}
 
 	init_components() {
@@ -309,7 +323,7 @@ class GUI_colors_class {
 				});
 			});
 		if (this.uiType === 'dialog') {
-			this.inputs.swatches.uiSwatches('set_all_hex', $('#color_swatches').uiSwatches('get_all_hex'));
+			this.inputs.swatches.uiSwatches('set_all_hex', config.swatches.default);
 		}
 
 		// Initialize color picker gradient
@@ -326,7 +340,8 @@ class GUI_colors_class {
 
 		// Initialize hex entry
 		this.inputs.hex
-			.on('input', () => {
+			.on('input', (event) => {
+				console.log(event);
 				const value = this.inputs.hex.val();
 				const trimmedValue = value.trim();
 				if (value !== trimmedValue) {
@@ -424,6 +439,10 @@ class GUI_colors_class {
 			if (this.uiType === 'dialog') {
 				this.COLOR = newColor != null ? newColor : this.COLOR;
 				this.ALPHA = newAlpha != null ? newAlpha : this.ALPHA;
+				if (this.colorNotSet) {
+					this.colorNotSet = false;
+					$('#dialog_previous_color_sample', this.el)[0].style.background = this.COLOR;
+				}
 			} else {
 				config.COLOR = newColor != null ? newColor : config.COLOR;
 				config.ALPHA = newAlpha != null ? newAlpha : config.ALPHA;
@@ -481,7 +500,7 @@ class GUI_colors_class {
 			this.inputs.hsl[hslKey].number.uiNumberInput('set_value', hslValue);
 		}
 
-		this.render_range_gradients({ hsl, hsv });
+		this.render_ui_deferred({ hsl, hsv });
 	}
 
 	/**
@@ -491,7 +510,7 @@ class GUI_colors_class {
 	 *                    hsl - override for hsl values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 *                    hsv - override for hsv values so it isn't calculated based on rgb (can lose selected hue/saturation otherwise)
 	 */
-	render_range_gradients(options) {
+	render_ui_deferred(options) {
 		options = options || {};
 		const COLOR = this.uiType === 'dialog' ? this.COLOR : config.COLOR;
 
@@ -548,6 +567,11 @@ class GUI_colors_class {
 		this.inputs.hsl.l.range.uiRange('set_background',
 			`linear-gradient(to right, #000000 0%, ${ Helper.hslToHex(rangeMid.h, rangeMid.s, rangeMid.l) } 50%, #ffffff 100%)`
 		);
+
+		// Store swatch values
+		if (this.uiType === 'sidebar') {
+			config.swatches.default = this.inputs.swatches.uiSwatches('get_all_hex');
+		}
 	}
 
 }

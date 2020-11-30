@@ -276,10 +276,15 @@ button img{
 }
 .ui_input_group > input,
 .ui_input_group > .ui_number_input,
-.ui_input_group > .ui_range {
+.ui_input_group > .ui_range,
+.ui_input_group > .ui_color_sample {
     border-radius: 0;
     height: auto;
     min-width: 0;
+}
+.ui_input_group > .ui_color_sample {
+    border: none;
+    width: 100%;
 }
 .ui_input_group > :first-child {
     border-radius: var(--input-border-radius) 0 0 var(--input-border-radius);
