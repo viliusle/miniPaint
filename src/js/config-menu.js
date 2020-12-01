@@ -15,10 +15,12 @@ const menuDefinition = [
 					{
 						name: 'Open File',
 						shortcut: 'Drag&Drop',
+						ellipsis: true,
 						target: 'file/open.open_file'
 					},
 					{
 						name: 'Open Directory',
+						ellipsis: true,
 						target: 'file/open.open_dir'
 					},
 					{
@@ -27,10 +29,12 @@ const menuDefinition = [
 					},
 					{
 						name: 'Open URL',
+						ellipsis: true,
 						target: 'file/open.open_url'
 					},
 					{
 						name: 'Open Data URL',
+						ellipsis: true,
 						target: 'file/open.open_data_url'
 					},
 					{
