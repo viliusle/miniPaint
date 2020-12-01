@@ -44,6 +44,7 @@ class Base_selection_class {
 		this.selected_obj_positions = {};
 		this.selected_object_drag_type = null;
 		this.click_details = {};
+		this.is_touch = false;
 
 		this.events();
 	}
@@ -52,13 +53,31 @@ class Base_selection_class {
 		var _this = this;
 
 		document.addEventListener('mousedown', function (e) {
+			if(_this.is_touch == true)
+				return;
 			_this.selected_object_actions(e);
 		});
 		document.addEventListener('mousemove', function (e) {
+			if(_this.is_touch == true)
+				return;
 			_this.selected_object_actions(e);
 		});
 		document.addEventListener('mouseup', function (e) {
+			if(_this.is_touch == true)
+				return;
 			_this.selected_object_actions(e);
+		});
+
+		// touch
+		document.addEventListener('touchstart', function (event) {
+			_this.is_touch = true;
+			_this.selected_object_actions(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.selected_object_actions(event);
+		}, {passive: false});
+		document.addEventListener('touchend', function (event) {
+			_this.selected_object_actions(event);
 		});
 	}
 
@@ -175,7 +194,7 @@ class Base_selection_class {
 		}
 
 		//draw corners
-		if (Math.abs(w) > block_size * 2 && Math.abs(h) > block_size * 2) {
+		if (settings.enable_controls == true && Math.abs(w) > block_size * 2 && Math.abs(h) > block_size * 2) {
 			corner(x - half_size, y - half_size, 0, 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
 			corner(x + w + half_size, y - half_size, -1, 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
 			corner(x - half_size, y + h + half_size, 0, -1, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
@@ -238,12 +257,19 @@ class Base_selection_class {
 
 	selected_object_actions(e) {
 		var settings = this.find_settings();
+
+		//simplify checks
+		var event_type = e.type;
+		if(event_type == 'touchstart') event_type = 'mousedown';
+		if(event_type == 'touchmove') event_type = 'mousemove';
+		if(event_type == 'touchend') event_type = 'mouseup';
+
 		const mainWrapper = document.getElementById('main_wrapper');
 		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
 		if (mainWrapper.style.cursor != defaultCursor) {
 			mainWrapper.style.cursor = defaultCursor;
 		}
-		if (e.type == 'mousedown' && config.mouse.valid == false || settings.enable_controls == false) {
+		if (event_type == 'mousedown' && config.mouse.valid == false || settings.enable_controls == false) {
 			return;
 		}
 		if (settings.data != null && settings.data.rotate != null && settings.data.rotate > 0) {
@@ -254,7 +280,7 @@ class Base_selection_class {
 		var mouse = config.mouse;
 		const drag_type = this.selected_object_drag_type;
 
-		if(e.type == 'mousedown' && settings.data !== null){
+		if(event_type == 'mousedown' && settings.data !== null){
 			this.click_details = {
 				x: settings.data.x,
 				y: settings.data.y,
@@ -262,8 +288,11 @@ class Base_selection_class {
 				height: settings.data.height,
 			};
 		}
-		if (e.type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
-			const allowNegativeDimensions = settings.data.render_function && ['line', 'gradient'].includes(settings.data.render_function[0]);
+		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
+
+			const allowNegativeDimensions = settings.data.render_function
+				&& ['line', 'gradient'].includes(settings.data.render_function[0]);
+
 			mainWrapper.style.cursor = "pointer";
 			
 			var is_ctrl = false;
@@ -276,7 +305,7 @@ class Base_selection_class {
 			const is_drag_type_top = Math.floor(drag_type / DRAG_TYPE_TOP) % 2 === 1;
 			const is_drag_type_bottom = Math.floor(drag_type / DRAG_TYPE_BOTTOM) % 2 === 1;
 			
-			if (e.buttons == 1) {
+			if (e.buttons == 1 || typeof e.buttons == "undefined") {
 				// Do transformations				
 				var dx = Math.round(mouse.x - mouse.click_x);
 				var dy = Math.round(mouse.y - mouse.click_y);
@@ -337,7 +366,7 @@ class Base_selection_class {
 			}
 			return;
 		}
-		if (e.type == 'mouseup' && this.mouse_lock == 'selected_object_actions') {
+		if (event_type == 'mouseup' && this.mouse_lock == 'selected_object_actions') {
 			//reset
 			this.mouse_lock = null;
 		}
@@ -345,17 +374,18 @@ class Base_selection_class {
 		if (!this.mouse_lock) {
 			for (let current_drag_type in this.selected_obj_positions) {
 				const position = this.selected_obj_positions[current_drag_type];
+
 				if (mouse.x >= position.x && mouse.x <= position.x + position.size
 					&& mouse.y >= position.y && mouse.y <= position.y + position.size
 					) {
 					//match
-					if (e.type == 'mousedown') {
-						if (e.buttons == 1) {
+					if (event_type == 'mousedown') {
+						if (e.buttons == 1 || typeof e.buttons == "undefined") {
 							this.mouse_lock = 'selected_object_actions';
 							this.selected_object_drag_type = current_drag_type;
 						}
 					}
-					if (e.type == 'mousemove') {
+					if (event_type == 'mousemove') {
 						mainWrapper.style.cursor = "pointer";
 					}
 				}

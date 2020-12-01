@@ -16,12 +16,14 @@ class Base_tools_class {
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
 		this.is_drag = false;
+		this.mouse_last_click_pos = [false, false];
 		this.mouse_click_pos = [false, false];
 		this.mouse_move_last = [false, false];
 		this.mouse_valid = false;
 		this.mouse_click_valid = false;
 		this.speed_average = 0;
 		this.save_mouse = save_mouse;
+		this.is_touch = false;
 
 		this.prepare();
 
@@ -32,13 +34,20 @@ class Base_tools_class {
 
 	dragStart(event) {
 		var _this = this;
+
+		var mouse = _this.get_mouse_info(event, true);
+		_this.mouse_click_pos[0] = mouse.x;
+		_this.mouse_click_pos[1] = mouse.y;
+
+		//update
 		_this.set_mouse_info(event);
 
 		_this.is_drag = true;
 		_this.speed_average = 0;
+
 		var mouse = _this.get_mouse_info(event, true);
-		_this.mouse_click_pos[0] = mouse.x;
-		_this.mouse_click_pos[1] = mouse.y;
+		_this.mouse_last_click_pos[0] = mouse.x;
+		_this.mouse_last_click_pos[1] = mouse.y;
 	}
 
 	dragMove(event) {
@@ -59,17 +68,27 @@ class Base_tools_class {
 		
 		//collect mouse info
 		document.addEventListener('mousedown', function (event) {
+			if(_this.is_touch == true)
+				return;
+
 			_this.dragStart(event);
 		});
 		document.addEventListener('mousemove', function (event) {
+			if(_this.is_touch == true)
+				return;
+
 			_this.dragMove(event);
 		});
 		document.addEventListener('mouseup', function (event) {
+			if(_this.is_touch == true)
+				return;
+
 			_this.dragEnd(event);
 		});
 
 		// collect touch info
 		document.addEventListener('touchstart', function (event) {
+			_this.is_touch = true;
 			_this.dragStart(event);
 		});
 		document.addEventListener('touchmove', function (event) {
@@ -120,7 +139,7 @@ class Base_tools_class {
 
 		if (event.changedTouches) {
 			//using touch events
-			event = event.changedTouches[0];
+			event = event.changedTouches[0];	//@todo - also use others?
 		}
 
 		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
@@ -141,6 +160,8 @@ class Base_tools_class {
 			y: mouse_y,
 			x_rel: x_rel,
 			y_rel: y_rel,
+			last_click_x: this.mouse_last_click_pos[0], //last click
+			last_click_y: this.mouse_last_click_pos[1], //last click
 			click_x: this.mouse_click_pos[0],
 			click_y: this.mouse_click_pos[1],
 			last_x: this.mouse_move_last[0],
@@ -158,7 +179,11 @@ class Base_tools_class {
 		}
 	}
 
-	get_mouse_info() {
+	get_mouse_info(event) {
+		if(typeof event != "undefined" && typeof mouse.x == "undefined"){
+			//mouse not set yet - set it now...
+			this.set_mouse_info(event);
+		}
 		return config.mouse;
 	}
 

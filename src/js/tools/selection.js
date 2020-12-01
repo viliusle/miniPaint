@@ -181,31 +181,6 @@ class Selection_class extends Base_tools_class {
 			this.selection.height = mouse.y - mouse.click_y;
 			config.need_render = true;
 		}
-		else {
-			//move selection
-			var selection = this.selection;
-			var layer = config.layer;
-			var x = this.selection.x + (mouse.x - mouse.last_x);
-			var y = this.selection.y + (mouse.y - mouse.last_y);
-			var width = Math.ceil(selection.width);
-			var height = Math.ceil(selection.height);
-			var from_x = this.selection_coords_from.x;
-			var from_y = this.selection_coords_from.y;
-
-			this.Base_selection.set_selection(x, y, null, null);
-
-			//move data
-			this.tmpCanvasCtx.clearRect(0, 0, layer.width, layer.height);
-			this.tmpCanvasCtx.drawImage(layer.link, 0, 0, layer.width, layer.height);
-			this.tmpCanvasCtx.clearRect(from_x - layer.x, from_y - layer.y, selection.width, selection.height);
-			this.tmpCanvasCtx.drawImage(layer.link,
-				Math.round(from_x - layer.x), Math.round(from_y - layer.y), width, height,
-				Math.round(selection.x - layer.x), Math.round(selection.y - layer.y), width, height
-				);
-
-			//draw draft preview
-			config.need_render = true;
-		}
 	}
 
 	mouseup(e) {

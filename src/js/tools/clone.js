@@ -16,6 +16,7 @@ class Clone_class extends Base_tools_class {
 		this.tmpCanvasCtx = null;
 		this.started = false;
 		this.clone_coords = null;
+		this.pressTimer = null;
 	}
 
 	dragStart(event) {
@@ -23,6 +24,14 @@ class Clone_class extends Base_tools_class {
 		if (config.TOOL.name != _this.name)
 			return;
 		_this.mousedown(event);
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.valid == true) {
+			this.pressTimer = window.setTimeout(function() {
+				//long press success
+				_this.mouseLongClick();
+			}, 2000);
+		}
 	}
 
 	dragMove(event) {
@@ -35,6 +44,8 @@ class Clone_class extends Base_tools_class {
 		var mouse = _this.get_mouse_info(event);
 		var params = _this.getParams();
 		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+
+		clearTimeout(this.pressTimer);
 	}
 
 	dragEnd(event) {
@@ -42,24 +53,34 @@ class Clone_class extends Base_tools_class {
 		if (config.TOOL.name != _this.name)
 			return;
 		_this.mouseup(event);
+
+		clearTimeout(this.pressTimer);
 	}
 
 	load() {
 		var _this = this;
+		var is_touch = false;
 
 		//mouse events
 		document.addEventListener('mousedown', function (event) {
+			if(is_touch)
+				return;
 			_this.dragStart(event);
 		});
 		document.addEventListener('mousemove', function (event) {
+			if(is_touch)
+				return;
 			_this.dragMove(event);
 		});
 		document.addEventListener('mouseup', function (event) {
+			if(is_touch)
+				return;
 			_this.dragEnd(event);
 		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
+			is_touch = true;
 			_this.dragStart(event);
 		});
 		document.addEventListener('touchmove', function (event) {
@@ -118,7 +139,34 @@ class Clone_class extends Base_tools_class {
 				x: mouse_x,
 				y: mouse_y,
 			};
+			alertify.success('Source coordinates saved.');
 		}
+	}
+
+	mouseLongClick(){
+		var params = this.getParams();
+		var mouse = this.get_mouse_info();
+
+		if (params.source_layer.value == 'Previous' && config.layer.type === null) {
+			this.Layer_raster.raster();
+		}
+		if (config.layer.type != 'image') {
+			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			return;
+		}
+		if (config.layer.rotate || 0 > 0) {
+			alertify.error('Erase on rotate object is disabled. Sorry.');
+			return;
+		}
+
+		var mouse_x = this.adaptSize(mouse.x, 'width');
+		var mouse_y = this.adaptSize(mouse.y, 'height');
+
+		this.clone_coords = {
+			x: mouse_x,
+			y: mouse_y,
+		};
+		alertify.success('Source coordinates saved.');
 	}
 
 	mousedown(e) {
@@ -144,7 +192,7 @@ class Clone_class extends Base_tools_class {
 			return;
 		}
 		if (this.clone_coords === null) {
-			alertify.error('Source is empty, right click on image to save source position.');
+			alertify.error('Source is empty, right click on image or use long press to save source position.');
 			return;
 		}
 		if (layer.width != layer.width_original || layer.height != layer.height_original) {
