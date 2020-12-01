@@ -89,6 +89,8 @@ class Dialog_class {
 		this.layer_active_small = document.createElement("canvas");
 		this.layer_active_small_ctx = this.layer_active_small.getContext("2d");
 		this.caller = null;
+		this.resize_clicked = {x: null, y: null}
+		this.element_offset = {x: null, y: null}
 
 		this.set_events();
 	}
@@ -113,6 +115,11 @@ class Dialog_class {
 		this.onload = config.on_load || false;
 		this.className = config.className || '';
 		this.comment = config.comment || '';
+
+		//reset position
+		var target = document.querySelector('#popup');
+		target.style.top = null;
+		target.style.left = null;
 
 		this.show_action();
 	}
@@ -154,6 +161,45 @@ class Dialog_class {
 				//escape
 				_this.hide(false);
 			}
+		}, false);
+
+		//register events
+		document.addEventListener('mousedown', function (event) {
+			if(event.target != document.querySelector('#popup h2'))
+				return;
+			event.preventDefault();
+			_this.resize_clicked.x = event.pageX;
+			_this.resize_clicked.y = event.pageY;s
+
+			var target = document.querySelector('#popup');
+			_this.element_offset.x = target.offsetTop;
+			_this.element_offset.y = target.offsetLeft;
+		}, false);
+
+		document.addEventListener('mousemove', function (event) {
+			event.preventDefault();
+			if(_this.resize_clicked.x != null){
+				var dx = _this.resize_clicked.x - event.pageX;
+				var dy = _this.resize_clicked.y - event.pageY;
+
+				var target = document.querySelector('#popup');
+				target.style.top = (_this.element_offset.x - dy) + "px";
+				target.style.left = (_this.element_offset.y - dx) + "px";
+			}
+		}, false);
+
+		document.addEventListener('mouseup', function (event) {
+			if(event.target != document.querySelector('#popup h2'))
+				return;
+			event.preventDefault();
+			_this.resize_clicked.x = null;
+			_this.resize_clicked.y = null;
+		}, false);
+
+		window.addEventListener('resize', function (event) {
+			var target = document.querySelector('#popup');
+			target.style.top = null;
+			target.style.left = null;
 		}, false);
 	}
 
