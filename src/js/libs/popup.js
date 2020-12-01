@@ -278,11 +278,11 @@ class Dialog_class {
 
 		//preview area
 		if (this.preview !== false) {
-			html_preview_content += '<div style="margin-top:10px;margin-bottom:15px;">';
-			html_preview_content += '<canvas style="position:relative;float:left;margin:0 5px 5px 0;border:1px solid #393939;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_pre"></canvas>';
-			html_preview_content += '<div id="canvas_preview_container">';
-			html_preview_content += '	<canvas style="position:absolute;border:1px solid #393939;background-color:#ffffff;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
-			html_preview_content += '	<canvas style="position:relative;border:1px solid #393939;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post"></canvas>';
+			html_preview_content += '<div class="preview_container">';
+			html_preview_content += '<canvas class="preview_canvas_left" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_pre"></canvas>';
+			html_preview_content += '<div class="canvas_preview_container">';
+			html_preview_content += '	<canvas class="preview_canvas_post_back" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
+			html_preview_content += '	<canvas class="preview_canvas_post" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post"></canvas>';
 			html_preview_content += '</div>';
 			html_preview_content += '</div>';
 		}
@@ -373,7 +373,7 @@ class Dialog_class {
 	}
 
 	generateParamsHtml() {
-		var html = '<table style="width:99%;">';
+		var html = '<table>';
 		var title = null;
 		for (var i in this.parameters) {
 			var parameter = this.parameters[i];
@@ -385,7 +385,7 @@ class Dialog_class {
 				if (parameter.values != undefined) {
 					if (parameter.values.length > 10 || parameter.type == 'select') {
 						//drop down
-						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" style="font-size:12px;" id="pop_data_' + parameter.name + '">';
+						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" id="pop_data_' + parameter.name + '">';
 						var k = 0;
 						for (var j in parameter.values) {
 							var sel = '';
@@ -400,7 +400,7 @@ class Dialog_class {
 					}
 					else {
 						//radio
-						html += '<td colspan="2">';
+						html += '<td class="radios" colspan="2">';
 						if (parameter.values.length > 2)
 							html += '<div class="group">';
 						var k = 0;
@@ -418,7 +418,7 @@ class Dialog_class {
 							}
 
 							html += '<input type="radio" onchange="POP.onChangeEvent();" ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
+							html += '<label class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;
@@ -436,7 +436,7 @@ class Dialog_class {
 					if (parameter.range != undefined) {
 						//range
 						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="' + parameter.range[1] + '" step="' + step + '" oninput="document.getElementById(\'pv' + i + '\').innerHTML=Math.round(this.value*100)/100;POP.preview_handler();" onchange="POP.onChangeEvent();" /></td>';
-						html += '<td style="padding-left:10px;width:50px;" id="pv' + i + '">' + parameter.value + '</td>';
+						html += '<td class="range_value" id="pv' + i + '">' + parameter.value + '</td>';
 					}
 					else if (parameter.type == 'color') {
 						//color
@@ -475,11 +475,11 @@ class Dialog_class {
 			}
 			else if (parameter.html != undefined) {
 				//html
-				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">' + parameter.html + '</td>';
+				html += '<td class="html_value" colspan="2">' + parameter.html + '</td>';
 			}
 			else if (parameter.title == undefined) {
 				//gap
-				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2"></td>';
+				html += '<td colspan="2"></td>';
 			}
 			else {
 				//locked fields without name
@@ -487,9 +487,9 @@ class Dialog_class {
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '" style="padding: 2px 0;">' + parameter.value + '</div></td>';
+					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '">' + parameter.value + '</div></td>';
 				else
-					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
+					html += '<td class="long_text_value" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
 			}
 			html += '</tr>';
 		}
