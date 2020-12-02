@@ -514,10 +514,12 @@ body .sp-preview{
 		position: absolute;
 		height: 100%;
 		right: -210px;
+		background: var(--background);
 	}
 	.sidebar_right.active{
 		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 		right: 0;
+		margin-right: 0;
 	}
 }
 
