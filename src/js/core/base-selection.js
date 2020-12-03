@@ -8,6 +8,8 @@ import config from './../config.js';
 var instance = null;
 var settings_all = [];
 
+const handle_size = 12;
+
 const DRAG_TYPE_TOP = 1;
 const DRAG_TYPE_BOTTOM = 2;
 const DRAG_TYPE_LEFT = 4;
@@ -137,7 +139,6 @@ class Base_selection_class {
 	 * marks object as selected, and draws corners
 	 */
 	draw_selection() {
-		var _this = this;
 		var settings = this.find_settings();
 		var data = settings.data;
 
@@ -156,8 +157,7 @@ class Base_selection_class {
 			return;
 		}
 
-		var block_size_default = 14;
-		block_size_default = Math.ceil(block_size_default / config.ZOOM);
+		var block_size_default = handle_size / config.ZOOM;
 
 		if (config.ZOOM != 1) {
 			x = Math.round(x);
@@ -166,7 +166,6 @@ class Base_selection_class {
 			h = Math.round(h);
 		}
 		var block_size = block_size_default;
-		var half_size = Math.ceil(block_size / 2);
 
 		this.ctx.save();
 		this.ctx.globalAlpha = 1;
@@ -178,77 +177,78 @@ class Base_selection_class {
 			y = Math.round(-data.height / 2);
 		}
 		
-		var half_fix = 0.5;
-
 		//fill
 		if (settings.enable_background == true) {
 			this.ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
 			this.ctx.fillRect(x, y, w, h);
 		}
 
+		const wholeLineWidth = 2 / config.ZOOM;
+		const halfLineWidth = wholeLineWidth / 2;
+
 		//borders
 		if (settings.enable_borders == true && (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT)) {
-			this.ctx.lineWidth = 1;
-			this.ctx.strokeStyle = "rgba(0, 128, 0, 0.5)";
-			this.ctx.strokeRect(x + half_fix, y + half_fix, w, h);
+			this.ctx.lineWidth = wholeLineWidth;
+			this.ctx.strokeStyle = 'rgb(255, 255, 255)';
+			this.ctx.strokeRect(x - halfLineWidth, y - halfLineWidth, w + wholeLineWidth, h + wholeLineWidth);
+			this.ctx.lineWidth = halfLineWidth;
+			this.ctx.strokeStyle = 'rgb(0, 0, 0)';
+			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + (wholeLineWidth * 2), h + (wholeLineWidth * 2));
 		}
 
 		//draw corners
-		if (settings.enable_controls == true && Math.abs(w) > block_size * 2 && Math.abs(h) > block_size * 2) {
-			corner(x - half_size, y - half_size, 0, 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
-			corner(x + w + half_size, y - half_size, -1, 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
-			corner(x - half_size, y + h + half_size, 0, -1, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
-			corner(x + w + half_size, y + h + half_size, -1, -1, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM);
-		}
-
-		if (settings.enable_controls == true) {
-			//draw centers
-			if (Math.abs(w) > block_size * 5) {
-				corner(x + w / 2 - block_size / 2, y - half_size, 0, 0, DRAG_TYPE_TOP);
-				corner(x + w / 2 - block_size / 2, y + h + half_size, 0, -1, DRAG_TYPE_BOTTOM);
-			}
-			if (Math.abs(h) > block_size * 5) {
-				corner(x - half_size, y + h / 2 - block_size / 2, 0, 0, DRAG_TYPE_LEFT);
-				corner(x + w + half_size, y + h / 2 - block_size / 2, -1, 0, DRAG_TYPE_RIGHT);
-			}
-		}
-
-		function corner(x, y, dx, dy, drag_type) {
-			var block_size = Math.round(block_size_default / 2) * 2;
-			x = Math.round(x);
-			y = Math.round(y);
+		var corner = (x, y, dx, dy, drag_type) => {
+			// var block_size = Math.round(block_size_default / 2) * 2;
 			var angle = 0;
 			if (settings.data.rotate != null && settings.data.rotate > 0) {
 				angle = settings.data.rotate;
 			}
 
 			//register position
-			_this.selected_obj_positions[drag_type] = {
+			this.selected_obj_positions[drag_type] = {
 				x: x + dx * block_size,
 				y: y + dy * block_size,
 				size: block_size,
 			};
 
 			if (settings.enable_controls == false || angle > 0) {
-				_this.ctx.strokeStyle = "rgba(0, 128, 0, 0.4)";
-				_this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+				this.ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+				this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 			}
 			else {
-				_this.ctx.strokeStyle = "#008000";
-				_this.ctx.fillStyle = "#ffffff";
+				this.ctx.strokeStyle = "#000000";
+				this.ctx.fillStyle = "#ffffff";
 			}
 
 			//borders
-			_this.ctx.lineWidth = 1;
-			if (config.ZOOM < 1)
-				_this.ctx.lineWidth = 2;
-			_this.ctx.beginPath();
-			_this.ctx.arc(
-				x + dx * block_size + half_size,
-				y + dy * block_size + half_size,
-				half_size, 0, 2 * Math.PI);
-			_this.ctx.fill();
-			_this.ctx.stroke();
+			this.ctx.lineWidth = halfLineWidth;
+			this.ctx.fillRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
+			this.ctx.strokeRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
+		};
+
+		const hitsLeftEdge = x < block_size;
+		const hitsTopEdge = y < block_size;
+		const hitsRightEdge = x + w > config.WIDTH - block_size;
+		const hitsBottomEdge = y + h > config.HEIGHT - block_size;
+		const hitsAnyEdge = hitsLeftEdge || hitsTopEdge || hitsRightEdge || hitsBottomEdge;
+
+		if (settings.enable_controls == true) {
+			corner(x - block_size - wholeLineWidth, y - block_size - wholeLineWidth, hitsAnyEdge ? 1 : 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
+			corner(x + w + wholeLineWidth, y - block_size - wholeLineWidth, hitsAnyEdge ? -1 : 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
+			corner(x - block_size - wholeLineWidth, y + h + wholeLineWidth, hitsAnyEdge ? 1 : 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
+			corner(x + w + wholeLineWidth, y + h + wholeLineWidth, hitsAnyEdge ? -1 : 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM);
+		}
+
+		if (settings.enable_controls == true) {
+			//draw centers
+			if (Math.abs(w) > block_size * 5) {
+				corner(x + w / 2 - block_size / 2, y - block_size - wholeLineWidth, 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_TOP);
+				corner(x + w / 2 - block_size / 2, y + h + wholeLineWidth, 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_BOTTOM);
+			}
+			if (Math.abs(h) > block_size * 5) {
+				corner(x - block_size - wholeLineWidth, y + h / 2 - block_size / 2, hitsAnyEdge ? 1 : 0, 0, DRAG_TYPE_LEFT);
+				corner(x + w + wholeLineWidth, y + h / 2 - block_size / 2, hitsAnyEdge ? -1 : 0, 0, DRAG_TYPE_RIGHT);
+			}
 		}
 
 		//restore
