@@ -39,30 +39,30 @@ config.TOOLS = [
 		attributes: {},
 		on_leave: 'on_leave',
 	},
-	{
-		name: 'brush',
-		title: 'Brush',
-		attributes: {
-			size: 4,
-			pressure: false,
-		},
-	},
-	{
-		name: 'pencil',
-		title: 'Pencil',
-		on_update: 'on_params_update',
-		attributes: {
-			antialiasing: true,
-			size: 2,
-		},
-	},
-	{
-		name: 'pick_color',
-		title: 'Pick Color',
-		attributes: {
-			global: false,
-		},
-	},
+	// {
+	// 	name: 'brush',
+	// 	title: 'Brush',
+	// 	attributes: {
+	// 		size: 4,
+	// 		pressure: false,
+	// 	},
+	// },
+	// {
+	// 	name: 'pencil',
+	// 	title: 'Pencil',
+	// 	on_update: 'on_params_update',
+	// 	attributes: {
+	// 		antialiasing: true,
+	// 		size: 2,
+	// 	},
+	// },
+	// {
+	// 	name: 'pick_color',
+	// 	title: 'Pick Color',
+	// 	attributes: {
+	// 		global: false,
+	// 	},
+	// },
 	{
 		name: 'erase',
 		title: 'Erase',
@@ -73,54 +73,54 @@ config.TOOLS = [
 			strict: true,
 		},
 	},
-	{
-		name: 'magic_wand',
-		title: 'Magic Wand Tool',
-		attributes: {
-			power: 15,
-			anti_aliasing: true,
-			contiguous: false,
-		},
-	},
-	{
-		name: 'fill',
-		title: 'Fill',
-		attributes: {
-			power: 5,
-			anti_aliasing: false,
-			contiguous: false,
-		},
-	},
-	{
-		name: 'line',
-		title: 'Line',
-		attributes: {
-			size: 1,
-			type: {
-				value: 'Simple',
-				values: ['Simple', 'Arrow'],
-			},
-		},
-	},
-	{
-		name: 'rectangle',
-		title: 'Rectangle',
-		attributes: {
-			size: 1,
-			radius: 0,
-			fill: true,
-			square: false,
-		},
-	},
-	{
-		name: 'circle',
-		title: 'Circle',
-		attributes: {
-			size: 1,
-			fill: true,
-			circle: false,
-		},
-	},
+	// {
+	// 	name: 'magic_wand',
+	// 	title: 'Magic Wand Tool',
+	// 	attributes: {
+	// 		power: 15,
+	// 		anti_aliasing: true,
+	// 		contiguous: false,
+	// 	},
+	// },
+	// {
+	// 	name: 'fill',
+	// 	title: 'Fill',
+	// 	attributes: {
+	// 		power: 5,
+	// 		anti_aliasing: false,
+	// 		contiguous: false,
+	// 	},
+	// },
+	// {
+	// 	name: 'line',
+	// 	title: 'Line',
+	// 	attributes: {
+	// 		size: 1,
+	// 		type: {
+	// 			value: 'Simple',
+	// 			values: ['Simple', 'Arrow'],
+	// 		},
+	// 	},
+	// },
+	// {
+	// 	name: 'rectangle',
+	// 	title: 'Rectangle',
+	// 	attributes: {
+	// 		size: 1,
+	// 		radius: 0,
+	// 		fill: true,
+	// 		square: false,
+	// 	},
+	// },
+	// {
+	// 	name: 'circle',
+	// 	title: 'Circle',
+	// 	attributes: {
+	// 		size: 1,
+	// 		fill: true,
+	// 		circle: false,
+	// 	},
+	// },
 	{
 		name: 'media',
 		title: 'Search Images',
@@ -134,29 +134,29 @@ config.TOOLS = [
 		title: 'Text',
 		attributes: {},
 	},
-	{
-		name: 'gradient',
-		title: 'Gradient',
-		attributes: {
-			color_1: '#008000',
-			color_2: '#ffffff',
-			alpha: 0,
-			radial: false,
-			radial_power: 50,
-		},
-	},
-	{
-		name: 'clone',
-		title: 'Clone tool',
-		attributes: {
-			size: 30,
-			anti_aliasing: true,
-			source_layer: {
-				value: 'Current',
-				values: ['Current', 'Previous'],
-			},
-		},
-	},
+	// {
+	// 	name: 'gradient',
+	// 	title: 'Gradient',
+	// 	attributes: {
+	// 		color_1: '#008000',
+	// 		color_2: '#ffffff',
+	// 		alpha: 0,
+	// 		radial: false,
+	// 		radial_power: 50,
+	// 	},
+	// },
+	// {
+	// 	name: 'clone',
+	// 	title: 'Clone tool',
+	// 	attributes: {
+	// 		size: 30,
+	// 		anti_aliasing: true,
+	// 		source_layer: {
+	// 			value: 'Current',
+	// 			values: ['Current', 'Previous'],
+	// 		},
+	// 	},
+	// },
 	{
 		name: 'crop',
 		title: 'Crop',
@@ -166,52 +166,52 @@ config.TOOLS = [
 			crop: true,
 		},
 	},
-	{
-		name: 'blur',
-		title: 'Blur tool',
-		attributes: {
-			size: 30,
-			strength: 1,
-		},
-	},
-	{
-		name: 'sharpen',
-		title: 'Sharpen tool',
-		attributes: {
-			size: 30,
-		},
-	},
-	{
-		name: 'desaturate',
-		title: 'Desaturate',
-		attributes: {
-			size: 50,
-			anti_aliasing: true,
-		},
-	},
-	{
-		name: 'bulge_pinch',
-		title: 'Bulge/Pinch tool',
-		attributes: {
-			radius: 80,
-			power: 50,
-			bulge: true,
-		},
-	},
-	{
-		name: 'animation',
-		title: 'Play animation',
-		on_update: 'on_params_update',
-		on_leave: 'on_leave',
-		attributes: {
-			play: false,
-			delay: 400,
-		},
-	},
+	// {
+	// 	name: 'blur',
+	// 	title: 'Blur tool',
+	// 	attributes: {
+	// 		size: 30,
+	// 		strength: 1,
+	// 	},
+	// },
+	// {
+	// 	name: 'sharpen',
+	// 	title: 'Sharpen tool',
+	// 	attributes: {
+	// 		size: 30,
+	// 	},
+	// },
+	// {
+	// 	name: 'desaturate',
+	// 	title: 'Desaturate',
+	// 	attributes: {
+	// 		size: 50,
+	// 		anti_aliasing: true,
+	// 	},
+	// },
+	// {
+	// 	name: 'bulge_pinch',
+	// 	title: 'Bulge/Pinch tool',
+	// 	attributes: {
+	// 		radius: 80,
+	// 		power: 50,
+	// 		bulge: true,
+	// 	},
+	// },
+	// {
+	// 	name: 'animation',
+	// 	title: 'Play animation',
+	// 	on_update: 'on_params_update',
+	// 	on_leave: 'on_leave',
+	// 	attributes: {
+	// 		play: false,
+	// 		delay: 400,
+	// 	},
+	// },
 ];
 
 //link to active tool
-config.TOOL = config.TOOLS[2];
+config.TOOL = config.TOOLS[0];
 
 	
 export default config;
