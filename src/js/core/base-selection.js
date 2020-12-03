@@ -196,6 +196,12 @@ class Base_selection_class {
 			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + (wholeLineWidth * 2), h + (wholeLineWidth * 2));
 		}
 
+		const hitsLeftEdge = x < handle_size;
+		const hitsTopEdge = y < handle_size;
+		const hitsRightEdge = x + w > config.WIDTH - handle_size;
+		const hitsBottomEdge = y + h > config.HEIGHT - handle_size;
+		const hitsAnyEdge = hitsLeftEdge || hitsTopEdge || hitsRightEdge || hitsBottomEdge;
+
 		//draw corners
 		var corner = (x, y, dx, dy, drag_type) => {
 			// var block_size = Math.round(block_size_default / 2) * 2;
@@ -222,15 +228,15 @@ class Base_selection_class {
 
 			//borders
 			this.ctx.lineWidth = halfLineWidth;
+			if (hitsAnyEdge) {
+				this.ctx.globalCompositeOperation = 'difference';
+			}
 			this.ctx.fillRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
+			if (hitsAnyEdge) {
+				this.ctx.globalCompositeOperation = 'source-over';
+			}
 			this.ctx.strokeRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
 		};
-
-		const hitsLeftEdge = x < block_size;
-		const hitsTopEdge = y < block_size;
-		const hitsRightEdge = x + w > config.WIDTH - block_size;
-		const hitsBottomEdge = y + h > config.HEIGHT - block_size;
-		const hitsAnyEdge = hitsLeftEdge || hitsTopEdge || hitsRightEdge || hitsBottomEdge;
 
 		if (settings.enable_controls == true) {
 			corner(x - block_size - wholeLineWidth, y - block_size - wholeLineWidth, hitsAnyEdge ? 1 : 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
