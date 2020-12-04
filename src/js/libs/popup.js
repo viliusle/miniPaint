@@ -169,7 +169,7 @@ class Dialog_class {
 				return;
 			event.preventDefault();
 			_this.resize_clicked.x = event.pageX;
-			_this.resize_clicked.y = event.pageY;s
+			_this.resize_clicked.y = event.pageY;
 
 			var target = document.querySelector('#popup');
 			_this.element_offset.x = target.offsetTop;

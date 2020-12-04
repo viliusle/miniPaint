@@ -139,7 +139,7 @@ class Base_tools_class {
 
 		if (event.changedTouches) {
 			//using touch events
-			event = event.changedTouches[0];	//@todo - also use others?
+			event = event.changedTouches[0];
 		}
 
 		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;

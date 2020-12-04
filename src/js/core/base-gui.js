@@ -270,11 +270,8 @@ class Base_gui_class {
 
 			if (auto_size == false) {
 				//screen size is smaller then 400x300
-				config.WIDTH = parseInt(page_w) - 5;
+				config.WIDTH = parseInt(page_w) - 15;
 				config.HEIGHT = parseInt(page_h) - 10;
-				if (page_w < 585) {
-					config.HEIGHT = config.HEIGHT - 15;
-				}
 			}
 		}
 	}

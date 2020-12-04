@@ -1,9 +1,13 @@
 .wrapper{
 	display: -ms-grid;
 	display: grid;
-	height: calc(100vh - 30px);
 	margin: 0;
-	position: relative;
+	position: fixed; /* dont change it, vh does not work on mobiles with bottom footer */
+	top: 30px;
+	right: 0;
+	left: 0;
+	bottom: 5px;
+	height: auto;
 	overflow: hidden;
 
 	-ms-grid-rows: auto 1fr;
@@ -623,6 +627,9 @@ canvas{
 @media screen and (max-width:700px){
 	body{
 		padding-top:50px;
+	}
+	.wrapper{
+		top: 50px;
 	}
 }
 @media screen and (max-width:550px){

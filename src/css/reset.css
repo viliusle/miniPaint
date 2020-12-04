@@ -1,7 +1,3 @@
-*{
-	box-sizing: border-box;
-	background-repeat: no-repeat;
-}
 :root {
 	/* original - default */
 	--background: radial-gradient(circle, #aaa 0%, #4d5355 100%);
@@ -40,9 +36,6 @@
 	--scrollbar-track-color: #464d4f;
 	--scrollbar-thumb-color: #2f3739;
 	--mobile-menu-toggle-filter: invert(1);
-}
-html {
-	font-size: 10px; /* Base is 10px for easy REM calculation */
 }
 body.theme-light{
 	/* light */
@@ -111,6 +104,14 @@ body.theme-green{
 	--scrollbar-track-color: #050702;
 	--scrollbar-thumb-color: #80937d;
 	--mobile-menu-toggle-filter: invert(1);
+}
+
+*{
+	box-sizing: border-box;
+	background-repeat: no-repeat;
+}
+html {
+	font-size: 10px; /* Base is 10px for easy REM calculation */
 }
 body{
 	margin: 0px;

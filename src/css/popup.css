@@ -161,6 +161,9 @@
 }
 
 @media screen and (max-width:500px){
+	#popup {
+		max-height: calc(80vh - 20px); /* mobile phones has bottom menu */
+	}
 	#popup tr{
 		display: block;
 		margin-bottom: 10px;
