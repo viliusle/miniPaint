@@ -187,15 +187,16 @@ class Base_selection_class {
 
 		const wholeLineWidth = 2 / config.ZOOM;
 		const halfLineWidth = wholeLineWidth / 2;
+		const doubleLineWidth = wholeLineWidth * 2;
 
 		//borders
 		if (settings.enable_borders == true && (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT)) {
+			this.ctx.lineWidth = doubleLineWidth;
+			this.ctx.strokeStyle = '#ffffff';
+			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + doubleLineWidth, h + doubleLineWidth);
 			this.ctx.lineWidth = wholeLineWidth;
-			this.ctx.strokeStyle = 'rgb(255, 255, 255)';
-			this.ctx.strokeRect(x - halfLineWidth, y - halfLineWidth, w + wholeLineWidth, h + wholeLineWidth);
-			this.ctx.lineWidth = halfLineWidth;
-			this.ctx.strokeStyle = 'rgb(0, 0, 0)';
-			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + (wholeLineWidth * 2), h + (wholeLineWidth * 2));
+			this.ctx.strokeStyle = '#008800';
+			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + doubleLineWidth, h + doubleLineWidth);
 		}
 
 		const hitsLeftEdge = x < handle_size;
@@ -229,11 +230,15 @@ class Base_selection_class {
 			}
 
 			//borders
-			this.ctx.lineWidth = wholeLineWidth;
+			this.ctx.lineWidth = halfLineWidth;
 			this.ctx.beginPath();
 			this.ctx.arc(x + dx * block_size, y + dy * block_size, block_size / 2, 0, 2 * Math.PI);
 			this.ctx.fill();
 			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.fillStyle = "#008800";
+			this.ctx.arc(x + dx * block_size, y + dy * block_size, block_size / 2.8, 0, 2 * Math.PI);
+			this.ctx.fill();
 		};
 
 		if (settings.enable_controls == true) {
