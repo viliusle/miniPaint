@@ -1,6 +1,6 @@
 :root {
 	/* original - default */
-	--background: radial-gradient(circle, #aaa 0%, #4d5355 100%);
+	--background: #575e60;
 	--text-color: #f4f3f3;
 	--text-color-muted: #c1c1c1;
 	--text-color-red: #e38282;

@@ -543,9 +543,11 @@ body .sp-preview{
 }
 .canvas_wrapper canvas{
 	position: absolute;
-	border: 1px solid var(--border-color);
 	box-sizing: content-box;
 	font-kerning: normal !important;
+}
+.loaded .canvas_wrapper canvas{
+	border: 1px solid var(--border-color);
 }
 #mouse{
 	position:absolute;
