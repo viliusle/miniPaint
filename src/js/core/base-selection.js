@@ -166,6 +166,8 @@ class Base_selection_class {
 			h = Math.round(h);
 		}
 		var block_size = block_size_default;
+		var corner_offset = (block_size / 2.4);
+		var middle_offset = (block_size / 1.9);
 
 		this.ctx.save();
 		this.ctx.globalAlpha = 1;
@@ -227,33 +229,29 @@ class Base_selection_class {
 			}
 
 			//borders
-			this.ctx.lineWidth = halfLineWidth;
-			if (hitsAnyEdge) {
-				this.ctx.globalCompositeOperation = 'difference';
-			}
-			this.ctx.fillRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
-			if (hitsAnyEdge) {
-				this.ctx.globalCompositeOperation = 'source-over';
-			}
-			this.ctx.strokeRect(x + dx * block_size, y + dy * block_size, block_size, block_size);
+			this.ctx.lineWidth = wholeLineWidth;
+			this.ctx.beginPath();
+			this.ctx.arc(x + dx * block_size, y + dy * block_size, block_size / 2, 0, 2 * Math.PI);
+			this.ctx.fill();
+			this.ctx.stroke();
 		};
 
 		if (settings.enable_controls == true) {
-			corner(x - block_size - wholeLineWidth, y - block_size - wholeLineWidth, hitsAnyEdge ? 1 : 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
-			corner(x + w + wholeLineWidth, y - block_size - wholeLineWidth, hitsAnyEdge ? -1 : 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
-			corner(x - block_size - wholeLineWidth, y + h + wholeLineWidth, hitsAnyEdge ? 1 : 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
-			corner(x + w + wholeLineWidth, y + h + wholeLineWidth, hitsAnyEdge ? -1 : 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM);
+			corner(x - corner_offset - wholeLineWidth, y - corner_offset - wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
+			corner(x + w + corner_offset + wholeLineWidth, y - corner_offset - wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
+			corner(x - corner_offset - wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
+			corner(x + w + corner_offset + wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM);
 		}
 
 		if (settings.enable_controls == true) {
 			//draw centers
 			if (Math.abs(w) > block_size * 5) {
-				corner(x + w / 2 - block_size / 2, y - block_size - wholeLineWidth, 0, hitsAnyEdge ? 1 : 0, DRAG_TYPE_TOP);
-				corner(x + w / 2 - block_size / 2, y + h + wholeLineWidth, 0, hitsAnyEdge ? -1 : 0, DRAG_TYPE_BOTTOM);
+				corner(x + w / 2, y - middle_offset - wholeLineWidth, 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_TOP);
+				corner(x + w / 2, y + h + middle_offset + wholeLineWidth, 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_BOTTOM);
 			}
 			if (Math.abs(h) > block_size * 5) {
-				corner(x - block_size - wholeLineWidth, y + h / 2 - block_size / 2, hitsAnyEdge ? 1 : 0, 0, DRAG_TYPE_LEFT);
-				corner(x + w + wholeLineWidth, y + h / 2 - block_size / 2, hitsAnyEdge ? -1 : 0, 0, DRAG_TYPE_RIGHT);
+				corner(x - middle_offset - wholeLineWidth, y + h / 2, hitsLeftEdge ? 0.5 : 0, 0, DRAG_TYPE_LEFT);
+				corner(x + w + middle_offset + wholeLineWidth, y + h / 2, hitsRightEdge ? -0.5 : 0, 0, DRAG_TYPE_RIGHT);
 			}
 		}
 
@@ -312,7 +310,7 @@ class Base_selection_class {
 			const is_drag_type_bottom = Math.floor(drag_type / DRAG_TYPE_BOTTOM) % 2 === 1;
 			
 			if (e.buttons == 1 || typeof e.buttons == "undefined") {
-				// Do transformations				
+				// Do transformations
 				var dx = Math.round(mouse.x - mouse.click_x);
 				var dy = Math.round(mouse.y - mouse.click_y);
 				var width = this.click_details.width + dx;
@@ -381,8 +379,8 @@ class Base_selection_class {
 			for (let current_drag_type in this.selected_obj_positions) {
 				const position = this.selected_obj_positions[current_drag_type];
 
-				if (mouse.x >= position.x && mouse.x <= position.x + position.size
-					&& mouse.y >= position.y && mouse.y <= position.y + position.size
+				if (mouse.x >= position.x - position.size / 2 && mouse.x <= position.x + position.size / 2
+					&& mouse.y >= position.y - position.size / 2 && mouse.y <= position.y + position.size / 2
 					) {
 					//match
 					if (event_type == 'mousedown') {
