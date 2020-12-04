@@ -142,13 +142,9 @@ class Base_tools_class {
 			event = event.changedTouches[0];
 		}
 
-		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
-		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
-
-		//adapt coords to ZOOM
-		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
-		mouse_x = global_pos.x;
-		mouse_y = global_pos.y;
+		var mouse_coords = this.get_mouse_coordinates_from_event(event);
+		var mouse_x = mouse_coords.x;
+		var mouse_y = mouse_coords.y;
 
 		var start_pos = this.Base_layers.get_world_coords(0, 0);
 		var x_rel = mouse_x - start_pos.x;
@@ -177,6 +173,21 @@ class Base_tools_class {
 			this.mouse_move_last[0] = mouse_x;
 			this.mouse_move_last[1] = mouse_y;
 		}
+	}
+
+	get_mouse_coordinates_from_event(event){
+		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
+		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
+
+		//adapt coords to ZOOM
+		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
+		mouse_x = global_pos.x;
+		mouse_y = global_pos.y;
+
+		return {
+			x: mouse_x,
+			y: mouse_y,
+		};
 	}
 
 	get_mouse_info(event) {
