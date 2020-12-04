@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
 import Helper_class from './../../libs/helpers.js';
@@ -43,8 +44,9 @@ class GUI_layers_class {
 			var target = event.target;
 			if (target.id == 'insert_layer') {
 				//new layer
-				window.State.save();
-				_this.Base_layers.insert();
+				app.State.do_action(
+					new app.Actions.Insert_layer_action()
+				);
 			}
 			else if (target.id == 'layer_up') {
 				//move layer up
@@ -58,18 +60,23 @@ class GUI_layers_class {
 			}
 			else if (target.id == 'visibility') {
 				//change visibility
-				_this.Base_layers.toggle_visibility(target.dataset.id);
+				return app.State.do_action(
+					new app.Actions.Toggle_layer_visibility_action(target.dataset.id)
+				);
 			}
 			else if (target.id == 'delete') {
 				//delete layer
-				window.State.save();
-				_this.Base_layers.delete(target.dataset.id);
+				app.State.do_action(
+					new app.Actions.Delete_layer_action(target.dataset.id)
+				);
 			}
 			else if (target.id == 'layer_name') {
 				//select layer
 				if (target.dataset.id == config.layer.id)
 					return;
-				_this.Base_layers.select(target.dataset.id);
+				app.State.do_action(
+					new app.Actions.Select_layer_action(target.dataset.id)
+				);
 			}
 			else if (target.id == 'delete_filter') {
 				//delete filter

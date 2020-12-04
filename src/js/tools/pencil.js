@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -95,7 +96,11 @@ class Pencil_class extends Base_tools_class {
 				rotate: null,
 				is_vector: true,
 			};
-			this.Base_layers.insert(this.layer);
+			app.State.do_action(
+				new app.Actions.Bundle_action('new_pencil_layer', 'New Pencil Layer', [
+					new app.Actions.Insert_layer_action(this.layer)
+				])
+			);
 			this.params_hash = params_hash;
 		}
 		else {

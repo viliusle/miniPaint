@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -18,6 +19,7 @@ class Animation_class extends Base_tools_class {
 		this.name = 'animation';
 		this.intervalID = null;
 		this.index = 0;
+		this.toggle_layer_visibility_action = new app.Actions.Toggle_layer_visibility_action();
 
 		this.disable_selection(ctx);
 	}
@@ -102,7 +104,8 @@ class Animation_class extends Base_tools_class {
 
 		//show 1
 		if (config.layers[this.index] != undefined) {
-			_this.Base_layers.toggle_visibility(config.layers[this.index].id);
+			this.toggle_layer_visibility_action.layer_id = config.layers[this.index].id;
+			this.toggle_layer_visibility_action.do();
 		}
 
 		//change index

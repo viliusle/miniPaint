@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
@@ -56,7 +57,11 @@ class Layer_duplicate_class {
 			params.link = config.layer.link.cloneNode(true);
 		}
 
-		this.Base_layers.insert(params);
+		app.State.do_action(
+			new app.Actions.Bundle_action('duplicate_layer', 'Duplicate Layer', [
+				new app.Actions.Insert_layer_action(params)
+			])
+		);
 	}
 
 }

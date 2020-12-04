@@ -10,6 +10,9 @@ import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
+let action_history = [];
+let action_history_index = 0;
+let action_history_max = 50;
 
 /**
  * Undo state class. Supports multiple levels undo.
@@ -36,16 +39,69 @@ class Base_state_class {
 
 	set_events() {
 		document.addEventListener('keydown', (event) => {
-			var code = event.code;
+			const key = event.key;
 			if (this.Helper.is_input(event.target))
 				return;
 
-			if (code == "KeyZ" && (event.ctrlKey == true || event.metaKey)) {
-				//undo
+			if (key == "z" && (event.ctrlKey == true || event.metaKey)) {
+				// Undo
 				this.undo();
 				event.preventDefault();
 			}
+			if (key == "y" && (event.ctrlKey == true || event.metaKey)) {
+				// Redo
+				this.redo();
+				event.preventDefault();
+			}
 		}, false);
+	}
+
+	async do_action(action) {
+		try {
+			await action.do();
+		} catch (error) {
+			// Action aborted. This could be expected behavior if detected that the action shouldn't run.
+			return { status: 'aborted', reason: error };
+		}
+		// Remove all redo actions from history
+		if (action_history_index < action_history.length) {
+			action_history = action_history.slice(0, action_history_index);
+			const freed_actions = action_history.slice(action_history_index, action_history.length);
+			for (let freed_action of freed_actions) {
+				freed_action.free();
+			}
+		}
+		// Add the new action to history
+		action_history.push(action);
+		if (action_history.length > action_history_max) {
+			action_history.shift();
+		} else {
+			action_history_index++;
+		}
+		return { status: 'completed' };
+	}
+
+	can_redo() {
+		return action_history_index < action_history.length;
+	}
+
+	can_undo() {
+		return action_history_index > 0;
+	}
+
+	async redo_action() {
+		if (this.can_redo()) {
+			const action = action_history[action_history_index];
+			await action.do();
+			action_history_index++;
+		}
+	}
+
+	async undo_action() {
+		if (this.can_undo()) {
+			action_history_index--;
+			await action_history[action_history_index].undo();
+		}
 	}
 
 	save() {
@@ -105,6 +161,8 @@ class Base_state_class {
 	 * supports multiple levels undo system
 	 */
 	undo() {
+		this.undo_action();
+		/*
 		if (this.enabled == false || this.layers_archive[0] == undefined) {
 			//not saved yet
 			alertify.error('Undo is not available.');
@@ -145,6 +203,11 @@ class Base_state_class {
 
 		this.Base_layers.select(data.layer_active);
 		this.layers_archive.shift(); //remove used state
+		*/
+	}
+
+	redo() {
+		this.redo_action();
 	}
 
 	/**

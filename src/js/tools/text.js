@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import zoomView from './../libs/zoomView.js';
 import Base_tools_class from './../core/base-tools.js';
@@ -2037,14 +2038,17 @@ class Text_class extends Base_tools_class {
 			this.selecting = true;
 			this.layer = existingLayer;
 			const editor = this.get_editor(this.layer);
-			this.Base_layers.select(existingLayer.id);
 			editor.trigger_cursor_start(this.layer, -1 + mouse.x - this.layer.x, mouse.y - this.layer.y);
+			app.State.do_action(
+				new app.Actions.Bundle_action('select_text_layer', 'Select Text Layer', [
+					new app.Actions.Select_layer_action(existingLayer.id)
+				])
+			);
 			this.Base_selection.set_selection(this.layer.x, this.layer.y, this.layer.width, this.layer.height);
 		}
 		else {
 			// Create a new text layer
 			this.creating = true;
-			window.State.save();
 			const layer = {
 				type: this.name,
 				params: {
@@ -2062,7 +2066,11 @@ class Text_class extends Base_tools_class {
 				rotate: null,
 				is_vector: true,
 			};
-			this.Base_layers.insert(layer);
+			app.State.do_action(
+				new app.Actions.Bundle_action('new_text_layer', 'New Text Layer', [
+					new app.Actions.Insert_layer_action(layer)
+				])
+			);
 			this.layer = config.layer;
 			this.Base_selection.set_selection(mouse.x, mouse.y, 0, 0);
 		}

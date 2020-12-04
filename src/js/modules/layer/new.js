@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import GUI_tools_class from './../../core/gui/gui-tools.js';
@@ -31,9 +32,10 @@ class Layer_new_class {
 		}, false);
 	}
 
-	new () {
-		window.State.save();
-		this.Base_layers.insert();
+	new() {
+		app.State.do_action(
+			new app.Actions.Insert_layer_action()
+		);
 	}
 
 	new_selection() {
@@ -83,7 +85,9 @@ class Layer_new_class {
 			type: 'image',
 			data: canvas.toDataURL("image/png"),
 		};
-		this.Base_layers.insert(params, false);
+		app.State.do_action(
+			new app.Actions.Insert_layer_action(params, false)
+		);
 		
 		this.Selection.on_leave();
 		this.GUI_tools.activate_tool('select');

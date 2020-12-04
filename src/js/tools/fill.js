@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -117,7 +118,11 @@ class Fill_class extends Base_tools_class {
 			params.y = parseInt(canvas.dataset.y) || 0;
 			params.width = canvas.width;
 			params.height = canvas.height;
-			this.Base_layers.insert(params);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill', 'Fill', [
+					new app.Actions.Insert_layer_action(params)
+				])
+			);
 		}
 
 		//prevent crash bug on touch screen - hard to explain and debug

@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -87,39 +88,40 @@ class File_new_class {
 			width = dim[0];
 			height = dim[1];
 		}
-		if (transparency == true)
-			config.TRANSPARENCY = true;
-		else
-			config.TRANSPARENCY = false;
 
-		config.WIDTH = parseInt(width);
-		config.HEIGHT = parseInt(height);
-		config.ALPHA = 255;
-		config.COLOR = '#008000';
-		config.mouse = {};
-		config.visible_width = null;
-		config.visible_height = null;
-		this.Base_gui.prepare_canvas();
+		// Prepare layers		
+		app.State.do_action(
+			new app.Actions.Bundle_action('new_file', 'New File', [
+				new app.Actions.Prepare_canvas_action('undo'),
+				new app.Actions.Update_config_action({
+					TRANSPARENCY: !!transparency,
+					WIDTH: parseInt(width),
+					HEIGHT: parseInt(height),
+					ALPHA: 255,
+					COLOR: '#008000',
+					mouse: {},
+					visible_width: null,
+					visible_height: null
+				}),
+				new app.Actions.Prepare_canvas_action('do'),
+				new app.Actions.Reset_layers_action(),
+				new app.Actions.Init_canvas_zoom_action(),
+				new app.Actions.Insert_layer_action({})
+			])
+		);
 
-		//prepare layers
-		this.Base_layers.reset_layers();
-		this.Base_layers.init_zoom_lib();
-		this.Base_layers.insert({});
-		config.need_render = true;
-
-		//last resolution
+		// Last resolution
 		var last_resolution = JSON.stringify([config.WIDTH, config.HEIGHT]);
 		this.Helper.setCookie('last_resolution', last_resolution);
 
-		//save_resolution
+		// Save resolution
 		if (save_resolution) {
 			this.Helper.setCookie('save_resolution', 1);
 		}
 		else {
 			this.Helper.setCookie('save_resolution', 0);
 		}
-
-		//transparency
+		// Save transparency
 		if (transparency) {
 			this.Helper.setCookie('transparency', 1);
 		}

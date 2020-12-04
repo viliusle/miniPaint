@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
@@ -39,15 +40,20 @@ class Layer_flatten_class {
 		params.type = 'image';
 		params.name = 'Merged';
 		params.data = canvas.toDataURL("image/png");
-		this.Base_layers.insert(params);
 
-		//remove all layers
+		//remove rest of layers
+		let delete_actions = [];
 		for (var i = config.layers.length - 1; i >= 0; i--) {
-			if (config.layers[i].id == config.layer.id)
-				continue;
-
-			this.Base_layers.delete(config.layers[i].id);
+			delete_actions.push(new app.Actions.Delete_layer_action(config.layers[i].id));
 		}
+		console.log(delete_actions);
+		// Run actions
+		app.State.do_action(
+			new app.Actions.Bundle_action('flatten_image', 'Flatten Image', [
+				new app.Actions.Insert_layer_action(params),
+				...delete_actions
+			])
+		);
 
 		canvas.width = 1;
 		canvas.height = 1;

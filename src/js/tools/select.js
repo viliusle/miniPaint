@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -64,9 +65,9 @@ class Select_tool_class extends Base_tools_class {
 
 		//keyboard actions
 		document.addEventListener('keydown', (e) => {
-			if (config.TOOL.name != _this.name)
+			if (config.TOOL.name != this.name)
 				return;
-			if (_this.POP.active == true)
+			if (this.POP.active == true)
 				return;
 			if (this.Helper.is_input(e.target))
 				return;
@@ -74,24 +75,26 @@ class Select_tool_class extends Base_tools_class {
 
 			//up
 			if (k == 38) {
-				_this.move(0, -1, e);
+				this.move(0, -1, e);
 			}
 			//down
 			else if (k == 40) {
-				_this.move(0, 1, e);
+				this.move(0, 1, e);
 			}
 			//right
 			else if (k == 39) {
-				_this.move(1, 0, e);
+				this.move(1, 0, e);
 			}
 			//left
 			else if (k == 37) {
-				_this.move(-1, 0, e);
+				this.move(-1, 0, e);
 			}
 			if (k == 46) {
 				//delete
-				if (config.TOOL.name == _this.name) {
-					_this.Base_layers.delete(config.layer.id);
+				if (config.TOOL.name == this.name) {
+					app.State.do_action(
+						new app.Actions.Delete_layer_action(config.layer.id)
+					);
 				}
 			}
 		});
@@ -166,7 +169,9 @@ class Select_tool_class extends Base_tools_class {
 			var canvas = this.Base_layers.convert_layer_to_canvas(value.id, null, false);
 
 			if (this.check_hit_region(e, canvas.getContext("2d")) == true) {
-				this.Base_layers.select(value.id);
+				app.State.do_action(
+					new app.Actions.Select_layer_action(value.id)
+				);
 				break;
 			}
 		}

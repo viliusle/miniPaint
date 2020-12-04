@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -64,8 +65,6 @@ class Rectangle_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		window.State.save();
-
 		//register new object - current layer is not ours or params changed
 		this.layer = {
 			type: this.name,
@@ -76,7 +75,11 @@ class Rectangle_class extends Base_tools_class {
 			y: mouse.y,
 			is_vector: true,
 		};
-		this.Base_layers.insert(this.layer);
+		app.State.do_action(
+			new app.Actions.Bundle_action('rectangle', 'Rectangle', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
 	}
 
 	mousemove(e) {
@@ -142,7 +145,9 @@ class Rectangle_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			this.Base_layers.delete(config.layer.id);
+			app.State.do_action(
+				new app.Actions.Delete_layer_action(config.layer.id)
+			);
 			return;
 		}
 
