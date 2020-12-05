@@ -330,9 +330,9 @@ class Base_layers_class {
 				link: null,
 				x: 0,
 				y: 0,
-				width: 0,
+				width: null,
 				width_original: null,
-				height: 0,
+				height: null,
 				height_original: null,
 				visible: true,
 				is_vector: false,
@@ -366,8 +366,8 @@ class Base_layers_class {
 					layer.is_vector = true;
 				}
 
-				if (config.layers.length == 1 && config.layer.width == 0
-					&& config.layer.height == 0 && config.layer.data == null) {
+				if (config.layers.length == 1 && (config.layer.width == 0 || config.layer.width === null)
+					&& (config.layer.height == 0 || config.layer.height === null) && config.layer.data == null) {
 					//remove first empty layer?
 					_this.delete(config.layer.id, true);
 				}
@@ -375,9 +375,9 @@ class Base_layers_class {
 				if (layer.link == null) {
 					if (typeof layer.data == 'object') {
 						//load actual image
-						if (layer.width == 0)
+						if (layer.width == 0 || layer.width === null)
 							layer.width = layer.data.width;
-						if (layer.height == 0)
+						if (layer.height == 0 || layer.height === null)
 							layer.height = layer.data.height;
 						layer.link = layer.data.cloneNode(true);
 						layer.link.onload = function () {
@@ -392,9 +392,9 @@ class Base_layers_class {
 						layer.link = new Image();
 						layer.link.onload = function () {
 							//update dimensions
-							if (layer.width == 0)
+							if (layer.width == 0 || layer.width === null)
 								layer.width = layer.link.width;
-							if (layer.height == 0)
+							if (layer.height == 0 || layer.height === null)
 								layer.height = layer.link.height;
 							if (layer.width_original == null)
 								layer.width_original = layer.width;
@@ -423,7 +423,7 @@ class Base_layers_class {
 			}
 
 			if (settings != undefined && config.layers.length > 0
-				&& config.layer.width == 0 && config.layer.height == 0
+				&& (config.layer.width == 0 || config.layer.width === null) && (config.layer.height == 0 || config.layer.height === null)
 				&& config.layer.data == null && layer.type != 'image' && can_automate !== false) {
 				//update existing layer, because its empty
 				for (var i in layer) {
