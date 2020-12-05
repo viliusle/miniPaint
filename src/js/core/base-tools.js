@@ -139,16 +139,12 @@ class Base_tools_class {
 
 		if (event.changedTouches) {
 			//using touch events
-			event = event.changedTouches[0];	//@todo - also use others?
+			event = event.changedTouches[0];
 		}
 
-		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
-		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
-
-		//adapt coords to ZOOM
-		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
-		mouse_x = global_pos.x;
-		mouse_y = global_pos.y;
+		var mouse_coords = this.get_mouse_coordinates_from_event(event);
+		var mouse_x = mouse_coords.x;
+		var mouse_y = mouse_coords.y;
 
 		var start_pos = this.Base_layers.get_world_coords(0, 0);
 		var x_rel = mouse_x - start_pos.x;
@@ -177,6 +173,21 @@ class Base_tools_class {
 			this.mouse_move_last[0] = mouse_x;
 			this.mouse_move_last[1] = mouse_y;
 		}
+	}
+
+	get_mouse_coordinates_from_event(event){
+		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
+		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
+
+		//adapt coords to ZOOM
+		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
+		mouse_x = global_pos.x;
+		mouse_y = global_pos.y;
+
+		return {
+			x: mouse_x,
+			y: mouse_y,
+		};
 	}
 
 	get_mouse_info(event) {
@@ -263,7 +274,21 @@ class Base_tools_class {
 	}
 
 	getParams() {
-		return config.TOOL.attributes;
+		const params = {};
+		// Number inputs return the .value if defined as objects.
+		for (let attributeName in config.TOOL.attributes) {
+			const attribute = config.TOOL.attributes[attributeName];
+			if (!isNaN(attribute.value) && attribute.value != null) {
+				if (typeof attribute.value === 'string') {
+					params[attributeName] = attribute;
+				} else {
+					params[attributeName] = attribute.value;
+				}
+			} else {
+				params[attributeName] = attribute;
+			}
+		}
+		return params;
 	}
 
 	adaptSize(value, type = "width") {

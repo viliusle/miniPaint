@@ -1,9 +1,13 @@
 .wrapper{
 	display: -ms-grid;
 	display: grid;
-	height: calc(100vh - 30px);
 	margin: 0;
-	position: relative;
+	position: fixed; /* dont change it, vh does not work on mobiles with bottom footer */
+	top: 30px;
+	right: 0;
+	left: 0;
+	bottom: 5px;
+	height: auto;
 	overflow: hidden;
 
 	-ms-grid-rows: auto 1fr;
@@ -514,10 +518,12 @@ body .sp-preview{
 		position: absolute;
 		height: 100%;
 		right: -210px;
+		background: var(--background);
 	}
 	.sidebar_right.active{
 		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 		right: 0;
+		margin-right: 0;
 	}
 }
 
@@ -537,9 +543,11 @@ body .sp-preview{
 }
 .canvas_wrapper canvas{
 	position: absolute;
-	border: 1px solid var(--border-color);
 	box-sizing: content-box;
 	font-kerning: normal !important;
+}
+.loaded .canvas_wrapper canvas{
+	border: 1px solid var(--border-color);
 }
 #mouse{
 	position:absolute;
@@ -621,6 +629,9 @@ canvas{
 @media screen and (max-width:700px){
 	body{
 		padding-top:50px;
+	}
+	.wrapper{
+		top: 50px;
 	}
 }
 @media screen and (max-width:550px){

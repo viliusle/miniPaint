@@ -71,8 +71,8 @@ class Rectangle_class extends Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: mouse.x,
-			y: mouse.y,
+			x: Math.round(mouse.x),
+			y: Math.round(mouse.y),
 			is_vector: true,
 		};
 		app.State.do_action(
@@ -92,25 +92,32 @@ class Rectangle_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
 
 		if (params.square == true) {
-			if (Math.abs(width) < Math.abs(height)) {
-				if (width > 0)
-					width = Math.abs(height);
-				else
-					width = -Math.abs(height);
+			if (width < height) {
+				width = height;
+			} else {
+				height = width;
 			}
-			else {
-				if (height > 0)
-					height = Math.abs(width);
-				else
-					height = -Math.abs(width);
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
 			}
 		}
 
 		//more data
+		config.layer.x = x;
+		config.layer.y = y;
 		config.layer.width = width;
 		config.layer.height = height;
 		this.Base_layers.render();
@@ -124,22 +131,27 @@ class Rectangle_class extends Base_tools_class {
 			config.layer.status = null;
 			return;
 		}
-
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
 
 		if (params.square == true) {
-			if (Math.abs(width) < Math.abs(height)) {
-				if (width > 0)
-					width = Math.abs(height);
-				else
-					width = -Math.abs(height);
+			if (width < height) {
+				width = height;
+			} else {
+				height = width;
 			}
-			else {
-				if (height > 0)
-					height = Math.abs(width);
-				else
-					height = -Math.abs(width);
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
 			}
 		}
 
@@ -152,6 +164,8 @@ class Rectangle_class extends Base_tools_class {
 		}
 
 		//more data
+		config.layer.x = x;
+		config.layer.y = y;
 		config.layer.width = width;
 		config.layer.height = height;
 		config.layer.status = null;
@@ -187,35 +201,6 @@ class Rectangle_class extends Base_tools_class {
 	}
 
 	/**
-	 * draws rectangle
-	 * 
-	 * @param {CanvasRenderingContext2D} ctx
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @param {Number} width
-	 * @param {Number} height
-	 * @param {Boolean} fill
-	 */
-	rectangle(ctx, x, y, width, height, fill) {
-		x = x + 0.5;
-		y = y + 0.5;
-		width--;
-		height--;
-		if (typeof fill == "undefined")
-			fill = false;
-
-		ctx.beginPath();
-		ctx.rect(x, y, width, height);
-
-		if (fill) {
-			ctx.fill();
-		}
-		else {
-			ctx.stroke();
-		}
-	}
-	
-	/**
 	 * Draws a rounded rectangle on canvas.
 	 * 
 	 * @param {CanvasRenderingContext2D} ctx
@@ -239,7 +224,8 @@ class Rectangle_class extends Base_tools_class {
 			height = Math.abs(height);
 			y = y - height;
 		}
-		
+		var smaller_dimension = Math.min(width, height);
+
 		radius = parseInt(radius);
 		if (typeof fill == 'undefined') {
 			fill = false;
@@ -250,24 +236,29 @@ class Rectangle_class extends Base_tools_class {
 		radius = Math.min(radius, width / 2, height / 2);
 		radius = Math.floor(radius);
 		
-		//make it nicer
-		x = x + 0.5;
-		y = y + 0.5;
-		width--;
-		height--;
+		// Odd dimensions must draw offset half a pixel
+		if (width % 2 == 1) {
+			x -= 0.5;
+		}
+		if (height % 2 == 1) {
+			y -= 0.5;
+		}
+
+		var stroke_offset = !fill && ctx.lineWidth % 2 == 1 && width > 1 && height > 1 ? 0.5 : 0;
 		
+		if (smaller_dimension < 2) fill = true;
+
 		radius = {tl: radius, tr: radius, br: radius, bl: radius};
-		
 		ctx.beginPath();
-		ctx.moveTo(x + radius.tl, y);
-		ctx.lineTo(x + width - radius.tr, y);
-		ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-		ctx.lineTo(x + width, y + height - radius.br);
-		ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-		ctx.lineTo(x + radius.bl, y + height);
-		ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-		ctx.lineTo(x, y + radius.tl);
-		ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+		ctx.moveTo(x + radius.tl + stroke_offset, y + stroke_offset);
+		ctx.lineTo(x + width - radius.tr - stroke_offset, y + stroke_offset);
+		ctx.quadraticCurveTo(x + width - stroke_offset, y + stroke_offset, x + width - stroke_offset, y + radius.tr + stroke_offset);
+		ctx.lineTo(x + width - stroke_offset, y + height - radius.br - stroke_offset);
+		ctx.quadraticCurveTo(x + width - stroke_offset, y + height - stroke_offset, x + width - radius.br - stroke_offset, y + height - stroke_offset);
+		ctx.lineTo(x + radius.bl + stroke_offset, y + height - stroke_offset);
+		ctx.quadraticCurveTo(x + stroke_offset, y + height - stroke_offset, x + stroke_offset, y + height - radius.bl - stroke_offset);
+		ctx.lineTo(x + stroke_offset, y + radius.tl + stroke_offset);
+		ctx.quadraticCurveTo(x + stroke_offset, y + stroke_offset, x + radius.tl + stroke_offset, y + stroke_offset);
 		ctx.closePath();
 		if (fill) {
 			ctx.fill();
