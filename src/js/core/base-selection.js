@@ -171,8 +171,10 @@ class Base_selection_class {
 
 		this.ctx.save();
 		this.ctx.globalAlpha = 1;
+		let isRotated = false;
 		if (data.rotate != null && data.rotate != 0) {
 			//rotate
+			isRotated = true;
 			this.ctx.translate(data.x + data.width / 2, data.y + data.height / 2);
 			this.ctx.rotate(data.rotate * Math.PI / 180);
 			x = Math.round(-data.width / 2);
@@ -199,11 +201,10 @@ class Base_selection_class {
 			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + doubleLineWidth, h + doubleLineWidth);
 		}
 
-		const hitsLeftEdge = x < handle_size;
-		const hitsTopEdge = y < handle_size;
-		const hitsRightEdge = x + w > config.WIDTH - handle_size;
-		const hitsBottomEdge = y + h > config.HEIGHT - handle_size;
-		const hitsAnyEdge = hitsLeftEdge || hitsTopEdge || hitsRightEdge || hitsBottomEdge;
+		const hitsLeftEdge = isRotated ? false : x < handle_size;
+		const hitsTopEdge = isRotated ? false : y < handle_size;
+		const hitsRightEdge = isRotated ? false : x + w > config.WIDTH - handle_size;
+		const hitsBottomEdge = isRotated ? false : y + h > config.HEIGHT - handle_size;
 
 		//draw corners
 		var corner = (x, y, dx, dy, drag_type) => {
@@ -220,9 +221,11 @@ class Base_selection_class {
 				size: block_size,
 			};
 
+			let fillColor = "#008800";
 			if (settings.enable_controls == false || angle > 0) {
 				this.ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
 				this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+				fillColor = "rgba(0, 127, 0, 0.4)";
 			}
 			else {
 				this.ctx.strokeStyle = "#000000";
@@ -236,7 +239,7 @@ class Base_selection_class {
 			this.ctx.fill();
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.fillStyle = "#008800";
+			this.ctx.fillStyle = fillColor;
 			this.ctx.arc(x + dx * block_size, y + dy * block_size, block_size / 2.8, 0, 2 * Math.PI);
 			this.ctx.fill();
 		};
