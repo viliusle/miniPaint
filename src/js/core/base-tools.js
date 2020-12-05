@@ -274,7 +274,21 @@ class Base_tools_class {
 	}
 
 	getParams() {
-		return config.TOOL.attributes;
+		const params = {};
+		// Number inputs return the .value if defined as objects.
+		for (let attributeName in config.TOOL.attributes) {
+			const attribute = config.TOOL.attributes[attributeName];
+			if (!isNaN(attribute.value) && attribute.value != null) {
+				if (typeof attribute.value === 'string') {
+					params[attributeName] = attribute;
+				} else {
+					params[attributeName] = attribute.value;
+				}
+			} else {
+				params[attributeName] = attribute;
+			}
+		}
+		return params;
 	}
 
 	adaptSize(value, type = "width") {
