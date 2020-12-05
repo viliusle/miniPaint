@@ -210,7 +210,7 @@ class Base_selection_class {
 		var corner = (x, y, dx, dy, drag_type) => {
 			// var block_size = Math.round(block_size_default / 2) * 2;
 			var angle = 0;
-			if (settings.data.rotate != null && settings.data.rotate > 0) {
+			if (settings.data.rotate != null && settings.data.rotate != 0) {
 				angle = settings.data.rotate;
 			}
 
@@ -222,7 +222,7 @@ class Base_selection_class {
 			};
 
 			let fillColor = "#008800";
-			if (settings.enable_controls == false || angle > 0) {
+			if (settings.enable_controls == false || angle != 0) {
 				this.ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
 				this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 				fillColor = "rgba(0, 127, 0, 0.4)";
