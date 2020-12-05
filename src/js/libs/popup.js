@@ -172,19 +172,18 @@ class Dialog_class {
 			_this.resize_clicked.y = event.pageY;
 
 			var target = document.querySelector('#popup');
-			_this.element_offset.x = target.offsetTop;
-			_this.element_offset.y = target.offsetLeft;
+			_this.element_offset.x = target.offsetLeft;
+			_this.element_offset.y = target.offsetTop;
 		}, false);
 
 		document.addEventListener('mousemove', function (event) {
-			event.preventDefault();
 			if(_this.resize_clicked.x != null){
 				var dx = _this.resize_clicked.x - event.pageX;
 				var dy = _this.resize_clicked.y - event.pageY;
 
 				var target = document.querySelector('#popup');
-				target.style.top = (_this.element_offset.x - dy) + "px";
-				target.style.left = (_this.element_offset.y - dx) + "px";
+				target.style.left = (_this.element_offset.x - dx) + "px";
+				target.style.top = (_this.element_offset.y - dy) + "px";
 			}
 		}, false);
 
@@ -325,10 +324,13 @@ class Dialog_class {
 		//preview area
 		if (this.preview !== false) {
 			html_preview_content += '<div class="preview_container">';
-			html_preview_content += '<canvas class="preview_canvas_left" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_pre"></canvas>';
+			html_preview_content += '<canvas class="preview_canvas_left" width="' + this.width_mini + '" height="'
+				+ this.height_mini + '" id="pop_pre"></canvas>';
 			html_preview_content += '<div class="canvas_preview_container">';
-			html_preview_content += '	<canvas class="preview_canvas_post_back" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
-			html_preview_content += '	<canvas class="preview_canvas_post" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post"></canvas>';
+			html_preview_content += '	<canvas class="preview_canvas_post_back" width="' + this.width_mini
+				+ '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
+			html_preview_content += '	<canvas class="preview_canvas_post" width="' + this.width_mini + '" height="'
+				+ this.height_mini + '" id="pop_post"></canvas>';
 			html_preview_content += '</div>';
 			html_preview_content += '</div>';
 		}
@@ -431,7 +433,8 @@ class Dialog_class {
 				if (parameter.values != undefined) {
 					if (parameter.values.length > 10 || parameter.type == 'select') {
 						//drop down
-						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" id="pop_data_' + parameter.name + '">';
+						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" id="pop_data_' + parameter.name
+							+ '">';
 						var k = 0;
 						for (var j in parameter.values) {
 							var sel = '';
@@ -439,7 +442,8 @@ class Dialog_class {
 								sel = 'selected="selected"';
 							if (parameter.value == undefined && k == 0)
 								sel = 'selected="selected"';
-							html += '<option ' + sel + ' name="' + parameter.values[j] + '">' + parameter.values[j] + '</option>';
+							html += '<option ' + sel + ' name="' + parameter.values[j] + '">' + parameter.values[j]
+								+ '</option>';
 							k++;
 						}
 						html += '</select></td>';
@@ -463,8 +467,11 @@ class Dialog_class {
 								title = parts[0] + ' - <span class="trn">' + parts[1] + '</span>';
 							}
 
-							html += '<input type="radio" onchange="POP.onChangeEvent();" ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
+							html += '<input type="radio" onchange="POP.onChangeEvent();" ' + ch + ' name="'
+								+ parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="'
+								+ parameter.values[j] + '">';
+							html += '<label class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title
+								+ '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;
@@ -481,25 +488,35 @@ class Dialog_class {
 						step = parameter.step;
 					if (parameter.range != undefined) {
 						//range
-						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="' + parameter.range[1] + '" step="' + step + '" oninput="document.getElementById(\'pv' + i + '\').innerHTML=Math.round(this.value*100)/100;POP.preview_handler();" onchange="POP.onChangeEvent();" /></td>';
+						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name
+							+ '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="'
+							+ parameter.range[1] + '" step="' + step
+							+ '" oninput="document.getElementById(\'pv' + i + '\').innerHTML = '
+							+ 'Math.round(this.value*100) / 100;POP.preview_handler();" '
+							+'onchange="POP.onChangeEvent();" /></td>';
 						html += '<td class="range_value" id="pv' + i + '">' + parameter.value + '</td>';
 					}
 					else if (parameter.type == 'color') {
 						//color
-						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" onchange="POP.onChangeEvent();" /></td>';
+						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value
+							+ '" onchange="POP.onChangeEvent();" /></td>';
 					}
 					else if (typeof parameter.value == 'boolean') {
 						var checked = '';
 						if (parameter.value === true)
 							checked = 'checked';
-						html += '<td class="checkbox"><input type="checkbox" id="pop_data_' + parameter.name + '" ' + checked + ' onclick="POP.onChangeEvent();" > <label class="trn" for="pop_data_' + parameter.name + '">Toggle</label></td>';
+						html += '<td class="checkbox"><input type="checkbox" id="pop_data_' + parameter.name + '" '
+							+ checked + ' onclick="POP.onChangeEvent();" > <label class="trn" for="pop_data_'
+							+ parameter.name + '">Toggle</label></td>';
 					}
 					else {
 						//input or textarea
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
 						if (parameter.type == 'textarea') {
-							html += '<td><textarea rows="10" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
+							html += '<td><textarea rows="10" id="pop_data_' + parameter.name
+								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">'
+								+ parameter.value + '</textarea></td>';
 						}
 						else {
 							var input_type = "text";
@@ -508,7 +525,9 @@ class Dialog_class {
 							if (parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 
-							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" /></td>';
+							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name
+								+ '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="'
+								+ parameter.placeholder + '" /></td>';
 						}
 					}
 				}
@@ -533,9 +552,11 @@ class Dialog_class {
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '">' + parameter.value + '</div></td>';
+					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '">' + parameter.value
+						+ '</div></td>';
 				else
-					html += '<td class="long_text_value" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
+					html += '<td class="long_text_value" colspan="2"><textarea disabled="disabled">' + parameter.value
+						+ '</textarea></td>';
 			}
 			html += '</tr>';
 		}
