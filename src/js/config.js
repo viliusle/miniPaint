@@ -150,7 +150,10 @@ config.TOOLS = [
 		title: 'Rectangle',
 		attributes: {
 			size: 1,
-			radius: 0,
+			radius: {
+				value: 0,
+				min: 0,
+			},
 			fill: true,
 			square: false,
 		},
