@@ -546,11 +546,6 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Color to Alpha',
-				ellipsis: true,
-				target: 'tools/color_to_alpha.color_to_alpha'
-			},
-			{
 				name: 'Color Zoom',
 				ellipsis: true,
 				target: 'tools/color_zoom.color_zoom'

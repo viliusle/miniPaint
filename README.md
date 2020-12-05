@@ -37,7 +37,7 @@ Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic
 Tilt Shift, Vignette, Vibrance, Vintage, Blueprint, Night Vision, Pencil, also Instagram Filters: 1977, Aden, Clarendon, 
 Gingham, Inkwell, Lo-fi, Toaster, Valencia, X-Pro II.
 - **Tools**: pencil, brush, magic wand, erase, fill, color picker, letters, crop, blur, sharpen, desaturate, clone,
- borders, sprites, key-points, color to alpha, color zoom, replace color, restore alpha, content fill.
+ borders, sprites, key-points, color zoom, replace color, restore alpha, content fill.
 - **Help**: keyboard shortcuts, translations.
 
 ## Embed
