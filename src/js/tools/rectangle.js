@@ -72,8 +72,8 @@ class Rectangle_class extends Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: mouse.x,
-			y: mouse.y,
+			x: Math.round(mouse.x),
+			y: Math.round(mouse.y),
 			is_vector: true,
 		};
 		this.Base_layers.insert(this.layer);
@@ -89,8 +89,8 @@ class Rectangle_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		var width = Math.round(mouse.x) - this.layer.x;
+		var height = Math.round(mouse.y) - this.layer.y;
 
 		if (params.square == true) {
 			if (Math.abs(width) < Math.abs(height)) {
@@ -122,8 +122,8 @@ class Rectangle_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		var width = Math.round(mouse.x) - this.layer.x;
+		var height = Math.round(mouse.y) - this.layer.y;
 
 		if (params.square == true) {
 			if (Math.abs(width) < Math.abs(height)) {
@@ -245,11 +245,13 @@ class Rectangle_class extends Base_tools_class {
 		radius = Math.min(radius, width / 2, height / 2);
 		radius = Math.floor(radius);
 		
-		//make it nicer
-		x = x + 0.5;
-		y = y + 0.5;
-		width--;
-		height--;
+		// Odd dimensions must draw offset half a pixel
+		if (width % 2 == 1) {
+			x -= 0.5;
+		}
+		if (height % 2 == 1) {
+			y -= 0.5;
+		}
 		
 		radius = {tl: radius, tr: radius, br: radius, bl: radius};
 		
