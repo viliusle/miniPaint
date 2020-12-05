@@ -422,8 +422,14 @@ class File_open_class {
 		this.Base_layers.reset_layers();
 		this.Base_gui.prepare_canvas();
 
+		var max_id_order = 0;
 		for (var i in json.layers) {
 			var value = json.layers[i];
+
+			if(value.id > max_id_order)
+				max_id_order = value.id;
+			if(typeof value.order != undefined && value.order > max_id_order)
+				max_id_order = value.order;
 
 			if (value.type == 'image') {
 				//add image data
@@ -437,6 +443,7 @@ class File_open_class {
 
 			this.Base_layers.insert(value, false);
 		}
+		this.Base_layers.auto_increment = max_id_order + 1;
 		if(json.info.layer_active != undefined) {
 			this.Base_layers.select(json.info.layer_active);
 		}
