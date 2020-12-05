@@ -165,6 +165,7 @@ const menuDefinition = [
 			{
 				name: 'Resize',
 				ellipsis: true,
+				shortcut: 'R',
 				target: 'image/resize.resize'
 			},
 			{
@@ -205,6 +206,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Auto Adjust Colors',
+				shortcut: 'F',
 				target: 'image/auto_adjust.auto_adjust'
 			},
 			{
@@ -250,6 +252,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Duplicate',
+				shortcut: 'D',
 				target: 'layer/duplicate.duplicate'
 			},
 			{
