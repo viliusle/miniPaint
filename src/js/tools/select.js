@@ -2,6 +2,7 @@ import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_selection_class from './../core/base-selection.js';
+import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
 
 class Select_tool_class extends Base_tools_class {
@@ -10,6 +11,7 @@ class Select_tool_class extends Base_tools_class {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.POP = new Dialog_class();
+		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'select';
 		this.saved = false;
@@ -61,12 +63,12 @@ class Select_tool_class extends Base_tools_class {
 		});
 
 		//keyboard actions
-		document.addEventListener('keydown', function (e) {
+		document.addEventListener('keydown', (e) => {
 			if (config.TOOL.name != _this.name)
 				return;
 			if (_this.POP.active == true)
 				return;
-			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.tagName == 'SELECT')
+			if (this.Helper.is_input(e.target))
 				return;
 			var k = e.keyCode;
 
@@ -99,10 +101,16 @@ class Select_tool_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
-		if (this.Base_selection.mouse_lock != null)
+		if (this.Base_selection.mouse_lock != null) {
+			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
+			if (config.layer.type === 'text' && config.layer.params && config.layer.params.boundary === 'dynamic') {
+				config.layer.params.boundary = 'box';
+			}
 			return;
+		}
 
 		this.auto_select_object(e);
+		this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 		this.saved = false;
 
 		this.last_post = {

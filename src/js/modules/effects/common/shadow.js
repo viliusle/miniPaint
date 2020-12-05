@@ -1,6 +1,6 @@
-import config from './../../config.js';
-import Effects_common_class from './abstract/css.js';
-import Dialog_class from './../../libs/popup.js';
+import config from '../../../config.js';
+import Effects_common_class from '../abstract/css.js';
+import Dialog_class from '../../../libs/popup.js';
 
 class Effects_brightness_class extends Effects_common_class {
 
@@ -35,7 +35,31 @@ class Effects_brightness_class extends Effects_common_class {
 			+ params.color;
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//draw
+		var size = this.convert_value(null, {x: 5, y: 5, value: 5, color: '#000000'}, 'preview');
+		ctx.filter = "drop-shadow("+size+")";
+		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.filter = 'none';
+	}
+
+	render_pre(ctx, data) {
+		var value = this.convert_value(data.params.value, data.params, 'save');
+		var filter = 'drop-shadow(' + value + ')';
+
+		if(ctx.filter == 'none')
+			ctx.filter = filter;
+		else
+			ctx.filter += ' ' + filter;
+	}
+
+	render_post(ctx, data){
+		ctx.filter = 'none';
+	}
+
 }
-;
 
 export default Effects_brightness_class;

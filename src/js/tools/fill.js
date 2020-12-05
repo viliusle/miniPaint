@@ -12,6 +12,7 @@ class Fill_class extends Base_tools_class {
 		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'fill';
+		this.working = false;
 	}
 
 	dragStart(event) {
@@ -50,8 +51,12 @@ class Fill_class extends Base_tools_class {
 		this.fill(mouse);
 	}
 
-	fill(mouse) {
+	async fill(mouse) {
 		var params = this.getParams();
+
+		if(this.working == true){
+			return;
+		}
 
 		if (config.layer.type != 'image' && config.layer.type !== null) {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
@@ -94,6 +99,7 @@ class Fill_class extends Base_tools_class {
 		color_to.a = config.ALPHA;
 
 		//change
+		this.working = true;
 		this.fill_general(ctx, config.WIDTH, config.HEIGHT,
 			mouse_x, mouse_y, color_to, params.power, params.anti_aliasing, params.contiguous);
 
@@ -113,6 +119,10 @@ class Fill_class extends Base_tools_class {
 			params.height = canvas.height;
 			this.Base_layers.insert(params);
 		}
+
+		//prevent crash bug on touch screen - hard to explain and debug
+		await new Promise(r => setTimeout(r, 10));
+		this.working = false;
 	}
 
 	fill_general(context, W, H, x, y, color_to, sensitivity, anti_aliasing, contiguous = false) {

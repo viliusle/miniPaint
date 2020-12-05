@@ -22,11 +22,11 @@ class Erase_class extends Base_tools_class {
 		_this.mousedown(event);
 	}
 
-	dragMove(event) {
+	dragMove(event, is_touch) {
 		var _this = this;
 		if (config.TOOL.name != _this.name)
 			return;
-		_this.mousemove(event);
+		_this.mousemove(event, is_touch);
 
 		//mouse cursor
 		var mouse = _this.get_mouse_info(event);
@@ -52,7 +52,7 @@ class Erase_class extends Base_tools_class {
 			_this.dragStart(event);
 		});
 		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
+			_this.dragMove(event, false);
 		});
 		document.addEventListener('mouseup', function (event) {
 			_this.dragEnd(event);
@@ -63,7 +63,7 @@ class Erase_class extends Base_tools_class {
 			_this.dragStart(event);
 		});
 		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
+			_this.dragMove(event, true);
 		});
 		document.addEventListener('touchend', function (event) {
 			_this.dragEnd(event);
@@ -116,7 +116,7 @@ class Erase_class extends Base_tools_class {
 		this.tmpCanvasCtx.scale(
 			config.layer.width_original / config.layer.width,
 			config.layer.height_original / config.layer.height
-			);
+		);
 
 		//do erase
 		this.erase_general(this.tmpCanvasCtx, 'click', mouse, params.size, params.strict, params.circle);
@@ -126,7 +126,7 @@ class Erase_class extends Base_tools_class {
 		config.need_render = true;
 	}
 
-	mousemove(e) {
+	mousemove(e, is_touch) {
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		if (mouse.is_drag == false)
@@ -143,7 +143,7 @@ class Erase_class extends Base_tools_class {
 		}
 
 		//do erase
-		this.erase_general(this.tmpCanvasCtx, 'move', mouse, params.size, params.strict, params.circle);
+		this.erase_general(this.tmpCanvasCtx, 'move', mouse, params.size, params.strict, params.circle, is_touch);
 
 		//draw draft preview
 		config.need_render = true;
@@ -164,7 +164,7 @@ class Erase_class extends Base_tools_class {
 		this.tmpCanvasCtx = null;
 	}
 
-	erase_general(ctx, type, mouse, size, strict, is_circle) {
+	erase_general(ctx, type, mouse, size, strict, is_circle, is_touch) {
 		var mouse_x = Math.round(mouse.x) - config.layer.x;
 		var mouse_y = Math.round(mouse.y) - config.layer.y;
 		var alpha = config.ALPHA;
@@ -222,20 +222,8 @@ class Erase_class extends Base_tools_class {
 			ctx.restore();
 		}
 
-		//extra work if mouse moving fast
-		if (type == 'move' && is_circle == true && mouse_last_x != false && mouse_last_y != false) {
-			if (strict == false && is_circle == true) {
-				var radgrad = ctx.createRadialGradient(
-					mouse_x, mouse_y, size / 10,
-					mouse_x, mouse_y, size / 2);
-				if (alpha < 255)
-					radgrad.addColorStop(0, "rgba(255, 255, 255, " + alpha / 255 / 10 + ")");
-				else
-					radgrad.addColorStop(0, "rgba(255, 255, 255, 1)");
-				radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
-				ctx.strokeStyle = radgrad;
-			}
-
+		//extra work if mouse moving fast - fill gaps
+		if (type == 'move' && is_circle == true && mouse_last_x != false && mouse_last_y != false && is_touch !== true) {
 			ctx.save();
 			ctx.globalCompositeOperation = 'destination-out';
 

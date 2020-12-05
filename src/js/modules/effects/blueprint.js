@@ -15,32 +15,13 @@ class Effects_blueprint_class {
 	}
 
 	blueprint() {
-		var _this = this;
-
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
 
-		var settings = {
-			title: 'Blueprint',
-			preview: true,
-			effects: true,
-			params: [],
-			on_change: function (params, canvas_preview, w, h, canvas_) {
-				var data = _this.change(canvas_, canvas_.width, canvas_.height);
-				canvas_preview.clearRect(0, 0, canvas_.width, canvas_.height);
-				canvas_preview.drawImage(data, 0, 0);
-			},
-			on_finish: function (params) {
-				window.State.save();
-				_this.save(params);
-			},
-		};
-		this.POP.show(settings);
-	}
+		window.State.save();
 
-	save(params) {
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");
@@ -83,14 +64,14 @@ class Effects_blueprint_class {
 		var img = ctx.getImageData(0, 0, width, height);
 		var img = this.ImageFilters.BrightnessContrastPhotoshop(img, 80, 0);
 		ctx.putImageData(img, 0, 0);
-		
+
 		//merge
 		ctx2.globalCompositeOperation = "screen";
 		ctx2.filter = 'grayscale(1)';
 		ctx2.drawImage(canvas, 0, 0);
 		ctx2.globalCompositeOperation = "source-over";
 		ctx2.filter = 'none';
-		
+
 		//draw lines
 		this.draw_grid(ctx2, 20);
 		
@@ -161,6 +142,15 @@ class Effects_blueprint_class {
 		}
 	}
 
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var data = this.change(canvas, canvas_thumb.width, canvas_thumb.height);
+		ctx.drawImage(data, 0, 0);
+	}
 }
 
 export default Effects_blueprint_class;

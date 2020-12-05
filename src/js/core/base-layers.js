@@ -98,6 +98,7 @@ class Base_layers_class {
 
 	after_render() {
 		config.need_render = false;
+		config.need_render_changed_params = false;
 		this.ctx.restore();
 		zoomView.canvasDefault();
 	}
@@ -209,7 +210,7 @@ class Base_layers_class {
 	}
 
 	/**
-	 * export current 1ayers to given canvas
+	 * export current layers to given canvas
 	 *
 	 * @param {canvas.context} ctx
 	 * @param {object} object
@@ -219,28 +220,29 @@ class Base_layers_class {
 		if (object.visible == false || object.type == null)
 			return;
 
-		//apply filters
-		var filter_code = '';
+		//apply pre-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
+			filter.name = filter.name.replace('drop-shadow', 'shadow');
 
-			if (filter_code != '')
-				filter_code += ' ';
+			//find filter
+			var found = false;
+			for (var i in this.Base_gui.modules) {
+				if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
+					continue;
 
-			//load filter lib
-			var filter_file = filter.name.replace(/-/g, '_') + '.js';
-			if(filter_file == 'drop_shadow.js')
-				filter_file = 'shadow.js';
-			var filter_include = require("./../modules/effects/"+filter_file);
-			var filter_class = new filter_include.default();
-
-			var params_values = filter_class.convert_value(filter.params.value, filter.params, 'save');
-			filter_code += filter.name + "(" + params_values + ")";
+				var filter_class = this.Base_gui.modules[i];
+				var module_name = i.split("/").pop();
+				if(module_name == filter.name){
+					//found it
+					found = true;
+					filter_class.render_pre(ctx, filter, object);
+				}
+			}
+			if(found == false){
+				console.log('Error: can not find filter: ' + filter.name);
+			}
 		}
-		if (filter_code != '')
-			ctx.filter = filter_code;
-		else
-			ctx.filter = 'none';
 
 		//example with canvas object - other types should overwrite this method
 		if (object.type == 'image') {
@@ -280,7 +282,30 @@ class Base_layers_class {
 
 			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
 		}
-		ctx.filter = 'none';
+
+		//apply post-filters
+		for (var i in object.filters) {
+			var filter = object.filters[i];
+			filter.name = filter.name.replace('drop-shadow', 'shadow');
+
+			//find filter
+			var found = false;
+			for (var i in this.Base_gui.modules) {
+				if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
+					continue;
+
+				var filter_class = this.Base_gui.modules[i];
+				var module_name = i.split("/").pop();
+				if(module_name == filter.name){
+					//found it
+					found = true;
+					filter_class.render_post(ctx, filter, object);
+				}
+			}
+			if(found == false){
+				console.log('Error: can not find filter: ' + filter.name);
+			}
+		}
 	}
 
 	/**
@@ -305,9 +330,9 @@ class Base_layers_class {
 				link: null,
 				x: 0,
 				y: 0,
-				width: 0,
+				width: null,
 				width_original: null,
-				height: 0,
+				height: null,
 				height_original: null,
 				visible: true,
 				is_vector: false,
@@ -341,8 +366,8 @@ class Base_layers_class {
 					layer.is_vector = true;
 				}
 
-				if (config.layers.length == 1 && config.layer.width == 0
-					&& config.layer.height == 0 && config.layer.data == null) {
+				if (config.layers.length == 1 && (config.layer.width == 0 || config.layer.width === null)
+					&& (config.layer.height == 0 || config.layer.height === null) && config.layer.data == null) {
 					//remove first empty layer?
 					_this.delete(config.layer.id, true);
 				}
@@ -350,9 +375,9 @@ class Base_layers_class {
 				if (layer.link == null) {
 					if (typeof layer.data == 'object') {
 						//load actual image
-						if (layer.width == 0)
+						if (layer.width == 0 || layer.width === null)
 							layer.width = layer.data.width;
-						if (layer.height == 0)
+						if (layer.height == 0 || layer.height === null)
 							layer.height = layer.data.height;
 						layer.link = layer.data.cloneNode(true);
 						layer.link.onload = function () {
@@ -367,9 +392,9 @@ class Base_layers_class {
 						layer.link = new Image();
 						layer.link.onload = function () {
 							//update dimensions
-							if (layer.width == 0)
+							if (layer.width == 0 || layer.width === null)
 								layer.width = layer.link.width;
-							if (layer.height == 0)
+							if (layer.height == 0 || layer.height === null)
 								layer.height = layer.link.height;
 							if (layer.width_original == null)
 								layer.width_original = layer.width;
@@ -385,6 +410,9 @@ class Base_layers_class {
 							};
 							resolve(true);
 						};
+						layer.link.onerror = function () {
+							alertify.error('Sorry, image could not be loaded.');
+						};
 						layer.link.src = layer.data;
 						layer.link.crossOrigin = "Anonymous";
 					}
@@ -395,7 +423,7 @@ class Base_layers_class {
 			}
 
 			if (settings != undefined && config.layers.length > 0
-				&& config.layer.width == 0 && config.layer.height == 0
+				&& (config.layer.width == 0 || config.layer.width === null) && (config.layer.height == 0 || config.layer.height === null)
 				&& config.layer.data == null && layer.type != 'image' && can_automate !== false) {
 				//update existing layer, because its empty
 				for (var i in layer) {

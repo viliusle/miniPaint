@@ -3,13 +3,14 @@ import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
-class Magic_wand_class extends Base_tools_class {
+class Magic_erase_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.ctx = ctx;
-		this.name = 'magic_wand';
+		this.name = 'magic_erase';
+		this.working = false;
 	}
 
 	dragStart(event) {
@@ -45,11 +46,15 @@ class Magic_wand_class extends Base_tools_class {
 
 		window.State.save();
 
-		this.magic_wand(mouse);
+		this.magic_erase(mouse);
 	}
 
-	magic_wand(mouse) {
+	async magic_erase(mouse) {
 		var params = this.getParams();
+
+		if(this.working == true){
+			return;
+		}
 
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
@@ -79,14 +84,18 @@ class Magic_wand_class extends Base_tools_class {
 		mouse_y = Math.round(mouse_y);
 
 		//change
-		this.magic_wand_general(ctx, config.WIDTH, config.HEIGHT,
+		this.working = true;
+		this.magic_erase_general(ctx, config.WIDTH, config.HEIGHT,
 			mouse_x, mouse_y, params.power, params.anti_aliasing, params.contiguous);
 
 		this.Base_layers.update_layer_image(canvas);
+		//prevent crash bug on touch screen - hard to explain and debug
+		await new Promise(r => setTimeout(r, 10));
+		this.working = false;
 	}
 
 	/**
-	 * apply magic wand
+	 * apply magic erase
 	 *
 	 * @param {ctx} context
 	 * @param {int} W
@@ -96,7 +105,7 @@ class Magic_wand_class extends Base_tools_class {
 	 * @param {int} sensitivity max 100
 	 * @param {Boolean} anti_aliasing
 	 */
-	magic_wand_general(context, W, H, x, y, sensitivity, anti_aliasing, contiguous = false) {
+	magic_erase_general(context, W, H, x, y, sensitivity, anti_aliasing, contiguous = false) {
 		sensitivity = sensitivity * 255 / 100; //convert to 0-255 interval
 		x = parseInt(x);
 		y = parseInt(y);
@@ -154,6 +163,7 @@ class Magic_wand_class extends Base_tools_class {
 						&& Math.abs(imgData[k + 1] - color_from.g) <= sensitivity
 						&& Math.abs(imgData[k + 2] - color_from.b) <= sensitivity
 						&& Math.abs(imgData[k + 3] - color_from.a) <= sensitivity) {
+						//erase
 						imgData_tmp[k] = color_to.r; //r
 						imgData_tmp[k + 1] = color_to.g; //g
 						imgData_tmp[k + 2] = color_to.b; //b
@@ -198,4 +208,4 @@ class Magic_wand_class extends Base_tools_class {
 	}
 
 }
-export default Magic_wand_class;
+export default Magic_erase_class;

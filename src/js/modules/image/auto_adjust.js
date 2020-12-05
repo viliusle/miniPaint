@@ -1,6 +1,7 @@
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
+import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
@@ -16,21 +17,20 @@ class Image_autoAdjust_class {
 
 		this.POP = new Dialog_class();
 		this.Base_layers = new Base_layers_class();
+		this.Helper = new Helper_class();
 
 		this.set_events();
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 70 && event.ctrlKey != true && event.metaKey != true) {
 				//F - adjust
-				_this.auto_adjust();
+				this.auto_adjust();
 				event.preventDefault();
 			}
 		}, false);

@@ -93,9 +93,9 @@ class Line_class extends Base_tools_class {
 		if (e.ctrlKey == true || e.metaKey) {
 			//one direction only
 			if (Math.abs(width) < Math.abs(height))
-				width = 1;
+				width = 0;
 			else
-				height = 1;
+				height = 0;
 		}
 
 		//more data
@@ -123,9 +123,9 @@ class Line_class extends Base_tools_class {
 		if (e.ctrlKey == true || e.metaKey) {
 			//one direction only
 			if (Math.abs(width) < Math.abs(height))
-				width = 1;
+				width = 0;
 			else
-				height = 1;
+				height = 0;
 		}
 
 		//more data
@@ -148,14 +148,14 @@ class Line_class extends Base_tools_class {
 		ctx.lineWidth = params.size;
 		ctx.lineCap = 'round';
 
-		var width = layer.x + layer.width - 1;
-		var height = layer.y + layer.height - 1;
+		var width = layer.x + layer.width;
+		var height = layer.y + layer.height;
 
 		if (type == 'Simple') {
 			//draw line
 			ctx.beginPath();
-			ctx.moveTo(layer.x + 0.5, layer.y + 0.5);
-			ctx.lineTo(width + 0.5, height + 0.5);
+			ctx.moveTo(layer.x, layer.y);
+			ctx.lineTo(width, height);
 			ctx.stroke();
 		}
 		else if (type == 'Arrow') {
@@ -163,8 +163,8 @@ class Line_class extends Base_tools_class {
 			if (headlen < 15)
 				headlen = 15;
 			this.arrow(ctx,
-				layer.x + 0.5, layer.y + 0.5,
-				width + 0.5, height + 0.5,
+				layer.x, layer.y,
+				width, height,
 				headlen);
 		}
 		else if (type == 'Curve') {

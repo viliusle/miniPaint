@@ -73,6 +73,7 @@ class GUI_layers_class {
 			}
 			else if (target.id == 'delete_filter') {
 				//delete filter
+				window.State.save();
 				_this.Base_layers.delete_filter(target.dataset.pid, target.dataset.id);
 			}
 		});
