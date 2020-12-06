@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -88,7 +89,11 @@ class Magic_erase_class extends Base_tools_class {
 		this.magic_erase_general(ctx, config.WIDTH, config.HEIGHT,
 			mouse_x, mouse_y, params.power, params.anti_aliasing, params.contiguous);
 
-		this.Base_layers.update_layer_image(canvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('magic_erase_tool', 'Magic Eraser Tool', [
+				new app.Actions.Update_layer_image_action(canvas)
+			])
+		);
 		//prevent crash bug on touch screen - hard to explain and debug
 		await new Promise(r => setTimeout(r, 10));
 		this.working = false;

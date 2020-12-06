@@ -41,6 +41,7 @@ export class Select_layer_action extends Base_action {
 
         if (this.reset_selection_action) {
             await this.reset_selection_action.undo();
+            this.reset_selection_action.free();
             this.reset_selection_action = null;
         }
 
@@ -53,5 +54,9 @@ export class Select_layer_action extends Base_action {
 
     free() {
         this.old_layer = null;
+        if (this.reset_selection_action) {
+            this.reset_selection_action.free();
+            this.reset_selection_action = null;
+        }
     }
 }

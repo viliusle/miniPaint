@@ -411,16 +411,15 @@ class Base_layers_class {
 	 * @param {int} id
 	 * @param {int} value 0-100
 	 */
-	set_opacity(id, value) {
-		id = parseInt(id);
+	async set_opacity(id, value) {
 		value = parseInt(value);
 		if (value < 0 || value > 100) {
 			//reset
 			value = 100;
 		}
-		var link = this.get_layer(id);
-
-		link.opacity = value;
+		return app.State.do_action(
+			new app.Actions.Update_layer_action(id, { opacity: value })
+		);
 	}
 
 	/**
@@ -428,36 +427,10 @@ class Base_layers_class {
 	 *
 	 * @param {int} id
 	 */
-	layer_clear(id) {
-		id = parseInt(id);
-		var link = this.get_layer(id);
-
-		if (link.type == 'image') {
-			//clean image
-			link.link = null;
-		}
-
-		for (var i in link) {
-			//remove private attributes
-			if (i[0] == '_')
-				delete link[i];
-		}
-
-		link.x = 0;
-		link.y = 0;
-		link.width = 0;
-		link.height = 0;
-		link.visible = true;
-		link.opacity = 100;
-		link.composition = null;
-		link.rotate = 0;
-		link.data = null;
-		link.params = {};
-		link.status = null;
-		link.render_function = null;
-		link.type = null;
-
-		config.need_render = true;
+	async layer_clear(id) {
+		return app.State.do_action(
+			new app.Actions.Clear_layer_action(id)
+		);
 	}
 
 	/**
@@ -466,24 +439,10 @@ class Base_layers_class {
 	 * @param {int} id
 	 * @param {int} direction
 	 */
-	move(id, direction) {
-		id = parseInt(id);
-		var link = this.get_layer(id);
-
-		if (direction < 0) {
-			var target = this.find_previous(id);
-		}
-		else {
-			var target = this.find_next(id);
-		}
-		if (target != null) {
-			var current_order = link.order;
-			link.order = target.order;
-			target.order = current_order;
-		}
-
-		this.render();
-		this.Base_gui.GUI_layers.render_layers();
+	async move(id, direction) {
+		return app.State.do_action(
+			new app.Actions.Reorder_layer_action(id, direction)
+		);
 	}
 
 	/**
@@ -579,18 +538,9 @@ class Base_layers_class {
 	 * @param {object} params
 	 */
 	add_filter(layer_id, name, params) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-		var filter = {
-			id: this.Helper.getRandomInt(1, 999999999),
-			name: name,
-			params: params,
-		};
-		link.filters.push(filter);
-
-		config.need_render = true;
-		this.Base_gui.GUI_layers.render_layers();
+		return app.State.do_action(
+			new app.Actions.Add_layer_filter_action(layer_id, name, params)
+		);
 	}
 
 	/**
@@ -600,18 +550,9 @@ class Base_layers_class {
 	 * @param {string} filter_id
 	 */
 	delete_filter(layer_id, filter_id) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-
-		for (var i in link.filters) {
-			if (link.filters[i].id == filter_id) {
-				link.filters.splice(i, 1);
-			}
-		}
-
-		config.need_render = true;
-		this.Base_gui.GUI_layers.render_layers();
+		return app.State.do_action(
+			new app.Actions.Delete_layer_filter_action(layer_id, filter_id)
+		);
 	}
 
 	/**
@@ -704,28 +645,9 @@ class Base_layers_class {
 	 * @param {int} layer_id (optional)
 	 */
 	update_layer_image(canvas, layer_id) {
-		if (layer_id == null)
-			layer_id = config.layer.id;
-		var link = this.get_layer(layer_id);
-
-		if (link.type != 'image'){
-			alertify.error('Error: layer must be image.');
-			return null;
-		}
-
-		if(this.Helper.is_edge_or_ie() == false){
-			//update image using blob (faster)
-			canvas.toBlob(function (blob) {
-				link.link.src = window.URL.createObjectURL(blob);
-				config.need_render = true;
-			}, 'image/png');
-		}
-		else{
-			//slow way for IE, Edge
-			link.link.src = canvas.toDataURL();
-		}
-
-		config.need_render = true;
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas, layer_id)
+		);
 	}
 
 	/**

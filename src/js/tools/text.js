@@ -367,12 +367,6 @@ class Text_document_class {
 		for (let i = 0; i < insertLine.length; i++) {
 			const span = insertLine[i];
 			const spanLength = span.text.length;
-			if (span === insertedSpan) {
-				console.log(
-					(character > characterCount || character === 0),
-					character <= characterCount + spanLength
-				);
-			}
 			if (!modifyingSpan && (character > characterCount || character === 0) && character <= characterCount + spanLength) {
 				if (insertLine[i + 1] && insertLine[i + 1].text === '') {
 					modifyingSpan = insertLine[i + 1];
@@ -2390,6 +2384,10 @@ class Text_class extends Base_tools_class {
 			editor.Base_layers = this.Base_layers;
 			editor.layer = layer;
 			layerEditors.set(layer, editor);
+		}
+		if (layer._needs_update_data) {
+			delete layer._needs_update_data;
+			editor.set_lines(layer.data);
 		}
 		return editor;
 	}

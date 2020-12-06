@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
@@ -47,7 +48,9 @@ class Image_flip_class {
 		}
 
 		//save
-		this.Base_layers.update_layer_image(canvas2);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas2)
+		);
 	}
 
 }

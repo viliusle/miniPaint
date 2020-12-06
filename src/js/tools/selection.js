@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -249,7 +250,11 @@ class Selection_class extends Base_tools_class {
 			return;
 
 		delete config.layer.link_canvas;
-		this.Base_layers.update_layer_image(this.tmpCanvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('selection_tool', 'Selection Tool', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas)
+			])
+		);
 
 		this.reset_tmp_canvas();
 		config.need_render = true;
@@ -283,7 +288,12 @@ class Selection_class extends Base_tools_class {
 		//do erase
 		this.tmpCanvasCtx.clearRect(mouse_x, mouse_y, selection.width, selection.height);
 
-		this.Base_layers.update_layer_image(this.tmpCanvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('selection_tool', 'Selection Tool', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas)
+			])
+		);
+
 		this.selection = {
 			x: null,
 			y: null,

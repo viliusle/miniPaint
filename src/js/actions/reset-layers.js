@@ -39,15 +39,28 @@ export class Reset_layers_action extends Base_action {
         super.undo();
         if (this.insert_action) {
             await this.insert_action.undo();
+            this.insert_action.free();
             this.insert_action = null;
         }
         for (let i = this.delete_actions.length - 1; i >= 0; i--) {
             await this.delete_actions[i].undo();
+            this.delete_actions[i].free();
         }
         app.Layers.auto_increment = this.previous_auto_increment;
 
         app.Layers.render();
 		app.GUI.GUI_layers.render_layers();
     }
-
+    free() {
+        if (this.insert_action) {
+            this.insert_action.free();
+            this.insert_action = null;
+        }
+        if (this.delete_actions) {
+            for (let action of this.delete_actions) {
+                action.free();
+            }
+            this.delete_actions = null;
+        }
+    }
 }

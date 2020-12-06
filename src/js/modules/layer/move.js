@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 
@@ -8,13 +9,15 @@ class Layer_move_class {
 	}
 
 	up() {
-		window.State.save();
-		this.Base_layers.move(config.layer.id, 1);
+		app.State.do_action(
+			new app.Actions.Reorder_layer_action(config.layer.id, 1)
+		);
 	}
 
 	down() {
-		window.State.save();
-		this.Base_layers.move(config.layer.id, -1);
+		app.State.do_action(
+			new app.Actions.Reorder_layer_action(config.layer.id, -1)
+		);
 	}
 }
 

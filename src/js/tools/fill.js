@@ -106,7 +106,11 @@ class Fill_class extends Base_tools_class {
 
 		if (config.layer.type != null) {
 			//update
-			this.Base_layers.update_layer_image(canvas);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
+					new app.Actions.Update_layer_image_action(canvas)
+				])
+			);
 		}
 		else {
 			//create new
@@ -119,7 +123,7 @@ class Fill_class extends Base_tools_class {
 			params.width = canvas.width;
 			params.height = canvas.height;
 			app.State.do_action(
-				new app.Actions.Bundle_action('fill', 'Fill', [
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
 					new app.Actions.Insert_layer_action(params)
 				])
 			);

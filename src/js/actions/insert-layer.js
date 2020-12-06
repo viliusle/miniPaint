@@ -1,6 +1,7 @@
 import app from './../app.js';
 import config from './../config.js';
 import { Base_action } from './base.js';
+import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 export class Insert_layer_action extends Base_action {
 	/**
@@ -23,6 +24,7 @@ export class Insert_layer_action extends Base_action {
 
 	async do() {
 		super.do();
+
 		this.previous_auto_increment = app.Layers.auto_increment;
 		this.previous_selected_layer = config.layer;
 		let autoresize_as = null;
@@ -78,7 +80,7 @@ export class Insert_layer_action extends Base_action {
 				// Remove first empty layer
 
 				this.delete_layer_action = new app.Actions.Delete_layer_action(config.layer.id, true);
-				this.delete_layer_action.do();
+				await this.delete_layer_action.do();
 			}
 
 			if (layer.link == null) {
@@ -179,15 +181,17 @@ export class Insert_layer_action extends Base_action {
 			this.autoresize_canvas_action = null;
 		}
 		if (this.inserted_layer_id) {
-			await new app.Actions.Delete_layer_action(this.inserted_layer_id, true).do();
+			config.layers.pop();
 			this.inserted_layer_id = null;
 		}
 		if (this.update_layer_action) {
 			await this.update_layer_action.undo();
+			this.update_layer_action.free();
 			this.update_layer_action = null;
 		}
 		if (this.delete_layer_action) {
 			await this.delete_layer_action.undo();
+			this.delete_layer_action.free();
 			this.delete_layer_action = null;
 		}
 		config.layer = this.previous_selected_layer;
@@ -198,8 +202,14 @@ export class Insert_layer_action extends Base_action {
 	}
 
 	free() {
-		this.delete_layer_action = null;
-		this.update_layer_action = null;
+		if (this.delete_layer_action) {
+			this.delete_layer_action.free();
+			this.delete_layer_action = null;
+		}
+		if (this.update_layer_action) {
+			this.update_layer_action.free();
+			this.update_layer_action = null;
+		}
 		this.previous_selected_layer = null;
 	}
 }

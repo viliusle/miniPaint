@@ -76,10 +76,12 @@ export class Delete_layer_action extends Base_action {
 		}
 		if (this.select_layer_action) {
 			await this.select_layer_action.undo();
+			this.select_layer_action.free();
 			this.select_layer_action = null;
 		}
 		if (this.insert_layer_action) {
 			await this.insert_layer_action.undo();
+			this.insert_layer_action.free();
 			this.insert_layer_action = null;
 		}
 
@@ -91,8 +93,14 @@ export class Delete_layer_action extends Base_action {
 		if (this.deleted_layer) {
 			delete this.deleted_layer.link;
 		}
-		this.insert_layer_action = null;
-		this.select_layer_action = null;
+		if (this.insert_layer_action) {
+			this.insert_layer_action.free();
+			this.insert_layer_action = null;
+		}
+		if (this.select_layer_action) {
+			this.select_layer_action.free();
+			this.select_layer_action = null;
+		}
 		this.deleted_layer = null;
 	}
 }

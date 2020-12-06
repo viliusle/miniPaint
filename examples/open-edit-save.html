@@ -72,13 +72,11 @@ function save_image(){
 		//update image using blob (faster)
 		tempCanvas.toBlob(function (blob) {
 			alert('Data length: ' + blob.size);
-			console.log(blob);
 		}, 'image/png');
 	}
 	else{
 		//slow way for IE, Edge
 		var data = tempCanvas.toDataURL();
-		console.log(data);
 		alert('Data length: ' + data.length);
 	}
 }

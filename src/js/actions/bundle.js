@@ -41,6 +41,11 @@ export class Bundle_action extends Base_action {
     }
 
     free() {
-        this.actions_to_do = null;
+        if (this.actions_to_do) {
+            for (let action of this.actions_to_do) {
+                action.free();
+            }
+            this.actions_to_do = null;
+        }
     }
 }

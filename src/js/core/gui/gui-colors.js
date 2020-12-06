@@ -341,7 +341,6 @@ class GUI_colors_class {
 		// Initialize hex entry
 		this.inputs.hex
 			.on('input', (event) => {
-				console.log(event);
 				const value = this.inputs.hex.val();
 				const trimmedValue = value.trim();
 				if (value !== trimmedValue) {

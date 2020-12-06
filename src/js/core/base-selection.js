@@ -45,39 +45,47 @@ class Base_selection_class {
 		this.selected_object_drag_type = null;
 		this.click_details = {};
 		this.is_touch = false;
+		// True if dragging from inside canvas area
+		this.is_drag = false;
 
 		this.events();
 	}
 
 	events() {
-		var _this = this;
-
-		document.addEventListener('mousedown', function (e) {
-			if(_this.is_touch == true)
+		document.addEventListener('mousedown', (e) => {
+			this.is_drag = false;
+			if(this.is_touch == true)
 				return;
-			_this.selected_object_actions(e);
+			if (!e.target.closest('#main_wrapper'))
+				return;
+			this.is_drag = true;
+			this.selected_object_actions(e);
 		});
-		document.addEventListener('mousemove', function (e) {
-			if(_this.is_touch == true)
+		document.addEventListener('mousemove', (e) => {
+			if(this.is_touch == true)
 				return;
-			_this.selected_object_actions(e);
+			this.selected_object_actions(e);
 		});
-		document.addEventListener('mouseup', function (e) {
-			if(_this.is_touch == true)
+		document.addEventListener('mouseup', (e) => {
+			if(this.is_touch == true)
 				return;
-			_this.selected_object_actions(e);
+			this.selected_object_actions(e);
 		});
 
 		// touch
-		document.addEventListener('touchstart', function (event) {
-			_this.is_touch = true;
-			_this.selected_object_actions(event);
+		document.addEventListener('touchstart', (event) => {
+			this.is_drag = false;
+			this.is_touch = true;
+			if (!e.target.closest('#main_wrapper'))
+				return;
+			this.is_drag = true;
+			this.selected_object_actions(event);
 		});
-		document.addEventListener('touchmove', function (event) {
-			_this.selected_object_actions(event);
+		document.addEventListener('touchmove', (event) => {
+			this.selected_object_actions(event);
 		}, {passive: false});
-		document.addEventListener('touchend', function (event) {
-			_this.selected_object_actions(event);
+		document.addEventListener('touchend', (event) => {
+			this.selected_object_actions(event);
 		});
 	}
 
@@ -264,6 +272,9 @@ class Base_selection_class {
 		if(event_type == 'touchmove') event_type = 'mousemove';
 		if(event_type == 'touchend') event_type = 'mouseup';
 
+		if (!this.is_drag && ['mousedown', 'mouseup'].includes(event_type))
+			return;
+
 		const mainWrapper = document.getElementById('main_wrapper');
 		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
 		if (mainWrapper.style.cursor != defaultCursor) {
@@ -288,7 +299,7 @@ class Base_selection_class {
 				height: settings.data.height,
 			};
 		}
-		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions') {
+		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions' && this.is_drag) {
 
 			const allowNegativeDimensions = settings.data.render_function
 				&& ['line', 'gradient'].includes(settings.data.render_function[0]);

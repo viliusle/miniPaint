@@ -50,13 +50,15 @@ class GUI_layers_class {
 			}
 			else if (target.id == 'layer_up') {
 				//move layer up
-				window.State.save();
-				_this.Base_layers.move(config.layer.id, 1);
+				app.State.do_action(
+					new app.Actions.Reorder_layer_action(config.layer.id, 1)
+				);
 			}
 			else if (target.id == 'layer_down') {
 				//move layer down
-				window.State.save();
-				_this.Base_layers.move(config.layer.id, -1);
+				app.State.do_action(
+					new app.Actions.Reorder_layer_action(config.layer.id, -1)
+				);
 			}
 			else if (target.id == 'visibility') {
 				//change visibility
@@ -80,8 +82,9 @@ class GUI_layers_class {
 			}
 			else if (target.id == 'delete_filter') {
 				//delete filter
-				window.State.save();
-				_this.Base_layers.delete_filter(target.dataset.pid, target.dataset.id);
+				app.State.do_action(
+					new app.Actions.Delete_layer_filter_action(target.dataset.pid, target.dataset.id)
+				);
 			}
 		});
 
@@ -107,38 +110,40 @@ class GUI_layers_class {
 
 		document.getElementById(target_id).innerHTML = '';
 		var html = '';
+		
+		if (config.layer) {
+			for (var i in layers) {
+				var value = layers[i];
 
-		for (var i in layers) {
-			var value = layers[i];
+				if (value.id == config.layer.id)
+					html += '<div class="item active">';
+				else
+					html += '<div class="item">';
+				if (value.visible == true)
+					html += '	<span class="visibility visible" id="visibility" data-id="' + value.id + '" title="hide"></span>';
+				else
+					html += '	<span class="visibility" id="visibility" data-id="' + value.id + '" title="show"></span>';
+				html += '	<span class="delete" id="delete" data-id="' + value.id + '" title="delete"></span>';
+				html += '	<span class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</span>';
+				html += '	<div class="clear"></div>';
+				html += '</div>';
 
-			if (value.id == config.layer.id)
-				html += '<div class="item active">';
-			else
-				html += '<div class="item">';
-			if (value.visible == true)
-				html += '	<span class="visibility visible" id="visibility" data-id="' + value.id + '" title="hide"></span>';
-			else
-				html += '	<span class="visibility" id="visibility" data-id="' + value.id + '" title="show"></span>';
-			html += '	<span class="delete" id="delete" data-id="' + value.id + '" title="delete"></span>';
-			html += '	<span class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</span>';
-			html += '	<div class="clear"></div>';
-			html += '</div>';
+				//show filters
+				if (layers[i].filters.length > 0) {
+					html += '<div class="filters">';
+					for (var j in layers[i].filters) {
+						var filter = layers[i].filters[j];
+						var title = this.Helper.ucfirst(filter.name);
+						title = title.replace(/-/g, ' ');
 
-			//show filters
-			if (layers[i].filters.length > 0) {
-				html += '<div class="filters">';
-				for (var j in layers[i].filters) {
-					var filter = layers[i].filters[j];
-					var title = this.Helper.ucfirst(filter.name);
-					title = title.replace(/-/g, ' ');
-
-					html += '<div class="filter">';
-					html += '	<span class="delete" id="delete_filter" data-pid="' + layers[i].id + '" data-id="' + filter.id + '" title="delete"></span>';
-					html += '	<span class="layer_name" id="filter_name" data-pid="' + layers[i].id + '" data-id="' + filter.id + '">' + title + '</span>';
-					html += '	<div class="clear"></div>';
+						html += '<div class="filter">';
+						html += '	<span class="delete" id="delete_filter" data-pid="' + layers[i].id + '" data-id="' + filter.id + '" title="delete"></span>';
+						html += '	<span class="layer_name" id="filter_name" data-pid="' + layers[i].id + '" data-id="' + filter.id + '">' + title + '</span>';
+						html += '	<div class="clear"></div>';
+						html += '</div>';
+					}
 					html += '</div>';
 				}
-				html += '</div>';
 			}
 		}
 

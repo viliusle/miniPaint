@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -128,7 +129,11 @@ class Sharpen_class extends Base_tools_class {
 		}
 		delete config.layer.link_canvas;
 
-		this.Base_layers.update_layer_image(this.tmpCanvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('sharpen_tool', 'Sharpen Tool', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas)
+			])
+		);
 
 		//decrease memory
 		this.tmpCanvas.width = 1;

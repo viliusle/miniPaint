@@ -5,6 +5,7 @@ import { Base_action } from './base.js';
 export class Update_layer_action extends Base_action {
     /**
 	 * Updates an existing layer with the provided settings
+     * WARNING: If passing objects or arrays into settings, make sure these are new objects, and not a modified existing object!
 	 *
      * @param {string} layer_id
 	 * @param {object} settings 
@@ -20,11 +21,9 @@ export class Update_layer_action extends Base_action {
     async do() {
         super.do();
         this.reference_layer = app.Layers.get_layer(this.layer_id);
-
         if (!this.reference_layer) {
             throw new Error('Aborted - layer with specified id doesn\'t exist');
         }
-
         for (let i in this.settings) {
             if (i == 'id')
                 continue;
@@ -33,6 +32,10 @@ export class Update_layer_action extends Base_action {
             this.old_settings[i] = this.reference_layer[i];
             this.reference_layer[i] = this.settings[i];
         }
+        if (this.settings.data && this.reference_layer.type === 'text') {
+            this.reference_layer._needs_update_data = true;
+        }
+        config.need_render = true;
     }
 
     async undo() {
@@ -41,9 +44,13 @@ export class Update_layer_action extends Base_action {
             for (let i in this.old_settings) {
                 this.reference_layer[i] = this.old_settings[i];
             }
+            if (this.old_settings.data && this.reference_layer[i] === 'text') {
+                this.reference_layer._needs_update_data = true;
+            }
             this.old_settings = {};
         }
         this.reference_layer = null;
+        config.need_render = true;
     }
 
     free() {

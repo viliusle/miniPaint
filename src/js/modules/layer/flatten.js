@@ -46,7 +46,6 @@ class Layer_flatten_class {
 		for (var i = config.layers.length - 1; i >= 0; i--) {
 			delete_actions.push(new app.Actions.Delete_layer_action(config.layers[i].id));
 		}
-		console.log(delete_actions);
 		// Run actions
 		app.State.do_action(
 			new app.Actions.Bundle_action('flatten_image', 'Flatten Image', [

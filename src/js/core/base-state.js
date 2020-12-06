@@ -61,6 +61,7 @@ class Base_state_class {
 			await action.do();
 		} catch (error) {
 			// Action aborted. This could be expected behavior if detected that the action shouldn't run.
+			console.info(error);
 			return { status: 'aborted', reason: error };
 		}
 		// Remove all redo actions from history
@@ -106,6 +107,7 @@ class Base_state_class {
 
 	save() {
 
+		/*
 		this.optimize();
 
 		if (this.enabled == false) {
@@ -155,6 +157,7 @@ class Base_state_class {
 				}
 			);
 		}
+		*/
 	}
 
 	/**
