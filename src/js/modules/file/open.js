@@ -302,6 +302,8 @@ class File_open_class {
 	
 	open_template_test(){
 		var _this = this;
+
+		this.Base_layers.debug_rendering = true;
 		
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
