@@ -117,10 +117,6 @@ class Base_layers_class {
 			return;
 		}
 
-		if(this.debug_rendering === true){
-			console.log('Rendering...');
-		}
-
 		if (this.stable_dimensions[0] != config.WIDTH || this.stable_dimensions[1] != config.HEIGHT) {
 			//dimensions changed - re-init zoom lib
 			this.init_zoom_lib();
@@ -128,13 +124,17 @@ class Base_layers_class {
 
 		if (config.need_render == true) {
 
+			if(this.debug_rendering === true){
+				console.log('Rendering...');
+			}
+
 			if (this.last_zoom != config.ZOOM) {
 				//change zoom
 				zoomView.scaleAt(
 					this.Base_gui.GUI_preview.zoom_data.x,
 					this.Base_gui.GUI_preview.zoom_data.y,
 					config.ZOOM / this.last_zoom
-					);
+				);
 			}
 			else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
 				//move visible window
