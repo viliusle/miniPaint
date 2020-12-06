@@ -59,6 +59,7 @@ class Base_layers_class {
 		this.last_zoom = 1;
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
+		this.debug_rendering = false;
 	}
 
 	/**
@@ -114,6 +115,10 @@ class Base_layers_class {
 			//request render and exit
 			config.need_render = true;
 			return;
+		}
+
+		if(this.debug_rendering === true){
+			console.log('Rendering...');
 		}
 
 		if (this.stable_dimensions[0] != config.WIDTH || this.stable_dimensions[1] != config.HEIGHT) {
