@@ -131,7 +131,7 @@ class Base_layers_class {
 					this.Base_gui.GUI_preview.zoom_data.x,
 					this.Base_gui.GUI_preview.zoom_data.y,
 					config.ZOOM / this.last_zoom
-					);
+				);
 			}
 			else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
 				//move visible window

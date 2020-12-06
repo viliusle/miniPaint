@@ -148,6 +148,7 @@ class Base_selection_class {
 		var _this = this;
 		var settings = this.find_settings();
 		var data = settings.data;
+		console.log(JSON.stringify(data));
 
 		if (settings.data === null || settings.data.status == 'draft'
 			|| (settings.data.hide_selection_if_active === true && settings.data.type == config.TOOL.name)) {

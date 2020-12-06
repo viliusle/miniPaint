@@ -320,21 +320,17 @@ class Crop_class extends Base_tools_class {
 				HEIGHT: parseInt(selection.height)
 			}),
 			new app.Actions.Prepare_canvas_action('do'),
-			new app.Actions.Reset_selection_action()
+			new app.Actions.Reset_selection_action(this.selection)
 		);
 		await app.State.do_action(
 			new app.Actions.Bundle_action('crop_tool', 'Crop Tool', actions)
 		);
-		this.selection = {
-			x: null,
-			y: null,
-			width: null,
-			height: null,
-		};
 	}
 
 	on_leave() {
-		this.Base_selection.reset_selection();
+		return [
+			new app.Actions.Reset_selection_action()
+		];
 	}
 
 }

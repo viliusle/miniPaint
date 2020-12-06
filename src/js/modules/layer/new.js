@@ -86,11 +86,12 @@ class Layer_new_class {
 			data: canvas.toDataURL("image/png"),
 		};
 		app.State.do_action(
-			new app.Actions.Insert_layer_action(params, false)
+			new Bundle_action('new_layer', 'New Layer', [
+				new app.Actions.Insert_layer_action(params, false),
+				...this.Selection.on_leave(),
+				new app.Actions.Activate_tool_action('select')
+			])
 		);
-		
-		this.Selection.on_leave();
-		this.GUI_tools.activate_tool('select');
 	}
 
 }

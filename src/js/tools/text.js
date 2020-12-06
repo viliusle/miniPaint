@@ -1638,10 +1638,12 @@ class Text_editor_class {
 						const strikethrough = span.meta.strikethrough != null ? span.meta.strikethrough : metaDefaults.strikethrough;
 						const family = span.meta.family || metaDefaults.family;
 
-						this.load_font_family(family, () => {
-							this.hasValueChanged = true;
-							this.Base_layers.render();
-						});
+						if (fontLoadMap.get(family) !== true) {
+							this.load_font_family(family, () => {
+								this.hasValueChanged = true;
+								this.Base_layers.render();
+							});
+						}
 
 						let fontMetrics;
 						if (underline || strikethrough) {

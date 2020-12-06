@@ -1,3 +1,4 @@
+export { Activate_tool_action } from './activate-tool.js';
 export { Add_layer_filter_action } from './add-layer-filter.js';
 export { Autoresize_canvas_action } from './autoresize-canvas.js';
 export { Bundle_action } from './bundle.js';
