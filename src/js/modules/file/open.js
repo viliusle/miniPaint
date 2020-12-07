@@ -315,6 +315,8 @@ class File_open_class {
 	
 	open_template_test(){
 		var _this = this;
+
+		this.Base_layers.debug_rendering = true;
 		
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
@@ -391,7 +393,7 @@ class File_open_class {
 		img.src = url;
 	}
 
-	load_json(data) {
+	async load_json(data) {
 		var json;
 		if(typeof data == 'string')
 			json = JSON.parse(data);
@@ -446,8 +448,14 @@ class File_open_class {
 			new app.Actions.Prepare_canvas_action('do'),
 		);
 
+		var max_id_order = 0;
 		for (var i in json.layers) {
 			var value = json.layers[i];
+
+			if(value.id > max_id_order)
+				max_id_order = value.id;
+			if(typeof value.order != undefined && value.order > max_id_order)
+				max_id_order = value.order;
 
 			if (value.type == 'image') {
 				//add image data
@@ -467,7 +475,10 @@ class File_open_class {
 				new app.Actions.Select_layer_action(json.info.layer_active, true)
 			);
 		}
-		app.State.do_action(
+		actions.push(
+			new app.Actions.Set_object_property_action(this.Base_layers, 'auto_increment', max_id_order + 1)
+		);
+		await app.State.do_action(
 			new app.Actions.Bundle_action('open_json_file', 'Open JSON File', actions)
 		);
 	}

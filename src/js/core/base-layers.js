@@ -60,6 +60,7 @@ class Base_layers_class {
 		this.last_zoom = 1;
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
+		this.debug_rendering = false;
 	}
 
 	/**
@@ -124,6 +125,10 @@ class Base_layers_class {
 		}
 
 		if (config.need_render == true) {
+
+			if(this.debug_rendering === true){
+				console.log('Rendering...');
+			}
 
 			if (this.last_zoom != config.ZOOM) {
 				//change zoom

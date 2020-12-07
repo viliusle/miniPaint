@@ -38,9 +38,9 @@ export class Insert_layer_action extends Base_action {
 			link: null,
 			x: 0,
 			y: 0,
-			width: 0,
+			width: null,
 			width_original: null,
-			height: 0,
+			height: null,
 			height_original: null,
 			visible: true,
 			is_vector: false,
@@ -75,8 +75,8 @@ export class Insert_layer_action extends Base_action {
 				layer.is_vector = true;
 			}
 
-			if (config.layers.length == 1 && config.layer.width == 0
-				&& config.layer.height == 0 && config.layer.data == null) {
+			if (config.layers.length == 1 && (config.layer.width == 0 || config.layer.width === null)
+					&& (config.layer.height == 0 || config.layer.height === null) && config.layer.data == null) {
 				// Remove first empty layer
 
 				this.delete_layer_action = new app.Actions.Delete_layer_action(config.layer.id, true);
@@ -86,9 +86,9 @@ export class Insert_layer_action extends Base_action {
 			if (layer.link == null) {
 				if (typeof layer.data == 'object') {
 					// Load actual image
-					if (layer.width == 0)
+					if (layer.width == 0 || layer.width === null)
 						layer.width = layer.data.width;
-					if (layer.height == 0)
+					if (layer.height == 0 || layer.height === null)
 						layer.height = layer.data.height;
 					layer.link = layer.data.cloneNode(true);
 					layer.link.onload = function () {
@@ -104,9 +104,9 @@ export class Insert_layer_action extends Base_action {
 						layer.link = new Image();
 						layer.link.onload = () => {
 							// Update dimensions
-							if (layer.width == 0)
+							if (layer.width == 0 || layer.width === null)
 								layer.width = layer.link.width;
-							if (layer.height == 0)
+							if (layer.height == 0 || layer.height === null)
 								layer.height = layer.link.height;
 							if (layer.width_original == null)
 								layer.width_original = layer.width;
@@ -133,7 +133,7 @@ export class Insert_layer_action extends Base_action {
 		}
 
 		if (this.settings != undefined && config.layers.length > 0
-			&& config.layer.width == 0 && config.layer.height == 0
+			&& (config.layer.width == 0 || config.layer.width === null) && (config.layer.height == 0 || config.layer.height === null)
 			&& config.layer.data == null && layer.type != 'image' && this.can_automate !== false) {
 			// Update existing layer, because it's empty
 			delete layer.name;
