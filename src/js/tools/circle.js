@@ -79,6 +79,7 @@ class Circle_class extends Base_tools_class {
 				center_x: mouse.x,
 				center_y: mouse.y,
 			},
+			color: config.COLOR
 		};
 		if (params.circle == true) {
 			//disable rotate
@@ -134,19 +135,21 @@ class Circle_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			app.State.do_action(
-				new app.Actions.Delete_layer_action(config.layer.id)
-			);
+			app.State.scrap_last_action();
 			return;
 		}
 
 		//more data
-		config.layer.x = this.layer.data.center_x - width;
-		config.layer.y = this.layer.data.center_y - height;
-		config.layer.width = width * 2;
-		config.layer.height = height * 2;
-		config.layer.status = null;
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x: this.layer.data.center_x - width,
+				y: this.layer.data.center_y - height,
+				width: width * 2,
+				height: height * 2,
+				status: null
+			}),
+			{ merge_with_history: 'new_circle_layer' }
+		);
 	}
 
 	render(ctx, layer) {

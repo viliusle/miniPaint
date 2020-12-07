@@ -289,6 +289,7 @@ config.TOOLS = [
 	{
 		name: 'animation',
 		title: 'Play animation',
+		on_activate: 'on_activate',
 		on_update: 'on_params_update',
 		on_leave: 'on_leave',
 		attributes: {

@@ -74,9 +74,10 @@ class Rectangle_class extends Base_tools_class {
 			x: Math.round(mouse.x),
 			y: Math.round(mouse.y),
 			is_vector: true,
+			color: config.COLOR
 		};
 		app.State.do_action(
-			new app.Actions.Bundle_action('rectangle', 'Rectangle', [
+			new app.Actions.Bundle_action('new_rectangle_layer', 'New Rectangle Layer', [
 				new app.Actions.Insert_layer_action(this.layer)
 			])
 		);
@@ -157,19 +158,21 @@ class Rectangle_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			app.State.do_action(
-				new app.Actions.Delete_layer_action(config.layer.id)
-			);
+			app.State.scrap_last_action();
 			return;
 		}
 
 		//more data
-		config.layer.x = x;
-		config.layer.y = y;
-		config.layer.width = width;
-		config.layer.height = height;
-		config.layer.status = null;
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x,
+				y,
+				width,
+				height,
+				status: null
+			}),
+			{ merge_with_history: 'new_rectangle_layer' }
+		);
 	}
 
 	render(ctx, layer) {

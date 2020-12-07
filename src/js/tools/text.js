@@ -2123,10 +2123,17 @@ class Text_class extends Base_tools_class {
 				width = 1;
 				height = 1;
 			}
-			config.layer.x = Math.min(mouse.x, this.mousedownX);
-			config.layer.y = Math.min(mouse.y, this.mousedownY);
-			config.layer.width = width;
-			config.layer.height = height;
+			app.State.do_action(
+				new app.Actions.Bundle_action('resize_text_layer', 'Resize Text Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						x: Math.min(mouse.x, this.mousedownX),
+						y: Math.min(mouse.y, this.mousedownY),
+						width,
+						height
+					}),
+					{ merge_with_history: 'new_text_layer' }
+				])
+			);
 			this.textarea.focus();
 		}
 		else if (this.selecting) {

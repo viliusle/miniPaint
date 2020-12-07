@@ -16,8 +16,10 @@ class Select_tool_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'select';
 		this.saved = false;
-		this.last_post = {x: null, y: null};
-
+		this.mousedown_dimensions = { x: null, y: null, width: null, height: null };
+		this.keyboard_move_start_position = null;
+		this.moving = false;
+		this.resizing = false;
 		var sel_config = {
 			enable_background: false,
 			enable_borders: true,
@@ -31,17 +33,21 @@ class Select_tool_class extends Base_tools_class {
 	}
 
 	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousedown(event);
+		this.mousedown(event);
 	}
 
 	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousemove(event);
+		this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mouseup(event);
 	}
 
 	load() {
@@ -54,6 +60,9 @@ class Select_tool_class extends Base_tools_class {
 		document.addEventListener('mousemove', function (event) {
 			_this.dragMove(event);
 		});
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
@@ -61,6 +70,9 @@ class Select_tool_class extends Base_tools_class {
 		});
 		document.addEventListener('touchmove', function (event) {
 			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
 		});
 
 		//keyboard actions
@@ -98,28 +110,54 @@ class Select_tool_class extends Base_tools_class {
 				}
 			}
 		});
+		document.addEventListener('keyup', (e) => {
+			if (config.TOOL.name != this.name)
+				return;
+			if (this.POP.active == true)
+				return;
+			if (this.Helper.is_input(e.target))
+				return;
+			var k = e.keyCode;
+			if ([37, 38, 39, 40].includes(k)) {
+				if (this.keyboard_move_start_position) {
+					let x = config.layer.x;
+					let y = config.layer.y;
+					config.layer.x = this.keyboard_move_start_position.x;
+					config.layer.y = this.keyboard_move_start_position.y;
+					app.State.do_action(
+						new app.Actions.Update_layer_action(config.layer.id, { x, y })
+					);
+					this.keyboard_move_start_position = null;
+				}
+			}
+		});
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
+
+		this.mousedown_dimensions = {
+			x: Math.round(config.layer.x),
+			y: Math.round(config.layer.y),
+			width: Math.round(config.layer.width),
+			height: Math.round(config.layer.height)
+		};
+
 		if (this.Base_selection.mouse_lock != null) {
+			this.resizing = true;
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 			if (config.layer.type === 'text' && config.layer.params && config.layer.params.boundary === 'dynamic') {
 				config.layer.params.boundary = 'box';
 			}
-			return;
 		}
-
-		this.auto_select_object(e);
-		this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
-		this.saved = false;
-
-		this.last_post = {
-			x: config.layer.x,
-			y: config.layer.y,
-		};
+		else {
+			this.moving = true;
+			await this.auto_select_object(e);
+			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
+			this.saved = false;
+		}
 	}
 
 	mousemove(e) {
@@ -129,22 +167,71 @@ class Select_tool_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false) {
 			return;
 		}
-		if (this.Base_selection.mouse_lock != null)
+		if (this.resizing) {
 			return;
-
-		if (this.saved == false) {
-			window.State.save();
-			this.saved = true;
 		}
+		else if (this.moving) {
+			//move object
+			config.layer.x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
+			config.layer.y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+			config.need_render = true;
+		}
+	}
 
-		//move object
-		config.layer.x = Math.round(mouse.x - mouse.click_x + this.last_post.x);
-		config.layer.y = Math.round(mouse.y - mouse.click_y + this.last_post.y);
-
-		this.Base_layers.render();
+	mouseup(e) {
+		var mouse = this.get_mouse_info(e);
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+		if (this.resizing) {
+			let x = config.layer.x;
+			let y = config.layer.y;
+			let width = config.layer.width;
+			let height = config.layer.height;
+			config.layer.x = this.mousedown_dimensions.x;
+			config.layer.y = this.mousedown_dimensions.y;
+			config.layer.width = this.mousedown_dimensions.width;
+			config.layer.height = this.mousedown_dimensions.height;
+			if (
+				this.mousedown_dimensions.x !== x || this.mousedown_dimensions.y !== y ||
+				this.mousedown_dimensions.width !== width || this.mousedown_dimensions.height !== height
+			) {
+				app.State.do_action(
+					new app.Actions.Bundle_action('resize_layer', 'Resize Layer', [
+						new app.Actions.Update_layer_action(config.layer.id, {
+							x, y, width, height
+						})
+					])
+				);
+			}
+		}
+		else if (this.moving) {
+			config.layer.x = this.mousedown_dimensions.x;
+			config.layer.y = this.mousedown_dimensions.y;
+			const new_x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
+			const new_y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+			if (this.mousedown_dimensions.x !== new_x || this.mousedown_dimensions.y !== new_y) {
+				app.State.do_action(
+					new app.Actions.Bundle_action('move_layer', 'Move Layer', [
+						new app.Actions.Update_layer_action(config.layer.id, {
+							x: new_x,
+							y: new_y
+						})
+					])
+				);
+			}
+		}
+		this.moving = false;
+		this.resizing = false;
 	}
 
 	move(direction_x, direction_y, event) {
+		if (!this.keyboard_move_start_position) {
+			this.keyboard_move_start_position = {
+				x: config.layer.x,
+				y: config.layer.y
+			}
+		}
 		var power = 10;
 		if (event.ctrlKey == true || event.metaKey)
 			power = 50;
@@ -156,7 +243,7 @@ class Select_tool_class extends Base_tools_class {
 		config.need_render = true;
 	}
 
-	auto_select_object(e) {
+	async auto_select_object(e) {
 		var params = this.getParams();
 		if (params.auto_select == false)
 			return;
@@ -169,7 +256,7 @@ class Select_tool_class extends Base_tools_class {
 			var canvas = this.Base_layers.convert_layer_to_canvas(value.id, null, false);
 
 			if (this.check_hit_region(e, canvas.getContext("2d")) == true) {
-				app.State.do_action(
+				await app.State.do_action(
 					new app.Actions.Select_layer_action(value.id)
 				);
 				break;

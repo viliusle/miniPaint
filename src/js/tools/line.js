@@ -75,9 +75,10 @@ class Line_class extends Base_tools_class {
 			y: mouse.y,
 			rotate: null,
 			is_vector: true,
+			color: config.COLOR
 		};
 		app.State.do_action(
-			new app.Actions.Bundle_action('line', 'Line', [
+			new app.Actions.Bundle_action('new_line_layer', 'New Line Layer', [
 				new app.Actions.Insert_layer_action(this.layer)
 			])
 		);
@@ -119,9 +120,7 @@ class Line_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			app.State.do_action(
-				new app.Actions.Delete_layer_action(config.layer.id)
-			);
+			app.State.scrap_last_action();
 			return;
 		}
 
@@ -134,10 +133,14 @@ class Line_class extends Base_tools_class {
 		}
 
 		//more data
-		config.layer.width = width;
-		config.layer.height = height;
-		config.layer.status = null;
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				width,
+				height,
+				status: null
+			}),
+			{ merge_with_history: 'new_line_layer' }
+		);
 	}
 
 	render(ctx, layer) {

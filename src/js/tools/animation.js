@@ -62,8 +62,16 @@ class Animation_class extends Base_tools_class {
 		}
 	}
 
+	on_activate() {
+		return [
+			new app.Actions.Stop_animation_action(false)
+		];
+	}
+
 	on_leave() {
-		this.stop();
+		return [
+			new app.Actions.Stop_animation_action(true)
+		];
 	}
 
 	start(delay) {
@@ -78,22 +86,7 @@ class Animation_class extends Base_tools_class {
 	}
 
 	stop() {
-		var params = this.getParams();
-		if (this.intervalID == null)
-			return;
-
-		clearInterval(this.intervalID);
-		params.play = false;
-		this.index = 0;
-		this.GUI_tools.show_action_attributes();
-
-		//make all visible
-		for (var i in config.layers) {
-			config.layers[i].visible = true;
-		}
-
-		this.Base_gui.GUI_layers.render_layers();
-		config.need_render = true;
+		new app.Actions.Stop_animation_action(true).do();
 	}
 
 	play(_this) {

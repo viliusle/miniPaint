@@ -205,7 +205,7 @@ class Brush_class extends Base_tools_class {
 			//register new object - current layer is not ours or params changed
 			this.layer = {
 				type: this.name,
-				data: [],
+				data: [[]],
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
@@ -216,6 +216,7 @@ class Brush_class extends Base_tools_class {
 				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
+				color: config.COLOR
 			};
 			app.State.do_action(
 				new app.Actions.Bundle_action('new_brush_layer', 'New Brush Layer', [
@@ -233,8 +234,17 @@ class Brush_class extends Base_tools_class {
 				index: this.data_index,
 			});
 		}
-
-		config.layer.data.push([]);
+		else {
+			const new_data = JSON.parse(JSON.stringify(config.layer.data));
+			new_data.push([]);
+			app.State.do_action(
+				new app.Actions.Bundle_action('update_brush_layer', 'Update Brush Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						data: new_data
+					})
+				])
+			);
+		}
 
 		var current_group = config.layer.data[index];
 		var params = this.getParams();
@@ -486,7 +496,7 @@ class Brush_class extends Base_tools_class {
 	 * recalculate layer x, y, width and height values.
 	 */
 	check_dimensions() {
-		var data = config.layer.data;
+		var data = JSON.parse(JSON.stringify(config.layer.data)); // Deep copy for history
 		this.check_legacy_format(data);
 
 		if(config.layer.data.length == 0 || data[0].length == 0)
@@ -523,12 +533,18 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//change layers bounds
-		config.layer.x = config.layer.x + min_x;
-		config.layer.y = config.layer.y + min_y;
-		config.layer.width = max_x - min_x;
-		config.layer.height = max_y - min_y;
-
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x: config.layer.x + min_x,
+				y: config.layer.y + min_y,
+				width: max_x - min_x,
+				height: max_y - min_y,
+				data
+			}),
+			{
+				merge_with_history: ['new_brush_layer', 'update_brush_layer']
+			}
+		);
 	}
 
 }

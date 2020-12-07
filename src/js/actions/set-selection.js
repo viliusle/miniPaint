@@ -14,7 +14,7 @@ export class Set_selection_action extends Base_action {
         this.height = height;
         this.settings_reference = null;
         this.old_settings_data = null;
-        this.old_settings_override = old_settings_override || null;
+        this.old_settings_override = JSON.parse(JSON.stringify(old_settings_override)) || null;
 	}
 
 	async do() {
@@ -34,7 +34,7 @@ export class Set_selection_action extends Base_action {
     }
 
     async undo() {
-        super.undo();
+        super.undo()
         if (this.old_settings_override) {
             for (let prop in this.old_settings_override) {
                 this.settings_reference.data[prop] = this.old_settings_override[prop];   

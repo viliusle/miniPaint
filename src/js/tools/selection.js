@@ -152,11 +152,6 @@ class Selection_class extends Base_tools_class {
 			}
 		}
 		else {
-			//save last translation?
-			if (this.selection.width != null && this.selection.height != null) {
-				this.save_translate();
-			}
-
 			//create new selection
 			this.selection = {
 				x: mouse.x,
@@ -195,6 +190,9 @@ class Selection_class extends Base_tools_class {
 		}
 		if ((e.type == 'mousedown' && mouse.click_valid == false) || config.layer.type != 'image') {
 			return;
+		}
+		if (this.type === 'move') {
+			return; // Translate appears to not work at the moment
 		}
 
 		var width = mouse.x - this.selection.x;

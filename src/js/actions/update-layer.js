@@ -44,7 +44,7 @@ export class Update_layer_action extends Base_action {
             for (let i in this.old_settings) {
                 this.reference_layer[i] = this.old_settings[i];
             }
-            if (this.old_settings.data && this.reference_layer[i] === 'text') {
+            if (this.old_settings.data && this.reference_layer.type === 'text') {
                 this.reference_layer._needs_update_data = true;
             }
             this.old_settings = {};

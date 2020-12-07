@@ -8,6 +8,7 @@ import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import app from '../app.js';
 
 var instance = null;
 let action_history = [];
@@ -56,12 +57,11 @@ class Base_state_class {
 		}, false);
 	}
 
-	async do_action(action) {
+	async do_action(action, options = {}) {
 		try {
 			await action.do();
 		} catch (error) {
-			// Action aborted. This could be expected behavior if detected that the action shouldn't run.
-			console.info(error);
+			// Action aborted. This is usually expected behavior as actions throw errors if they shouldn't run.
 			return { status: 'aborted', reason: error };
 		}
 		// Remove all redo actions from history
@@ -73,11 +73,25 @@ class Base_state_class {
 			}
 		}
 		// Add the new action to history
-		action_history.push(action);
-		if (action_history.length > action_history_max) {
-			action_history.shift();
+		if (options.merge_with_history) {
+			if (typeof options.merge_with_history === 'string') {
+				options.merge_with_history = [options.merge_with_history];
+			}
+			const last_action = action_history[action_history.length - 1];
+			if (options.merge_with_history.includes(last_action.action_id)) {
+				action_history[action_history.length - 1] = new app.Actions.Bundle_action(
+					last_action.action_id,
+					last_action.action_name,
+					[last_action, action]
+				);
+			}
 		} else {
-			action_history_index++;
+			action_history.push(action);
+			if (action_history.length > action_history_max) {
+				action_history.shift();
+			} else {
+				action_history_index++;
+			}
 		}
 		return { status: 'completed' };
 	}
@@ -102,6 +116,13 @@ class Base_state_class {
 		if (this.can_undo()) {
 			action_history_index--;
 			await action_history[action_history_index].undo();
+		}
+	}
+
+	async scrap_last_action() {
+		if (this.can_undo()) {
+			await this.undo_action();
+			action_history.pop();
 		}
 	}
 

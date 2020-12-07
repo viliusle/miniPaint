@@ -37,7 +37,7 @@ export class Reset_selection_action extends Base_action {
     async undo() {
         super.undo();
         if (this.old_settings_data) {
-            for (let prop in this.old_settings_data) {
+            for (let prop of ['x', 'y', 'width', 'height']) {
                 this.settings_reference.data[prop] = this.old_settings_data[prop];
                 if (this.mirror_selection_settings) {
                     this.mirror_selection_settings[prop] = this.old_settings_data[prop];

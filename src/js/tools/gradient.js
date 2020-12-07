@@ -93,7 +93,7 @@ class Gradient_class extends Base_tools_class {
 			},
 		};
 		app.State.do_action(
-			new app.Actions.Bundle_action('gradient', 'Gradient', [
+			new app.Actions.Bundle_action('new_gradient_layer', 'New Gradient Layer', [
 				new app.Actions.Insert_layer_action(this.layer)
 			])
 		);
@@ -138,23 +138,31 @@ class Gradient_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			app.State.do_action(
-				new app.Actions.Delete_layer_action(config.layer.id)
-			);
+			app.State.scrap_last_action();
 			return;
 		}
 
+		let new_settings = {};
 		if (params.radial == true) {
-			config.layer.x = this.layer.data.center_x - width;
-			config.layer.y = this.layer.data.center_y - height;
-			config.layer.width = width * 2;
-			config.layer.height = height * 2;
+			new_settings = {
+				x: this.layer.data.center_x - width,
+				y: this.layer.data.center_y - height,
+				width: width * 2,
+				height: height * 2
+			}
 		}
 		else {
-			config.layer.width = width;
-			config.layer.height = height;
+			new_settings = {
+				width,
+				height
+			}
 		}
-		config.layer.status = null;
+		new_settings.status = null;
+
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, new_settings),
+			{ merge_with_history: 'new_gradient_layer' }
+		);
 
 		this.Base_layers.render();
 	}

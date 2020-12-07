@@ -95,6 +95,7 @@ class Pencil_class extends Base_tools_class {
 				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
+				color: config.COLOR
 			};
 			app.State.do_action(
 				new app.Actions.Bundle_action('new_pencil_layer', 'New Pencil Layer', [
@@ -105,7 +106,15 @@ class Pencil_class extends Base_tools_class {
 		}
 		else {
 			//continue adding layer data, just register break
-			config.layer.data.push(null);
+			const new_data = JSON.parse(JSON.stringify(config.layer.data));
+			new_data.push(null);
+			app.State.do_action(
+				new app.Actions.Bundle_action('update_pencil_layer', 'Update Pencil Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						data: new_data
+					})
+				])
+			);
 		}
 	}
 
@@ -306,7 +315,7 @@ class Pencil_class extends Base_tools_class {
 			return;
 
 		//find bounds
-		var data = config.layer.data;
+		var data = JSON.parse(JSON.stringify(config.layer.data)); // Deep copy for history
 		var min_x = data[0][0];
 		var min_y = data[0][1];
 		var max_x = data[0][0];
@@ -329,12 +338,18 @@ class Pencil_class extends Base_tools_class {
 		}
 
 		//change layers bounds
-		config.layer.x = config.layer.x + min_x;
-		config.layer.y = config.layer.y + min_y;
-		config.layer.width = max_x - min_x;
-		config.layer.height = max_y - min_y;
-
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x: config.layer.x + min_x,
+				y: config.layer.y + min_y,
+				width: max_x - min_x,
+				height: max_y - min_y,
+				data
+			}),
+			{
+				merge_with_history: ['new_pencil_layer', 'update_pencil_layer']
+			}
+		);
 	}
 
 }

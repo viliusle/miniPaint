@@ -16,6 +16,7 @@ export { Select_layer_action } from './select-layer.js';
 export { Select_next_layer_action } from './select-next-layer.js';
 export { Select_previous_layer_action } from './select-previous-layer.js';
 export { Set_selection_action } from './set-selection.js';
+export { Stop_animation_action } from './stop-animation.js';
 export { Toggle_layer_visibility_action } from './toggle-layer-visibility.js';
 export { Update_config_action } from './update-config.js';
 export { Update_layer_image_action } from './update-layer-image.js';
