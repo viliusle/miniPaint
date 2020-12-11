@@ -200,6 +200,42 @@ class Base_selection_class {
 			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + (wholeLineWidth * 2), h + (wholeLineWidth * 2));
 		}
 
+		//show crop lines
+		if(settings.crop_lines === true){
+
+			for(var part = 1; part < 3; part++) {
+				this.ctx.lineWidth = wholeLineWidth;
+				this.ctx.strokeStyle = 'rgb(255, 255, 255)';
+				this.ctx.beginPath();
+				this.ctx.moveTo(x + w / 3 * part - halfLineWidth, y);
+				this.ctx.lineTo(x + w / 3 * part - halfLineWidth, y + h);
+				this.ctx.stroke();
+
+				this.ctx.lineWidth = halfLineWidth;
+				this.ctx.strokeStyle = 'rgb(0, 0, 0)';
+				this.ctx.beginPath();
+				this.ctx.moveTo(x + w / 3 * part - halfLineWidth, y);
+				this.ctx.lineTo(x + w / 3 * part - halfLineWidth, y + h);
+				this.ctx.stroke();
+			}
+
+			for(var part = 1; part < 3; part++) {
+				this.ctx.lineWidth = wholeLineWidth;
+				this.ctx.strokeStyle = 'rgb(255, 255, 255)';
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y + h / 3 * part - halfLineWidth);
+				this.ctx.lineTo(x + w, y + h / 3 * part - halfLineWidth);
+				this.ctx.stroke();
+
+				this.ctx.lineWidth = halfLineWidth;
+				this.ctx.strokeStyle = 'rgb(0, 0, 0)';
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y + h / 3 * part - halfLineWidth);
+				this.ctx.lineTo(x + w, y + h / 3 * part - halfLineWidth);
+				this.ctx.stroke();
+			}
+		}
+
 		const hitsLeftEdge = isRotated ? false : x < handle_size;
 		const hitsTopEdge = isRotated ? false : y < handle_size;
 		const hitsRightEdge = isRotated ? false : x + w > config.WIDTH - handle_size;

@@ -26,6 +26,7 @@ class Crop_class extends Base_tools_class {
 			enable_background: true,
 			enable_borders: true,
 			enable_controls: true,
+			crop_lines: true,
 			data_function: function () {
 				return _this.selection;
 			},
