@@ -50,6 +50,17 @@ class File_open_class {
 		window.ondragover = function (e) {
 			e.preventDefault();
 		};
+		document.addEventListener('keydown', (event) => {
+			var code = event.key.toLowerCase();
+			if (this.Helper.is_input(event.target))
+				return;
+
+			if (code == "o") {
+				//open
+				this.open_file();
+				event.preventDefault();
+			}
+		}, false);
 	}
 
 	on_paste(data, width, height) {
