@@ -416,7 +416,7 @@ class Dialog_class {
 		}
 
 		//call translation again to translate popup
-		var lang = this.Base_gui.get_current_language();
+		var lang = this.Base_gui.get_language();
 		this.Help_translate.translate(lang);
 	}
 

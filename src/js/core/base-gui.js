@@ -405,24 +405,28 @@ class Base_gui_class {
 		document.querySelector('body').classList.add('theme-' + theme_name);
 	}
 
-	get_current_language() {
+	get_language() {
 		return config.LANG;
 	}
 
-	get_current_color() {
+	get_color() {
 		return config.COLOR;
 	}
 
-	get_current_alpha() {
+	get_alpha() {
 		return config.ALPHA;
 	}
 
-	get_current_zoom() {
+	get_zoom() {
 		return config.ZOOM;
 	}
 
 	get_transparency_support() {
 		return config.TRANSPARENCY;
+	}
+
+	get_active_tool() {
+		return config.TOOL;
 	}
 
 }
