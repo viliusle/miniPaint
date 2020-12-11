@@ -39,7 +39,6 @@
  * - function	function			'custom_function'
  */
 import './../../css/popup.css';
-import app_config from './../config.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_gui_class from './../core/base-gui.js';
 import Help_translate_class from './../modules/help/translate.js';
@@ -417,7 +416,8 @@ class Dialog_class {
 		}
 
 		//call translation again to translate popup
-		this.Help_translate.translate(app_config.LANG);
+		var lang = this.Base_gui.get_current_language();
+		this.Help_translate.translate(lang);
 	}
 
 	generateParamsHtml() {
@@ -625,7 +625,9 @@ class Dialog_class {
 	}
 
 	draw_background(canvas, W, H, gap, force) {
-		if (app_config.TRANSPARENCY == false && force == undefined) {
+		var transparent = this.Base_gui.get_transparency_support();
+
+		if (transparent == false && force == undefined) {
 			canvas.beginPath();
 			canvas.rect(0, 0, W, H);
 			canvas.fillStyle = "#ffffff";
