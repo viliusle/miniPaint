@@ -1,3 +1,5 @@
+import config from "../config";
+
 /**
  * various helpers
  * 
@@ -604,6 +606,34 @@ class Helper_class {
 			return result;
 		};
 	};
+
+	/**
+	 * draws line that is visible on white and black backgrounds.
+	 *
+	 * @param ctx
+	 * @param start_x
+	 * @param start_y
+	 * @param end_x
+	 * @param end_y
+	 */
+	draw_special_line(ctx, start_x, start_y, end_x, end_y){
+		const wholeLineWidth = 2 / config.ZOOM;
+		const halfLineWidth = wholeLineWidth / 2;
+
+		ctx.lineWidth = wholeLineWidth;
+		ctx.strokeStyle = 'rgb(255, 255, 255)';
+		ctx.beginPath();
+		ctx.moveTo(start_x - halfLineWidth, start_y);
+		ctx.lineTo(end_x - halfLineWidth, end_y);
+		ctx.stroke();
+
+		ctx.lineWidth = halfLineWidth;
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.beginPath();
+		ctx.moveTo(start_x - halfLineWidth, start_y);
+		ctx.lineTo(end_x - halfLineWidth, end_y);
+		ctx.stroke();
+	}
 
 }
 export default Helper_class;

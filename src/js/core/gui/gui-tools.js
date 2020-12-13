@@ -122,13 +122,6 @@ class GUI_tools_class {
 			return;
 		}
 
-		//send activate event to new tool
-		if (config.TOOL.on_activate != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_activate;
-			this.tools_modules[moduleKey][functionName]();
-		}
-
 		//set default cursor
 		const mainWrapper = document.getElementById('main_wrapper');
 		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
@@ -138,6 +131,14 @@ class GUI_tools_class {
 
 		this.show_action_attributes();
 		this.Helper.setCookie('active_tool', this.active_tool);
+
+		//send activate event to new tool
+		if (config.TOOL.on_activate != undefined) {
+			var moduleKey = config.TOOL.name;
+			var functionName = config.TOOL.on_activate;
+			this.tools_modules[moduleKey][functionName]();
+		}
+
 		config.need_render = true;
 	}
 

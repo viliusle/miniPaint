@@ -100,6 +100,24 @@ class Base_gui_class {
 		if (transparency_type) {
 			config.TRANSPARENCY_TYPE = transparency_type;
 		}
+
+		//snap
+		var snap_cookie = this.Helper.getCookie('snap');
+		if (snap_cookie === null) {
+			//default
+			config.SNAP = true;
+		}
+		else{
+			config.SNAP = Boolean(snap_cookie);
+		}
+		if(config.SNAP == false){
+			//turn "select > snap" off
+			for(var i in config.TOOLS){
+				if(config.TOOLS[i].name == 'select'){
+					config.TOOLS[i].attributes.auto_snap = false;
+				}
+			}
+		}
 	}
 
 	render_main_gui() {

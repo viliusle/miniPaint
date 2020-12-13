@@ -12,6 +12,7 @@ config.visible_height = null;
 config.COLOR = '#008000';
 config.ALPHA = 255;
 config.ZOOM = 1;
+config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
 config.layers = [];
 config.layer = null;
@@ -72,8 +73,10 @@ config.TOOLS = [
 	{
 		name: 'select',
 		title: 'Select object tool',
+		on_update: 'on_params_update',
 		attributes: {
 			auto_select: true,
+			auto_snap: true,
 		},
 	},
 	{
