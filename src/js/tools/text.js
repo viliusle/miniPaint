@@ -366,12 +366,6 @@ class Text_document_class {
 		for (let i = 0; i < insertLine.length; i++) {
 			const span = insertLine[i];
 			const spanLength = span.text.length;
-			if (span === insertedSpan) {
-				console.log(
-					(character > characterCount || character === 0),
-					character <= characterCount + spanLength
-				);
-			}
 			if (!modifyingSpan && (character > characterCount || character === 0) && character <= characterCount + spanLength) {
 				if (insertLine[i + 1] && insertLine[i + 1].text === '') {
 					modifyingSpan = insertLine[i + 1];
