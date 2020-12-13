@@ -63,6 +63,9 @@ class Select_tool_class extends Base_tools_class {
 		document.addEventListener('mousemove', function (event) {
 			_this.dragMove(event);
 		});
+		document.addEventListener('mouseup', function (event) {
+			_this.dragEnd(event);
+		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
@@ -70,6 +73,9 @@ class Select_tool_class extends Base_tools_class {
 		});
 		document.addEventListener('touchmove', function (event) {
 			_this.dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.dragEnd(event);
 		});
 
 		//keyboard actions
@@ -148,8 +154,16 @@ class Select_tool_class extends Base_tools_class {
 		this.Base_layers.render();
 	}
 
+	dragEnd(event) {
+		this.Base_layers.render();
+	}
+
 	render_overlay(ctx){
 		var ctx = this.Base_layers.ctx;
+		var mouse = this.get_mouse_info(event);
+
+		if (mouse.is_drag == false)
+			return;
 
 		//x
 		if(this.snap_line_info.x !== null) {
