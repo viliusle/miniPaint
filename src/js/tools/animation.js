@@ -47,18 +47,19 @@ class Animation_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
-	on_params_update() {
+	on_params_update(data) {
+		if(data.key != "play")
+			return;
+
 		var params = this.getParams();
 		if (config.layers.length == 1) {
 			alertify.error('Can not animate 1 layer.');
 			return;
 		}
+		this.stop();
 
 		if (params.play == true) {
 			this.start(params.delay);
-		}
-		else {
-			this.stop();
 		}
 	}
 

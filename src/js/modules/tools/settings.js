@@ -43,9 +43,18 @@ class Tools_settings_class {
 		}
 		else {
 			var theme = config.themes[0];
-		}	
+		}
 		
 		var t_values = ['squares', 'green', 'grey'];
+
+		//snap
+		var snap_cookie = this.Helper.getCookie('snap');
+		if (snap_cookie === null) {
+			var snap = true; //default
+		}
+		else{
+			var snap = Boolean(snap_cookie);
+		}
 
 		var settings = {
 			title: 'Settings',
@@ -55,6 +64,7 @@ class Tools_settings_class {
 					value: config.TRANSPARENCY_TYPE, values: t_values},
 				{name: "theme", title: "Theme", values: config.themes, value: theme},
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
+				{name: "snap", title: "Enable snap:", value: snap},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -99,7 +109,18 @@ class Tools_settings_class {
 		//transparency_type
 		config.TRANSPARENCY_TYPE = params.transparency_type;
 		this.Helper.setCookie('transparency_type', config.TRANSPARENCY_TYPE);
-		
+
+		//snap
+		if (params.snap) {
+			this.Helper.setCookie('snap', 1);
+			config.SNAP = true;
+		}
+		else {
+			this.Helper.setCookie('snap', 0);
+			config.SNAP = false;
+		}
+
+		//finish
 		this.Base_gui.prepare_canvas();
 		config.need_render = true;
 	}

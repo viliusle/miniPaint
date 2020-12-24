@@ -57,6 +57,16 @@ export class Activate_tool_action extends Base_action {
             return;
         }
 
+        //set default cursor
+        const mainWrapper = document.getElementById('main_wrapper');
+        const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
+        if (mainWrapper.style.cursor != defaultCursor) {
+            mainWrapper.style.cursor = defaultCursor;
+        }
+
+        app.GUI.GUI_tools.show_action_attributes();
+        app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
+
         //send activate event to new tool
         if (config.TOOL.on_activate != undefined) {
             var moduleKey = config.TOOL.name;
@@ -69,15 +79,6 @@ export class Activate_tool_action extends Base_action {
             }
         }
 
-        //set default cursor
-        const mainWrapper = document.getElementById('main_wrapper');
-        const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
-        if (mainWrapper.style.cursor != defaultCursor) {
-            mainWrapper.style.cursor = defaultCursor;
-        }
-
-        app.GUI.GUI_tools.show_action_attributes();
-        app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
         config.need_render = true;
     }
 
@@ -91,15 +92,6 @@ export class Activate_tool_action extends Base_action {
                 action.free();
             }
             this.tool_activate_actions = null;
-        }
-
-        // Undo leave actions
-        if (this.tool_leave_actions) {
-            for (let action of this.tool_leave_actions) {
-                await action.undo();
-                action.free();
-            }
-            this.tool_leave_actions = null;
         }
 
         //reset last
@@ -116,6 +108,9 @@ export class Activate_tool_action extends Base_action {
             }
         }
 
+        app.GUI.GUI_tools.show_action_attributes();
+        app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
+
         //set default cursor
         const mainWrapper = document.getElementById('main_wrapper');
         const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
@@ -123,8 +118,15 @@ export class Activate_tool_action extends Base_action {
             mainWrapper.style.cursor = defaultCursor;
         }
 
-        app.GUI.GUI_tools.show_action_attributes();
-        app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
+        // Undo leave actions
+        if (this.tool_leave_actions) {
+            for (let action of this.tool_leave_actions) {
+                await action.undo();
+                action.free();
+            }
+            this.tool_leave_actions = null;
+        }
+
         config.need_render = true;
     }
 

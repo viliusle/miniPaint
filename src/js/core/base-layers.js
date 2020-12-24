@@ -169,6 +169,9 @@ class Base_layers_class {
 			//render selected object controls
 			this.Base_selection.draw_selection();
 
+			//active tool overlay
+			this.render_overlay();
+
 			//render preview
 			this.render_preview(layers_sorted);
 
@@ -182,6 +185,15 @@ class Base_layers_class {
 		requestAnimationFrame(function () {
 			_this.render(force);
 		});
+	}
+
+	render_overlay(){
+		var render_class = config.TOOL.name;
+		var render_function = 'render_overlay';
+
+		if(typeof this.Base_gui.GUI_tools.tools_modules[render_class][render_function] != "undefined") {
+			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](this.ctx);
+		}
 	}
 
 	render_preview(layers) {
