@@ -14,7 +14,7 @@ export class Set_selection_action extends Base_action {
         this.height = height;
         this.settings_reference = null;
         this.old_settings_data = null;
-        this.old_settings_override = JSON.parse(JSON.stringify(old_settings_override)) || null;
+        this.old_settings_override = old_settings_override ? JSON.parse(JSON.stringify(old_settings_override)) || null : null;
 	}
 
 	async do() {

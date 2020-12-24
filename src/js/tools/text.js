@@ -1818,8 +1818,10 @@ class Text_class extends Base_tools_class {
 		this.selecting = false;
 		this.resizing = false;
 		this.focused = false;
+		this.focusedValue = null;
 		this.mousedownX = 0;
 		this.mousedownY = 0;
+		this.mousedownBounds = {};
 		this.is_fonts_loaded = false;
 		if (ctx) {
 			this.selection = {
@@ -1850,11 +1852,29 @@ class Text_class extends Base_tools_class {
 
 			this.textarea.addEventListener('focus', () => {
 				this.focused = true;
+				let editor = this.get_editor(this.layer);
+				if (editor) {
+					this.focusedValue = JSON.stringify(editor.document.lines);
+				}
 			}, true);
+
 			this.textarea.addEventListener('blur', () => {
 				this.focused = false;
+				let editor = this.get_editor(this.layer);
+				if (editor) {
+					let value = JSON.stringify(editor.document.lines);
+					if (this.focusedValue !== value) {
+						this.layer.data = JSON.parse(this.focusedValue);
+						console.log('here');
+						app.State.do_action(
+							new app.Actions.Update_layer_action(this.layer.id, { data: JSON.parse(value) })
+						);
+					}
+				}
+				this.focusedValue = null;
 				this.Base_layers.render();
 			}, true);
+
 			this.textarea.addEventListener('input', (e) => {
 				if (config.layer) {
 					const editor = this.get_editor(config.layer);
@@ -1864,6 +1884,7 @@ class Text_class extends Base_tools_class {
 					this.extend_fixed_bounds(config.layer, editor);
 				}
 			}, true);
+
 			this.textarea.addEventListener('keydown', (e) => {
 				if (config.layer) {
 					let handled = true;
@@ -2023,6 +2044,13 @@ class Text_class extends Base_tools_class {
 
 		this.mousedownX = mouse.x;
 		this.mousedownY = mouse.y;
+		this.mousedownBounds = {
+			x: config.layer.x,
+			y: config.layer.y,
+			width: config.layer.width,
+			height: config.layer.height,
+			boundary: config.layer.params.boundary
+		};
 
 		if (this.Base_selection.mouse_lock !== null) {
 			this.resizing = true;
@@ -2037,10 +2065,10 @@ class Text_class extends Base_tools_class {
 			editor.trigger_cursor_start(this.layer, -1 + mouse.x - this.layer.x, mouse.y - this.layer.y);
 			app.State.do_action(
 				new app.Actions.Bundle_action('select_text_layer', 'Select Text Layer', [
-					new app.Actions.Select_layer_action(existingLayer.id)
+					new app.Actions.Select_layer_action(existingLayer.id),
+					new app.Actions.Set_selection_action(this.layer.x, this.layer.y, this.layer.width, this.layer.height)
 				])
 			);
-			this.Base_selection.set_selection(this.layer.x, this.layer.y, this.layer.width, this.layer.height);
 		}
 		else {
 			// Create a new text layer
@@ -2064,11 +2092,11 @@ class Text_class extends Base_tools_class {
 			};
 			app.State.do_action(
 				new app.Actions.Bundle_action('new_text_layer', 'New Text Layer', [
-					new app.Actions.Insert_layer_action(layer)
+					new app.Actions.Insert_layer_action(layer),
+					new app.Actions.Set_selection_action(mouse.x, mouse.y, 0, 0)
 				])
 			);
 			this.layer = config.layer;
-			this.Base_selection.set_selection(mouse.x, mouse.y, 0, 0);
 		}
 	}
 
@@ -2114,7 +2142,28 @@ class Text_class extends Base_tools_class {
 		}
 		const editor = this.get_editor(this.layer);
 
-		if (this.creating) {
+		if (this.resizing) {
+			config.layer.x = this.mousedownBounds.x;
+			config.layer.y = this.mousedownBounds.y;
+			config.layer.width = this.mousedownBounds.width;
+			config.layer.height = this.mousedownBounds.height;
+			const new_params = JSON.parse(JSON.stringify(config.layer.params));
+			new_params.boundary = config.layer.params.boundary;
+			config.layer.params.boundary = this.mousedownBounds.boundary;
+			app.State.do_action(
+				new app.Actions.Bundle_action('resize_text_layer', 'Resize Text Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						x: this.selection.x,
+						y: this.selection.y,
+						width: this.selection.width,
+						height: this.selection.height,
+						params: new_params
+					}),
+					new app.Actions.Set_selection_action(this.selection.x, this.selection.y, this.selection.width, this.selection.height)
+				])
+			);
+		}
+		else if (this.creating) {
 			let width = Math.abs(mouse.x - this.mousedownX);
 			let height = Math.abs(mouse.y - this.mousedownY);
 
@@ -2159,9 +2208,13 @@ class Text_class extends Base_tools_class {
 		// Center layer on mouse if not click & drag
 		if (this.creating && config.layer.params.boundary === 'dynamic') {
 			requestAnimationFrame(() => {
-				config.layer.x -= config.layer.width / 2;
-				config.layer.y -= config.layer.height / 2;
-				this.Base_layers.render();
+				app.State.do_action(
+					new app.Actions.Update_layer_action(config.layer.id, {
+						x: config.layer.x - config.layer.width / 2,
+						y: config.layer.y - config.layer.height / 2
+					}),
+					{ merge_with_history: 'new_text_layer' }
+				);
 			});
 		}
 
@@ -2396,7 +2449,8 @@ class Text_class extends Base_tools_class {
 		}
 		if (layer._needs_update_data) {
 			delete layer._needs_update_data;
-			editor.set_lines(layer.data);
+			editor.hasValueChanged = true;
+			editor.set_lines(JSON.parse(JSON.stringify(layer.data)));
 		}
 		return editor;
 	}

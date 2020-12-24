@@ -5,7 +5,7 @@ import { Base_action } from './base.js';
 export class Update_layer_action extends Base_action {
     /**
 	 * Updates an existing layer with the provided settings
-     * WARNING: If passing objects or arrays into settings, make sure these are new objects, and not a modified existing object!
+     * WARNING: If passing objects or arrays into settings, make sure these are new or cloned objects, and not a modified existing object!
 	 *
      * @param {string} layer_id
 	 * @param {object} settings 
@@ -32,7 +32,7 @@ export class Update_layer_action extends Base_action {
             this.old_settings[i] = this.reference_layer[i];
             this.reference_layer[i] = this.settings[i];
         }
-        if (this.settings.data && this.reference_layer.type === 'text') {
+        if (this.reference_layer.type === 'text') {
             this.reference_layer._needs_update_data = true;
         }
         config.need_render = true;
@@ -44,7 +44,7 @@ export class Update_layer_action extends Base_action {
             for (let i in this.old_settings) {
                 this.reference_layer[i] = this.old_settings[i];
             }
-            if (this.old_settings.data && this.reference_layer.type === 'text') {
+            if (this.reference_layer.type === 'text') {
                 this.reference_layer._needs_update_data = true;
             }
             this.old_settings = {};

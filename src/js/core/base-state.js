@@ -12,7 +12,6 @@ import app from '../app.js';
 
 var instance = null;
 let action_history = [];
-let action_history_index = 0;
 let action_history_max = 50;
 
 /**
@@ -34,6 +33,8 @@ class Base_state_class {
 		this.levels = 3;
 		this.levels_optimal = 3;
 		this.enabled = true;
+		this.action_history = action_history;
+		this.action_history_index = 0;
 
 		this.set_events();
 	}
@@ -65,9 +66,9 @@ class Base_state_class {
 			return { status: 'aborted', reason: error };
 		}
 		// Remove all redo actions from history
-		if (action_history_index < action_history.length) {
-			action_history = action_history.slice(0, action_history_index);
-			const freed_actions = action_history.slice(action_history_index, action_history.length);
+		if (this.action_history_index < action_history.length) {
+			action_history = action_history.slice(0, this.action_history_index);
+			const freed_actions = action_history.slice(this.action_history_index, action_history.length);
 			for (let freed_action of freed_actions) {
 				freed_action.free();
 			}
@@ -90,32 +91,32 @@ class Base_state_class {
 			if (action_history.length > action_history_max) {
 				action_history.shift();
 			} else {
-				action_history_index++;
+				this.action_history_index++;
 			}
 		}
 		return { status: 'completed' };
 	}
 
 	can_redo() {
-		return action_history_index < action_history.length;
+		return this.action_history_index < action_history.length;
 	}
 
 	can_undo() {
-		return action_history_index > 0;
+		return this.action_history_index > 0;
 	}
 
 	async redo_action() {
 		if (this.can_redo()) {
-			const action = action_history[action_history_index];
+			const action = action_history[this.action_history_index];
 			await action.do();
-			action_history_index++;
+			this.action_history_index++;
 		}
 	}
 
 	async undo_action() {
 		if (this.can_undo()) {
-			action_history_index--;
-			await action_history[action_history_index].undo();
+			this.action_history_index--;
+			await action_history[this.action_history_index].undo();
 		}
 	}
 

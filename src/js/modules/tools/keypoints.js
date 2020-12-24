@@ -28,8 +28,6 @@ class Tools_keypoints_class {
 
 	//generate key points for image
 	keypoints(return_data) {
-		window.State.save();
-
 		var W = config.WIDTH;
 		var H = config.HEIGHT;
 

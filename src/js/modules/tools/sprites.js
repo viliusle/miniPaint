@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -24,7 +25,6 @@ class Tools_sprites_class {
 				{name: "width", title: "Width:", value: config.WIDTH},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.generate_sprites(params.gap, params.width);
 			},
 		};
@@ -50,8 +50,13 @@ class Tools_sprites_class {
 		var W = sprite_width;
 		var H = config.HEIGHT;
 
+		let actions = [];
+
+		let new_width = config.WIDTH;
+		let new_height = config.HEIGHT;
+
 		//prepare width
-		config.WIDTH = parseInt(sprite_width);
+		new_width = parseInt(sprite_width);
 		this.Base_gui.prepare_canvas();
 
 		//collect trim info
@@ -71,7 +76,7 @@ class Tools_sprites_class {
 				continue;
 
 			var trim_details = trim_details_array[layer.id];
-			if (config.WIDTH == trim_details.left) {
+			if (new_width == trim_details.left) {
 				//empty layer
 				continue;
 			}
@@ -86,13 +91,17 @@ class Tools_sprites_class {
 			if (yy % gap > 0 && gap > 0) {
 				yy = yy - yy % gap + gap;
 			}
-			if (yy + height > config.HEIGHT) {
-				config.HEIGHT = parseInt(yy + height);
+			if (yy + height > new_height) {
+				new_height = parseInt(yy + height);
 				this.Base_gui.prepare_canvas();
 			}
 
-			layer.x = layer.x + xx - trim_details.left;
-			layer.y = layer.y + yy - trim_details.top;
+			actions.push(
+				new app.Actions.Update_layer_action(layer.id, {
+					x: layer.x + xx - trim_details.left,
+					y: layer.y + yy - trim_details.top
+				})
+			);
 
 			xx += width;
 			if (gap > 0) {
@@ -108,8 +117,19 @@ class Tools_sprites_class {
 				max_height = 0;
 			}
 		}
+		actions.push(
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: new_width,
+				HEIGHT: new_height
+			}),
+			new app.Actions.Prepare_canvas_action('do')
+		);
 
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Bundle_action('sprites', 'Sprites', actions)
+		);
+
 	}
 
 }

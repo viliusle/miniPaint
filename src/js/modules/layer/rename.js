@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -21,14 +22,15 @@ class Layer_rename_class {
 				document.querySelector('#pop_data_name').select();
 			},
 			on_finish: function (params) {
-				window.State.save();
-				if (id == null)
-					var link = config.layer;
-				else
-					var link = _this.Base_layers.get_layer(id);
-				link.name = params.name;
-				_this.Base_layers.refresh_gui();
-				config.need_render = true;
+				app.State.do_action(
+					new app.Actions.Bundle_action('rename_layer', 'Rename Layer', [
+						new app.Actions.Refresh_layers_gui_action('undo'),
+						new app.Actions.Update_layer_action(id || config.layer.id, {
+							name: params.name
+						}),
+						new app.Actions.Refresh_layers_gui_action('do')
+					])
+				);
 			},
 		};
 		this.POP.show(settings);
