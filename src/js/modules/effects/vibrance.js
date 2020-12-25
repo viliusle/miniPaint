@@ -34,7 +34,6 @@ class Effects_vibrance_class {
 				canvas_preview.drawImage(data, 0, 0);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};

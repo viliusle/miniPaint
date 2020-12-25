@@ -59,6 +59,7 @@ class Select_tool_class extends Base_tools_class {
 		if (config.TOOL.name != this.name)
 			return;
 		this.mouseup(event);
+		this.Base_layers.render();
 	}
 
 	load() {
@@ -121,7 +122,7 @@ class Select_tool_class extends Base_tools_class {
 				return;
 			if (this.POP.active == true)
 				return;
-			if (this.Helper.is_input(e.target))
+			if (this.Helper.is_input(event.target))
 				return;
 			var k = event.key;
 			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
@@ -231,10 +232,6 @@ class Select_tool_class extends Base_tools_class {
 		}
 		this.moving = false;
 		this.resizing = false;
-	}
-
-	dragEnd(event) {
-		this.Base_layers.render();
 	}
 
 	render_overlay(ctx){

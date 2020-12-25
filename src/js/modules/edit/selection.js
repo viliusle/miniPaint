@@ -15,12 +15,10 @@ class Edit_selection_class {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
-
 		this.Selection.select_all();
 	}
 
 	delete() {
-		window.State.save();
 		this.Selection.delete_selection();
 	}
 }

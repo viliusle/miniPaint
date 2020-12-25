@@ -87,7 +87,6 @@ class Blur_class extends Base_tools_class {
 			return;
 		}
 		this.started = true;
-		window.State.save();
 
 		//get canvas from layer
 		this.tmpCanvas = document.createElement('canvas');

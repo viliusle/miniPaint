@@ -20,8 +20,6 @@ class File_new_class {
 	}
 
 	new () {
-		window.State.save();
-
 		var _this = this;
 		var w = config.WIDTH;
 		var h = config.HEIGHT;

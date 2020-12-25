@@ -47,7 +47,6 @@ class Tools_contentFill_class {
 				{name: "clone_count", title: "Clone count:", value: 15, range: [10, 50]},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.apply_affect(params);
 			},
 		};
@@ -72,7 +71,7 @@ class Tools_contentFill_class {
 					width: config.WIDTH,
 					height: config.HEIGHT
 				}),
-				new app.Actions.Update_layer_image_data(canvas)
+				new app.Actions.Update_layer_image_action(canvas)
 			])
 		);
 	}

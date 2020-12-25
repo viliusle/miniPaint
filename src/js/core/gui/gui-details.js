@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Text_class from './../../tools/text.js';
@@ -172,6 +173,23 @@ class GUI_details_class {
 				console.log('Error: missing details event target ' + 'detail_' + key);
 				return;
 			}
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = parseInt(this.value);
+			});
+			target.addEventListener('blur', function (e) {
+				var value = parseInt(this.value);
+				config.layer[key] = focus_value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								[key]: value
+							})
+						])
+					);
+				}
+			});
 			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
 				
@@ -239,14 +257,34 @@ class GUI_details_class {
 
 		if (events) {
 			//events
-			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
+			var target = document.getElementById('detail_param_' + key);
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = parseInt(this.value);
+			});
+			target.addEventListener('blur', function (e) {
+				var value = parseInt(this.value);
+				config.layer.params[key] = focus_value;
+				let params_copy = JSON.parse(JSON.stringify(config.layer.params));
+				params_copy[key] = value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								params: params_copy
+							})
+						])
+					);
+				}
+			});
+			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
 				config.layer.params[key] = value;
 				config.need_render = true;
 				config.need_render_changed_params = true;
 
 			});
-			document.getElementById('detail_param_' + key).addEventListener('click', function (e) {
+			target.addEventListener('click', function (e) {
 				if (typeof config.layer.params[key] != 'boolean')
 					return;
 				this.classList.toggle('active');
@@ -278,7 +316,27 @@ class GUI_details_class {
 
 		if (events) {
 			//events
-			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
+			var target = document.getElementById('detail_param_' + key);
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = this.value;
+			});
+			target.addEventListener('blur', function (e) {
+				var value = this.value;
+				config.layer.params[key] = focus_value;
+				let params_copy = JSON.parse(JSON.stringify(config.layer.params));
+				params_copy[key] = value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								params: params_copy
+							})
+						])
+					);
+				}
+			});
+			target.addEventListener('change', function (e) {
 				var value = this.value;
 				config.layer.params[key] = value;
 				config.need_render = true;
@@ -306,11 +364,22 @@ class GUI_details_class {
 
 		if (events) {
 			//events
+			let focus_value = null;
+			$colorInput.on('focus', function (e) {
+				focus_value = $colorInput.uiColorInput('get_value');
+			});
 			$colorInput.on('change', function (e) {
 				const value = $colorInput.uiColorInput('get_value');
-				config.layer.color = value;
-				config.need_render = true;
-				config.need_render_changed_params = true;
+				config.layer.color = focus_value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								color: value
+							})
+						])
+					);
+				}
 			});
 		}
 	}
@@ -334,22 +403,38 @@ class GUI_details_class {
 		if (events) {
 			//events
 			document.getElementById('reset_x').addEventListener('click', function (e) {
-				if(config.layer.x != null)
-					config.layer.x = 0;
-				config.need_render = true;
-				config.need_render_changed_params = true;
+				if (config.layer.x) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								x: 0
+							})
+						])
+					);
+				}
 			});
 			document.getElementById('reset_y').addEventListener('click', function (e) {
-				if(config.layer.x != null)
-					config.layer.y = 0;
-				config.need_render = true;
-				config.need_render_changed_params = true;
+				if (config.layer.y) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								y: 0
+							})
+						])
+					);
+				}
 			});
 			document.getElementById('reset_size').addEventListener('click', function (e) {
-				config.layer.width = config.layer.width_original;
-				config.layer.height = config.layer.height_original;
-				config.need_render = true;
-				config.need_render_changed_params = true;
+				if (config.layer.width !== config.layer.width_original || config.layer.height !== config.layer.height_original) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								width: config.layer.width_original,
+								height: config.layer.height_original
+							})
+						])
+					);
+				}
 			});
 		}
 	}
@@ -363,6 +448,7 @@ class GUI_details_class {
 			document.getElementById('detail_param_text').addEventListener('click', function (e) {
 				document.querySelector('#tools_container #text').click();
 				document.getElementById('text_tool_keyboard_input').focus();
+				config.need_render = true;
 			});
 		}
 	}

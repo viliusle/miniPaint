@@ -36,7 +36,6 @@ class Image_decreaseColors_class {
 				{name: "greyscale", title: "Greyscale:", value: false},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.execute(params);
 			},
 		};

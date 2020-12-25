@@ -108,7 +108,6 @@ class Selection_class extends Base_tools_class {
 			if (code == 46) {
 				//delete
 				if (config.TOOL.name == this.name) {
-					window.State.save();
 					this.delete_selection();
 				}
 			}

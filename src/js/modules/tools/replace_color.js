@@ -37,7 +37,6 @@ class Tools_replaceColor_class {
 				{name: "mode", title: "Mode:", values: ['Advanced', 'Simple']},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.save_alpha(params);
 			},
 		};

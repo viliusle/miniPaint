@@ -35,8 +35,6 @@ class Layer_duplicate_class {
 	}
 
 	duplicate() {
-		window.State.save();
-
 		var params = JSON.parse(JSON.stringify(config.layer));
 		delete params.id;
 		delete params.order;

@@ -45,8 +45,6 @@ class Magic_erase_class extends Base_tools_class {
 			return;
 		}
 
-		window.State.save();
-
 		this.magic_erase(mouse);
 	}
 

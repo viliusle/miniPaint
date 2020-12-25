@@ -29,8 +29,6 @@ class Effects_common_class {
 				canvas_preview.drawImage(this.layer_active_small, 0, 0);
 			},
 			on_finish: function (params) {
-
-				window.State.save();
 				_this.params = params;
 				_this.save(params, type);
 			},

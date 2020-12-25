@@ -18,8 +18,6 @@ class Image_flip_class {
 	}
 
 	flip(mode) {
-		window.State.save();
-
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;

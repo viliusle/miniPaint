@@ -232,8 +232,6 @@ class Crop_class extends Base_tools_class {
 			return;
 		}
 
-		window.State.save();
-
 		//controll boundaries
 		selection.x = Math.max(selection.x, 0);
 		selection.y = Math.max(selection.y, 0);

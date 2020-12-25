@@ -63,6 +63,11 @@ export class Delete_layer_action extends Base_action {
 		// Remove layer from list
 		this.deleted_layer = config.layers.splice(this.delete_index, 1)[0];
 
+		// Estimate memory
+		if (this.deleted_layer.link && this.deleted_layer.link.src && typeof this.deleted_layer.link.src === 'string') {
+			this.memory_estimate = new Blob([this.deleted_layer.link.src]).size;
+		}
+
 		app.Layers.render();
 		app.GUI.GUI_layers.render_layers();
 	}
@@ -85,6 +90,9 @@ export class Delete_layer_action extends Base_action {
 			this.insert_layer_action = null;
 		}
 
+		// Estimate memory
+		this.memory_estimate = 0;
+
 		app.Layers.render();
 		app.GUI.GUI_layers.render_layers();
 	}
@@ -92,6 +100,7 @@ export class Delete_layer_action extends Base_action {
 	free() {
 		if (this.deleted_layer) {
 			delete this.deleted_layer.link;
+			delete this.deleted_layer.data;
 		}
 		if (this.insert_layer_action) {
 			this.insert_layer_action.free();

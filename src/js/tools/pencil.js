@@ -71,8 +71,6 @@ class Pencil_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		window.State.save();
-
 		var params_hash = this.get_params_hash();
 		var params = this.getParams();
 		var opacity = 100;

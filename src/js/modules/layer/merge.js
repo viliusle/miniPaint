@@ -15,8 +15,6 @@ class Layer_merge_class {
 			return false;
 		}
 
-		window.State.save();
-
 		//create tmp canvas
 		var canvas = document.createElement('canvas');
 		canvas.width = config.WIDTH;
@@ -51,6 +49,7 @@ class Layer_merge_class {
 			])
 		);
 
+		//free canvas data
 		canvas.width = 1;
 		canvas.height = 1;
 	}

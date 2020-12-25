@@ -45,7 +45,7 @@ window.addEventListener('load', function (e) {
 	// Register as global for quick or external access
 	window.Layers = Layers;
 	window.AppConfig = config;
-	window.State = Base_state;	// window.State.save();
+	window.State = Base_state;
 	window.FileOpen = File_open;
 	window.FileSave = File_save;
 

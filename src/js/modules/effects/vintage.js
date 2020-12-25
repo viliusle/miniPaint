@@ -34,7 +34,6 @@ class Effects_vintage_class {
 				_this.change(canvas_, params);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};

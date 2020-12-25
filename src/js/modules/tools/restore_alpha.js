@@ -31,7 +31,6 @@ class Tools_restoreAlpha_class {
 				{name: "level", title: "Level:", value: "128", range: [0, 255]},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.save_alpha(params.level);
 			},
 		};

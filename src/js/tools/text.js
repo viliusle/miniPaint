@@ -1865,7 +1865,6 @@ class Text_class extends Base_tools_class {
 					let value = JSON.stringify(editor.document.lines);
 					if (this.focusedValue !== value) {
 						this.layer.data = JSON.parse(this.focusedValue);
-						console.log('here');
 						app.State.do_action(
 							new app.Actions.Update_layer_action(this.layer.id, { data: JSON.parse(value) })
 						);
@@ -2179,9 +2178,9 @@ class Text_class extends Base_tools_class {
 						y: Math.min(mouse.y, this.mousedownY),
 						width,
 						height
-					}),
-					{ merge_with_history: 'new_text_layer' }
-				])
+					})
+				]),
+				{ merge_with_history: 'new_text_layer' }
 			);
 			this.textarea.focus();
 		}
@@ -2286,8 +2285,13 @@ class Text_class extends Base_tools_class {
 			}
 		} else {
 			editor.document.queuedMetaChanges = null;
+			let oldData = JSON.parse(JSON.stringify(editor.document.lines));
 			editor.document.set_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character, meta);
 			editor.hasValueChanged = true;
+			this.layer.data = oldData;
+			app.State.do_action(
+				new app.Actions.Update_layer_action(this.layer.id, { data: JSON.parse(JSON.stringify(editor.document.lines)) })
+			);
 			this.Base_layers.render();
 		}
 	}
@@ -2313,23 +2317,25 @@ class Text_class extends Base_tools_class {
 
 	resize_to_dynamic_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary === 'dynamic') {
-			layer.width = editor.textBoundaryWidth + 1;
-			layer.height = editor.textBoundaryHeight + 1;
-			layer.width = Math.max(9, layer.width);
-			layer.height = Math.max(9, layer.height);
+			let new_width = Math.max(9, editor.textBoundaryWidth + 1);
+			let new_height = Math.max(9, editor.textBoundaryHeight + 1);
+			config.layer.width = new_width;
+			config.layer.height = new_height;
 		}
 	}
 
 	extend_fixed_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary !== 'dynamic') {
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(layer.params.textDirection);
+			let new_width = layer.width;
+			let new_height = layer.height;
 			if (isHorizontalTextDirection) {
-				layer.width = Math.max(editor.textBoundaryWidth + 1, layer.width);
+				new_width = Math.max(editor.textBoundaryWidth + 1, new_width);
 			} else {
-				layer.height = Math.max(editor.textBoundaryHeight + 1, layer.height);
+				new_height = Math.max(editor.textBoundaryHeight + 1, new_height);
 			}
-			layer.width = layer.width;
-			layer.height = layer.height;
+			config.layer.width = new_width;
+			config.layer.height = new_height;
 		}
 	}
 

@@ -32,7 +32,6 @@ class Tools_colorZoom_class {
 				canvas_preview.putImageData(data, 0, 0);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save_zoom(params.zoom, params.center);
 			},
 		};

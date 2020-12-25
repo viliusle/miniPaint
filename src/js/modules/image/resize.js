@@ -78,8 +78,6 @@ class Image_resize_class {
 			return false;
 		}
 		
-		window.State.save();
-
 		// Build a list of actions to execute for resize
 		let actions = [];
 		
@@ -89,7 +87,6 @@ class Image_resize_class {
 			for (var i in config.layers) {
 				try {
 					actions = actions.concat(await this.resize_layer(config.layers[i], params));
-					
 				} catch (error) {
 					skips++;
 				}
@@ -121,19 +118,19 @@ class Image_resize_class {
 		var height = parseInt(params.height);
 		var width_100 = parseInt(params.width_percent);
 		var height_100 = parseInt(params.height_percent);
-		var canvas_width;
-		var canvas_height;
+		var canvas_width = layer.width;
+		var canvas_height = layer.height;
 		var sharpen = params.sharpen;
 		var _this = this;
 
 		//if dimension with percent provided
 		if (isNaN(width) && isNaN(height)) {
 			if (isNaN(width_100) == false) {
-				width = Math.round(layer.width * width_100 / 100);
+				width = Math.round(config.WIDTH * width_100 / 100);
 				canvas_width = Math.round(config.WIDTH * width_100 / 100);
 			}
 			if (isNaN(height_100) == false) {
-				height = Math.round(layer.height * height_100 / 100);
+				height = Math.round(config.HEIGHT * height_100 / 100);
 				canvas_height = Math.round(config.HEIGHT * height_100 / 100);
 			}
 		}
@@ -150,12 +147,13 @@ class Image_resize_class {
 				canvas_height = Math.round(canvas_width / canvas_ratio);
 		}
 
-		let new_x = params.layers == 'All' ? Math.round(layer.x * canvas_width / config.WIDTH) : layer.x;
-		let new_y = params.layers == 'All' ? Math.round(layer.y * canvas_height / config.HEIGHT) : layer.y;
+		let new_x = params.layers == 'All' ? Math.round(layer.x * width / config.WIDTH) : layer.x;
+		let new_y = params.layers == 'All' ? Math.round(layer.y * height / config.HEIGHT) : layer.y;
+		let xratio = width / config.WIDTH;
+		let yratio = height / config.HEIGHT;
 		
 		//is text
 		if (layer.type == 'text') {
-			var xratio = width / layer.width;
 			let data = JSON.parse(JSON.stringify(layer.data));
 			for (let line of data) {
 				for (let span of line) {
@@ -171,8 +169,8 @@ class Image_resize_class {
 					x: new_x, 
 					y: new_y,
 					data,
-					width,
-					height
+					width: layer.width * xratio,
+					height: layer.height * yratio
 				})
 			];
 		}
@@ -184,8 +182,8 @@ class Image_resize_class {
 				new app.Actions.Update_layer_action(layer.id, {
 					x: new_x, 
 					y: new_y,
-					width,
-					height
+					width: layer.width * xratio,
+					height: layer.height * yratio
 				})
 			];
 		}

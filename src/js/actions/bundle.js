@@ -14,9 +14,13 @@ export class Bundle_action extends Base_action {
         super.do();
         let error = null;
         let i = 0;
+        this.memory_estimate = 0;
+        this.database_estimate = 0;
         for (i = 0; i < this.actions_to_do.length; i++) {
             try {
                 await this.actions_to_do[i].do();
+                this.memory_estimate += this.actions_to_do[i].memory_estimate;
+                this.database_estimate += this.actions_to_do[i].database_estimate;
             } catch (e) {
                 error = e;
                 break;
@@ -34,8 +38,12 @@ export class Bundle_action extends Base_action {
 
     async undo() {
         super.undo();
+        this.memory_estimate = 0;
+        this.database_estimate = 0;
         for (let i = this.actions_to_do.length - 1; i >= 0; i--) {
             await this.actions_to_do[i].undo();
+            this.memory_estimate += this.actions_to_do[i].memory_estimate;
+            this.database_estimate += this.actions_to_do[i].database_estimate;
         }
         config.need_render = true;
     }

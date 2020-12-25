@@ -201,7 +201,6 @@ class File_open_class {
 				{name: "data", title: "Data URL:", type: "textarea", value: ""},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.file_open_data_url_handler(params.data);
 			},
 		};
@@ -250,7 +249,6 @@ class File_open_class {
 				{name: "url", title: "URL:", value: ""},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.file_open_url_handler(params);
 			},
 		};
@@ -261,7 +259,6 @@ class File_open_class {
 		var _this = this;
 		var files = e.target.files;
 
-		window.State.save();
 		var auto_increment = this.Base_layers.auto_increment;
 
 		if (files == undefined) {
@@ -303,9 +300,11 @@ class File_open_class {
 						order: order,
 					};
 					app.State.do_action(
-						new app.Actions.Insert_layer_action(new_layer)
+						new app.Actions.Bundle_action('open_image', 'Open Image', [
+							new app.Actions.Insert_layer_action(new_layer),
+							..._this.extract_exif(this.file)
+						])
 					);
-					_this.extract_exif(this.file);
 				}
 				else {
 					//json
@@ -494,6 +493,9 @@ class File_open_class {
 		);
 	}
 
+	/**
+	 * Returns an action that saves the exif data of the provided object to the current layer
+	 */
 	extract_exif(object) {
 		var exif_data = {
 			general: [],
@@ -517,7 +519,11 @@ class File_open_class {
 			exif_data.general['Last modified'] = this.Helper.format_time(object.lastModified);
 
 		//save
-		config.layer._exif = exif_data;
+		return [
+			new app.Actions.Update_layer_action(config.layer.id, {
+				_exif: exif_data
+			})
+		]
 	}
 }
 

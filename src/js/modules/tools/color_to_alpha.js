@@ -33,7 +33,6 @@ class Tools_colorToAlpha_class {
 				{name: "color", title: "Color:", value: config.COLOR, type: 'color'},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.apply_affect(params.color);
 			},
 		};

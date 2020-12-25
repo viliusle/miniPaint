@@ -22,8 +22,6 @@ class Effects_inkwell_class {
 			return;
 		}
 
-		window.State.save();
-
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");

@@ -15,8 +15,6 @@ class Layer_flatten_class {
 			return;
 		}
 
-		window.State.save();
-
 		//create tmp canvas
 		var canvas = document.createElement('canvas');
 		canvas.width = config.WIDTH;

@@ -44,7 +44,6 @@ class Image_colorCorrections_class {
 				{name: "param_l", title: "Luminance:", value: "0", range: [-100, 100]},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.save_alpha(params);
 			},
 		};

@@ -51,8 +51,6 @@ class Layer_new_class {
 			return;
 		}
 
-		window.State.save();
-		
 		//if image was stretched
 		var width_ratio = (layer.width / layer.width_original);
 		var height_ratio = (layer.height / layer.height_original);
@@ -86,7 +84,7 @@ class Layer_new_class {
 			data: canvas.toDataURL("image/png"),
 		};
 		app.State.do_action(
-			new Bundle_action('new_layer', 'New Layer', [
+			new app.Actions.Bundle_action('new_layer', 'New Layer', [
 				new app.Actions.Insert_layer_action(params, false),
 				...this.Selection.on_leave(),
 				new app.Actions.Activate_tool_action('select')
