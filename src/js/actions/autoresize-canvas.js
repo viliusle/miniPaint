@@ -13,22 +13,22 @@ export class Autoresize_canvas_action extends Base_action {
 	 */
 	constructor(width, height, layer_id, can_automate = true) {
 		super('autoresize_canvas', 'Auto-resize Canvas');
-        this.width = width;
-        this.height = height;
-        this.layer_id = layer_id;
-        this.can_automate = can_automate;
-        this.old_config_width = null;
-        this.old_config_height = null;
+		this.width = width;
+		this.height = height;
+		this.layer_id = layer_id;
+		this.can_automate = can_automate;
+		this.old_config_width = null;
+		this.old_config_height = null;
 	}
 
 	async do() {
-        super.do();
-        const width = this.width;
-        const height = this.height;
-        const can_automate = this.can_automate;
-        let need_fit = false;
-        let new_config_width = config.WIDTH;
-        let new_config_height = config.HEIGHT;
+		super.do();
+		const width = this.width;
+		const height = this.height;
+		const can_automate = this.can_automate;
+		let need_fit = false;
+		let new_config_width = config.WIDTH;
+		let new_config_height = config.HEIGHT;
 
 		// Resize up
 		if (width > new_config_width || height > new_config_height) {
@@ -53,40 +53,40 @@ export class Autoresize_canvas_action extends Base_action {
 				new_config_height = parseInt(height);
 		}
 
-        if (new_config_width !== config.WIDTH || new_config_height !== height) {
-            this.old_config_width = config.WIDTH;
-            this.old_config_height = config.HEIGHT;
-            config.WIDTH = new_config_width;
-            config.HEIGHT = new_config_height;
-            app.GUI.prepare_canvas();
-        } else {
-            throw new Error('Aborted - Resize not necessary')
-        }
+		if (new_config_width !== config.WIDTH || new_config_height !== height) {
+			this.old_config_width = config.WIDTH;
+			this.old_config_height = config.HEIGHT;
+			config.WIDTH = new_config_width;
+			config.HEIGHT = new_config_height;
+			app.GUI.prepare_canvas();
+		} else {
+			throw new Error('Aborted - Resize not necessary')
+		}
 
 		// Fit zoom when after short pause
 		// @todo - remove setTimeout
 		if (need_fit == true) {
-            await new Promise((resolve) => {
-                window.setTimeout(() => {
-                    app.GUI.GUI_preview.zoom_auto();
-                    resolve();
-                }, 100);
-            });
+			await new Promise((resolve) => {
+				window.setTimeout(() => {
+					app.GUI.GUI_preview.zoom_auto();
+					resolve();
+				}, 100);
+			});
 		}
-    }
+	}
 
-    async undo() {
-        super.undo();
-        if (this.old_config_width != null) {
-            config.WIDTH = this.old_config_width;
-        }
-        if (this.old_config_height != null) {
-            config.HEIGHT = this.old_config_height;
-        }
-        if (this.old_config_width != null || this.old_config_height != null) {
-            app.GUI.prepare_canvas();
-        }
-        this.old_config_width = null;
-        this.old_config_height = null;
-    }
+	async undo() {
+		super.undo();
+		if (this.old_config_width != null) {
+			config.WIDTH = this.old_config_width;
+		}
+		if (this.old_config_height != null) {
+			config.HEIGHT = this.old_config_height;
+		}
+		if (this.old_config_width != null || this.old_config_height != null) {
+			app.GUI.prepare_canvas();
+		}
+		this.old_config_width = null;
+		this.old_config_height = null;
+	}
 }
