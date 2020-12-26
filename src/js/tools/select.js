@@ -145,13 +145,6 @@ class Select_tool_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		this.mousedown_dimensions = {
-			x: Math.round(config.layer.x),
-			y: Math.round(config.layer.y),
-			width: Math.round(config.layer.width),
-			height: Math.round(config.layer.height)
-		};
-
 		if (this.Base_selection.mouse_lock != null) {
 			this.resizing = true;
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
@@ -165,6 +158,13 @@ class Select_tool_class extends Base_tools_class {
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 			this.saved = false;
 		}
+
+		this.mousedown_dimensions = {
+			x: Math.round(config.layer.x),
+			y: Math.round(config.layer.y),
+			width: Math.round(config.layer.width),
+			height: Math.round(config.layer.height)
+		};
 	}
 
 	mousemove(e) {
