@@ -298,11 +298,11 @@ class File_open_class {
 						type: 'image',
 						data: event.target.result,
 						order: order,
+						_exif: _this.extract_exif(this.file)
 					};
 					app.State.do_action(
 						new app.Actions.Bundle_action('open_image', 'Open Image', [
-							new app.Actions.Insert_layer_action(new_layer),
-							..._this.extract_exif(this.file)
+							new app.Actions.Insert_layer_action(new_layer)
 						])
 					);
 				}
@@ -518,12 +518,7 @@ class File_open_class {
 		if (object.lastModified != undefined)
 			exif_data.general['Last modified'] = this.Helper.format_time(object.lastModified);
 
-		//save
-		return [
-			new app.Actions.Update_layer_action(config.layer.id, {
-				_exif: exif_data
-			})
-		]
+		return exif_data;
 	}
 }
 

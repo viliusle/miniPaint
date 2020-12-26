@@ -59,7 +59,7 @@ export class Insert_layer_action extends Base_action {
 
 		// Build data
 		for (let i in this.settings) {
-			if (typeof layer[i] == "undefined") {
+			if (typeof layer[i] == "undefined" && !i.startsWith('_')) {
 				alertify.error('Error: wrong key: ' + i);
 				continue;
 			}
