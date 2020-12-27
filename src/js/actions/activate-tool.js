@@ -21,51 +21,50 @@ export class Activate_tool_action extends Base_action {
 		const key = this.key;
 		this.old_key = app.GUI.GUI_tools.active_tool;
 
-		if (this.key === this.old_key && !this.ignore_same_tool) {
-			throw new Error('Aborted - specified tool is already the active tool');
-		}
+		if (this.key !== this.old_key || this.ignore_same_tool) {
 
-		//reset last
-		document.querySelector('#tools_container .' + this.old_key)
-			.classList.remove("active");
+			//reset last
+			document.querySelector('#tools_container .' + this.old_key)
+				.classList.remove("active");
 
-		//send exit event to old previous tool
-		if (config.TOOL.on_leave != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_leave;
-			this.tool_leave_actions = app.GUI.GUI_tools.tools_modules[moduleKey][functionName]();
-			if (this.tool_leave_actions) {
-				for (let action of this.tool_leave_actions) {
-					await action.do();
+			//send exit event to old previous tool
+			if (config.TOOL.on_leave != undefined) {
+				var moduleKey = config.TOOL.name;
+				var functionName = config.TOOL.on_leave;
+				this.tool_leave_actions = app.GUI.GUI_tools.tools_modules[moduleKey][functionName]();
+				if (this.tool_leave_actions) {
+					for (let action of this.tool_leave_actions) {
+						await action.do();
+					}
 				}
 			}
-		}
 
-		//change active
-		app.GUI.GUI_tools.active_tool = key;
-		document.querySelector('#tools_container .' + app.GUI.GUI_tools.active_tool)
-			.classList.add("active");
-		for (let i in config.TOOLS) {
-			if (config.TOOLS[i].name == app.GUI.GUI_tools.active_tool) {
-				config.TOOL = config.TOOLS[i];
+			//change active
+			app.GUI.GUI_tools.active_tool = key;
+			document.querySelector('#tools_container .' + app.GUI.GUI_tools.active_tool)
+				.classList.add("active");
+			for (let i in config.TOOLS) {
+				if (config.TOOLS[i].name == app.GUI.GUI_tools.active_tool) {
+					config.TOOL = config.TOOLS[i];
+				}
 			}
-		}
 
-		//check module
-		if (app.GUI.GUI_tools.tools_modules[key] == undefined) {
-			alertify.error('Tools class not found: ' + key);
-			return;
-		}
+			//check module
+			if (app.GUI.GUI_tools.tools_modules[key] == undefined) {
+				alertify.error('Tools class not found: ' + key);
+				return;
+			}
 
-		//set default cursor
-		const mainWrapper = document.getElementById('main_wrapper');
-		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
-		if (mainWrapper.style.cursor != defaultCursor) {
-			mainWrapper.style.cursor = defaultCursor;
-		}
+			//set default cursor
+			const mainWrapper = document.getElementById('main_wrapper');
+			const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
+			if (mainWrapper.style.cursor != defaultCursor) {
+				mainWrapper.style.cursor = defaultCursor;
+			}
 
-		app.GUI.GUI_tools.show_action_attributes();
-		app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
+			app.GUI.GUI_tools.show_action_attributes();
+			app.GUI.GUI_tools.Helper.setCookie('active_tool', app.GUI.GUI_tools.active_tool);
+		}
 
 		//send activate event to new tool
 		if (config.TOOL.on_activate != undefined) {
