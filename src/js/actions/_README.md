@@ -4,11 +4,11 @@ Most layer and image manipulation tasks are bound to the undo history, which the
 
 All actions that the user can do in the application are organized into separate Javascript modules inside the `src/js/actions` folder. It will be a very rare event if you ever need to add a new action, as most functionality in the application is covered by the following actions:
 
-insert-layer.js
-update-layer.js
-update-layer-image.js
-delete-layer.js
-update-config.js
+- insert-layer.js
+- update-layer.js
+- update-layer-image.js
+- delete-layer.js
+- update-config.js
 
 These Javascript files contain classes that represent each action. They run by calling the `do()` method, and can be reversed by calling the `undo()` method. However, normally you will not call `do()` or `undo()` methods directly. Instead... the State object will do this for you.
 
@@ -29,7 +29,7 @@ app.State.do_action(
 );
 ```
 
-This example creates an instance of the Insert_layer_action class, then passes that instance to the `do_action()` method on the State object. This results in the action running immediately then adds the action to the undo history.
+This example creates an instance of the Insert_layer_action class, then passes that instance to the `do_action()` method on the State object. This results in the action running immediately then the action is added to the undo history.
 
 The `app` object is just a module that collects references to a bunch of globally accessible classes throughout the application. It makes referencing different actions easier since you don't have to import them individually.
 
