@@ -181,6 +181,18 @@ class Select_tool_class extends Base_tools_class {
 			//move object
 			config.layer.x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
 			config.layer.y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+
+			//apply snap
+			var snap_info = this.calc_snap(e, config.layer.x, config.layer.y);
+			if(snap_info != null){
+				if(snap_info.x != null) {
+					config.layer.x = snap_info.x;
+				}
+				if(snap_info.y != null) {
+					config.layer.y = snap_info.y;
+				}
+			}
+
 			config.need_render = true;
 		}
 	}
@@ -191,7 +203,6 @@ class Select_tool_class extends Base_tools_class {
 			return;
 		}
 		if (this.resizing) {
-			this.apply_snap(e, config.layer);
 			let x = config.layer.x;
 			let y = config.layer.y;
 			let width = config.layer.width;
@@ -214,11 +225,21 @@ class Select_tool_class extends Base_tools_class {
 			}
 		}
 		else if (this.moving) {
-			this.apply_snap(e, config.layer);
-			const new_x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
-			const new_y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+			var new_x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
+			var new_y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
 			config.layer.x = this.mousedown_dimensions.x;
 			config.layer.y = this.mousedown_dimensions.y;
+
+			var snap_info = this.calc_snap(e, new_x, new_y);
+			if(snap_info != null){
+				if(snap_info.x != null) {
+					new_x = snap_info.x;
+				}
+				if(snap_info.y != null) {
+					new_y = snap_info.y;
+				}
+			}
+
 			if (this.mousedown_dimensions.x !== new_x || this.mousedown_dimensions.y !== new_y) {
 				app.State.do_action(
 					new app.Actions.Bundle_action('move_layer', 'Move Layer', [
@@ -264,12 +285,21 @@ class Select_tool_class extends Base_tools_class {
 		}
 	}
 
-	apply_snap(event, layer) {
+	/**
+	 * calculates current object snap coordinates and returns it. One of coordinates can be null.
+	 *
+	 * @param event
+	 * @param pos_x
+	 * @param pos_y
+	 * @returns object|null
+	 */
+	calc_snap(event, pos_x, pos_y) {
+		var snap_position = { x: null, y: null };
 		var params = this.getParams();
 
 		if(config.SNAP === false || params.auto_snap !== true || event.ctrlKey == true || event.metaKey == true){
 			this.snap_line_info = {x: null, y: null};
-			return;
+			return null;
 		}
 
 		//settings
@@ -297,14 +327,30 @@ class Select_tool_class extends Base_tools_class {
 			}
 
 			//x
-			snap_positions.x.push(config.layers[i].x);
-			snap_positions.x.push(config.layers[i].x + config.layers[i].width/2);
-			snap_positions.x.push(config.layers[i].x + config.layers[i].width);
+			var x = config.layers[i].x;
+			if(x > 0 && x < config.WIDTH)
+				snap_positions.x.push(x);
+
+			var x = config.layers[i].x + config.layers[i].width/2;
+			if(x > 0 && x < config.WIDTH)
+				snap_positions.x.push(x);
+
+			var x = config.layers[i].x + config.layers[i].width;
+			if(x > 0 && x < config.WIDTH)
+				snap_positions.x.push(x);
 
 			//y
-			snap_positions.y.push(config.layers[i].y);
-			snap_positions.y.push(config.layers[i].y + config.layers[i].height/2);
-			snap_positions.y.push(config.layers[i].y + config.layers[i].height);
+			var y = config.layers[i].y;
+			if(y > 0 && y < config.HEIGHT)
+				snap_positions.y.push(y);
+
+			var y = config.layers[i].y + config.layers[i].height/2;
+			if(y > 0 && y < config.HEIGHT)
+				snap_positions.y.push(y);
+
+			var y = config.layers[i].y + config.layers[i].height;
+			if(y > 0 && y < config.HEIGHT)
+				snap_positions.y.push(y);
 		}
 
 		//find closest snap positions
@@ -334,19 +380,19 @@ class Select_tool_class extends Base_tools_class {
 		};
 		//x
 		for(var i in snap_positions.x){
-			var distance = Math.abs(config.layer.x - snap_positions.x[i]);
+			var distance = Math.abs(pos_x - snap_positions.x[i]);
 			if(distance < max_distance && (distance < min_group_distance.x.start || min_group_distance.x.start === null)){
 				min_group_distance.x.start = distance;
 				min_group.x.start = snap_positions.x[i];
 			}
 
-			var distance = Math.abs(config.layer.x + config.layer.width/2 - snap_positions.x[i]);
+			var distance = Math.abs(pos_x + config.layer.width/2 - snap_positions.x[i]);
 			if(distance < max_distance && (distance < min_group_distance.x.center || min_group_distance.x.center === null)){
 				min_group_distance.x.center = distance;
 				min_group.x.center = snap_positions.x[i];
 			}
 
-			var distance = Math.abs(config.layer.x + config.layer.width - snap_positions.x[i]);
+			var distance = Math.abs(pos_x + config.layer.width - snap_positions.x[i]);
 			if(distance < max_distance && (distance < min_group_distance.x.end || min_group_distance.x.end === null)){
 				min_group_distance.x.end = distance;
 				min_group.x.end = snap_positions.x[i];
@@ -354,19 +400,19 @@ class Select_tool_class extends Base_tools_class {
 		}
 		//y
 		for(var i in snap_positions.y){
-			var distance = Math.abs(config.layer.y - snap_positions.y[i]);
+			var distance = Math.abs(pos_y - snap_positions.y[i]);
 			if(distance < max_distance && (distance < min_group_distance.y.start || min_group_distance.y.start === null)){
 				min_group_distance.y.start = distance;
 				min_group.y.start = snap_positions.y[i];
 			}
 
-			var distance = Math.abs(config.layer.y + config.layer.height/2 - snap_positions.y[i]);
+			var distance = Math.abs(pos_y + config.layer.height/2 - snap_positions.y[i]);
 			if(distance < max_distance && (distance < min_group_distance.y.center || min_group_distance.y.center === null)){
 				min_group_distance.y.center = distance;
 				min_group.y.center = snap_positions.y[i];
 			}
 
-			var distance = Math.abs(config.layer.y + config.layer.height - snap_positions.y[i]);
+			var distance = Math.abs(pos_y + config.layer.height - snap_positions.y[i]);
 			if(distance < max_distance && (distance < min_group_distance.y.end || min_group_distance.y.end === null)){
 				min_group_distance.y.end = distance;
 				min_group.y.end = snap_positions.y[i];
@@ -394,18 +440,11 @@ class Select_tool_class extends Base_tools_class {
 			min_distance.y = min_group_distance.y.end;
 
 		//apply snap
+		var success = false;
 		//x
-		if(min_group.x.start != null && min_group_distance.x.start == min_distance.x) {
-			config.layer.x = Math.round(min_group.x.start);
-			this.snap_line_info.x = {
-				start_x: min_group.x.start,
-				start_y: 0,
-				end_x: min_group.x.start,
-				end_y: config.HEIGHT,
-			};
-		}
-		else if(min_group.x.center != null && min_group_distance.x.center == min_distance.x) {
-			config.layer.x = Math.round(min_group.x.center - config.layer.width / 2);
+		if(min_group.x.center != null && min_group_distance.x.center == min_distance.x) {
+			snap_position.x = Math.round(min_group.x.center - config.layer.width / 2);
+			success = true;
 			this.snap_line_info.x = {
 				start_x: min_group.x.center,
 				start_y: 0,
@@ -413,8 +452,19 @@ class Select_tool_class extends Base_tools_class {
 				end_y: config.HEIGHT
 			};
 		}
+		else if(min_group.x.start != null && min_group_distance.x.start == min_distance.x) {
+			snap_position.x = Math.round(min_group.x.start);
+			success = true;
+			this.snap_line_info.x = {
+				start_x: min_group.x.start,
+				start_y: 0,
+				end_x: min_group.x.start,
+				end_y: config.HEIGHT,
+			};
+		}
 		else if(min_group.x.end != null && min_group_distance.x.end == min_distance.x) {
-			config.layer.x = Math.round(min_group.x.end - config.layer.width);
+			snap_position.x = Math.round(min_group.x.end - config.layer.width);
+			success = true;
 			this.snap_line_info.x = {
 				start_x: min_group.x.end,
 				start_y: 0,
@@ -426,17 +476,9 @@ class Select_tool_class extends Base_tools_class {
 			this.snap_line_info.x = null;
 		}
 		//y
-		if(min_group.y.start != null && min_group_distance.y.start == min_distance.y) {
-			config.layer.y = Math.round(min_group.y.start);
-			this.snap_line_info.y = {
-				start_x: 0,
-				start_y: min_group.y.start,
-				end_x: config.WIDTH,
-				end_y: min_group.y.start,
-			};
-		}
-		else if(min_group.y.center != null && min_group_distance.y.center == min_distance.y) {
-			config.layer.y = Math.round(min_group.y.center - config.layer.height / 2);
+		if(min_group.y.center != null && min_group_distance.y.center == min_distance.y) {
+			snap_position.y = Math.round(min_group.y.center - config.layer.height / 2);
+			success = true;
 			this.snap_line_info.y = {
 				start_x: 0,
 				start_y: min_group.y.center,
@@ -444,8 +486,19 @@ class Select_tool_class extends Base_tools_class {
 				end_y: min_group.y.center,
 			};
 		}
+		else if(min_group.y.start != null && min_group_distance.y.start == min_distance.y) {
+			snap_position.y = Math.round(min_group.y.start);
+			success = true;
+			this.snap_line_info.y = {
+				start_x: 0,
+				start_y: min_group.y.start,
+				end_x: config.WIDTH,
+				end_y: min_group.y.start,
+			};
+		}
 		else if(min_group.y.end != null && min_group_distance.y.end == min_distance.y) {
-			config.layer.y = Math.round(min_group.y.end - config.layer.height);
+			snap_position.y = Math.round(min_group.y.end - config.layer.height);
+			success = true;
 			this.snap_line_info.y = {
 				start_x: 0,
 				start_y: min_group.y.end,
@@ -456,6 +509,12 @@ class Select_tool_class extends Base_tools_class {
 		else{
 			this.snap_line_info.y = null;
 		}
+
+		if(success) {
+			return snap_position;
+		}
+
+		return null;
 	}
 
 	move(direction_x, direction_y, event) {
