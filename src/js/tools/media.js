@@ -69,7 +69,6 @@ class Media_class extends Base_tools_class {
 				for (var i = 0; i < targets.length; i++) {
 					targets[i].addEventListener('click', function (event) {
 						//we have click
-						window.State.save();
 						var data = {
 							url: this.dataset.url,
 						};

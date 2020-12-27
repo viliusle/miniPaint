@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -31,28 +32,30 @@ class Crop_class extends Base_tools_class {
 				return _this.selection;
 			},
 		};
+		this.mousedown_selection = null;
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
 	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		this.is_mousedown_canvas = false;
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousedown(event);
+		if (!event.target.closest('#main_wrapper'))
+			return;
+		this.is_mousedown_canvas = true;
+		this.mousedown(event);
 	}
 
 	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousemove(event);
+		this.mousemove(event);
 	}
 
 	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mouseup(event);
+		this.mouseup(event);
 	}
 
 	load() {
@@ -83,8 +86,10 @@ class Crop_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (this.Base_selection.is_drag == false || mouse.valid == false || mouse.click_valid == false)
 			return;
+
+		this.mousedown_selection = JSON.parse(JSON.stringify(this.selection));
 
 		if (this.Base_selection.mouse_lock !== null) {
 			return;
@@ -96,7 +101,7 @@ class Crop_class extends Base_tools_class {
 
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false) {
+		if (this.Base_selection.is_drag == false || mouse.is_drag == false) {
 			return;
 		}
 		if (e.type == 'mousedown' && (mouse.valid == false || mouse.click_valid == false)) {
@@ -109,7 +114,7 @@ class Crop_class extends Base_tools_class {
 		var width = mouse.x - mouse.click_x;
 		var height = mouse.y - mouse.click_y;
 		
-		if(event.ctrlKey == true || event.metaKey){
+		if(e.ctrlKey == true || e.metaKey){
 			//ctrl is pressed - crop will be calculated based on global width and height ratio
 			var ratio = config.WIDTH / config.HEIGHT;
 			var width_new = Math.round(height * ratio);
@@ -135,6 +140,9 @@ class Crop_class extends Base_tools_class {
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
 
+		if (!this.Base_selection.is_drag) {
+			return;
+		}
 		if (e.type == 'mousedown' && mouse.click_valid == false) {
 			return;
 		}
@@ -184,7 +192,9 @@ class Crop_class extends Base_tools_class {
 			this.selection.height = config.HEIGHT - this.selection.y;
 		}
 
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Set_selection_action(this.selection.x, this.selection.y, this.selection.width, this.selection.height, this.mousedown_selection)
+		);
 	}
 
 	render(ctx, layer) {
@@ -194,7 +204,7 @@ class Crop_class extends Base_tools_class {
 	/**
 	 * do actual crop
 	 */
-	on_params_update() {
+	async on_params_update() {
 		var params = this.getParams();
 		var selection = this.selection;
 		params.crop = true;
@@ -222,81 +232,104 @@ class Crop_class extends Base_tools_class {
 			return;
 		}
 
-		window.State.save();
-
 		//controll boundaries
 		selection.x = Math.max(selection.x, 0);
 		selection.y = Math.max(selection.y, 0);
 		selection.width = Math.min(selection.width, config.WIDTH);
 		selection.height = Math.min(selection.height, config.HEIGHT);
 
+		let actions = [];
+
 		for (var i in config.layers) {
 			var link = config.layers[i];
 			if (link.type == null)
 				continue;
 
+			let x = link.x;
+			let y = link.y;
+			let width = link.width;
+			let height = link.height;
+			let width_original = link.width_original;
+			let height_original = link.height_original;
+
 			//move
-			link.x -= parseInt(selection.x);
-			link.y -= parseInt(selection.y);
+			x -= parseInt(selection.x);
+			y -= parseInt(selection.y);
 
 			if (link.type == 'image') {
 				//also remove unvisible data
-				var left = 0;
-				if (link.x < 0)
-					left = -link.x;
-				var top = 0;
-				if (link.y < 0)
-					top = -link.y;
-				var right = 0;
-				if (link.x + link.width > selection.width)
-					right = link.x + link.width - selection.width;
-				var bottom = 0;
-				if (link.y + link.height > selection.height)
-					bottom = link.y + link.height - selection.height;
-				var width = link.width - left - right;
-				var height = link.height - top - bottom;
+				let left = 0;
+				if (x < 0)
+					left = -x;
+				let top = 0;
+				if (y < 0)
+					top = -y;
+				let right = 0;
+				if (x + width > selection.width)
+					right = x + width - selection.width;
+				let bottom = 0;
+				if (y + height > selection.height)
+					bottom = y + height - selection.height;
+				let crop_width = width - left - right;
+				let crop_height = height - top - bottom;
 
 				//if image was streched
-				var width_ratio = (link.width / link.width_original);
-				var height_ratio = (link.height / link.height_original);
+				let width_ratio = (width / width_original);
+				let height_ratio = (height / height_original);
 
 				//create smaller canvas
-				var canvas = document.createElement('canvas');
-				var ctx = canvas.getContext("2d");
-				canvas.width = width / width_ratio;
-				canvas.height = height / height_ratio;
+				let canvas = document.createElement('canvas');
+				let ctx = canvas.getContext("2d");
+				canvas.width = crop_width / width_ratio;
+				canvas.height = crop_height / height_ratio;
 
 				//cut required part
 				ctx.translate(-left / width_ratio, -top / height_ratio);
 				canvas.getContext("2d").drawImage(link.link, 0, 0);
 				ctx.translate(0, 0);
-				this.Base_layers.update_layer_image(canvas, link.id);
+				actions.push(
+					new app.Actions.Update_layer_image_action(canvas, link.id)
+				);
 
 				//update attributes
-				link.width = Math.ceil(canvas.width * width_ratio);
-				link.height = Math.ceil(canvas.height * height_ratio);
-				link.x += left;
-				link.y += top;
-				link.width_original = canvas.width;
-				link.height_original = canvas.height;
+				width = Math.ceil(canvas.width * width_ratio);
+				height = Math.ceil(canvas.height * height_ratio);
+				x += left;
+				y += top;
+				width_original = canvas.width;
+				height_original = canvas.height;
 			}
+
+			actions.push(
+				new app.Actions.Update_layer_action(link.id, {
+					x,
+					y,
+					width,
+					height,
+					width_original,
+					height_original
+				})
+			);
 		}
 
-		config.WIDTH = parseInt(selection.width);
-		config.HEIGHT = parseInt(selection.height);
-
-		this.Base_gui.prepare_canvas();
-		this.selection = {
-			x: null,
-			y: null,
-			width: null,
-			height: null,
-		};
-		this.Base_selection.reset_selection();
+		actions.push(
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: parseInt(selection.width),
+				HEIGHT: parseInt(selection.height)
+			}),
+			new app.Actions.Prepare_canvas_action('do'),
+			new app.Actions.Reset_selection_action(this.selection)
+		);
+		await app.State.do_action(
+			new app.Actions.Bundle_action('crop_tool', 'Crop Tool', actions)
+		);
 	}
 
 	on_leave() {
-		this.Base_selection.reset_selection();
+		return [
+			new app.Actions.Reset_selection_action()
+		];
 	}
 
 }

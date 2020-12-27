@@ -88,7 +88,13 @@ const menuDefinition = [
 		children: [
 			{
 				name: 'Undo',
+				shortcut: 'Ctrl+Z',
 				target: 'edit/undo.undo'
+			},
+			{
+				name: 'Redo',
+				shortcut: 'Ctrl+Y',
+				target: 'edit/redo.redo'
 			},
 			{
 				divider: true
@@ -112,6 +118,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Select All',
+				shortcut: 'Ctrl+A',
 				target: 'edit/selection.select_all'
 			}
 		]

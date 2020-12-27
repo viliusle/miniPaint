@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
@@ -112,10 +113,10 @@ class File_save_class {
 						if (config.layers[i].visible == false)
 							continue;
 						
-						this.Base_layers.select(config.layers[i].id);
+						new app.Actions.Select_layer_action(config.layers[i].id, true).do();
 						_this.save_action(params, true);
 					}
-					this.Base_layers.select(active_layer);
+					new app.Actions.Select_layer_action(active_layer, true).do();
 				}
 				else {
 					_this.save_action(params);

@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -18,6 +19,7 @@ class Animation_class extends Base_tools_class {
 		this.name = 'animation';
 		this.intervalID = null;
 		this.index = 0;
+		this.toggle_layer_visibility_action = new app.Actions.Toggle_layer_visibility_action();
 
 		this.disable_selection(ctx);
 	}
@@ -61,8 +63,16 @@ class Animation_class extends Base_tools_class {
 		}
 	}
 
+	on_activate() {
+		return [
+			new app.Actions.Stop_animation_action(false)
+		];
+	}
+
 	on_leave() {
-		this.stop();
+		return [
+			new app.Actions.Stop_animation_action(true)
+		];
 	}
 
 	start(delay) {
@@ -77,22 +87,7 @@ class Animation_class extends Base_tools_class {
 	}
 
 	stop() {
-		var params = this.getParams();
-		if (this.intervalID == null)
-			return;
-
-		clearInterval(this.intervalID);
-		params.play = false;
-		this.index = 0;
-		this.GUI_tools.show_action_attributes();
-
-		//make all visible
-		for (var i in config.layers) {
-			config.layers[i].visible = true;
-		}
-
-		this.Base_gui.GUI_layers.render_layers();
-		config.need_render = true;
+		new app.Actions.Stop_animation_action(true).do();
 	}
 
 	play(_this) {
@@ -103,7 +98,8 @@ class Animation_class extends Base_tools_class {
 
 		//show 1
 		if (config.layers[this.index] != undefined) {
-			_this.Base_layers.toggle_visibility(config.layers[this.index].id);
+			this.toggle_layer_visibility_action.layer_id = config.layers[this.index].id;
+			this.toggle_layer_visibility_action.do();
 		}
 
 		//change index

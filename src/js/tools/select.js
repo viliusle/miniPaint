@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -16,7 +17,10 @@ class Select_tool_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'select';
 		this.saved = false;
-		this.last_post = {x: null, y: null};
+		this.mousedown_dimensions = { x: null, y: null, width: null, height: null };
+		this.keyboard_move_start_position = null;
+		this.moving = false;
+		this.resizing = false;
 		this.ctrl_pressed = false;
 		this.snap_line_info = {x: null, y: null};
 
@@ -40,17 +44,22 @@ class Select_tool_class extends Base_tools_class {
 	}
 
 	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousedown(event);
+		this.mousedown(event);
 	}
 
 	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousemove(event);
+		this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mouseup(event);
+		this.Base_layers.render();
 	}
 
 	load() {
@@ -80,53 +89,81 @@ class Select_tool_class extends Base_tools_class {
 
 		//keyboard actions
 		document.addEventListener('keydown', (event) => {
-			if (config.TOOL.name != _this.name)
+			if (config.TOOL.name != this.name)
 				return;
-			if (_this.POP.active == true)
+			if (this.POP.active == true)
 				return;
 			if (this.Helper.is_input(event.target))
 				return;
 			var k = event.key;
 
 			if (k == "ArrowUp") {
-				_this.move(0, -1, event);
+				this.move(0, -1, event);
 			}
 			else if (k == "ArrowDown") {
-				_this.move(0, 1, event);
+				this.move(0, 1, event);
 			}
 			else if (k == "ArrowRight") {
-				_this.move(1, 0, event);
+				this.move(1, 0, event);
 			}
 			else if (k == "ArrowLeft") {
-				_this.move(-1, 0, event);
+				this.move(-1, 0, event);
 			}
 			if (k == "Delete") {
-				if (config.TOOL.name == _this.name) {
-					_this.Base_layers.delete(config.layer.id);
+				if (config.TOOL.name == this.name) {
+					app.State.do_action(
+						new app.Actions.Delete_layer_action(config.layer.id)
+					);
+				}
+			}
+		});
+		document.addEventListener('keyup', (event) => {
+			if (config.TOOL.name != this.name)
+				return;
+			if (this.POP.active == true)
+				return;
+			if (this.Helper.is_input(event.target))
+				return;
+			var k = event.key;
+			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
+				if (this.keyboard_move_start_position) {
+					let x = config.layer.x;
+					let y = config.layer.y;
+					config.layer.x = this.keyboard_move_start_position.x;
+					config.layer.y = this.keyboard_move_start_position.y;
+					app.State.do_action(
+						new app.Actions.Update_layer_action(config.layer.id, { x, y })
+					);
+					this.keyboard_move_start_position = null;
 				}
 			}
 		});
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
+
 		if (this.Base_selection.mouse_lock != null) {
+			this.resizing = true;
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
 			if (config.layer.type === 'text' && config.layer.params && config.layer.params.boundary === 'dynamic') {
 				config.layer.params.boundary = 'box';
 			}
-			return;
+		}
+		else {
+			this.moving = true;
+			await this.auto_select_object(e);
+			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
+			this.saved = false;
 		}
 
-		this.auto_select_object(e);
-		this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
-		this.saved = false;
-
-		this.last_post = {
-			x: config.layer.x,
-			y: config.layer.y,
+		this.mousedown_dimensions = {
+			x: Math.round(config.layer.x),
+			y: Math.round(config.layer.y),
+			width: Math.round(config.layer.width),
+			height: Math.round(config.layer.height)
 		};
 	}
 
@@ -137,25 +174,64 @@ class Select_tool_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false) {
 			return;
 		}
-		if (this.Base_selection.mouse_lock != null)
+		if (this.resizing) {
 			return;
-
-		if (this.saved == false) {
-			window.State.save();
-			this.saved = true;
 		}
-
-		//move object
-		config.layer.x = Math.round(mouse.x - mouse.click_x + this.last_post.x);
-		config.layer.y = Math.round(mouse.y - mouse.click_y + this.last_post.y);
-
-		this.apply_snap(e, config.layer);
-
-		this.Base_layers.render();
+		else if (this.moving) {
+			//move object
+			config.layer.x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
+			config.layer.y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+			config.need_render = true;
+		}
 	}
 
-	dragEnd(event) {
-		this.Base_layers.render();
+	mouseup(e) {
+		var mouse = this.get_mouse_info(e);
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+		if (this.resizing) {
+			this.apply_snap(e, config.layer);
+			let x = config.layer.x;
+			let y = config.layer.y;
+			let width = config.layer.width;
+			let height = config.layer.height;
+			config.layer.x = this.mousedown_dimensions.x;
+			config.layer.y = this.mousedown_dimensions.y;
+			config.layer.width = this.mousedown_dimensions.width;
+			config.layer.height = this.mousedown_dimensions.height;
+			if (
+				this.mousedown_dimensions.x !== x || this.mousedown_dimensions.y !== y ||
+				this.mousedown_dimensions.width !== width || this.mousedown_dimensions.height !== height
+			) {
+				app.State.do_action(
+					new app.Actions.Bundle_action('resize_layer', 'Resize Layer', [
+						new app.Actions.Update_layer_action(config.layer.id, {
+							x, y, width, height
+						})
+					])
+				);
+			}
+		}
+		else if (this.moving) {
+			this.apply_snap(e, config.layer);
+			const new_x = Math.round(mouse.x - mouse.click_x + this.mousedown_dimensions.x);
+			const new_y = Math.round(mouse.y - mouse.click_y + this.mousedown_dimensions.y);
+			config.layer.x = this.mousedown_dimensions.x;
+			config.layer.y = this.mousedown_dimensions.y;
+			if (this.mousedown_dimensions.x !== new_x || this.mousedown_dimensions.y !== new_y) {
+				app.State.do_action(
+					new app.Actions.Bundle_action('move_layer', 'Move Layer', [
+						new app.Actions.Update_layer_action(config.layer.id, {
+							x: new_x,
+							y: new_y
+						})
+					])
+				);
+			}
+		}
+		this.moving = false;
+		this.resizing = false;
 	}
 
 	render_overlay(ctx){
@@ -188,7 +264,7 @@ class Select_tool_class extends Base_tools_class {
 		}
 	}
 
-	apply_snap(event, layer){
+	apply_snap(event, layer) {
 		var params = this.getParams();
 
 		if(config.SNAP === false || params.auto_snap !== true || event.ctrlKey == true || event.metaKey == true){
@@ -383,6 +459,12 @@ class Select_tool_class extends Base_tools_class {
 	}
 
 	move(direction_x, direction_y, event) {
+		if (!this.keyboard_move_start_position) {
+			this.keyboard_move_start_position = {
+				x: config.layer.x,
+				y: config.layer.y
+			}
+		}
 		var power = 10;
 		if (event.ctrlKey == true || event.metaKey)
 			power = 50;
@@ -394,7 +476,7 @@ class Select_tool_class extends Base_tools_class {
 		config.need_render = true;
 	}
 
-	auto_select_object(e) {
+	async auto_select_object(e) {
 		var params = this.getParams();
 		if (params.auto_select == false)
 			return;
@@ -407,7 +489,9 @@ class Select_tool_class extends Base_tools_class {
 			var canvas = this.Base_layers.convert_layer_to_canvas(value.id, null, false);
 
 			if (this.check_hit_region(e, canvas.getContext("2d")) == true) {
-				this.Base_layers.select(value.id);
+				await app.State.do_action(
+					new app.Actions.Select_layer_action(value.id)
+				);
 				break;
 			}
 		}

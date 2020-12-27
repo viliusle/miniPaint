@@ -8,6 +8,7 @@ import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import app from '../app.js';
 
 var instance = null;
 
@@ -30,165 +31,190 @@ class Base_state_class {
 		this.levels = 3;
 		this.levels_optimal = 3;
 		this.enabled = true;
+		this.action_history = [];
+		this.action_history_index = 0;
+		this.action_history_max = 50;
 
 		this.set_events();
 	}
 
 	set_events() {
 		document.addEventListener('keydown', (event) => {
-			var code = event.code;
+			const key = (event.key || '').toLowerCase();
 			if (this.Helper.is_input(event.target))
 				return;
 
-			if (code == "KeyZ" && (event.ctrlKey == true || event.metaKey)) {
-				//undo
+			if (key == "z" && (event.ctrlKey == true || event.metaKey)) {
+				// Undo
 				this.undo();
+				event.preventDefault();
+			}
+			if (key == "y" && (event.ctrlKey == true || event.metaKey)) {
+				// Redo
+				this.redo();
 				event.preventDefault();
 			}
 		}, false);
 	}
 
-	save() {
-
-		this.optimize();
-
-		if (this.enabled == false) {
-			return;
+	async do_action(action, options = {}) {
+		let error_during_free = false;
+		try {
+			await action.do();
+		} catch (error) {
+			// Action aborted. This is usually expected behavior as actions throw errors if they shouldn't run.
+			return { status: 'aborted', reason: error };
 		}
-
-		//move previous
-		this.layers_archive.unshift(null);
-		if (this.layers_archive.length > this.levels) {
-			//remove element, that is too far in history - saving memory here
-			this.layers_archive.splice(-1, 1);
-		}
-
-		//general
-		this.layers_archive[0] = {
-			width: config.WIDTH,
-			height: config.HEIGHT,
-			layer_active: config.layer.id,
-		};
-
-		//layers
-		this.layers_archive[0].layers = [];
-		for (var i in config.layers) {
-			var layer = {};
-			for (var j in config.layers[i]) {
-				if (j[0] == '_' || j == 'link_canvas') {
-					//private data
-					continue;
+		// Remove all redo actions from history
+		if (this.action_history_index < this.action_history.length) {
+			const freed_actions = this.action_history.slice(this.action_history_index, this.action_history.length).reverse();
+			this.action_history = this.action_history.slice(0, this.action_history_index);
+			for (let freed_action of freed_actions) {
+				try {
+					await freed_action.free();
+				} catch (error) {
+					error_during_free = true;
 				}
-
-				layer[j] = config.layers[i][j];
 			}
-			layer = JSON.parse(JSON.stringify(layer));
-			this.layers_archive[0].layers.push(layer);
 		}
-
-		//image data
-		this.layers_archive[0].data = [];
-		for (var i in config.layers) {
-			if (config.layers[i].type != 'image')
-				continue;
-
-			this.layers_archive[0].data.push(
-				{
-					id: config.layers[i].id,
-					data: config.layers[i].link.cloneNode(true), //@todo - optimize, avoid duplicating data
+		// Add the new action to history
+		const last_action = this.action_history[this.action_history.length - 1];
+		if (options.merge_with_history && last_action) {
+			if (typeof options.merge_with_history === 'string') {
+				options.merge_with_history = [options.merge_with_history];
+			}
+			if (options.merge_with_history.includes(last_action.action_id)) {
+				this.action_history[this.action_history.length - 1] = new app.Actions.Bundle_action(
+					last_action.action_id,
+					last_action.action_description,
+					[last_action, action]
+				);
+			}
+		} else {
+			this.action_history.push(action);
+			if (this.action_history.length > this.action_history_max) {
+				let action_to_free = this.action_history.shift();
+				try {
+					await action_to_free.free();
+				} catch (error) {
+					error_during_free = true;
 				}
-			);
+			} else {
+				this.action_history_index++;
+			}
 		}
+
+		// Chrome arbitrary method to determine memory usage, but most people use Chrome so...
+		if (window.performance && window.performance.memory) {
+			if (window.performance.memory.usedJSHeapSize > window.performance.memory.jsHeapSizeLimit * 0.8) {
+				this.free(window.performance.memory.jsHeapSizeLimit * 0.2);
+			}
+		}
+
+		if (error_during_free) {
+			alertify.error('A problem occurred while removing undo history. It\'s suggested you save your work and refresh the page in order to free up memory.');
+		}
+		return { status: 'completed' };
+	}
+
+	can_redo() {
+		return this.action_history_index < this.action_history.length;
+	}
+
+	can_undo() {
+		return this.action_history_index > 0;
+	}
+
+	async redo_action() {
+		if (this.can_redo()) {
+			const action = this.action_history[this.action_history_index];
+			await action.do();
+			this.action_history_index++;
+		} else {
+			alertify.success('There\'s nothing to redo', 3);
+		}
+	}
+
+	async undo_action() {
+		if (this.can_undo()) {
+			this.action_history_index--;
+			await this.action_history[this.action_history_index].undo();
+		} else {
+			alertify.success('There\'s nothing to undo', 3);
+		}
+	}
+
+	async scrap_last_action() {
+		if (this.can_undo()) {
+			await this.undo_action();
+			this.action_history.pop();
+		}
+	}
+
+	// Frees history actions up to the specified memory & database size. Starts with undo history, then moves to redo history.
+	async free(memory_size = 0, database_size = 0) {
+		let total_memory_freed = 0;
+		let total_database_freed = 0;
+		let has_error = false;
+		let free_complete = false;
+		while (this.action_history_index > 0) {
+			let action = this.action_history.shift();
+			total_memory_freed += action.memory_estimate;
+			total_database_freed += action.database_estimate;
+			try {
+				await action.free();
+			} catch (error) {
+				has_error = true;
+			}
+			if (total_memory_freed >= memory_size && total_database_freed >= database_size) {
+				free_complete = true;
+				break;
+			}
+			this.action_history_index--;
+		}
+		if (!free_complete) {
+			for (let i = this.action_history.length - 1; i >= 0; i--) {
+				let action = this.action_history[i];
+				total_memory_freed += action.memory_estimate;
+				total_database_freed += action.database_estimate;
+				try {
+					await action.free();
+				} catch (error) {
+					has_error = true;
+				}
+				if (total_memory_freed >= memory_size && total_database_freed >= database_size) {
+					free_complete = true;
+					break;
+				}
+			}
+		}
+		if (has_error) {
+			alertify.error('A problem occurred while removing undo history. It\'s suggested you save your work and refresh the page in order to free up memory.');
+		}
+		return {
+			total_memory_freed,
+			total_database_freed
+		}
+	}
+
+	save() {
+		const message = 'window.State.save() is removed. Use State.do_action() to manage undo history instead.';
+		console.warn(message);
+		alertify.error(message);
 	}
 
 	/**
 	 * supports multiple levels undo system
 	 */
 	undo() {
-		if (this.enabled == false || this.layers_archive[0] == undefined) {
-			//not saved yet
-			alertify.error('Undo is not available.');
-			return false;
-		}
-
-		var data = this.layers_archive[0];
-
-		//set attributes
-		if (config.WIDTH != parseInt(data.width) || config.HEIGHT != parseInt(data.height)) {
-			config.WIDTH = parseInt(data.width);
-			config.HEIGHT = parseInt(data.height);
-			this.Base_gui.prepare_canvas();
-		}
-		this.Base_layers.reset_layers();
-
-		for (var i in data.layers) {
-			var value = data.layers[i];
-
-			if (value.type == 'image') {
-				//add image data
-				value.link = null;
-				for (var j in data.data) {
-					if (data.data[j].id == value.id) {
-						value.data = data.data[j].data;
-					}
-				}
-			}
-
-			this.Base_layers.insert(value, false);
-		}
-
-		if (config.WIDTH != parseInt(data.width) || config.HEIGHT != parseInt(data.height)) {
-			config.WIDTH = parseInt(data.width);
-			config.HEIGHT = parseInt(data.height);
-			this.Base_gui.prepare_canvas();
-		}
-
-		this.Base_layers.select(data.layer_active);
-		this.layers_archive.shift(); //remove used state
+		this.undo_action();
 	}
 
 	/**
-	 * try save, optimize memory, find optimal undo level count.
+	 * supports multiple levels redo system
 	 */
-	optimize() {
-		var megapixels = config.WIDTH * config.HEIGHT / 1024 / 1024;
-		var images = 0;
-		for (var i in config.layers) {
-			if (config.layers[i].type == 'image') {
-				images++;
-			}
-		}
-		var total_megapixels = megapixels * images;
-
-		if (total_megapixels > 100) {
-			//high dimensions - undo disabled
-			if (this.enabled == true)
-				alertify.warning('Undo disabled.');
-			this.enabled = false;
-			this.layers_archive = [];
-		}
-		else {
-			//enabled
-			if (this.enabled == false)
-				alertify.success('Undo enabled.');
-			this.enabled = true;
-
-			if (total_megapixels > 50) {
-				//1 undo level
-				if (this.levels > 1)
-					alertify.warning('Undo levels changed to 1.');
-				this.levels = 1;
-				this.layers_archive = [
-					this.layers_archive[0],
-				];
-			}
-			else {
-				//OK
-				if (this.levels == 1)
-					alertify.success('Undo levels restored to ' + this.levels);
-				this.levels = this.levels_optimal;
-			}
-		}
+	redo() {
+		this.redo_action();
 	}
 
 }

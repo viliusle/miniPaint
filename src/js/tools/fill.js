@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -45,8 +46,6 @@ class Fill_class extends Base_tools_class {
 			alertify.error('Erase on rotate object is disabled. Sorry.');
 			return;
 		}
-
-		window.State.save();
 
 		this.fill(mouse);
 	}
@@ -105,7 +104,11 @@ class Fill_class extends Base_tools_class {
 
 		if (config.layer.type != null) {
 			//update
-			this.Base_layers.update_layer_image(canvas);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
+					new app.Actions.Update_layer_image_action(canvas)
+				])
+			);
 		}
 		else {
 			//create new
@@ -117,7 +120,11 @@ class Fill_class extends Base_tools_class {
 			params.y = parseInt(canvas.dataset.y) || 0;
 			params.width = canvas.width;
 			params.height = canvas.height;
-			this.Base_layers.insert(params);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
+					new app.Actions.Insert_layer_action(params)
+				])
+			);
 		}
 
 		//prevent crash bug on touch screen - hard to explain and debug

@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import app from './../../app.js';
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 import Help_translate_class from './../../modules/help/translate.js';
@@ -90,56 +91,14 @@ class GUI_tools_class {
 		}
 
 		this.show_action_attributes();
-		this.activate_tool(this.active_tool);
+		new app.Actions.Activate_tool_action(this.active_tool, true).do();
 		this.Base_gui.check_canvas_offset();
 	}
 
-	activate_tool(key) {
-		//reset last
-		document.querySelector('#tools_container .' + this.active_tool)
-			.classList.remove("active");
-
-		//send exit event to old previous tool
-		if (config.TOOL.on_leave != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_leave;
-			this.tools_modules[moduleKey][functionName]();
-		}
-
-		//change active
-		this.active_tool = key;
-		document.querySelector('#tools_container .' + this.active_tool)
-			.classList.add("active");
-		for (var i in config.TOOLS) {
-			if (config.TOOLS[i].name == this.active_tool) {
-				config.TOOL = config.TOOLS[i];
-			}
-		}
-
-		//check module
-		if (this.tools_modules[key] == undefined) {
-			alertify.error('Tools class not found: ' + key);
-			return;
-		}
-
-		//set default cursor
-		const mainWrapper = document.getElementById('main_wrapper');
-		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
-		if (mainWrapper.style.cursor != defaultCursor) {
-			mainWrapper.style.cursor = defaultCursor;
-		}
-
-		this.show_action_attributes();
-		this.Helper.setCookie('active_tool', this.active_tool);
-
-		//send activate event to new tool
-		if (config.TOOL.on_activate != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_activate;
-			this.tools_modules[moduleKey][functionName]();
-		}
-
-		config.need_render = true;
+	async activate_tool(key) {
+		return app.State.do_action(
+			new app.Actions.Activate_tool_action(key)
+		);
 	}
 
 	action_data() {

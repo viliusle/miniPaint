@@ -47,7 +47,6 @@ class Effects_browser_class extends Base_tools_class {
 				for (var i = 0; i < targets.length; i++) {
 					targets[i].addEventListener('click', function (event) {
 						//we have click
-						window.State.save();
 						var key = this.dataset.key;
 						for (var i in data) {
 							if(data[i].key == key){
