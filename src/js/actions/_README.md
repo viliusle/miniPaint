@@ -1,8 +1,8 @@
-# Actions and Managing Undo History
+# Managing Undo History with Actions
 
-Most layer and image manipulation tasks are bound to the undo history, which the user can undo by using the "Ctrl + Z" shortcut on their keyboard.
+Most layer and image manipulation tasks are bound to the undo history, which the user can undo by using the "Ctrl + Z" shortcut on their keyboard, and redo by using the "Ctrl + Y" shortcut.
 
-All actions that the user can take in the application are organized into separate Javascript modules inside the `src/js/actions` folder. It will be a very rare event if you ever need to add a new action, as most functionality in the application is covered by the following actions:
+All actions that the user can do in the application are organized into separate Javascript modules inside the `src/js/actions` folder. It will be a very rare event if you ever need to add a new action, as most functionality in the application is covered by the following actions:
 
 insert-layer.js
 update-layer.js
@@ -10,43 +10,43 @@ update-layer-image.js
 delete-layer.js
 update-config.js
 
-These Javascript files contain classes that create the actions, which can be run by calling the `do()` method, and reversed by calling the `undo()` method. However, normally you will not call `do()` or `undo()` directly on the action. Instead...
+These Javascript files contain classes that represent each action. They run by calling the `do()` method, and can be reversed by calling the `undo()` method. However, normally you will not call `do()` or `undo()` methods directly. Instead... the State object will do this for you.
 
 The application history is managed by the `src/js/core/base-state.js` module. It has a `do_action()` method that runs an action then adds it to the history stack so the user can undo it. The following examples will show how the state and actions work together.
 
-## Example 1 - Running a single action that inserts a new layer, and add that action to the undo history.
+## Example 1 - Running a single action, and adding it to the undo history
 
 ```
 // This import path will change relative to the module you import from:
 import 'app' from './src/js/app.js';
 
 app.State.do_action(
-    new app.Actions.Insert_layer_action({
-        name: 'Layer Name',
-        type: 'image',
-        data: 'SOME IMAGE DATA'
-    })
+	new app.Actions.Insert_layer_action({
+		name: 'Layer Name',
+		type: 'image',
+		data: 'SOME IMAGE DATA'
+	})
 );
 ```
 
-This example creates an instance of the Insert_layer_action class, then passes that instance to the `do_action()` method on the State object. The State object automatically manages adding the action to the undo history.
+This example creates an instance of the Insert_layer_action class, then passes that instance to the `do_action()` method on the State object. This results in the action running immediately then adds the action to the undo history.
 
-The `app` object is just a module that collects references to a bunch of globally accessible classes throughout the application, it just makes it easier to reference the State object and any action you'd like to run.
+The `app` object is just a module that collects references to a bunch of globally accessible classes throughout the application. It makes referencing different actions easier since you don't have to import them individually.
 
-## Example 2 - Running multiple actions that are undone all at the same time if the user presses "Ctrl + Z"
+## Example 2 - Running multiple actions that are undone all at the same time
 
-Actions can be grouped together by using the `Bundle_action`. This bundle action wraps around other actions and you can give a name and id to the bundle to describe it.
+Actions can be grouped together by using the `Bundle_action`. You give the bundle a name and id to describe it, then a list of actions to run when the bundle runs.
 
 ```
 import 'app' from './src/js/app.js';
 
 app.State.do_action(
-    new app.Actions.Bundle_action('bundle_id', 'Bundle Description', [
-        new app.Actions.Update_layer_action(config.layer.id, { x: 0, y: 0 }),
-        new app.Actions.Prepare_canvas_action('undo'),
-        new app.Actions.Update_config_action({ WIDTH: 200, HEIGHT: 200 }),
-        new app.Actions.Prepare_canvas_action('do')
-    ])
+	new app.Actions.Bundle_action('bundle_id', 'Bundle Description', [
+		new app.Actions.Update_layer_action(config.layer.id, { x: 0, y: 0 }),
+		new app.Actions.Prepare_canvas_action('undo'),
+		new app.Actions.Update_config_action({ WIDTH: 200, HEIGHT: 200 }),
+		new app.Actions.Prepare_canvas_action('do')
+	])
 )
 ```
 
@@ -56,7 +56,7 @@ When the actions in the bundle are executed, they run from the first declared (t
 
 In this example you see the Prepare_canvas_action added to the bundle. This resizes the canvas after setting the width and height in the config, because just updating the config doesn't actually resize the canvas. It has an argument to tell it when to execute, (whether the action is being 'done' or 'undone'), because it isn't necessary to resize the canvas before setting the width and height.
 
-So when the bundle is 'done', the run order is Update_layer_action, Prepare_canvas_action (runs but doesn't do anything), Update_config_action, Prepare_canvas_action.
+So when the action bundle runs ('do' or 'redo'), the run order is Update_layer_action, Prepare_canvas_action (runs but doesn't do anything), Update_config_action, Prepare_canvas_action.
 
 When the bundle is 'undone', the run order is Prepare_canvas_action (doesn't do anything), Update_config_action, Prepare_canvas_action, Update_layer_action.
 
@@ -72,13 +72,13 @@ During the "mousedown" or "touchstart" event, insert the new layer.
 
 ```
 app.State.do_action(
-    new app.Actions.Bundle_action('create_rectangle', 'Create Rectangle', [
-        new app.Actions.Insert_layer_action({
-            name: 'New Rectangle',
-            width: 0,
-            height: 0
-        })
-    ])
+	new app.Actions.Bundle_action('create_rectangle', 'Create Rectangle', [
+		new app.Actions.Insert_layer_action({
+			name: 'New Rectangle',
+			width: 0,
+			height: 0
+		})
+	])
 );
 ```
 
@@ -93,11 +93,11 @@ During the "mouseup" or "touchend" event, commit the new width and height to his
 
 ```
 app.State.do_action(
-    new app.Actions.Update_layer_action({
-        width: NEW_WIDTH,
-        height: NEW_HEIGHT
-    }),
-    { merge_with_history: 'create_rectangle' }
+	new app.Actions.Update_layer_action({
+		width: NEW_WIDTH,
+		height: NEW_HEIGHT
+	}),
+	{ merge_with_history: 'create_rectangle' }
 );
 ```
 
@@ -115,9 +115,9 @@ import { Base_action } from './base.js';
 
 export class Custom_action extends Base_action {
 	constructor(/* Pass data the action needs to run */) {
-        // Give the action an ID and a description
-        super('custom_action', 'My Custom Action');
-        // Store data on `this.` instance and create any necessary variables
+		// Give the action an ID and a description
+		super('custom_action', 'My Custom Action');
+		// Store data on `this.` instance and create any necessary variables
 	}
 
 	async do() {
@@ -131,12 +131,12 @@ export class Custom_action extends Base_action {
 	}
 
 	free() {
-        // This method is called when the action is removed from
-        // the history stack, either by reaching the undo limit or 
-        // by undoing one or more actions then running a new action.
-        // (the actions that were undone are freed)
+		// This method is called when the action is removed from
+		// the history stack, either by reaching the undo limit or 
+		// by undoing one or more actions then running a new action.
+		// (the actions that were undone are freed)
 
-        // Clean up any varible references for freeing memory or storage space here
+		// Clean up any varible references for freeing memory or storage space here
 	}
 }
 ```
