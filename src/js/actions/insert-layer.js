@@ -95,7 +95,7 @@ export class Insert_layer_action extends Base_action {
 						config.need_render = true;
 					};
 					layer.data = null;
-					autoresize_as = [config.layer.width, config.layer.height];
+					autoresize_as = [config.layer.width, config.layer.height, null, true, true];
 					need_autoresize = true;
 				}
 				else if (typeof layer.data == 'string') {
@@ -114,7 +114,7 @@ export class Insert_layer_action extends Base_action {
 								layer.height_original = layer.height;
 							// Free data
 							layer.data = null;
-							autoresize_as = [layer.width, layer.height, layer.id, this.can_automate];
+							autoresize_as = [layer.width, layer.height, layer.id, this.can_automate, true];
 							config.need_render = true;
 							resolve();
 						};

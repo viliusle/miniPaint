@@ -11,12 +11,13 @@ export class Autoresize_canvas_action extends Base_action {
 	 * @param {int} layer_id
 	 * @param {boolean} can_automate
 	 */
-	constructor(width, height, layer_id, can_automate = true) {
+	constructor(width, height, layer_id, can_automate = true, ignore_same_size = false) {
 		super('autoresize_canvas', 'Auto-resize Canvas');
 		this.width = width;
 		this.height = height;
 		this.layer_id = layer_id;
 		this.can_automate = can_automate;
+		this.ignore_same_size = ignore_same_size;
 		this.old_config_width = null;
 		this.old_config_height = null;
 	}
@@ -59,7 +60,7 @@ export class Autoresize_canvas_action extends Base_action {
 			config.WIDTH = new_config_width;
 			config.HEIGHT = new_config_height;
 			app.GUI.prepare_canvas();
-		} else {
+		} else if (!this.ignore_same_size) {
 			throw new Error('Aborted - Resize not necessary')
 		}
 
