@@ -142,7 +142,7 @@ class File_open_class {
 				app.State.do_action(
 					new app.Actions.Bundle_action('open_file_webcam', 'Open File Webcam', [
 						new app.Actions.Insert_layer_action(new_layer),
-						new app.Actions.Autoresize_canvas_action(width, height)
+						new app.Actions.Autoresize_canvas_action(width, height, null, true, true)
 					])
 				);
 				
@@ -227,7 +227,7 @@ class File_open_class {
 			app.State.do_action(
 				new app.Actions.Bundle_action('open_file_data_url', 'Open File Data URL', [
 					new app.Actions.Insert_layer_action(new_layer),
-					new app.Actions.Autoresize_canvas_action(img.width, img.height)
+					new app.Actions.Autoresize_canvas_action(img.width, img.height, null, true, true)
 				])
 			);
 			img.onload = function () {
@@ -375,6 +375,7 @@ class File_open_class {
 
 		var layer_name = url.replace(/^.*[\\\/]/, '');
 
+		console.log
 		var img = new Image();
 		img.crossOrigin = "Anonymous";
 		img.onload = function () {
@@ -393,7 +394,7 @@ class File_open_class {
 			app.State.do_action(
 				new app.Actions.Bundle_action('open_file_url', 'Open File URL', [
 					new app.Actions.Insert_layer_action(new_layer),
-					new app.Actions.Autoresize_canvas_action(img.width, img.height)
+					new app.Actions.Autoresize_canvas_action(img.width, img.height, null, true, true)
 				])
 			);
 		};
