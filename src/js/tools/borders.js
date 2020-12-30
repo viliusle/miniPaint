@@ -76,7 +76,7 @@ class Borders_class extends Base_tools_class {
 	}
 
 	on_activate() {
-		var params = config.TOOL.attributes;
+		var params = this.getParams();
 		console.log('params', params);
 		this.add_borders({size:params.size, shadow:false, color:config.COLOR});
 	}

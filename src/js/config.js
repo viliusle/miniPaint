@@ -47,6 +47,16 @@ config.TOOLS = [
 			size: 12
 		}
 	},
+	{
+		name: 'shadow_a',
+		title: 'Shadow A',
+		on_activate: 'on_activate',
+	},
+	{
+		name: 'shadow_b',
+		title: 'Shadow B',
+		on_activate: 'on_activate',
+	},
 	// {
 	// 	name: 'brush',
 	// 	title: 'Brush',
