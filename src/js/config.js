@@ -39,6 +39,14 @@ config.TOOLS = [
 		attributes: {},
 		on_leave: 'on_leave',
 	},
+	{
+		name: 'borders',
+		title: 'Border',
+		on_activate: 'on_activate',
+		attributes: {
+			size: 12
+		}
+	},
 	// {
 	// 	name: 'brush',
 	// 	title: 'Brush',
@@ -47,15 +55,15 @@ config.TOOLS = [
 	// 		pressure: false,
 	// 	},
 	// },
-	// {
-	// 	name: 'pencil',
-	// 	title: 'Pencil',
-	// 	on_update: 'on_params_update',
-	// 	attributes: {
-	// 		antialiasing: true,
-	// 		size: 2,
-	// 	},
-	// },
+	{
+		name: 'pencil',
+		title: 'Pencil',
+		on_update: 'on_params_update',
+		attributes: {
+			antialiasing: true,
+			size: 2,
+		},
+	},
 	// {
 	// 	name: 'pick_color',
 	// 	title: 'Pick Color',
