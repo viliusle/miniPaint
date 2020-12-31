@@ -76,7 +76,7 @@ class Effects_browser_class extends Base_tools_class {
 		ctx.drawImage(active_image, 0, 0);
 		ctx.scale(1, 1);
 
-		//draw previews
+		//draw demo thumbs
 		for (var i in data) {
 			var title = data[i].title;
 			var function_name = 'demo';

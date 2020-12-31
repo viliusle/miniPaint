@@ -61,6 +61,7 @@ class Base_layers_class {
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
 		this.debug_rendering = false;
+		this.render_success = null;
 	}
 
 	/**
@@ -125,6 +126,7 @@ class Base_layers_class {
 		}
 
 		if (config.need_render == true) {
+			this.render_success = null;
 
 			if(this.debug_rendering === true){
 				console.log('Rendering...');
@@ -180,6 +182,10 @@ class Base_layers_class {
 			this.last_zoom = config.ZOOM;
 
 			this.Base_gui.GUI_details.render_details();
+
+			if(this.render_success === false){
+				alertify.error('Rendered with errors.');
+			}
 		}
 
 		requestAnimationFrame(function () {
@@ -259,6 +265,7 @@ class Base_layers_class {
 				}
 			}
 			if(found == false){
+				this.render_success = false;
 				console.log('Error: can not find filter: ' + filter.name);
 			}
 		}
@@ -299,7 +306,13 @@ class Base_layers_class {
 			var render_class = object.render_function[0];
 			var render_function = object.render_function[1];
 
-			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
+			if(typeof this.Base_gui.GUI_tools.tools_modules[render_class] != "undefined") {
+				this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
+			}
+			else{
+				this.render_success = false;
+				console.log('Error: unknown layer type: ' + object.type);
+			}
 		}
 
 		//apply post-filters
@@ -322,6 +335,7 @@ class Base_layers_class {
 				}
 			}
 			if(found == false){
+				this.render_success = false;
 				console.log('Error: can not find filter: ' + filter.name);
 			}
 		}
