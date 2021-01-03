@@ -181,19 +181,6 @@ class GUI_details_class {
 			target.addEventListener('focus', function (e) {
 				focus_value = parseInt(this.value);
 			});
-			target.addEventListener('blur', function (e) {
-				var value = parseInt(this.value);
-				config.layer[key] = focus_value;
-				if (focus_value !== value) {
-					app.State.do_action(
-						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
-							new app.Actions.Update_layer_action(config.layer.id, {
-								[key]: value
-							})
-						])
-					);
-				}
-			});
 			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
 				
