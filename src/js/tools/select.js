@@ -549,7 +549,7 @@ class Select_tool_class extends Base_tools_class {
 			var value = layers_sorted[i];
 			var canvas = this.Base_layers.convert_layer_to_canvas(value.id, null, false);
 
-			if (this.check_hit_region(e, canvas.getContext("2d")) == true) {
+			if (this.check_hit_region(e, canvas.getContext("2d"), value) == true) {
 				await app.State.do_action(
 					new app.Actions.Select_layer_action(value.id)
 				);
@@ -558,10 +558,21 @@ class Select_tool_class extends Base_tools_class {
 		}
 	}
 
-	check_hit_region(e, ctx) {
+	check_hit_region(e, ctx, layer) {
 		var mouse = this.get_mouse_info(e);
-		var data = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
 
+		if(layer.type == 'image' && Math.abs(layer.width * layer.height / 1000000) > 5){
+			//too big to check using getImageData - use simple way
+			if (mouse.x > layer.x && mouse.x < layer.x + layer.width &&
+				mouse.y > layer.y && mouse.y < layer.y + layer.height) {
+				//hit
+				return true;
+			}
+
+			return false;
+		}
+
+		var data = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
 		var blank = [0, 0, 0, 0];
 		if (config.TRANSPARENCY == false) {
 			blank = [0, 0, 0, 0];
