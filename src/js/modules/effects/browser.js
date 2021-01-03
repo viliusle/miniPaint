@@ -30,7 +30,7 @@ class Effects_browser_class extends Base_tools_class {
 			html += '	<canvas id="c_' + data[i].key + '" width="' + this.preview_width + '" height="'
 				+ this.preview_height + '" class="effectsPreview" data-key="'
 				+ data[i].key + '"></canvas>';
-			html += '<div class="center">' + title + '</div>';
+			html += '<div class="preview-item-title">' + title + '</div>';
 			html += '</div>';
 		}
 		for (var i = 0; i < 4; i++) {

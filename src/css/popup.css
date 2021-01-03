@@ -57,6 +57,7 @@
 	padding: .5rem 0;
 	text-align: center;
 	border-top: 1px solid var(--header-background-color);
+	z-index: 3;
 }
 #popup .close{
 	position: absolute;
@@ -158,6 +159,10 @@
 }
 #popup .long_text_value{
 	font-size: 12px;
+}
+#popup .preview-item-title{
+	text-align: center;
+	max-width: 150px;
 }
 
 @media screen and (max-width:500px){

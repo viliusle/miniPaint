@@ -38,7 +38,7 @@ class Shape_class extends Base_tools_class {
 			html += '	<canvas id="c_' + data[i].key + '" width="' + this.preview_width + '" height="'
 				+ this.preview_height + '" class="effectsPreview" data-key="'
 				+ data[i].key + '"></canvas>';
-			html += '<div class="center">' + data[i].title + '</div>';
+			html += '<div class="preview-item-title">' + data[i].title + '</div>';
 			html += '</div>';
 		}
 		for (var i = 0; i < 4; i++) {
