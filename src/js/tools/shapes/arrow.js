@@ -1,63 +1,20 @@
-import app from './../app.js';
-import config from './../config.js';
-import Base_tools_class from './../core/base-tools.js';
-import Base_layers_class from './../core/base-layers.js';
+import app from './../../app.js';
+import config from './../../config.js';
+import Base_tools_class from './../../core/base-tools.js';
+import Base_layers_class from './../../core/base-layers.js';
 
-class Line_class extends Base_tools_class {
+class Arrow_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.ctx = ctx;
-		this.name = 'line';
+		this.name = 'arrow';
 		this.layer = {};
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-	}
-
 	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+		this.default_events();
 	}
 
 	mousedown(e) {
@@ -143,12 +100,19 @@ class Line_class extends Base_tools_class {
 		);
 	}
 
+	demo(ctx, x, y, width, height) {
+		ctx.fillStyle = '#aaa';
+		ctx.strokeStyle = '#555';
+		ctx.lineWidth = 2;
+
+		this.arrow(ctx, x, y, x + width, y + height, 15);
+	}
+
 	render(ctx, layer) {
 		if (layer.width == 0 && layer.height == 0)
 			return;
 
 		var params = layer.params;
-		var type = params.type.value;
 
 		//set styles
 		ctx.fillStyle = layer.color;
@@ -159,30 +123,16 @@ class Line_class extends Base_tools_class {
 		var width = layer.x + layer.width;
 		var height = layer.y + layer.height;
 
-		if (type == 'Simple') {
-			//draw line
-			ctx.beginPath();
-			ctx.moveTo(layer.x, layer.y);
-			ctx.lineTo(width, height);
-			ctx.stroke();
-		}
-		else if (type == 'Arrow') {
-			var headlen = params.size * 5;
-			if (headlen < 15)
-				headlen = 15;
-			this.arrow(ctx,
-				layer.x, layer.y,
-				width, height,
-				headlen);
-		}
-		else if (type == 'Curve') {
-			//not supported
-		}
+		var headlen = params.size * 7;
+		if (headlen < 15)
+			headlen = 15;
+		this.arrow(ctx,
+			layer.x, layer.y,
+			width, height,
+			headlen);
 	}
 
 	arrow(ctx, fromx, fromy, tox, toy, headlen) {
-		if (headlen == undefined)
-			headlen = 10;	// length of head in pixels
 		var dx = tox - fromx;
 		var dy = toy - fromy;
 		var angle = Math.atan2(dy, dx);
@@ -199,4 +149,4 @@ class Line_class extends Base_tools_class {
 
 }
 
-export default Line_class;
+export default Arrow_class;

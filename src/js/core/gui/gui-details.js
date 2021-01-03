@@ -137,6 +137,10 @@ class GUI_details_class {
 			document.getElementById('text_detail_params').style.display = 'block';
 			document.getElementById('detail_color').closest('.row').style.display = 'none';
 		}
+		else if (config.layer != undefined && (config.layer.color === null || config.layer.type == 'image')) {
+			//hide color
+			document.getElementById('detail_color').closest('.row').style.display = 'none';
+		}
 		else {
 			document.getElementById('text_detail_params').style.display = 'none';
 			document.getElementById('detail_color').closest('.row').style.display = 'block';

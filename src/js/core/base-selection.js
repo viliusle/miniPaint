@@ -78,7 +78,7 @@ class Base_selection_class {
 		document.addEventListener('touchstart', (event) => {
 			this.is_drag = false;
 			this.is_touch = true;
-			if (!e.target.closest('#main_wrapper'))
+			if (!event.target.closest('#main_wrapper'))
 				return;
 			this.is_drag = true;
 			this.selected_object_actions(event);

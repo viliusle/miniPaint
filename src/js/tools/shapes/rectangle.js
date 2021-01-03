@@ -1,7 +1,7 @@
-import app from './../app.js';
-import config from './../config.js';
-import Base_tools_class from './../core/base-tools.js';
-import Base_layers_class from './../core/base-layers.js';
+import app from './../../app.js';
+import config from './../../config.js';
+import Base_tools_class from './../../core/base-tools.js';
+import Base_layers_class from './../../core/base-layers.js';
 
 class Rectangle_class extends Base_tools_class {
 
@@ -13,51 +13,8 @@ class Rectangle_class extends Base_tools_class {
 		this.layer = {};
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-	}
-
 	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+		this.default_events();
 	}
 
 	mousedown(e) {
@@ -73,8 +30,8 @@ class Rectangle_class extends Base_tools_class {
 			render_function: [this.name, 'render'],
 			x: Math.round(mouse.x),
 			y: Math.round(mouse.y),
-			is_vector: true,
-			color: config.COLOR
+			color: null,
+			is_vector: true
 		};
 		app.State.do_action(
 			new app.Actions.Bundle_action('new_rectangle_layer', 'New Rectangle Layer', [
@@ -102,7 +59,7 @@ class Rectangle_class extends Base_tools_class {
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
-		if (params.square == true) {
+		if (params.square == true || e.ctrlKey == true || e.metaKey) {
 			if (width < height) {
 				width = height;
 			} else {
@@ -142,7 +99,7 @@ class Rectangle_class extends Base_tools_class {
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
-		if (params.square == true) {
+		if (params.square == true || e.ctrlKey == true || e.metaKey) {
 			if (width < height) {
 				width = height;
 			} else {
@@ -175,9 +132,21 @@ class Rectangle_class extends Base_tools_class {
 		);
 	}
 
+	demo(ctx, x, y, width, height) {
+		var coords = [
+			[0, 0],
+			[100, 0],
+			[100, 100],
+			[0, 100],
+			[0, 0],
+		];
+		this.draw_shape(ctx, x, y, width, height, coords);
+	}
+
 	render(ctx, layer) {
 		var params = layer.params;
 		var fill = params.fill;
+		var stroke = params.border;
 		var rotateSupport = true;
 		var radius = params.radius;
 		if(radius == undefined)
@@ -186,18 +155,22 @@ class Rectangle_class extends Base_tools_class {
 		ctx.save();
 
 		//set styles
-		ctx.fillStyle = layer.color;
-		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = params.size;
+		ctx.strokeStyle = 'transparent';
+		ctx.fillStyle = 'transparent';
+		if(params.border)
+			ctx.strokeStyle = params.border_color;
+		if(params.fill)
+			ctx.fillStyle = params.fill_color;
+		ctx.lineWidth = params.border_size;
 
 		if (rotateSupport == false) {
-			this.roundRect(ctx, layer.x, layer.y, layer.width, layer.height, radius, fill);
+			this.roundRect(ctx, layer.x, layer.y, layer.width, layer.height, radius, fill, stroke);
 		}
 		else {
 			//rotate
 			ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
 			ctx.rotate(layer.rotate * Math.PI / 180);
-			this.roundRect(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, radius, fill);
+			this.roundRect(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, radius, fill, stroke);
 		}
 
 		ctx.restore();
@@ -214,7 +187,7 @@ class Rectangle_class extends Base_tools_class {
 	 * @param {Number} radius
 	 * @param {Boolean} fill
 	 */
-	roundRect(ctx, x, y, width, height, radius, fill) {
+	roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 		x = parseInt(x);
 		y = parseInt(y);
 		width = parseInt(width);
@@ -266,7 +239,7 @@ class Rectangle_class extends Base_tools_class {
 		if (fill) {
 			ctx.fill();
 		}
-		else {
+		if (stroke) {
 			ctx.stroke();
 		}
 	}

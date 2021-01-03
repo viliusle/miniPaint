@@ -1,63 +1,20 @@
-import app from './../app.js';
-import config from './../config.js';
-import Base_tools_class from './../core/base-tools.js';
-import Base_layers_class from './../core/base-layers.js';
+import app from './../../app.js';
+import config from './../../config.js';
+import Base_tools_class from './../../core/base-tools.js';
+import Base_layers_class from './../../core/base-layers.js';
 
-class Circle_class extends Base_tools_class {
+class Ellipse_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.ctx = ctx;
-		this.name = 'circle';
+		this.name = 'ellipse';
 		this.layer = {};
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-	}
-
 	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+		this.default_events();
 	}
 
 	mousedown(e) {
@@ -75,18 +32,18 @@ class Circle_class extends Base_tools_class {
 			x: mouse.x,
 			y: mouse.y,
 			is_vector: true,
+			color: null,
 			data: {
 				center_x: mouse.x,
 				center_y: mouse.y,
-			},
-			color: config.COLOR
+			}
 		};
 		if (params.circle == true) {
 			//disable rotate
 			this.layer.rotate = null;
 		}
 		app.State.do_action(
-			new app.Actions.Bundle_action('new_circle_layer', 'New Circle Layer', [
+			new app.Actions.Bundle_action('new_ellipse_layer', 'New Ellipse Layer', [
 				new app.Actions.Insert_layer_action(this.layer)
 			])
 		);
@@ -102,9 +59,14 @@ class Circle_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
-		if (params.circle == true) {
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
+
+		if (params.circle == true || e.ctrlKey == true || e.metaKey) {
 			width = Math.round(Math.sqrt(width * width + height * height));
 			height = width;
 		}
@@ -126,9 +88,14 @@ class Circle_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
-		if (params.circle == true) {
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
+
+		if (params.circle == true || e.ctrlKey == true || e.metaKey) {
 			width = Math.round(Math.sqrt(width * width + height * height));
 			height = width;
 		}
@@ -148,7 +115,28 @@ class Circle_class extends Base_tools_class {
 				height: height * 2,
 				status: null
 			}),
-			{ merge_with_history: 'new_circle_layer' }
+			{ merge_with_history: 'new_ellipse_layer' }
+		);
+	}
+
+	demo(ctx, x, y, width, height) {
+		x = parseInt(x);
+		y = parseInt(y);
+		width = parseInt(width);
+		height = parseInt(height);
+
+		ctx.fillStyle = '#aaa';
+		ctx.strokeStyle = '#555';
+		ctx.lineWidth = 3;
+
+		this.ellipse(
+			ctx,
+			x,
+			y,
+			width,
+			height,
+			true,
+			true
 		);
 	}
 
@@ -159,9 +147,13 @@ class Circle_class extends Base_tools_class {
 		ctx.save();
 
 		//set styles
-		ctx.fillStyle = layer.color;
-		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = params.size;
+		ctx.strokeStyle = 'transparent';
+		ctx.fillStyle = 'transparent';
+		if(params.border)
+			ctx.strokeStyle = params.border_color;
+		if(params.fill)
+			ctx.fillStyle = params.fill_color;
+		ctx.lineWidth = params.border_size;
 
 		var dist_x = layer.width;
 		var dist_y = layer.height;
@@ -173,8 +165,9 @@ class Circle_class extends Base_tools_class {
 				layer.y + Math.round(layer.height / 2),
 				dist_x,
 				dist_y,
+				params.border,
 				params.fill
-				);
+			);
 		}
 		else {
 			ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
@@ -185,18 +178,19 @@ class Circle_class extends Base_tools_class {
 				-layer.height / 2 + Math.round(layer.height / 2),
 				dist_x,
 				dist_y,
+				params.border,
 				params.fill
-				);
+			);
 		}
 
 		ctx.restore();
 	}
 
-	ellipse_by_center(ctx, cx, cy, w, h, fill) {
-		this.ellipse(ctx, cx - w / 2.0, cy - h / 2.0, w, h, fill);
+	ellipse_by_center(ctx, cx, cy, w, h, stroke, fill) {
+		this.ellipse(ctx, cx - w / 2.0, cy - h / 2.0, w, h, stroke, fill);
 	}
 
-	ellipse(ctx, x, y, w, h, fill) {
+	ellipse(ctx, x, y, w, h, stroke, fill) {
 		var kappa = .5522848,
 			ox = (w / 2) * kappa, // control point offset horizontal
 			oy = (h / 2) * kappa, // control point offset vertical
@@ -212,12 +206,12 @@ class Circle_class extends Base_tools_class {
 		ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
 		ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
 		ctx.closePath();
-		if (fill == undefined || fill == false)
+		if ( stroke == true)
 			ctx.stroke();
-		else
+		if (fill == true)
 			ctx.fill();
 	}
 
 }
-;
-export default Circle_class;
+
+export default Ellipse_class;

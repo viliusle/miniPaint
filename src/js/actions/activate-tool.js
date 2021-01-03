@@ -24,14 +24,13 @@ export class Activate_tool_action extends Base_action {
 		if (this.key !== this.old_key || this.ignore_same_tool) {
 
 			//reset last
-			document.querySelector('#tools_container .' + this.old_key)
-				.classList.remove("active");
+			document.querySelector('#tools_container .' + this.old_key).classList.remove("active");
 
 			//send exit event to old previous tool
 			if (config.TOOL.on_leave != undefined) {
 				var moduleKey = config.TOOL.name;
 				var functionName = config.TOOL.on_leave;
-				this.tool_leave_actions = app.GUI.GUI_tools.tools_modules[moduleKey][functionName]();
+				this.tool_leave_actions = app.GUI.GUI_tools.tools_modules[moduleKey].object[functionName]();
 				if (this.tool_leave_actions) {
 					for (let action of this.tool_leave_actions) {
 						await action.do();
@@ -70,7 +69,7 @@ export class Activate_tool_action extends Base_action {
 		if (config.TOOL.on_activate != undefined) {
 			var moduleKey = config.TOOL.name;
 			var functionName = config.TOOL.on_activate;
-			this.tool_activate_actions = app.GUI.GUI_tools.tools_modules[moduleKey][functionName]();
+			this.tool_activate_actions = app.GUI.GUI_tools.tools_modules[moduleKey].object[functionName]();
 			if (this.tool_activate_actions) {
 				for (let action of this.tool_activate_actions) {
 					await action.do();

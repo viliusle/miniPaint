@@ -43,25 +43,6 @@ class Select_tool_class extends Base_tools_class {
 		}
 	}
 
-	dragStart(event) {
-		if (config.TOOL.name != this.name)
-			return;
-		this.mousedown(event);
-	}
-
-	dragMove(event) {
-		if (config.TOOL.name != this.name)
-			return;
-		this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		if (config.TOOL.name != this.name)
-			return;
-		this.mouseup(event);
-		this.Base_layers.render();
-	}
-
 	load() {
 		var _this = this;
 
@@ -138,6 +119,25 @@ class Select_tool_class extends Base_tools_class {
 				}
 			}
 		});
+	}
+
+	dragStart(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mousedown(event);
+	}
+
+	dragMove(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mouseup(event);
+		this.Base_layers.render();
 	}
 
 	async mousedown(e) {

@@ -33,6 +33,9 @@ class Effects_browser_class extends Base_tools_class {
 			html += '<div class="center">' + title + '</div>';
 			html += '</div>';
 		}
+		for (var i = 0; i < 4; i++) {
+			html += '<div class="item"></div>';
+		}
 
 		var settings = {
 			title: 'Effects browser',

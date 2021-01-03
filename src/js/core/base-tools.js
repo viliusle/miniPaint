@@ -6,6 +6,8 @@
 import config from './../config.js';
 import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
+import app from "../app";
+import Helper_class from "../libs/helpers";
 
 /**
  * Base tools class, can be used for extending on tools like brush, provides various helping methods.
@@ -15,6 +17,7 @@ class Base_tools_class {
 	constructor(save_mouse) {
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
+		this.Helper = new Helper_class();
 		this.is_drag = false;
 		this.mouse_last_click_pos = [false, false];
 		this.mouse_click_pos = [false, false];
@@ -305,6 +308,200 @@ class Base_tools_class {
 		}
 
 		return response;
+	}
+
+	draw_shape(ctx, x, y, width, height, coords, is_demo) {
+		if(is_demo !== false) {
+			ctx.fillStyle = '#aaa';
+			ctx.strokeStyle = '#555';
+			ctx.lineWidth = 2;
+		}
+		ctx.lineJoin = "round";
+
+		ctx.beginPath();
+		for(var i in coords){
+			if(coords[i] === null){
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+				ctx.beginPath();
+				continue;
+			}
+
+			//coords in 100x100 box
+			var pos_x = x + coords[i][0] * width / 100;
+			var pos_y = y + coords[i][1] * height / 100;
+
+			if(i == '0')
+				ctx.moveTo(pos_x, pos_y);
+			else
+				ctx.lineTo(pos_x, pos_y);
+		}
+		ctx.closePath();
+
+		ctx.fill();
+		ctx.stroke();
+	}
+
+	default_events(){
+		var _this = this;
+
+		//mouse events
+		document.addEventListener('mousedown', function (event) {
+			_this.default_dragStart(event);
+		});
+		document.addEventListener('mousemove', function (event) {
+			_this.default_dragMove(event);
+		});
+		document.addEventListener('mouseup', function (event) {
+			_this.default_dragEnd(event);
+		});
+
+		// collect touch events
+		document.addEventListener('touchstart', function (event) {
+			_this.default_dragStart(event);
+		});
+		document.addEventListener('touchmove', function (event) {
+			_this.default_dragMove(event);
+		});
+		document.addEventListener('touchend', function (event) {
+			_this.default_dragEnd(event);
+		});
+	}
+
+	default_dragStart(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mousedown(event);
+	}
+
+	default_dragMove(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mousemove(event);
+	}
+
+	default_dragEnd(event) {
+		if (config.TOOL.name != this.name)
+			return;
+		this.mouseup(event);
+	}
+
+	shape_mousedown(e) {
+		var mouse = this.get_mouse_info(e);
+		if (mouse.valid == false || mouse.click_valid == false)
+			return;
+
+		//register new object - current layer is not ours or params changed
+		this.layer = {
+			type: this.name,
+			params: this.clone(this.getParams()),
+			status: 'draft',
+			render_function: [this.name, 'render'],
+			x: Math.round(mouse.x),
+			y: Math.round(mouse.y),
+			color: null,
+			is_vector: true
+		};
+		app.State.do_action(
+			new app.Actions.Bundle_action('new_'+this.name+'_layer', 'New '+this.Helper.ucfirst(this.name)+' Layer', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
+	}
+
+	shape_mousemove(e) {
+		var mouse = this.get_mouse_info(e);
+		var params = this.getParams();
+
+		if (mouse.is_drag == false)
+			return;
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
+
+		if (e.ctrlKey == true || e.metaKey) {
+			if (width  < height * this.best_ratio) {
+				width = height * this.best_ratio;
+			}
+			else {
+				height = width / this.best_ratio;
+			}
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
+			}
+		}
+
+		//more data
+		config.layer.x = x;
+		config.layer.y = y;
+		config.layer.width = width;
+		config.layer.height = height;
+		this.Base_layers.render();
+	}
+
+	shape_mouseup(e) {
+		var mouse = this.get_mouse_info(e);
+		var params = this.getParams();
+
+		if (mouse.valid == false || mouse.click_valid == false) {
+			config.layer.status = null;
+			return;
+		}
+
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
+		var width = Math.abs(mouse_x - click_x);
+		var height = Math.abs(mouse_y - click_y);
+
+		if (e.ctrlKey == true || e.metaKey) {
+			if (width  < height * this.best_ratio) {
+				width = height * this.best_ratio;
+			}
+			else {
+				height = width / this.best_ratio;
+			}
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
+			}
+		}
+
+		if (width == 0 && height == 0) {
+			//same coordinates - cancel
+			app.State.scrap_last_action();
+			return;
+		}
+
+		//more data
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x,
+				y,
+				width,
+				height,
+				status: null
+			}),
+			{ merge_with_history: 'new_'+this.name+'_layer' }
+		);
 	}
 
 }

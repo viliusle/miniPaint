@@ -36,52 +36,19 @@ class Crop_class extends Base_tools_class {
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 	}
 
-	dragStart(event) {
+	load() {
+		this.default_events();
+	}
+
+	default_dragStart(event) {
 		this.is_mousedown_canvas = false;
 		if (config.TOOL.name != this.name)
 			return;
 		if (!event.target.closest('#main_wrapper'))
 			return;
+
 		this.is_mousedown_canvas = true;
 		this.mousedown(event);
-	}
-
-	dragMove(event) {
-		if (config.TOOL.name != this.name)
-			return;
-		this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		if (config.TOOL.name != this.name)
-			return;
-		this.mouseup(event);
-	}
-
-	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
 	}
 
 	mousedown(e) {

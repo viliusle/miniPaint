@@ -20,44 +20,6 @@ class Clone_class extends Base_tools_class {
 		this.pressTimer = null;
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-
-		var mouse = this.get_mouse_info(event);
-		if (mouse.valid == true) {
-			this.pressTimer = window.setTimeout(function() {
-				//long press success
-				_this.mouseLongClick();
-			}, 2000);
-		}
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-
-		//mouse cursor
-		var mouse = _this.get_mouse_info(event);
-		var params = _this.getParams();
-		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
-
-		clearTimeout(this.pressTimer);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-
-		clearTimeout(this.pressTimer);
-	}
-
 	load() {
 		var _this = this;
 		var is_touch = false;
@@ -94,6 +56,44 @@ class Clone_class extends Base_tools_class {
 		document.addEventListener('contextmenu', function (event) {
 			_this.mouseRightClick(event);
 		});
+	}
+
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.valid == true) {
+			this.pressTimer = window.setTimeout(function() {
+				//long press success
+				_this.mouseLongClick();
+			}, 2000);
+		}
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+
+		//mouse cursor
+		var mouse = _this.get_mouse_info(event);
+		var params = _this.getParams();
+		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+
+		clearTimeout(this.pressTimer);
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+
+		clearTimeout(this.pressTimer);
 	}
 
 	on_params_update() {

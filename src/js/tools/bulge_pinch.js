@@ -20,55 +20,18 @@ class BulgePinch_class extends Base_tools_class {
 		this.started = false;
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
+	load() {
+		this.default_events();
 	}
 
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+	default_dragMove(event) {
+		if (config.TOOL.name != this.name)
 			return;
 
 		//mouse cursor
-		var mouse = _this.get_mouse_info(event);
-		var params = _this.getParams();
-		_this.show_mouse_cursor(mouse.x, mouse.y, params.radius, 'circle');
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-	}
-
-	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+		var mouse = this.get_mouse_info(event);
+		var params = this.getParams();
+		this.show_mouse_cursor(mouse.x, mouse.y, params.radius, 'circle');
 	}
 
 	mousedown(e) {

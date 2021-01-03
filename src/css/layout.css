@@ -286,10 +286,8 @@ body .sp-preview{
 .sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }
 .sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }
 .sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }
-.sidebar_left .line:after{ background-image: url('images/icons/line.svg'); }
-.sidebar_left .rectangle:after{ background-image: url('images/icons/rectangle.svg'); }
-.sidebar_left .circle:after{ background-image: url('images/icons/circle.svg'); }
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
+.sidebar_left .shape:after{ background-image: url('../../images/icons/shape.svg'); }
 .sidebar_left .text:after{
 	background-image: url('images/icons/text.svg');
 	background-size: 16px auto;

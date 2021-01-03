@@ -13,7 +13,7 @@ export class Stop_animation_action extends Base_action {
 
 	async do() {
 		super.do();
-		const animation_tool = app.GUI.GUI_tools.tools_modules.animation;
+		const animation_tool = app.GUI.GUI_tools.tools_modules.animation.object;
 		var params = animation_tool.getParams();
 		if (animation_tool.intervalID == null)
 			return;
@@ -36,7 +36,7 @@ export class Stop_animation_action extends Base_action {
 
 	async undo() {
 		super.undo();
-		const animation_tool = app.GUI.GUI_tools.tools_modules.animation;
+		const animation_tool = app.GUI.GUI_tools.tools_modules.animation.object;
 		var params = animation_tool.getParams();
 		if (animation_tool.intervalID == null)
 			return;

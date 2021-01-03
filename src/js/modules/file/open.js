@@ -413,6 +413,8 @@ class File_open_class {
 		if (json.info.version == undefined) {
 			json.info.version = "3";
 		}
+
+		//migration
 		if (json.info.version < "4") {
 			//convert from v3 to v4
 			for (var i in json.layers) {
@@ -442,6 +444,40 @@ class File_open_class {
 						data: json.image_data[i].data,
 					}
 				);
+			}
+		}
+		if(json.info.version < "4.5.0"){
+			//migrate "rectangle", "circle" and "line" types to "shape"
+			for (var i in json.layers) {
+				var old_type = json.layers[i].type;
+
+				if(old_type == 'line' && json.layers[i].params.type.value == "Arrow"){
+					//migrate line (type=arrow) to arrow.
+					json.layers[i].type = 'arrow';
+					delete json.layers[i].params.type;
+					json.layers[i].render_function = ["arrow", "render"];
+				}
+				if(old_type == 'rectangle' || old_type == 'circle'){
+					//migrate params
+					json.layers[i].params.border_size = json.layers[i].params.size;
+					delete json.layers[i].params.size;
+
+					if(json.layers[i].params.fill == true){
+						json.layers[i].params.border = false;
+					}
+					else{
+						json.layers[i].params.border = true;
+					}
+					json.layers[i].params.border_color = json.layers[i].color;
+					json.layers[i].params.fill_color = json.layers[i].color;
+
+					json.layers[i].color = null;
+				}
+				if(old_type == 'circle'){
+					//rename circle to ellipse
+					json.layers[i].type = 'ellipse';
+					json.layers[i].render_function = ["ellipse", "render"];
+				}
 			}
 		}
 

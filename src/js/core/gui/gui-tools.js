@@ -40,11 +40,30 @@ class GUI_tools_class {
 		plugins_context.keys().forEach(function (key) {
 			if (key.indexOf('Base' + '/') < 0) {
 				var moduleKey = key.replace('./', '').replace('.js', '');
+				var full_key = moduleKey;
+				if (moduleKey.indexOf('/') > -1) {
+					var parts = moduleKey.split("/");
+					moduleKey = parts[parts.length - 1];
+				}
+
 				var classObj = plugins_context(key);
-				_this.tools_modules[moduleKey] = new classObj.default(ctx);
+				var object = new classObj.default(ctx);
+
+				var title = _this.Helper.ucfirst(object.name);
+				title = title.replace(/_/, ' ');
+
+				_this.tools_modules[moduleKey] = {
+					key: moduleKey,
+					full_key: full_key,
+					name: object.name,
+					title: title,
+					object: object,
+				};
 
 				//init events once
-				_this.tools_modules[moduleKey].load();
+				if(typeof object.load != "undefined") {
+					object.load();
+				}
 			}
 		});
 	}
@@ -59,8 +78,8 @@ class GUI_tools_class {
 		var target_id = "tools_container";
 		var _this = this;
 		var saved_tool = this.Helper.getCookie('active_tool');
-		if(saved_tool == 'media') {
-			//bringing this backby default gives bad UX
+		if(saved_tool == 'media' || saved_tool == 'shape') {
+			//bringing this back by default gives bad UX
 			saved_tool = null
 		}
 		if (saved_tool != null) {
@@ -70,15 +89,22 @@ class GUI_tools_class {
 		//left menu
 		for (var i in config.TOOLS) {
 			var item = config.TOOLS[i];
+			if(item.title)
+				var title = item.title;
+			else
+				var title = this.Helper.ucfirst(item.name).replace(/_/, ' ');
 
 			var itemDom = document.createElement('span');
 			itemDom.id = item.name;
-			itemDom.title = item.title;
+			itemDom.title = title;
 			if (item.name == this.active_tool) {
 				itemDom.className = 'item trn active ' + item.name;
 			}
 			else {
 				itemDom.className = 'item trn ' + item.name;
+			}
+			if(item.visible === false){
+				itemDom.style.display = 'none';
 			}
 
 			//event
@@ -195,7 +221,7 @@ class GUI_tools_class {
 						//send event
 						var moduleKey = actionData.name;
 						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey][functionName]({ key: id, value: new_value });
+						this.tools_modules[moduleKey].object[functionName]({ key: id, value: new_value });
 					}
 				});
 
@@ -255,7 +281,7 @@ class GUI_tools_class {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey][functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
 						}
 					});
 
@@ -292,7 +318,7 @@ class GUI_tools_class {
 						//send event
 						var moduleKey = actionData.name;
 						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey][functionName]({ key: event.target.id, value: event.target.value });
+						this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
 					}
 				});
 
@@ -322,7 +348,7 @@ class GUI_tools_class {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey][functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
 						}
 					});
 

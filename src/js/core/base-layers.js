@@ -197,8 +197,8 @@ class Base_layers_class {
 		var render_class = config.TOOL.name;
 		var render_function = 'render_overlay';
 
-		if(typeof this.Base_gui.GUI_tools.tools_modules[render_class][render_function] != "undefined") {
-			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](this.ctx);
+		if(typeof this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function] != "undefined") {
+			this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](this.ctx);
 		}
 	}
 
@@ -307,7 +307,7 @@ class Base_layers_class {
 			var render_function = object.render_function[1];
 
 			if(typeof this.Base_gui.GUI_tools.tools_modules[render_class] != "undefined") {
-				this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object, is_preview);
+				this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](ctx, object, is_preview);
 			}
 			else{
 				this.render_success = false;
