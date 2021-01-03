@@ -538,42 +538,6 @@
 		{
 			"id": 10,
 			"parent_id": 0,
-			"name": "Rectangle (opacity)",
-			"type": "rectangle",
-			"link": null,
-			"x": 177,
-			"y": 445,
-			"width": 30,
-			"width_original": null,
-			"height": 150,
-			"height_original": null,
-			"visible": true,
-			"is_vector": true,
-			"hide_selection_if_active": false,
-			"opacity": 50,
-			"order": 10,
-			"composition": "source-over",
-			"rotate": -15,
-			"data": null,
-			"params": {
-				"fill": true,
-				"square": false,
-				"border_size": 1,
-				"border": false,
-				"border_color": "#e01a1a",
-				"fill_color": "#e01a1a"
-			},
-			"status": null,
-			"color": null,
-			"filters": [],
-			"render_function": [
-				"rectangle",
-				"render"
-			]
-		},
-		{
-			"id": 11,
-			"parent_id": 0,
 			"name": "Rectangle",
 			"type": "rectangle",
 			"link": null,
@@ -587,7 +551,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 11,
+			"order": 10,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -608,7 +572,7 @@
 			]
 		},
 		{
-			"id": 12,
+			"id": 11,
 			"parent_id": 0,
 			"name": "Ellipse",
 			"type": "ellipse",
@@ -623,7 +587,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 12,
+			"order": 11,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": {
@@ -647,7 +611,7 @@
 			]
 		},
 		{
-			"id": 14,
+			"id": 12,
 			"parent_id": 0,
 			"name": "Gradient (radial)",
 			"type": "gradient",
@@ -662,7 +626,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 14,
+			"order": 12,
 			"composition": "source-over",
 			"rotate": null,
 			"data": {
@@ -685,7 +649,7 @@
 			]
 		},
 		{
-			"id": 15,
+			"id": 13,
 			"parent_id": 0,
 			"name": "Gradient (linear)",
 			"type": "gradient",
@@ -700,7 +664,7 @@
 			"is_vector": false,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 15,
+			"order": 13,
 			"composition": "source-over",
 			"rotate": null,
 			"data": {
@@ -723,7 +687,7 @@
 			]
 		},
 		{
-			"id": 16,
+			"id": 14,
 			"parent_id": 0,
 			"name": "Borders",
 			"type": "borders",
@@ -738,7 +702,7 @@
 			"is_vector": false,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 16,
+			"order": 14,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -755,7 +719,7 @@
 			]
 		},
 		{
-			"id": 17,
+			"id": 15,
 			"parent_id": 0,
 			"name": "Rectangle (radius)",
 			"type": "rectangle",
@@ -770,7 +734,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 17,
+			"order": 15,
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
@@ -792,7 +756,7 @@
 			]
 		},
 		{
-			"id": 18,
+			"id": 16,
 			"parent_id": 0,
 			"name": "Rectangle",
 			"type": "rectangle",
@@ -807,7 +771,7 @@
 			"is_vector": true,
 			"hide_selection_if_active": false,
 			"opacity": 100,
-			"order": 18,
+			"order": 16,
 			"composition": "source-over",
 			"rotate": 10,
 			"data": null,
@@ -818,6 +782,79 @@
 				"border": false,
 				"border_color": "#55b955",
 				"fill_color": "#55b955"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"rectangle",
+				"render"
+			]
+		},
+		{
+			"id": 17,
+			"parent_id": 0,
+			"name": "Rectangle (composition)",
+			"type": "rectangle",
+			"link": null,
+			"x": 147,
+			"y": 424,
+			"width": 100,
+			"width_original": null,
+			"height": 10,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 17,
+			"composition": "xor",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"radius": 0,
+				"fill": true,
+				"square": false,
+				"border_size": 1,
+				"border": false,
+				"border_color": "#6b6b6b",
+				"fill_color": "#6b6b6b"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"rectangle",
+				"render"
+			]
+		},
+		{
+			"id": 18,
+			"parent_id": 0,
+			"name": "Rectangle (opacity)",
+			"type": "rectangle",
+			"link": null,
+			"x": 177,
+			"y": 445,
+			"width": 30,
+			"width_original": null,
+			"height": 150,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 50,
+			"order": 18,
+			"composition": "source-over",
+			"rotate": -15,
+			"data": null,
+			"params": {
+				"fill": true,
+				"square": false,
+				"border_size": 1,
+				"border": false,
+				"border_color": "#e01a1a",
+				"fill_color": "#e01a1a"
 			},
 			"status": null,
 			"color": null,
