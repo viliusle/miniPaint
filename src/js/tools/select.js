@@ -47,25 +47,25 @@ class Select_tool_class extends Base_tools_class {
 		var _this = this;
 
 		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
+		document.addEventListener('mousedown', function (e) {
+			_this.dragStart(e);
 		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
+		document.addEventListener('mousemove', function (e) {
+			_this.dragMove(e);
 		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
+		document.addEventListener('mouseup', function (e) {
+			_this.dragEnd(e);
 		});
 
 		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
+		document.addEventListener('touchstart', function (e) {
+			_this.dragStart(e);
 		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
+		document.addEventListener('touchmove', function (e) {
+			_this.dragMove(e);
 		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
+		document.addEventListener('touchend', function (e) {
+			_this.dragEnd(e);
 		});
 
 		//keyboard actions
@@ -230,13 +230,15 @@ class Select_tool_class extends Base_tools_class {
 			config.layer.x = this.mousedown_dimensions.x;
 			config.layer.y = this.mousedown_dimensions.y;
 
-			var snap_info = this.calc_snap(e, new_x, new_y);
-			if(snap_info != null){
-				if(snap_info.x != null) {
-					new_x = snap_info.x;
-				}
-				if(snap_info.y != null) {
-					new_y = snap_info.y;
+			if(mouse.x - mouse.click_x || mouse.y - mouse.click_y) {
+				var snap_info = this.calc_snap(e, new_x, new_y);
+				if (snap_info != null) {
+					if (snap_info.x != null) {
+						new_x = snap_info.x;
+					}
+					if (snap_info.y != null) {
+						new_y = snap_info.y;
+					}
 				}
 			}
 
