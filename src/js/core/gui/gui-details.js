@@ -7,6 +7,7 @@ import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Text_class from './../../tools/text.js';
+import Base_layers_class from "../base-layers";
 
 var template = `
 	<div class="row">
@@ -113,6 +114,7 @@ class GUI_details_class {
 	constructor() {
 		this.POP = new Dialog_class();
 		this.Text = new Text_class();
+		this.Base_layers = new Base_layers_class();
 	}
 
 	render_main_details() {
@@ -157,9 +159,11 @@ class GUI_details_class {
 
 	render_general(key, events) {
 		var layer = config.layer;
+		var _this = this;
 
 		if (layer != undefined) {
 			var target = document.getElementById('detail_' + key);
+			target.dataset.layer = layer.id;
 			if (layer[key] == null) {
 				target.value = '';
 				target.disabled = true;
@@ -180,6 +184,20 @@ class GUI_details_class {
 			let focus_value = null;
 			target.addEventListener('focus', function (e) {
 				focus_value = parseInt(this.value);
+			});
+			target.addEventListener('blur', function (e) {
+				var value = parseInt(this.value);
+				var layer = _this.Base_layers.get_layer(e.target.dataset.layer);
+				layer[key] = focus_value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(layer.id, {
+								[key]: value
+							})
+						])
+					);
+				}
 			});
 			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
