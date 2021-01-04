@@ -54,8 +54,7 @@ class Human_class extends Base_tools_class {
 		//set styles
 		ctx.strokeStyle = 'transparent';
 		ctx.fillStyle = 'transparent';
-		if(params.border)
-			ctx.strokeStyle = params.border_color;
+		ctx.strokeStyle = params.border_color;
 		if(params.fill)
 			ctx.fillStyle = params.fill_color;
 		ctx.lineWidth = params.border_size;
