@@ -343,7 +343,7 @@ class Base_selection_class {
 		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions' && this.is_drag) {
 
 			const allowNegativeDimensions = settings.data.render_function
-				&& ['line', 'gradient'].includes(settings.data.render_function[0]);
+				&& ['line', 'arrow', 'gradient'].includes(settings.data.render_function[0]);
 
 			mainWrapper.style.cursor = "pointer";
 			
