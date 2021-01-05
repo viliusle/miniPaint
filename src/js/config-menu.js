@@ -109,6 +109,11 @@ const menuDefinition = [
 				target: 'layer/new.new_selection'
 			},
 			{
+				name: 'Copy to Clipboard',
+				shortcut: 'Ctrl+C',
+				target: 'edit/copy.copy_to_clipboard'
+			},
+			{
 				name: 'Paste',
 				shortcut: 'Ctrl+V',
 				target: 'edit/paste.paste'
