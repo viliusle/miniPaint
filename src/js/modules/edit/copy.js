@@ -1,5 +1,6 @@
 import config from "../../config";
 import Base_layers_class from './../../core/base-layers.js';
+import File_save_class from './../file/save.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -16,6 +17,7 @@ class Copy_class {
 
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
+		this.File_save = new File_save_class();
 
 		//events
 		document.addEventListener('keydown', (event) => {
@@ -44,7 +46,7 @@ class Copy_class {
 			if (config.TRANSPARENCY == false) {
 				//add white background
 				ctx.globalCompositeOperation = 'destination-over';
-				this.fillCanvasBackground(ctx, '#ffffff');
+				this.File_save.fillCanvasBackground(ctx, '#ffffff');
 				ctx.globalCompositeOperation = 'source-over';
 			}
 
