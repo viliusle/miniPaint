@@ -51,21 +51,43 @@ class Text_class extends Base_tools_class {
 		document.addEventListener('mouseup', function (event) {
 			_this.dragEnd(event);
 		});
-		//This event listener allows the user to double click a text-layer to bring up the editing dialogue
-		document.addEventListener('dblclick', function (e) {	//On double-click
-			var settings = {	//Build the editing dialogue (copied from gui-details.js)
-				title: 'Edit text',		//Title
-				params: [
+		document.addEventListener('dblclick', function (e) {	//On double-click bring up text editing dialogue
+			//Update Text Popup (Base format mimicing mousedown original text creation further down in this file)
+			var settings = {
+				title: 'Edit text',	//Title
+				params: [	//Update options for everything, holding values of current textbox being edited
 					{name: "text", title: "Text:", value: config.layer.params.text || "", type: "textarea"},
+					{name: "size", title: "Size:", value: config.layer.params.size},
+					{name: "family", title: "Custom font", value: config.layer.params.family, values: _this.get_fonts()},
+					{name: "bold", title: "Bold:", value: config.layer.params.bold},
+					{name: "italic", title: "Italic:", value: config.layer.params.italic},
+					{name: "align", title: "Align:", value: config.layer.params.align, values: ["Left", "Center", "Right"], type: 'select' },
+					{name: "stroke", title: "Stroke:", value: config.layer.params.stroke},
+					{name: "stroke_size", title: "Stroke size:", value: config.layer.params.stroke_size},
 				],
-				on_finish: function (params) {	//After getting edits, configure/render the edits
-					config.layer.params.text = params.text;
+				//Loading options and presentation
+				on_load: function (params) {
+					config.layer.params = params;
+					config.need_render = true;
+					var button = document.createElement('button');
+					button.innerHTML = 'Preview';
+					button.className = 'button trns';
+					document.querySelector('#popup .buttons').appendChild(button);
+					button.addEventListener('click', function (e) {
+						config.need_render = true;
+					});
+				},
+				on_change: function (params) {
+					config.layer.params = params;
+					config.need_render = true;
+				},
+				on_finish: function (params) {
+					config.layer.params = params;
 					config.need_render = true;
 				},
 			};
-			_this.POP.show(settings);	//After building, show the editting dialogue
+			_this.POP.show(settings);
 		});
-
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
