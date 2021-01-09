@@ -11,7 +11,7 @@ class Star_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'star';
 		this.layer = {};
-		this.best_ratio = 1;
+		this.best_ratio = 1.051;
 		this.coords = [];
 	}
 
@@ -61,6 +61,10 @@ class Star_class extends Base_tools_class {
 	}
 
 	demo(ctx, x, y, width, height) {
+		ctx.fillStyle = '#aaa';
+		ctx.strokeStyle = '#555';
+		ctx.lineWidth = 2;
+
 		this.draw_shape(ctx, x, y, width, height, this.coords);
 	}
 
@@ -85,6 +89,37 @@ class Star_class extends Base_tools_class {
 		this.draw_shape(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, this.coords, false);
 
 		ctx.restore();
+	}
+
+	draw_shape(ctx, x, y, width, height, coords) {
+		ctx.lineJoin = "round";
+
+		ctx.beginPath();
+
+		ctx.scale(1, 1.051);
+
+		for(var i in coords){
+			if(coords[i] === null){
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+				ctx.beginPath();
+				continue;
+			}
+
+			//coords in 100x100 box
+			var pos_x = x + coords[i][0] * width / 100;
+			var pos_y = y + coords[i][1] * height / 100;
+
+			if(i == '0')
+				ctx.moveTo(pos_x, pos_y);
+			else
+				ctx.lineTo(pos_x, pos_y);
+		}
+		ctx.closePath();
+
+		ctx.fill();
+		ctx.stroke();
 	}
 
 }
