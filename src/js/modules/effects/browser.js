@@ -30,8 +30,11 @@ class Effects_browser_class extends Base_tools_class {
 			html += '	<canvas id="c_' + data[i].key + '" width="' + this.preview_width + '" height="'
 				+ this.preview_height + '" class="effectsPreview" data-key="'
 				+ data[i].key + '"></canvas>';
-			html += '<div class="center">' + title + '</div>';
+			html += '<div class="preview-item-title">' + title + '</div>';
 			html += '</div>';
+		}
+		for (var i = 0; i < 4; i++) {
+			html += '<div class="item"></div>';
 		}
 
 		var settings = {
@@ -47,7 +50,6 @@ class Effects_browser_class extends Base_tools_class {
 				for (var i = 0; i < targets.length; i++) {
 					targets[i].addEventListener('click', function (event) {
 						//we have click
-						window.State.save();
 						var key = this.dataset.key;
 						for (var i in data) {
 							if(data[i].key == key){
@@ -77,7 +79,7 @@ class Effects_browser_class extends Base_tools_class {
 		ctx.drawImage(active_image, 0, 0);
 		ctx.scale(1, 1);
 
-		//draw previews
+		//draw demo thumbs
 		for (var i in data) {
 			var title = data[i].title;
 			var function_name = 'demo';

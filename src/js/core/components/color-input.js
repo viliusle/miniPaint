@@ -13,11 +13,21 @@ let POP;
 (function ($) {
 
 	const template = `
-		<div class="ui_color_input">
+		<div class="ui_color_input" tabindex="-1">
 			<input type="color">
 			<div class="alpha_overlay"></div>
 		</div>
 	`;
+
+	const on_focus_color_input = (event) => {
+		const $el = $(event.target.closest('.ui_color_input'));
+		$el.trigger('focus');
+	};
+
+	const on_blur_color_input = (event) => {
+		const $el = $(event.target.closest('.ui_color_input'));
+		$el.trigger('blur');
+	};
 
 	const on_click_color_input = (event) => {
 		event.preventDefault();
@@ -142,6 +152,8 @@ let POP;
 
 				$(input)
 					.on('click', on_click_color_input)
+					.on('focus', on_focus_color_input)
+					.on('blur', on_blur_color_input)
 
 				set_value($el, value);
 				set_disabled($el, disabled);

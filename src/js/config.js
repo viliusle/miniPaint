@@ -12,6 +12,7 @@ config.visible_height = null;
 config.COLOR = '#008000';
 config.ALPHA = 255;
 config.ZOOM = 1;
+config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
 config.layers = [];
 config.layer = null;
@@ -78,13 +79,11 @@ config.TOOLS = [
 	},
 	{
 		name: 'selection',
-		title: 'Selection',
 		attributes: {},
 		on_leave: 'on_leave',
 	},
 	{
 		name: 'brush',
-		title: 'Brush',
 		attributes: {
 			size: 4,
 			pressure: false,
@@ -92,7 +91,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'pencil',
-		title: 'Pencil',
 		on_update: 'on_params_update',
 		attributes: {
 			antialiasing: true,
@@ -101,14 +99,12 @@ config.TOOLS = [
 	},
 	{
 		name: 'pick_color',
-		title: 'Pick Color',
 		attributes: {
 			global: false,
 		},
 	},
 	{
 		name: 'erase',
-		title: 'Erase',
 		on_update: 'on_params_update',
 		attributes: {
 			size: 30,
@@ -127,7 +123,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'fill',
-		title: 'Fill',
 		attributes: {
 			power: 5,
 			anti_aliasing: false,
@@ -135,35 +130,52 @@ config.TOOLS = [
 		},
 	},
 	{
-		name: 'line',
-		title: 'Line',
+		name: 'shape',
+		on_activate: 'on_activate',
 		attributes: {
-			size: 1,
-			type: {
-				value: 'Simple',
-				values: ['Simple', 'Arrow'],
-			},
+			size: 3,
+			stroke: '#00aa00',
+		},
+	},
+	{
+		name: 'line',
+		visible: false,
+		attributes: {
+			size: 4,
+		},
+	},
+	{
+		name: 'arrow',
+		visible: false,
+		attributes: {
+			size: 4,
 		},
 	},
 	{
 		name: 'rectangle',
-		title: 'Rectangle',
+		visible: false,
 		attributes: {
-			size: 1,
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
 			radius: {
 				value: 0,
 				min: 0,
 			},
-			fill: true,
 			square: false,
 		},
 	},
 	{
-		name: 'circle',
-		title: 'Circle',
+		name: 'ellipse',
+		visible: false,
 		attributes: {
-			size: 1,
+			border_size: 4,
+			border: false,
 			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
 			circle: false,
 		},
 	},
@@ -176,8 +188,150 @@ config.TOOLS = [
 		},
 	},
 	{
+		name: 'triangle',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'right_triangle',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'romb',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'parallelogram',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'trapezoid',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'plus',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'pentagon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'hexagon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'star',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'star24',
+		title: '24-Points star',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'heart',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: false,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'cylinder',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'human',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
 		name: 'text',
-		title: 'Text',
 		on_update: 'on_params_update',
 		attributes: {
 			font: {
@@ -224,7 +378,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'gradient',
-		title: 'Gradient',
 		attributes: {
 			color_1: '#008000',
 			color_2: '#ffffff',
@@ -235,7 +388,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'clone',
-		title: 'Clone tool',
 		attributes: {
 			size: 30,
 			anti_aliasing: true,
@@ -247,7 +399,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'crop',
-		title: 'Crop',
 		on_update: 'on_params_update',
 		on_leave: 'on_leave',
 		attributes: {
@@ -256,7 +407,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'blur',
-		title: 'Blur tool',
 		attributes: {
 			size: 30,
 			strength: 1,
@@ -264,14 +414,12 @@ config.TOOLS = [
 	},
 	{
 		name: 'sharpen',
-		title: 'Sharpen tool',
 		attributes: {
 			size: 30,
 		},
 	},
 	{
 		name: 'desaturate',
-		title: 'Desaturate',
 		attributes: {
 			size: 50,
 			anti_aliasing: true,
@@ -288,7 +436,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'animation',
-		title: 'Play animation',
+		on_activate: 'on_activate',
 		on_update: 'on_params_update',
 		on_leave: 'on_leave',
 		attributes: {

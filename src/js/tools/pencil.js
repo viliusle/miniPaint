@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -12,65 +13,26 @@ class Pencil_class extends Base_tools_class {
 		this.params_hash = false;
 	}
 
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
+	load() {
+		this.default_events();
 	}
 
 	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
+		if (config.TOOL.name != this.name)
 			return;
-		_this.mousemove(event);
+		this.mousemove(event);
 
 		//mouse cursor
-		var mouse = _this.get_mouse_info(event);
-		var params = _this.getParams();
+		var mouse = this.get_mouse_info(event);
+		var params = this.getParams();
 		if (params.antialiasing == true)
-			_this.show_mouse_cursor(mouse.x, mouse.y, params.size || 1, 'circle');
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-	}
-
-	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+			this.show_mouse_cursor(mouse.x, mouse.y, params.size || 1, 'circle');
 	}
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
-
-		window.State.save();
 
 		var params_hash = this.get_params_hash();
 		var params = this.getParams();
@@ -94,13 +56,26 @@ class Pencil_class extends Base_tools_class {
 				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
+				color: config.COLOR
 			};
-			this.Base_layers.insert(this.layer);
+			app.State.do_action(
+				new app.Actions.Bundle_action('new_pencil_layer', 'New Pencil Layer', [
+					new app.Actions.Insert_layer_action(this.layer)
+				])
+			);
 			this.params_hash = params_hash;
 		}
 		else {
 			//continue adding layer data, just register break
-			config.layer.data.push(null);
+			const new_data = JSON.parse(JSON.stringify(config.layer.data));
+			new_data.push(null);
+			app.State.do_action(
+				new app.Actions.Bundle_action('update_pencil_layer', 'Update Pencil Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						data: new_data
+					})
+				])
+			);
 		}
 	}
 
@@ -301,7 +276,7 @@ class Pencil_class extends Base_tools_class {
 			return;
 
 		//find bounds
-		var data = config.layer.data;
+		var data = JSON.parse(JSON.stringify(config.layer.data)); // Deep copy for history
 		var min_x = data[0][0];
 		var min_y = data[0][1];
 		var max_x = data[0][0];
@@ -324,12 +299,18 @@ class Pencil_class extends Base_tools_class {
 		}
 
 		//change layers bounds
-		config.layer.x = config.layer.x + min_x;
-		config.layer.y = config.layer.y + min_y;
-		config.layer.width = max_x - min_x;
-		config.layer.height = max_y - min_y;
-
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x: config.layer.x + min_x,
+				y: config.layer.y + min_y,
+				width: max_x - min_x,
+				height: max_y - min_y,
+				data
+			}),
+			{
+				merge_with_history: ['new_pencil_layer', 'update_pencil_layer']
+			}
+		);
 	}
 
 }

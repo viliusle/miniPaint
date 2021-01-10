@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 
@@ -8,8 +9,9 @@ class Layer_delete_class {
 	}
 
 	delete() {
-		window.State.save();
-		this.Base_layers.delete(config.layer.id);
+		app.State.do_action(
+			new app.Actions.Delete_layer_action(config.layer.id)
+		);
 	}
 
 }

@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -17,44 +18,6 @@ class Clone_class extends Base_tools_class {
 		this.started = false;
 		this.clone_coords = null;
 		this.pressTimer = null;
-	}
-
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-
-		var mouse = this.get_mouse_info(event);
-		if (mouse.valid == true) {
-			this.pressTimer = window.setTimeout(function() {
-				//long press success
-				_this.mouseLongClick();
-			}, 2000);
-		}
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-
-		//mouse cursor
-		var mouse = _this.get_mouse_info(event);
-		var params = _this.getParams();
-		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
-
-		clearTimeout(this.pressTimer);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
-
-		clearTimeout(this.pressTimer);
 	}
 
 	load() {
@@ -93,6 +56,44 @@ class Clone_class extends Base_tools_class {
 		document.addEventListener('contextmenu', function (event) {
 			_this.mouseRightClick(event);
 		});
+	}
+
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.valid == true) {
+			this.pressTimer = window.setTimeout(function() {
+				//long press success
+				_this.mouseLongClick();
+			}, 2000);
+		}
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+
+		//mouse cursor
+		var mouse = _this.get_mouse_info(event);
+		var params = _this.getParams();
+		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+
+		clearTimeout(this.pressTimer);
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
+
+		clearTimeout(this.pressTimer);
 	}
 
 	on_params_update() {
@@ -216,7 +217,6 @@ class Clone_class extends Base_tools_class {
 			}
 		}
 		this.started = true;
-		window.State.save();
 
 		//get canvas from layer
 		this.tmpCanvas = document.createElement('canvas');
@@ -259,7 +259,11 @@ class Clone_class extends Base_tools_class {
 		}
 		delete config.layer.link_canvas;
 
-		this.Base_layers.update_layer_image(this.tmpCanvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('clone_tool', 'Clone Tool', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas)
+			])
+		);
 
 		//decrease memory
 		this.tmpCanvas.width = 1;

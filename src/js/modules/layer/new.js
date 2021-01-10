@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import GUI_tools_class from './../../core/gui/gui-tools.js';
@@ -31,9 +32,10 @@ class Layer_new_class {
 		}, false);
 	}
 
-	new () {
-		window.State.save();
-		this.Base_layers.insert();
+	new() {
+		app.State.do_action(
+			new app.Actions.Insert_layer_action()
+		);
 	}
 
 	new_selection() {
@@ -49,8 +51,6 @@ class Layer_new_class {
 			return;
 		}
 
-		window.State.save();
-		
 		//if image was stretched
 		var width_ratio = (layer.width / layer.width_original);
 		var height_ratio = (layer.height / layer.height_original);
@@ -83,10 +83,13 @@ class Layer_new_class {
 			type: 'image',
 			data: canvas.toDataURL("image/png"),
 		};
-		this.Base_layers.insert(params, false);
-		
-		this.Selection.on_leave();
-		this.GUI_tools.activate_tool('select');
+		app.State.do_action(
+			new app.Actions.Bundle_action('new_layer', 'New Layer', [
+				new app.Actions.Insert_layer_action(params, false),
+				...this.Selection.on_leave(),
+				new app.Actions.Activate_tool_action('select')
+			])
+		);
 	}
 
 }

@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import app from './../../app.js';
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 import Help_translate_class from './../../modules/help/translate.js';
@@ -39,11 +40,30 @@ class GUI_tools_class {
 		plugins_context.keys().forEach(function (key) {
 			if (key.indexOf('Base' + '/') < 0) {
 				var moduleKey = key.replace('./', '').replace('.js', '');
+				var full_key = moduleKey;
+				if (moduleKey.indexOf('/') > -1) {
+					var parts = moduleKey.split("/");
+					moduleKey = parts[parts.length - 1];
+				}
+
 				var classObj = plugins_context(key);
-				_this.tools_modules[moduleKey] = new classObj.default(ctx);
+				var object = new classObj.default(ctx);
+
+				var title = _this.Helper.ucfirst(object.name);
+				title = title.replace(/_/, ' ');
+
+				_this.tools_modules[moduleKey] = {
+					key: moduleKey,
+					full_key: full_key,
+					name: object.name,
+					title: title,
+					object: object,
+				};
 
 				//init events once
-				_this.tools_modules[moduleKey].load();
+				if(typeof object.load != "undefined") {
+					object.load();
+				}
 			}
 		});
 	}
@@ -58,8 +78,8 @@ class GUI_tools_class {
 		var target_id = "tools_container";
 		var _this = this;
 		var saved_tool = this.Helper.getCookie('active_tool');
-		if(saved_tool == 'media') {
-			//bringing this backby default gives bad UX
+		if(saved_tool == 'media' || saved_tool == 'shape') {
+			//bringing this back by default gives bad UX
 			saved_tool = null
 		}
 		if (saved_tool != null) {
@@ -69,15 +89,22 @@ class GUI_tools_class {
 		//left menu
 		for (var i in config.TOOLS) {
 			var item = config.TOOLS[i];
+			if(item.title)
+				var title = item.title;
+			else
+				var title = this.Helper.ucfirst(item.name).replace(/_/, ' ');
 
 			var itemDom = document.createElement('span');
 			itemDom.id = item.name;
-			itemDom.title = item.title;
+			itemDom.title = title;
 			if (item.name == this.active_tool) {
 				itemDom.className = 'item trn active ' + item.name;
 			}
 			else {
 				itemDom.className = 'item trn ' + item.name;
+			}
+			if(item.visible === false){
+				itemDom.style.display = 'none';
 			}
 
 			//event
@@ -90,55 +117,14 @@ class GUI_tools_class {
 		}
 
 		this.show_action_attributes();
-		this.activate_tool(this.active_tool);
+		new app.Actions.Activate_tool_action(this.active_tool, true).do();
 		this.Base_gui.check_canvas_offset();
 	}
 
-	activate_tool(key) {
-		//reset last
-		document.querySelector('#tools_container .' + this.active_tool)
-			.classList.remove("active");
-
-		//send exit event to old previous tool
-		if (config.TOOL.on_leave != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_leave;
-			this.tools_modules[moduleKey][functionName]();
-		}
-
-		//change active
-		this.active_tool = key;
-		document.querySelector('#tools_container .' + this.active_tool)
-			.classList.add("active");
-		for (var i in config.TOOLS) {
-			if (config.TOOLS[i].name == this.active_tool) {
-				config.TOOL = config.TOOLS[i];
-			}
-		}
-
-		//check module
-		if (this.tools_modules[key] == undefined) {
-			alertify.error('Tools class not found: ' + key);
-			return;
-		}
-
-		//send activate event to new tool
-		if (config.TOOL.on_activate != undefined) {
-			var moduleKey = config.TOOL.name;
-			var functionName = config.TOOL.on_activate;
-			this.tools_modules[moduleKey][functionName]();
-		}
-
-		//set default cursor
-		const mainWrapper = document.getElementById('main_wrapper');
-		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
-		if (mainWrapper.style.cursor != defaultCursor) {
-			mainWrapper.style.cursor = defaultCursor;
-		}
-
-		this.show_action_attributes();
-		this.Helper.setCookie('active_tool', this.active_tool);
-		config.need_render = true;
+	async activate_tool(key) {
+		return app.State.do_action(
+			new app.Actions.Activate_tool_action(key)
+		);
 	}
 
 	action_data() {
@@ -235,7 +221,7 @@ class GUI_tools_class {
 						//send event
 						var moduleKey = actionData.name;
 						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey][functionName]({ key: id, value: new_value });
+						this.tools_modules[moduleKey].object[functionName]({ key: id, value: new_value });
 					}
 				});
 
@@ -295,7 +281,7 @@ class GUI_tools_class {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey][functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
 						}
 					});
 
@@ -332,7 +318,7 @@ class GUI_tools_class {
 						//send event
 						var moduleKey = actionData.name;
 						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey][functionName]({ key: event.target.id, value: event.target.value });
+						this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
 					}
 				});
 
@@ -362,7 +348,7 @@ class GUI_tools_class {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey][functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
 						}
 					});
 

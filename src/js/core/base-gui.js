@@ -100,6 +100,16 @@ class Base_gui_class {
 		if (transparency_type) {
 			config.TRANSPARENCY_TYPE = transparency_type;
 		}
+
+		//snap
+		var snap_cookie = this.Helper.getCookie('snap');
+		if (snap_cookie === null) {
+			//default
+			config.SNAP = true;
+		}
+		else{
+			config.SNAP = Boolean(snap_cookie);
+		}
 	}
 
 	render_main_gui() {
@@ -403,6 +413,30 @@ class Base_gui_class {
 			document.querySelector('body').classList.remove('theme-' + config.themes[i]);
 		}
 		document.querySelector('body').classList.add('theme-' + theme_name);
+	}
+
+	get_language() {
+		return config.LANG;
+	}
+
+	get_color() {
+		return config.COLOR;
+	}
+
+	get_alpha() {
+		return config.ALPHA;
+	}
+
+	get_zoom() {
+		return config.ZOOM;
+	}
+
+	get_transparency_support() {
+		return config.TRANSPARENCY;
+	}
+
+	get_active_tool() {
+		return config.TOOL;
 	}
 
 }

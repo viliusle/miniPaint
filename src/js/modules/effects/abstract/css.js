@@ -1,3 +1,4 @@
+import app from './../../../app.js';
 import config from './../../../config.js';
 import Dialog_class from './../../../libs/popup.js';
 import Base_layers_class from './../../../core/base-layers.js';
@@ -28,8 +29,6 @@ class Effects_common_class {
 				canvas_preview.drawImage(this.layer_active_small, 0, 0);
 			},
 			on_finish: function (params) {
-
-				window.State.save();
 				_this.params = params;
 				_this.save(params, type);
 			},
@@ -38,7 +37,9 @@ class Effects_common_class {
 	}
 
 	save(params, type) {
-		this.Base_layers.add_filter(null, type, params);
+		return app.State.do_action(
+			new app.Actions.Add_layer_filter_action(null, type, params)
+		);
 	}
 
 	preview(params, type) {

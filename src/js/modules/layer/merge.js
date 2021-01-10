@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -13,8 +14,6 @@ class Layer_merge_class {
 			alertify.error('There are no layers behind.');
 			return false;
 		}
-
-		window.State.save();
 
 		//create tmp canvas
 		var canvas = document.createElement('canvas');
@@ -42,12 +41,15 @@ class Layer_merge_class {
 		params.name = config.layer.name + ' + merged';
 		params.order = current_order;
 		params.data = canvas.toDataURL("image/png");
-		this.Base_layers.insert(params);
+		app.State.do_action(
+			new app.Actions.Bundle_action('merge_layers', 'Merge Layers', [
+				new app.Actions.Insert_layer_action(params),
+				new app.Actions.Delete_layer_action(current_id),
+				new app.Actions.Delete_layer_action(previous_id)
+			])
+		);
 
-		//remove old layer
-		this.Base_layers.delete(current_id);
-		this.Base_layers.delete(previous_id);
-
+		//free canvas data
 		canvas.width = 1;
 		canvas.height = 1;
 	}

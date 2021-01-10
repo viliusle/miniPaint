@@ -1,6 +1,7 @@
-import config from './../config.js';
-import Base_tools_class from './../core/base-tools.js';
-import Base_layers_class from './../core/base-layers.js';
+import app from './../../app.js';
+import config from './../../config.js';
+import Base_tools_class from './../../core/base-tools.js';
+import Base_layers_class from './../../core/base-layers.js';
 
 class Rectangle_class extends Base_tools_class {
 
@@ -10,53 +11,13 @@ class Rectangle_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'rectangle';
 		this.layer = {};
-	}
-
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
+		this.best_ratio = 1;
+		this.snap_line_info = {x: null, y: null};
+		this.mouse_click = {x: null, y: null};
 	}
 
 	load() {
-		var _this = this;
-
-		//mouse events
-		document.addEventListener('mousedown', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('mousemove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('mouseup', function (event) {
-			_this.dragEnd(event);
-		});
-
-		// collect touch events
-		document.addEventListener('touchstart', function (event) {
-			_this.dragStart(event);
-		});
-		document.addEventListener('touchmove', function (event) {
-			_this.dragMove(event);
-		});
-		document.addEventListener('touchend', function (event) {
-			_this.dragEnd(event);
-		});
+		this.default_events();
 	}
 
 	mousedown(e) {
@@ -64,7 +25,22 @@ class Rectangle_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		window.State.save();
+		var mouse_x = mouse.x;
+		var mouse_y = mouse.y;
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+
+		this.mouse_click.x = mouse_x;
+		this.mouse_click.y = mouse_y;
 
 		//register new object - current layer is not ours or params changed
 		this.layer = {
@@ -72,11 +48,16 @@ class Rectangle_class extends Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: Math.round(mouse.x),
-			y: Math.round(mouse.y),
-			is_vector: true,
+			x: Math.round(mouse_x),
+			y: Math.round(mouse_y),
+			color: null,
+			is_vector: true
 		};
-		this.Base_layers.insert(this.layer);
+		app.State.do_action(
+			new app.Actions.Bundle_action('new_rectangle_layer', 'New Rectangle Layer', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
 	}
 
 	mousemove(e) {
@@ -91,17 +72,30 @@ class Rectangle_class extends Base_tools_class {
 
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
-		var click_x = Math.round(mouse.click_x);
-		var click_y = Math.round(mouse.click_y);
+		var click_x = Math.round(this.mouse_click.x);
+		var click_y = Math.round(this.mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+
 		var x = Math.min(mouse_x, click_x);
 		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
-		if (params.square == true) {
+		if (params.square == true || e.ctrlKey == true || e.metaKey) {
 			if (width < height) {
 				width = height;
-			} else {
+			}
+			else {
 				height = width;
 			}
 			if (mouse_x < click_x) {
@@ -117,6 +111,7 @@ class Rectangle_class extends Base_tools_class {
 		config.layer.y = y;
 		config.layer.width = width;
 		config.layer.height = height;
+
 		this.Base_layers.render();
 	}
 
@@ -128,20 +123,34 @@ class Rectangle_class extends Base_tools_class {
 			config.layer.status = null;
 			return;
 		}
-		
+
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
-		var click_x = Math.round(mouse.click_x);
-		var click_y = Math.round(mouse.click_y);
+		var click_x = Math.round(this.mouse_click.x);
+		var click_y = Math.round(this.mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+		this.snap_line_info = {x: null, y: null};
+
 		var x = Math.min(mouse_x, click_x);
 		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
-		if (params.square == true) {
+		if (params.square == true || e.ctrlKey == true || e.metaKey) {
 			if (width < height) {
 				width = height;
-			} else {
+			}
+			else {
 				height = width;
 			}
 			if (mouse_x < click_x) {
@@ -154,22 +163,43 @@ class Rectangle_class extends Base_tools_class {
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
-			this.Base_layers.delete(config.layer.id);
+			app.State.scrap_last_action();
 			return;
 		}
 
 		//more data
-		config.layer.x = x;
-		config.layer.y = y;
-		config.layer.width = width;
-		config.layer.height = height;
-		config.layer.status = null;
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x,
+				y,
+				width,
+				height,
+				status: null
+			}),
+			{ merge_with_history: 'new_rectangle_layer' }
+		);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
+	}
+
+	demo(ctx, x, y, width, height) {
+		var coords = [
+			[0, 0],
+			[100, 0],
+			[100, 100],
+			[0, 100],
+			[0, 0],
+		];
+		this.draw_shape(ctx, x, y, width, height, coords);
 	}
 
 	render(ctx, layer) {
 		var params = layer.params;
 		var fill = params.fill;
+		var stroke = params.border;
 		var rotateSupport = true;
 		var radius = params.radius;
 		if(radius == undefined)
@@ -178,18 +208,22 @@ class Rectangle_class extends Base_tools_class {
 		ctx.save();
 
 		//set styles
-		ctx.fillStyle = layer.color;
-		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = params.size;
+		ctx.strokeStyle = 'transparent';
+		ctx.fillStyle = 'transparent';
+		if(params.border)
+			ctx.strokeStyle = params.border_color;
+		if(params.fill)
+			ctx.fillStyle = params.fill_color;
+		ctx.lineWidth = params.border_size;
 
 		if (rotateSupport == false) {
-			this.roundRect(ctx, layer.x, layer.y, layer.width, layer.height, radius, fill);
+			this.roundRect(ctx, layer.x, layer.y, layer.width, layer.height, radius, fill, stroke);
 		}
 		else {
 			//rotate
 			ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
 			ctx.rotate(layer.rotate * Math.PI / 180);
-			this.roundRect(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, radius, fill);
+			this.roundRect(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, radius, fill, stroke);
 		}
 
 		ctx.restore();
@@ -206,7 +240,7 @@ class Rectangle_class extends Base_tools_class {
 	 * @param {Number} radius
 	 * @param {Boolean} fill
 	 */
-	roundRect(ctx, x, y, width, height, radius, fill) {
+	roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 		x = parseInt(x);
 		y = parseInt(y);
 		width = parseInt(width);
@@ -232,15 +266,15 @@ class Rectangle_class extends Base_tools_class {
 		radius = Math.floor(radius);
 		
 		// Odd dimensions must draw offset half a pixel
-		if (width % 2 == 1) {
+		if (width % 2 == 1 && config.layer.status != 'draft') {
 			x -= 0.5;
 		}
-		if (height % 2 == 1) {
+		if (height % 2 == 1 && config.layer.status != 'draft') {
 			y -= 0.5;
 		}
 
 		var stroke_offset = !fill && ctx.lineWidth % 2 == 1 && width > 1 && height > 1 ? 0.5 : 0;
-		
+
 		if (smaller_dimension < 2) fill = true;
 
 		radius = {tl: radius, tr: radius, br: radius, bl: radius};
@@ -258,7 +292,7 @@ class Rectangle_class extends Base_tools_class {
 		if (fill) {
 			ctx.fill();
 		}
-		else {
+		if (stroke) {
 			ctx.stroke();
 		}
 	}

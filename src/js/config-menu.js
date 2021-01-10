@@ -14,7 +14,7 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'Open File',
-						shortcut: 'Drag&Drop',
+						shortcut: 'O/Drag&Drop',
 						ellipsis: true,
 						target: 'file/open.open_file'
 					},
@@ -46,7 +46,7 @@ const menuDefinition = [
 			{
 				name: 'Search Images',
 				ellipsis: true,
-				target: 'file/search.search'
+				target: 'file/open.search'
 			},
 			{
 				divider: true
@@ -88,7 +88,13 @@ const menuDefinition = [
 		children: [
 			{
 				name: 'Undo',
+				shortcut: 'Ctrl+Z',
 				target: 'edit/undo.undo'
+			},
+			{
+				name: 'Redo',
+				shortcut: 'Ctrl+Y',
+				target: 'edit/redo.redo'
 			},
 			{
 				divider: true
@@ -103,6 +109,11 @@ const menuDefinition = [
 				target: 'layer/new.new_selection'
 			},
 			{
+				name: 'Copy to Clipboard',
+				shortcut: 'Ctrl+C',
+				target: 'edit/copy.copy_to_clipboard'
+			},
+			{
 				name: 'Paste',
 				shortcut: 'Ctrl+V',
 				target: 'edit/paste.paste'
@@ -112,6 +123,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Select All',
+				shortcut: 'Ctrl+A',
 				target: 'edit/selection.select_all'
 			}
 		]
@@ -121,6 +133,7 @@ const menuDefinition = [
 		children: [
 			{
 				name: 'Information',
+				shortcut: 'I',
 				ellipsis: true,
 				target: 'image/information.information'
 			},
