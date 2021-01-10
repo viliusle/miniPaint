@@ -27,6 +27,7 @@ class Base_tools_class {
 		this.speed_average = 0;
 		this.save_mouse = save_mouse;
 		this.is_touch = false;
+		this.shape_mouse_click = {x: null, y: null};
 
 		this.prepare();
 
@@ -392,19 +393,22 @@ class Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		var x_pos = mouse.x;
-		var y_pos = mouse.y;
+		var mouse_x = mouse.x;
+		var mouse_y = mouse.y;
 
 		//apply snap
-		var snap_info = this.calc_snap_initial(e, x_pos, y_pos);
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y);
 		if(snap_info != null){
 			if(snap_info.x != null) {
-				x_pos = snap_info.x;
+				mouse_x = snap_info.x;
 			}
 			if(snap_info.y != null) {
-				y_pos = snap_info.y;
+				mouse_y = snap_info.y;
 			}
 		}
+
+		this.shape_mouse_click.x = mouse_x;
+		this.shape_mouse_click.y = mouse_y;
 
 		//register new object - current layer is not ours or params changed
 		this.layer = {
@@ -412,8 +416,8 @@ class Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: Math.round(x_pos),
-			y: Math.round(y_pos),
+			x: Math.round(mouse_x),
+			y: Math.round(mouse_y),
 			color: null,
 			is_vector: true
 		};
@@ -436,8 +440,20 @@ class Base_tools_class {
 
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
-		var click_x = Math.round(mouse.click_x);
-		var click_y = Math.round(mouse.click_y);
+		var click_x = Math.round(this.shape_mouse_click.x);
+		var click_y = Math.round(this.shape_mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+
 		var x = Math.min(mouse_x, click_x);
 		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
@@ -464,17 +480,6 @@ class Base_tools_class {
 		config.layer.width = width;
 		config.layer.height = height;
 
-		//apply snap
-		var snap_info = this.calc_snap_end(e);
-		if(snap_info != null){
-			if(snap_info.width != null) {
-				config.layer.width = snap_info.width;
-			}
-			if(snap_info.height != null) {
-				config.layer.height = snap_info.height;
-			}
-		}
-
 		this.Base_layers.render();
 	}
 
@@ -489,8 +494,21 @@ class Base_tools_class {
 
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
-		var click_x = Math.round(mouse.click_x);
-		var click_y = Math.round(mouse.click_y);
+		var click_x = Math.round(this.shape_mouse_click.x);
+		var click_y = Math.round(this.shape_mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+		this.snap_line_info = {x: null, y: null};
+
 		var x = Math.min(mouse_x, click_x);
 		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
@@ -516,18 +534,6 @@ class Base_tools_class {
 			app.State.scrap_last_action();
 			return;
 		}
-
-		//apply snap
-		var snap_info = this.calc_snap_end(e);
-		if(snap_info != null){
-			if(snap_info.width != null) {
-				width = snap_info.width;
-			}
-			if(snap_info.height != null) {
-				height = snap_info.height;
-			}
-		}
-		this.snap_line_info = {x: null, y: null};
 
 		//more data
 		app.State.do_action(
@@ -580,7 +586,7 @@ class Base_tools_class {
 			],
 		};
 		for(var i in config.layers){
-			if(typeof exclude_id != "undefined" && exclude_id == config.layers[i].id){
+			if(exclude_id != null && exclude_id == config.layers[i].id){
 				continue;
 			}
 			if(config.layers[i].visible == false
@@ -620,15 +626,16 @@ class Base_tools_class {
 	}
 
 	/**
-	 * calculates initial object snap coordinates (x, y) and returns it. One of coordinates can be null.
+	 * calculates snap coordinates by current mouse position.
 	 *
 	 * @param event
 	 * @param pos_x
 	 * @param pos_y
+	 * @param exclude_id
 	 * @returns object|null
 	 */
-	calc_snap_initial(event, pos_x, pos_y) {
-		var snap_position = { x: null, y: null, width: null, height: null };
+	calc_snap_position(event, pos_x, pos_y, exclude_id) {
+		var snap_position = { x: null, y: null };
 		var params = this.getParams();
 
 		if(config.SNAP === false || event.shiftKey == true || (event.ctrlKey == true || event.metaKey == true)){
@@ -641,7 +648,10 @@ class Base_tools_class {
 		var max_distance = (config.WIDTH + config.HEIGHT) / 2 * sensitivity / config.ZOOM;
 
 		//collect snap positions
-		var snap_positions = this.get_snap_positions();
+		if(typeof exclude_id != "undefined")
+			var snap_positions = this.get_snap_positions(exclude_id);
+		else
+			var snap_positions = this.get_snap_positions();
 
 		//find closest snap positions
 		var min_value = {
@@ -689,95 +699,6 @@ class Base_tools_class {
 		//y
 		if(min_value.y != null) {
 			snap_position.y = Math.round(min_value.y);
-			success = true;
-			this.snap_line_info.y = {
-				start_x: 0,
-				start_y: min_value.y,
-				end_x: config.WIDTH,
-				end_y: min_value.y,
-			};
-		}
-		else{
-			this.snap_line_info.y = null;
-		}
-
-		if(success) {
-			return snap_position;
-		}
-
-		return null;
-	}
-
-	/**
-	 * calculates last object snap coordinates (width, height) and returns it. One of coordinates can be null.
-	 *
-	 * @param event
-	 * @param pos_x
-	 * @param pos_y
-	 * @returns object|null
-	 */
-	calc_snap_end(event) {
-		var snap_position = { x: null, y: null, width: null, height: null };
-		var params = this.getParams();
-
-		if(config.SNAP === false || event.shiftKey == true || (event.ctrlKey == true || event.metaKey == true)){
-			this.snap_line_info = {x: null, y: null};
-			return null;
-		}
-
-		//settings
-		var sensitivity = 0.01;
-		var max_distance = (config.WIDTH + config.HEIGHT) / 2 * sensitivity / config.ZOOM;
-
-		//collect snap positions
-		var snap_positions = this.get_snap_positions(config.layer.id);
-
-		//find closest snap positions
-		var min_value = {
-			x: null,
-			y: null,
-		};
-		var min_distance = {
-			x: null,
-			y: null,
-		};
-		//x
-		for(var i in snap_positions.x){
-			var distance = Math.abs(config.layer.x + config.layer.width - snap_positions.x[i]);
-			if(distance < max_distance && (distance < min_distance.x || min_distance.x === null)){
-				min_distance.x = distance;
-				min_value.x = snap_positions.x[i];
-			}
-		}
-		//y
-		for(var i in snap_positions.y){
-			var distance = Math.abs(config.layer.y + config.layer.height - snap_positions.y[i]);
-			if(distance < max_distance && (distance < min_distance.y || min_distance.y === null)){
-				min_distance.y = distance;
-				min_value.y = snap_positions.y[i];
-			}
-		}
-
-		//apply snap
-		var success = false;
-
-		//x
-		if(min_value.x != null) {
-			snap_position.width = Math.round(min_value.x - config.layer.x);
-			success = true;
-			this.snap_line_info.x = {
-				start_x: min_value.x,
-				start_y: 0,
-				end_x: min_value.x,
-				end_y: config.HEIGHT
-			};
-		}
-		else{
-			this.snap_line_info.x = null;
-		}
-		//y
-		if(min_value.y != null) {
-			snap_position.height = Math.round(min_value.y - config.layer.y);
 			success = true;
 			this.snap_line_info.y = {
 				start_x: 0,

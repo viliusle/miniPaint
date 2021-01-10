@@ -13,6 +13,7 @@ class Line_class extends Base_tools_class {
 		this.layer = {};
 		this.best_ratio = 1;
 		this.snap_line_info = {x: null, y: null};
+		this.mouse_click = {x: null, y: null};
 	}
 
 	load() {
@@ -24,19 +25,22 @@ class Line_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
-		var x_pos = mouse.x;
-		var y_pos = mouse.y;
+		var mouse_x = mouse.x;
+		var mouse_y = mouse.y;
 
 		//apply snap
-		var snap_info = this.calc_snap_initial(e, x_pos, y_pos);
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y);
 		if(snap_info != null){
 			if(snap_info.x != null) {
-				x_pos = snap_info.x;
+				mouse_x = snap_info.x;
 			}
 			if(snap_info.y != null) {
-				y_pos = snap_info.y;
+				mouse_y = snap_info.y;
 			}
 		}
+
+		this.mouse_click.x = mouse_x;
+		this.mouse_click.y = mouse_y;
 
 		//register new object - current layer is not ours or params changed
 		this.layer = {
@@ -44,8 +48,8 @@ class Line_class extends Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: x_pos,
-			y: y_pos,
+			x: mouse_x,
+			y: mouse_y,
 			rotate: null,
 			is_vector: true,
 			color: config.COLOR
@@ -65,8 +69,24 @@ class Line_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(this.mouse_click.x);
+		var click_y = Math.round(this.mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+
+		var width = mouse_x - this.layer.x;
+		var height = mouse_y - this.layer.y;
 		if (e.ctrlKey == true || e.metaKey) {
 			//one direction only
 			if (Math.abs(width) < Math.abs(height))
@@ -79,17 +99,6 @@ class Line_class extends Base_tools_class {
 		config.layer.width = width;
 		config.layer.height = height;
 
-		//apply snap
-		var snap_info = this.calc_snap_end(e);
-		if(snap_info != null){
-			if(snap_info.width != null) {
-				config.layer.width = snap_info.width;
-			}
-			if(snap_info.height != null) {
-				config.layer.height = snap_info.height;
-			}
-		}
-
 		this.Base_layers.render();
 	}
 
@@ -100,8 +109,26 @@ class Line_class extends Base_tools_class {
 			return;
 		}
 
-		var width = mouse.x - this.layer.x;
-		var height = mouse.y - this.layer.y;
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(this.mouse_click.x);
+		var click_y = Math.round(this.mouse_click.y);
+
+		//apply snap
+		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				mouse_x = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				mouse_y = snap_info.y;
+			}
+		}
+		this.snap_line_info = {x: null, y: null};
+
+
+		var width = mouse_x - this.layer.x;
+		var height = mouse_y - this.layer.y;
 
 		if (width == 0 && height == 0) {
 			//same coordinates - cancel
@@ -116,18 +143,6 @@ class Line_class extends Base_tools_class {
 			else
 				height = 0;
 		}
-
-		//apply snap
-		var snap_info = this.calc_snap_end(e);
-		if(snap_info != null){
-			if(snap_info.width != null) {
-				width = snap_info.width;
-			}
-			if(snap_info.height != null) {
-				height = snap_info.height;
-			}
-		}
-		this.snap_line_info = {x: null, y: null};
 
 		//more data
 		app.State.do_action(
