@@ -7,6 +7,7 @@ import Helper_class from './../../libs/helpers.js';
 import Clipboard_class from './../../libs/clipboard.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import EXIF from './../../../../node_modules/exif-js/exif.js';
+import GUI_tools_class from "../../core/gui/gui-tools";
 
 var instance = null;
 
@@ -29,6 +30,7 @@ class File_open_class {
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
+		this.GUI_tools = new GUI_tools_class();
 
 		//clipboard class
 		this.Clipboard_class = new Clipboard_class(function (data, w, h) {
@@ -556,6 +558,10 @@ class File_open_class {
 			exif_data.general['Last modified'] = this.Helper.format_time(object.lastModified);
 
 		return exif_data;
+	}
+
+	search(){
+		this.GUI_tools.activate_tool('media');
 	}
 }
 

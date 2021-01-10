@@ -46,7 +46,7 @@ const menuDefinition = [
 			{
 				name: 'Search Images',
 				ellipsis: true,
-				target: 'file/search.search'
+				target: 'file/open.search'
 			},
 			{
 				divider: true
