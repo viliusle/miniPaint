@@ -12,6 +12,7 @@ class Parallelogram_class extends Base_tools_class {
 		this.name = 'parallelogram';
 		this.layer = {};
 		this.best_ratio = 2;
+		this.snap_line_info = {x: null, y: null};
 		this.coords = [
 			[25, 0],
 			[100, 0],
@@ -35,6 +36,11 @@ class Parallelogram_class extends Base_tools_class {
 
 	mouseup(e) {
 		this.shape_mouseup(e);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
 	}
 
 	demo(ctx, x, y, width, height) {

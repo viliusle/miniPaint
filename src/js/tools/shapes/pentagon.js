@@ -12,6 +12,7 @@ class Pentagon_class extends Base_tools_class {
 		this.name = 'pentagon';
 		this.layer = {};
 		this.best_ratio = 1.051;
+		this.snap_line_info = {x: null, y: null};
 		this.coords = [
 			[100.40599536364314, 38.90073974812779],
 			[81.15261837150108, 98.1565411518722],
@@ -37,6 +38,11 @@ class Pentagon_class extends Base_tools_class {
 
 	mouseup(e) {
 		this.shape_mouseup(e);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
 	}
 
 	demo(ctx, x, y, width, height) {

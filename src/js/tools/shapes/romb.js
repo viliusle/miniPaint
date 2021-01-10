@@ -12,6 +12,7 @@ class Romb_class extends Base_tools_class {
 		this.name = 'romb';
 		this.layer = {};
 		this.best_ratio = 0.8;
+		this.snap_line_info = {x: null, y: null};
 		this.coords_demo = [
 			[50, 0],
 			[80, 50],
@@ -42,6 +43,11 @@ class Romb_class extends Base_tools_class {
 
 	mouseup(e) {
 		this.shape_mouseup(e);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
 	}
 
 	demo(ctx, x, y, width, height) {

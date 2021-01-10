@@ -54,7 +54,7 @@ class Media_class extends Base_tools_class {
 
 		var settings = {
 			title: 'Search',
-			comment: 'Source: <a class="text_muted" href="https://pixabay.com/">pixabay.com</a>.',
+			//comment: 'Source: <a class="text_muted" href="https://pixabay.com/">pixabay.com</a>.',
 			className: 'wide',
 			params: [
 				{name: "query", title: "Keyword:", value: query},

@@ -73,10 +73,8 @@ config.TOOLS = [
 	{
 		name: 'select',
 		title: 'Select object tool',
-		on_update: 'on_params_update',
 		attributes: {
 			auto_select: true,
-			auto_snap: true,
 		},
 	},
 	{

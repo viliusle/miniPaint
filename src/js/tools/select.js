@@ -21,7 +21,6 @@ class Select_tool_class extends Base_tools_class {
 		this.keyboard_move_start_position = null;
 		this.moving = false;
 		this.resizing = false;
-		this.ctrl_pressed = false;
 		this.snap_line_info = {x: null, y: null};
 
 		var sel_config = {
@@ -34,13 +33,6 @@ class Select_tool_class extends Base_tools_class {
 			},
 		};
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
-	}
-
-	on_params_update() {
-		var params = this.getParams();
-		if (params.auto_snap == true && config.SNAP == false) {
-			alertify.error('Snap is disabled on settings.');
-		}
 	}
 
 	load() {
@@ -264,27 +256,7 @@ class Select_tool_class extends Base_tools_class {
 		if (mouse.is_drag == false)
 			return;
 
-		//x
-		if(this.snap_line_info.x !== null) {
-			this.Helper.draw_special_line(
-				ctx,
-				this.snap_line_info.x.start_x,
-				this.snap_line_info.x.start_y,
-				this.snap_line_info.x.end_x,
-				this.snap_line_info.x.end_y
-			);
-		}
-
-		//y
-		if(this.snap_line_info.y !== null) {
-			this.Helper.draw_special_line(
-				ctx,
-				this.snap_line_info.y.start_x,
-				this.snap_line_info.y.start_y,
-				this.snap_line_info.y.end_x,
-				this.snap_line_info.y.end_y
-			);
-		}
+		this.render_overlay_parent(ctx);
 	}
 
 	/**
@@ -299,7 +271,7 @@ class Select_tool_class extends Base_tools_class {
 		var snap_position = { x: null, y: null };
 		var params = this.getParams();
 
-		if(config.SNAP === false || params.auto_snap !== true || event.ctrlKey == true || event.metaKey == true){
+		if(config.SNAP === false || event.shiftKey == true){
 			this.snap_line_info = {x: null, y: null};
 			return null;
 		}
@@ -309,51 +281,7 @@ class Select_tool_class extends Base_tools_class {
 		var max_distance = (config.WIDTH + config.HEIGHT) / 2 * sensitivity / config.ZOOM;
 
 		//collect snap positions
-		var snap_positions = {
-			x: [
-				0,
-				config.WIDTH/2,
-				config.WIDTH,
-			],
-			y: [
-				0,
-				config.HEIGHT/2,
-				config.HEIGHT,
-			],
-		};
-		for(var i in config.layers){
-			if(config.layer.id == config.layers[i].id || config.layers[i].visible == false
-				|| config.layers[i].x === null || config.layers[i].y === null
-				|| config.layers[i].width === null || config.layers[i].height === null){
-				continue;
-			}
-
-			//x
-			var x = config.layers[i].x;
-			if(x > 0 && x < config.WIDTH)
-				snap_positions.x.push(x);
-
-			var x = config.layers[i].x + config.layers[i].width/2;
-			if(x > 0 && x < config.WIDTH)
-				snap_positions.x.push(x);
-
-			var x = config.layers[i].x + config.layers[i].width;
-			if(x > 0 && x < config.WIDTH)
-				snap_positions.x.push(x);
-
-			//y
-			var y = config.layers[i].y;
-			if(y > 0 && y < config.HEIGHT)
-				snap_positions.y.push(y);
-
-			var y = config.layers[i].y + config.layers[i].height/2;
-			if(y > 0 && y < config.HEIGHT)
-				snap_positions.y.push(y);
-
-			var y = config.layers[i].y + config.layers[i].height;
-			if(y > 0 && y < config.HEIGHT)
-				snap_positions.y.push(y);
-		}
+		var snap_positions = this.get_snap_positions(config.layer.id);
 
 		//find closest snap positions
 		var min_group = {

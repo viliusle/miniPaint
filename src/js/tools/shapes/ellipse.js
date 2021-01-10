@@ -11,6 +11,8 @@ class Ellipse_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'ellipse';
 		this.layer = {};
+		this.best_ratio = 1;
+		this.snap_line_info = {x: null, y: null};
 	}
 
 	load() {
@@ -23,14 +25,28 @@ class Ellipse_class extends Base_tools_class {
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
 
+		var x_pos = mouse.x;
+		var y_pos = mouse.y;
+
+		//apply snap
+		var snap_info = this.calc_snap_initial(e, x_pos, y_pos);
+		if(snap_info != null){
+			if(snap_info.x != null) {
+				x_pos = snap_info.x;
+			}
+			if(snap_info.y != null) {
+				y_pos = snap_info.y;
+			}
+		}
+
 		//register new object - current layer is not ours or params changed
 		this.layer = {
 			type: this.name,
 			params: this.clone(this.getParams()),
 			render_function: [this.name, 'render'],
 			status: 'draft',
-			x: mouse.x,
-			y: mouse.y,
+			x: x_pos,
+			y: y_pos,
 			is_vector: true,
 			color: null,
 			data: {
@@ -76,6 +92,18 @@ class Ellipse_class extends Base_tools_class {
 		config.layer.y = this.layer.data.center_y - height;
 		config.layer.width = width * 2;
 		config.layer.height = height * 2;
+
+		//apply snap
+		var snap_info = this.calc_snap_end(e);
+		if(snap_info != null){
+			if(snap_info.width != null) {
+				config.layer.width = snap_info.width;
+			}
+			if(snap_info.height != null) {
+				config.layer.height = snap_info.height;
+			}
+		}
+
 		this.Base_layers.render();
 	}
 
@@ -106,17 +134,40 @@ class Ellipse_class extends Base_tools_class {
 			return;
 		}
 
+		var new_x = Math.round(this.layer.data.center_x - width);
+		var new_y = Math.round(this.layer.data.center_y - height);
+
+		//apply snap
+		var snap_info = this.calc_snap_end(e);
+		if(snap_info != null){
+			if(snap_info.width != null) {
+				width = snap_info.width / 2;
+			}
+			if(snap_info.height != null) {
+				height = snap_info.height / 2;
+			}
+		}
+		this.snap_line_info = {x: null, y: null};
+
+		width =  width * 2;
+		height = height * 2;
+
 		//more data
 		app.State.do_action(
 			new app.Actions.Update_layer_action(config.layer.id, {
-				x: this.layer.data.center_x - width,
-				y: this.layer.data.center_y - height,
-				width: width * 2,
-				height: height * 2,
+				x: new_x,
+				y: new_y,
+				width: width,
+				height: height,
 				status: null
 			}),
 			{ merge_with_history: 'new_ellipse_layer' }
 		);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
 	}
 
 	demo(ctx, x, y, width, height) {

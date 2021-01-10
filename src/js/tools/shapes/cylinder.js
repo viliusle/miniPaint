@@ -12,6 +12,7 @@ class Cylinder_class extends Base_tools_class {
 		this.name = 'cylinder';
 		this.layer = {};
 		this.best_ratio = 0.7;
+		this.snap_line_info = {x: null, y: null};
 	}
 
 	load() {
@@ -28,6 +29,11 @@ class Cylinder_class extends Base_tools_class {
 
 	mouseup(e) {
 		this.shape_mouseup(e);
+	}
+
+	render_overlay(ctx){
+		var ctx = this.Base_layers.ctx;
+		this.render_overlay_parent(ctx);
 	}
 
 	demo(ctx, x, y, width, height) {

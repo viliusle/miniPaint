@@ -110,14 +110,6 @@ class Base_gui_class {
 		else{
 			config.SNAP = Boolean(snap_cookie);
 		}
-		if(config.SNAP == false){
-			//turn "select > snap" off
-			for(var i in config.TOOLS){
-				if(config.TOOLS[i].name == 'select'){
-					config.TOOLS[i].attributes.auto_snap = false;
-				}
-			}
-		}
 	}
 
 	render_main_gui() {
