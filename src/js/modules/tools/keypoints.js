@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
@@ -27,8 +28,6 @@ class Tools_keypoints_class {
 
 	//generate key points for image
 	keypoints(return_data) {
-		window.State.save();
-
 		var W = config.WIDTH;
 		var H = config.HEIGHT;
 
@@ -158,7 +157,11 @@ class Tools_keypoints_class {
 			params.y = parseInt(clone.dataset.y);
 			params.width = clone.width;
 			params.height = clone.height;
-			this.Base_layers.insert(params);
+			app.State.do_action(
+				new app.Actions.Bundle_action('keypoints', 'Key-Points', [
+					new app.Actions.Insert_layer_action(params)
+				])
+			);
 
 			clone.width = 1;
 			clone.height = 1;

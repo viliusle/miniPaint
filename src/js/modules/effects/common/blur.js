@@ -1,0 +1,58 @@
+import config from '../../../config.js';
+import Effects_common_class from '../abstract/css.js';
+import Dialog_class from '../../../libs/popup.js';
+
+class Effects_blur_class extends Effects_common_class {
+
+	constructor() {
+		super();
+		this.POP = new Dialog_class();
+	}
+
+	blur() {
+		var params = [
+			{name: "value", title: "Percentage:", value: 5, range: [0, 50]},
+		];
+		this.show_dialog('blur', params);
+	}
+
+	convert_value(value, params, type) {
+
+		//adapt size to real canvas dimensions
+		if (type == 'preview') {
+			var diff = (this.POP.width_mini / this.POP.height_mini) / (config.WIDTH / config.HEIGHT);
+
+			value = value * diff;
+		}
+
+		return (value * config.ZOOM) + 'px';
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//draw
+		var size = this.convert_value(5, null, 'preview');
+		ctx.filter = "blur("+size+")";
+		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.filter = 'none';
+	}
+
+	render_pre(ctx, data) {
+		var value = this.convert_value(data.params.value, data.params, 'save');
+		var filter = 'blur(' + value + ')';
+
+		if(ctx.filter == 'none')
+			ctx.filter = filter;
+		else
+			ctx.filter += ' ' + filter;
+	}
+
+	render_post(ctx, data){
+		ctx.filter = 'none';
+	}
+
+}
+
+export default Effects_blur_class;

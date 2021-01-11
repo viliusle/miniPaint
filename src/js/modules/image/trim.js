@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -25,24 +26,20 @@ class Image_trim_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 84) {
 				//trim
-				_this.trim();
+				this.trim();
 				event.preventDefault();
 			}
 		}, false);
 	}
 	
-	trim(){
-		var _this = this;
-		
+	trim() {
 		var removeWhiteColor = false;
 		if(config.TRANSPARENCY == false)
 			removeWhiteColor = true;
@@ -55,58 +52,64 @@ class Image_trim_class {
 				{}, //gap
 				{name: "remove_white", title: "Trim white color?", value: removeWhiteColor},
 			],
-			on_finish: function (params) {
-				window.State.save();
-				if(params.trim_layer == true)
-					_this.trim_layer(config.layer.id, params.remove_white);
-				if(params.trim_all == true)
-					_this.trim_all(params.remove_white);
+			on_finish: (params) => {
+				let actions = [];
+				if (params.trim_layer == true)
+					actions = actions.concat(this.trim_layer(config.layer.id, params.remove_white));
+				if (params.trim_all == true)
+					actions = actions.concat(this.trim_all(params.remove_white));
+				if (actions.length > 0) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
+					);
+				}
 			},
 		};
 		this.Dialog.show(settings);
 	}
 	
-	trim_layer(layer_id, removeWhiteColor = false){
+	trim_layer(layer_id, removeWhiteColor = false) {
 		var layer = this.Base_layers.get_layer(layer_id);
 		
-		if (config.layer.type != 'image') {
+		if (layer.type != 'image') {
 			alertify.error('Skip - layer must be image.');
 			return false;
 		}
 		
 		var trim = this.get_trim_info(layer_id, removeWhiteColor);
 		trim = trim.relative;
-		
-		if(layer.type == 'image'){
-			//if image was stretched
-			var width_ratio = (layer.width / layer.width_original);
-			var height_ratio = (layer.height / layer.height_original);
+	
+		//if image was stretched
+		var width_ratio = (layer.width / layer.width_original);
+		var height_ratio = (layer.height / layer.height_original);
 
-			//create smaller canvas
-			var canvas = document.createElement('canvas');
-			var ctx = canvas.getContext("2d");
-			canvas.width = trim.width / width_ratio;
-			canvas.height = trim.height / height_ratio;
+		//create smaller canvas
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext("2d");
+		canvas.width = trim.width / width_ratio;
+		canvas.height = trim.height / height_ratio;
 
-			//cut required part
-			ctx.translate(-trim.left / width_ratio, -trim.top / height_ratio);
-			canvas.getContext("2d").drawImage(layer.link, 0, 0);
-			ctx.translate(0, 0);
-			this.Base_layers.update_layer_image(canvas, layer.id);
+		//cut required part
+		ctx.translate(-trim.left / width_ratio, -trim.top / height_ratio);
+		canvas.getContext("2d").drawImage(layer.link, 0, 0);
+		ctx.translate(0, 0);
 
-			//update attributes
-			layer.width = Math.ceil(canvas.width * width_ratio);
-			layer.height = Math.ceil(canvas.height * height_ratio);
-			layer.x += trim.left;
-			layer.y += trim.top;
-			layer.width_original = canvas.width;
-			layer.height_original = canvas.height;
-		}
-		
-		config.need_render = true;
+		return [
+			new app.Actions.Update_layer_image_action(canvas, layer.id),
+			new app.Actions.Update_layer_action(layer.id, {
+				x: layer.x + trim.left,
+				y: layer.y + trim.top,
+				width: Math.ceil(canvas.width * width_ratio),
+				height: Math.ceil(canvas.height * height_ratio),
+				width_original: canvas.width,
+				height_original: canvas.height
+			})
+		];
 	}
 	
 	trim_all(removeWhiteColor = false) {
+		let actions = [];
+
 		var all_top = config.HEIGHT;
 		var all_left = config.WIDTH;
 		var all_bottom = config.HEIGHT;
@@ -120,12 +123,12 @@ class Image_trim_class {
 		}
 
 		//collect info
-		for (var i = 0; i < config.layers.length; i++) {
-			var layer = config.layers[i];
+		for (let i = 0; i < config.layers.length; i++) {
+			let layer = config.layers[i];
 			
-			if(layer.width == null || layer.height == null || layer.x == null || layer.y == null){
+			if (layer.width == null || layer.height == null || layer.x == null || layer.y == null) {
 				//layer without dimensions
-				var trim_info = this.get_trim_info(layer.id, removeWhiteColor);
+				const trim_info = this.get_trim_info(layer.id, removeWhiteColor);
 
 				all_top = Math.min(all_top, trim_info.top);
 				all_left = Math.min(all_left, trim_info.left);
@@ -141,25 +144,29 @@ class Image_trim_class {
 		}
 
 		//move every layer
-		for (var i = 0; i < config.layers.length; i++) {
-			var layer = config.layers[i];
+		for (let i = 0; i < config.layers.length; i++) {
+			let layer = config.layers[i];
 			if (layer.x == null || layer.y == null || layer.type == null)
 				continue;
 			
-			layer.x = layer.x - all_left;
-			layer.y = layer.y - all_top;
+			actions.push(
+				new app.Actions.Update_layer_action(layer.id, {
+					x: layer.x - all_left,
+					y: layer.y - all_top
+				})
+			);
 		}
 
 		//resize
-		config.WIDTH = config.WIDTH - all_left - all_right;
-		config.HEIGHT = config.HEIGHT - all_top - all_bottom;
-		if (config.WIDTH < 1)
-			config.WIDTH = 1;
-		if (config.HEIGHT < 1)
-			config.HEIGHT = 1;
-
-		this.Base_gui.prepare_canvas();
-		config.need_render = true;
+		actions.push(
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: Math.max(1, config.WIDTH - all_left - all_right),
+				HEIGHT: Math.max(1, config.HEIGHT - all_top - all_bottom)
+			}),
+			new app.Actions.Prepare_canvas_action('do')
+		);
+		return actions;
 	}
 	
 	/**

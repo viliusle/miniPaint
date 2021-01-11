@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -33,7 +34,6 @@ class Effects_oil_class {
 				canvas_preview.putImageData(data, 0, 0);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};
@@ -51,7 +51,9 @@ class Effects_oil_class {
 		ctx.putImageData(data, 0, 0);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(data, params) {
@@ -61,6 +63,21 @@ class Effects_oil_class {
 		var filtered = ImageFilters.Oil(data, param1, param2);
 
 		return filtered;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var img = ctx.getImageData(0, 0, canvas_thumb.width, canvas_thumb.height);
+		var params = {
+			param1: 2,
+			param2: 32,
+		}
+		var data = this.change(img, params);
+		ctx.putImageData(data, 0, 0);
 	}
 
 }

@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 
@@ -8,9 +9,9 @@ class Layer_clear_class {
 	}
 
 	clear() {
-		window.State.save();
-
-		this.Base_layers.layer_clear(config.layer.id);
+		return app.State.do_action(
+			new app.Actions.Clear_layer_action(config.layer.id)
+		);
 	}
 
 }

@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Base_gui_class from './../../core/base-gui.js';
@@ -7,6 +8,7 @@ import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Pica from './../../../../node_modules/pica/dist/pica.js';
 import Helper_class from './../../libs/helpers.js';
+import { metaDefaults as textMetaDefaults } from '../../tools/text.js';
 
 var instance = null;
 
@@ -31,16 +33,14 @@ class Image_resize_class {
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 82 && event.ctrlKey != true && event.metaKey != true) {
 				//R - resize
-				_this.resize();
+				this.resize();
 				event.preventDefault();
 			}
 		}, false);
@@ -59,7 +59,7 @@ class Image_resize_class {
 				{name: "mode", title: "Mode:", values: ["Lanczos", "Hermite", "Basic"]},
 
 				{name: "sharpen", title: "Sharpen:", value: false},
-				{name: "layers", title: "Layers:", values: ["Active", "All"], value: "Active"},
+				{name: "layers", title: "Layers:", values: ["All", "Active"], value: "All"},
 			],
 			on_finish: function (params) {
 				_this.do_resize(params);
@@ -68,97 +68,131 @@ class Image_resize_class {
 		this.POP.show(settings);
 	}
 
-	do_resize(params) {
+	async do_resize(params) {
 		//validate
-		if (isNaN(params.width) && isNaN(params.height) && isNaN(params.width_percent) && isNaN(params.height_percent)){
+		if (isNaN(params.width) && isNaN(params.height) && isNaN(params.width_percent) && isNaN(params.height_percent)) {
 			alertify.error('Missing at least 1 size parameter.');
 			return false;
 		}
-		if (params.width == config.WIDTH && params.height == config.HEIGHT){
+		if (params.layers == 'All' && params.width == config.WIDTH && params.height == config.HEIGHT) {
 			return false;
 		}
 		
-		window.State.save();
+		// Build a list of actions to execute for resize
+		let actions = [];
 		
 		if (params.layers == 'All') {
 			//resize all layers
 			var skips = 0;
 			for (var i in config.layers) {
-				var response = this.resize_layer(config.layers[i], params);
-				if(response === false){
+				try {
+					actions = actions.concat(await this.resize_layer(config.layers[i], params));
+				} catch (error) {
 					skips++;
 				}
 			}
 			if (skips > 0) {
 				alertify.error(skips + ' layer(s) were skipped.');
 			}
+			actions = actions.concat(this.resize_gui(params));
 		}
 		else {
 			//only active
-			this.resize_layer(config.layer, params);
+			actions = actions.concat(await this.resize_layer(config.layer, params));
 		}
+		return app.State.do_action(
+			new app.Actions.Bundle_action('resize_layers', 'Resize Layers', actions)
+		);
 	}
 
 	/**
-	 * it will try to resize layer (image, text, vector), returns false on failure.
+	 * Generates actions that will resize layer (image, text, vector), returns a promise that rejects on failure.
 	 * 
 	 * @param {object} layer
 	 * @param {object} params
-	 * @returns {undefined|Boolean}
+	 * @returns {Promise<object>} Returns array of actions to perform
 	 */
-	resize_layer(layer, params) {
+	async resize_layer(layer, params) {
 		var mode = params.mode;
 		var width = parseInt(params.width);
 		var height = parseInt(params.height);
 		var width_100 = parseInt(params.width_percent);
 		var height_100 = parseInt(params.height_percent);
+		var canvas_width = layer.width;
+		var canvas_height = layer.height;
 		var sharpen = params.sharpen;
 		var _this = this;
 
 		//if dimension with percent provided
 		if (isNaN(width) && isNaN(height)) {
 			if (isNaN(width_100) == false) {
-				width = Math.round(layer.width * width_100 / 100);
+				width = Math.round(config.WIDTH * width_100 / 100);
+				canvas_width = Math.round(config.WIDTH * width_100 / 100);
 			}
 			if (isNaN(height_100) == false) {
-				height = Math.round(layer.height * height_100 / 100);
+				height = Math.round(config.HEIGHT * height_100 / 100);
+				canvas_height = Math.round(config.HEIGHT * height_100 / 100);
 			}
 		}
 
 		//if only 1 dimension was provided
 		if (isNaN(width) || isNaN(height)) {
 			var ratio = layer.width / layer.height;
+			var canvas_ratio = config.WIDTH / config.HEIGHT;
 			if (isNaN(width))
 				width = Math.round(height * ratio);
+				canvas_width = Math.round(canvas_height * canvas_ratio);
 			if (isNaN(height))
 				height = Math.round(width / ratio);
+				canvas_height = Math.round(canvas_width / canvas_ratio);
 		}
+
+		let new_x = params.layers == 'All' ? Math.round(layer.x * width / config.WIDTH) : layer.x;
+		let new_y = params.layers == 'All' ? Math.round(layer.y * height / config.HEIGHT) : layer.y;
+		let xratio = width / config.WIDTH;
+		let yratio = height / config.HEIGHT;
 		
 		//is text
-		if(layer.type == 'text'){
-			var ratio = width / layer.width;
-			layer.width = width;
-			layer.height = height;
-			layer.params.size = Math.ceil(layer.params.size * ratio);
-			this.resize_gui();
-			config.need_render = true;
-			return true;
+		if (layer.type == 'text') {
+			let data = JSON.parse(JSON.stringify(layer.data));
+			for (let line of data) {
+				for (let span of line) {
+					span.meta.size = Math.ceil((span.meta.size || textMetaDefaults.size) * xratio);
+					span.meta.stroke_size = parseFloat((0.1 * Math.round((span.meta.stroke_size != null ? span.meta.stroke_size : textMetaDefaults.stroke_size) * xratio / 0.1)).toFixed(1));
+					span.meta.kerning = Math.ceil((span.meta.kerning || textMetaDefaults.kerning) * xratio);
+				}
+			}
+
+			// Return actions
+			return [
+				new app.Actions.Update_layer_action(layer.id, {
+					x: new_x, 
+					y: new_y,
+					data,
+					width: layer.width * xratio,
+					height: layer.height * yratio
+				})
+			];
 		}
 		
 		//is vector
-		if(layer.is_vector == true && layer.width != null && layer.height != null){
-			layer.width = width;
-			layer.height = height;
-			this.resize_gui();
-			config.need_render = true;
-			return true;
+		else if (layer.is_vector == true && layer.width != null && layer.height != null) {
+			// Return actions
+			return [
+				new app.Actions.Update_layer_action(layer.id, {
+					x: new_x, 
+					y: new_y,
+					width: layer.width * xratio,
+					height: layer.height * yratio
+				})
+			];
 		}
 		
 		//only images supported at this point
-		if (layer.type != 'image') {
+		else if (layer.type != 'image') {
 			//error - no support
 			alertify.error('Layer must be vector or image (convert it to raster).');
-			return false;
+			throw new Error('Layer is not compatible with resize');
 		}
 		
 		//get canvas from layer
@@ -179,19 +213,15 @@ class Image_resize_class {
 			tmp_data.width = width;
 			tmp_data.height = height;
 			
-			this.pica.resize(canvas, tmp_data, {
+			await this.pica.resize(canvas, tmp_data, {
 				alpha: true,
 			})
-			.then(function(result) {
+			.then((result) => {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				canvas.width = width;
 				canvas.height = height;
-			
 				ctx.drawImage(tmp_data, 0, 0, width, height);
-				
-				finish_resize();
 			});
-			return;
 		}
 		else if (mode == "Hermite") {
 			//Hermite resample
@@ -211,48 +241,59 @@ class Image_resize_class {
 			ctx.drawImage(tmp_data, 0, 0, width, height);
 		}
 
-		finish_resize();
-	
-		//private finish action
-		function finish_resize(){
-			if (sharpen == true) {
-				var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				var filtered = _this.ImageFilters.Sharpen(imageData, 1);	//add effect
-				ctx.putImageData(filtered, 0, 0);
-			}
-
-			//save
-			_this.Base_layers.update_layer_image(canvas, layer.id);
-			layer.width = canvas.width;
-			layer.height = canvas.height;
-			layer.width_original = canvas.width;
-			layer.height_original = canvas.height;
-			config.need_render = true;
-			
-			_this.resize_gui();
+		if (sharpen == true) {
+			var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+			var filtered = _this.ImageFilters.Sharpen(imageData, 1);	//add effect
+			ctx.putImageData(filtered, 0, 0);
 		}
+
+		// Return actions
+		return [
+			new app.Actions.Update_layer_image_action(canvas, layer.id),
+			new app.Actions.Update_layer_action(layer.id, {
+				x: new_x, 
+				y: new_y,
+				width: canvas.width,
+				height: canvas.height,
+				width_original: canvas.width,
+				height_original: canvas.height
+			})
+		];
 	}
 	
-	resize_gui() {
-		var max_x = 0;
-		var max_y = 0;
-		
-		for (var i = 0; i < config.layers.length; i++) {
-			var layer = config.layers[i];
-			
-			if(layer.width == null || layer.height == null || layer.x == null || layer.y == null){
-				//layer without dimensions
-				continue;
-			}
+	resize_gui(params) {
+		var width = parseInt(params.width);
+		var height = parseInt(params.height);
+		var width_100 = parseInt(params.width_percent);
+		var height_100 = parseInt(params.height_percent);
 
-			max_x = Math.max(max_x, layer.x + layer.width);
-			max_y = Math.max(max_y, layer.y + layer.height);
+		//if dimension with percent provided
+		if (isNaN(width) && isNaN(height)) {
+			if (isNaN(width_100) == false) {
+				width = Math.round(config.WIDTH * width_100 / 100);
+			}
+			if (isNaN(height_100) == false) {
+				height = Math.round(config.HEIGHT * height_100 / 100);
+			}
 		}
-		
-		config.WIDTH = parseInt(max_x);
-		config.HEIGHT = parseInt(max_y);
-		this.Base_gui.prepare_canvas();
-		config.need_render = true;
+
+		//if only 1 dimension was provided
+		if (isNaN(width) || isNaN(height)) {
+			var ratio = config.WIDTH / config.HEIGHT;
+			if (isNaN(width))
+				width = Math.round(height * ratio);
+			if (isNaN(height))
+				height = Math.round(width / ratio);
+		}
+
+		return [
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: parseInt(width),
+				HEIGHT: parseInt(height)
+			}),
+			new app.Actions.Prepare_canvas_action('do')
+		];
 	}
 
 }

@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -46,7 +47,6 @@ class Tools_contentFill_class {
 				{name: "clone_count", title: "Clone count:", value: 15, range: [10, 50]},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.apply_affect(params);
 			},
 		};
@@ -63,11 +63,17 @@ class Tools_contentFill_class {
 		this.change(canvas, params);
 
 		//save
-		config.layer.x = 0;
-		config.layer.y = 0;
-		config.layer.width = config.WIDTH;
-		config.layer.height = config.HEIGHT;
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Bundle_action('content_fill', 'Content Fill', [
+				new app.Actions.Update_layer_action(config.layer.id, {
+					x: 0,
+					y: 0,
+					width: config.WIDTH,
+					height: config.HEIGHT
+				}),
+				new app.Actions.Update_layer_image_action(canvas)
+			])
+		);
 	}
 
 	change(canvas, params) {

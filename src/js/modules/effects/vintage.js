@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -33,7 +34,6 @@ class Effects_vintage_class {
 				_this.change(canvas_, params);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};
@@ -49,13 +49,27 @@ class Effects_vintage_class {
 		this.change(canvas, params);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(canvas, params) {
 		var level = parseInt(params.level);
 
 		this.Vintage.apply_all(canvas, level);
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var params = {
+			level: 50,
+		};
+		this.change(canvas, params);
 	}
 
 }

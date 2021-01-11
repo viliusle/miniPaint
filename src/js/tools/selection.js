@@ -1,8 +1,10 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_selection_class from './../core/base-selection.js';
 import GUI_tools_class from './../core/gui/gui-tools.js';
+import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 var instance = null;
@@ -21,6 +23,7 @@ class Selection_class extends Base_tools_class {
 		var _this = this;
 
 		this.Base_layers = new Base_layers_class();
+		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'selection';
 		this.type = null;
@@ -42,29 +45,9 @@ class Selection_class extends Base_tools_class {
 				return _this.selection;
 			},
 		};
+		this.mousedown_selection = null;
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
 		this.GUI_tools = new GUI_tools_class();
-	}
-
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
 	}
 
 	load() {
@@ -92,40 +75,62 @@ class Selection_class extends Base_tools_class {
 			_this.dragEnd(event);
 		});
 
-		document.addEventListener('keydown', function (e) {
+		document.addEventListener('keydown', (e) => {
 			var code = e.keyCode;
-			if (e.target.type == 'text' || e.target.tagName == 'INPUT' || e.target.type == 'textarea')
+			if (this.Helper.is_input(e.target))
 				return;
 
 			if (code == 27) {
 				//escape
-				_this.on_leave();
+				app.State.do_action(new app.Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave()));
 			}
 			if (code == 46) {
 				//delete
-				if (config.TOOL.name == _this.name) {
-					window.State.save();
-					_this.delete_selection();
+				if (config.TOOL.name == this.name) {
+					this.delete_selection();
 				}
 			}
 			if (code == 65 && (e.ctrlKey == true || e.metaKey)) {
 				//A
 				e.preventDefault();
-				_this.select_all();
+				this.select_all();
 			}
 		}, false);
+	}
+
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousedown(event);
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mousemove(event);
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		_this.mouseup(event);
 	}
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		var layer = config.layer;
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (this.Base_selection.is_drag == false || mouse.valid == false || mouse.click_valid == false)
 			return;
 
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
+
+		this.mousedown_selection = JSON.parse(JSON.stringify(this.selection));
 
 		if (this.selection.width != null && this.selection.height != null
 			&& mouse.x > this.selection.x
@@ -146,11 +151,6 @@ class Selection_class extends Base_tools_class {
 			}
 		}
 		else {
-			//save last translation?
-			if (this.selection.width != null && this.selection.height != null) {
-				this.save_translate();
-			}
-
 			//create new selection
 			this.selection = {
 				x: mouse.x,
@@ -165,7 +165,7 @@ class Selection_class extends Base_tools_class {
 
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false)
+		if (this.Base_selection.is_drag == false || mouse.is_drag == false)
 			return;
 		if (e.type == 'mousedown' && (mouse.valid == false || mouse.click_valid == false) || config.layer.type != 'image') {
 			return;
@@ -179,38 +179,19 @@ class Selection_class extends Base_tools_class {
 			this.selection.height = mouse.y - mouse.click_y;
 			config.need_render = true;
 		}
-		else {
-			//move selection
-			var selection = this.selection;
-			var layer = config.layer;
-			var x = this.selection.x + (mouse.x - mouse.last_x);
-			var y = this.selection.y + (mouse.y - mouse.last_y);
-			var width = Math.ceil(selection.width);
-			var height = Math.ceil(selection.height);
-			var from_x = this.selection_coords_from.x;
-			var from_y = this.selection_coords_from.y;
-
-			this.Base_selection.set_selection(x, y, null, null);
-
-			//move data
-			this.tmpCanvasCtx.clearRect(0, 0, layer.width, layer.height);
-			this.tmpCanvasCtx.drawImage(layer.link, 0, 0, layer.width, layer.height);
-			this.tmpCanvasCtx.clearRect(from_x - layer.x, from_y - layer.y, selection.width, selection.height);
-			this.tmpCanvasCtx.drawImage(layer.link,
-				Math.round(from_x - layer.x), Math.round(from_y - layer.y), width, height,
-				Math.round(selection.x - layer.x), Math.round(selection.y - layer.y), width, height
-				);
-
-			//draw draft preview
-			config.need_render = true;
-		}
 	}
 
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
 
+		if (!this.Base_selection.is_drag) {
+			return;
+		}
 		if ((e.type == 'mousedown' && mouse.click_valid == false) || config.layer.type != 'image') {
 			return;
+		}
+		if (this.type === 'move') {
+			return; // Translate appears to not work at the moment
 		}
 
 		var width = mouse.x - this.selection.x;
@@ -218,7 +199,9 @@ class Selection_class extends Base_tools_class {
 
 		if (width == 0 || height == 0) {
 			//cancel selection
-			this.on_leave();
+			app.State.do_action(
+				new app.Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave())
+			);
 			return;
 		}
 
@@ -241,7 +224,9 @@ class Selection_class extends Base_tools_class {
 				width: Math.abs(details.width),
 				height: Math.abs(details.height),
 			};
-			config.need_render = true;
+			app.State.do_action(
+				new app.Actions.Set_selection_action(this.selection.x, this.selection.y, this.selection.width, this.selection.height, this.mousedown_selection)
+			);
 		}
 	}
 
@@ -250,17 +235,19 @@ class Selection_class extends Base_tools_class {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
-		if (config.TOOL.name != 'selection') {
-			this.GUI_tools.activate_tool(this.name);
-		}
+		let actions = [];
 
-		this.selection = {
-			x: 0,
-			y: 0,
-			width: config.WIDTH,
-			height: config.HEIGHT,
-		};
-		config.need_render = true;
+		if (config.TOOL.name != this.name) {
+			actions.push(
+				new app.Actions.Activate_tool_action(this.name)
+			);
+		}
+		actions.push(
+			new app.Actions.Set_selection_action(0, 0, config.WIDTH, config.HEIGHT, this.selection)
+		);
+		app.State.do_action(
+			new app.Actions.Bundle_action('select_all', 'Select All', actions)
+		);
 	}
 
 	render(ctx, layer) {
@@ -272,7 +259,11 @@ class Selection_class extends Base_tools_class {
 			return;
 
 		delete config.layer.link_canvas;
-		this.Base_layers.update_layer_image(this.tmpCanvas);
+		app.State.do_action(
+			new app.Actions.Bundle_action('selection_tool', 'Selection Tool', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas)
+			])
+		);
 
 		this.reset_tmp_canvas();
 		config.need_render = true;
@@ -306,16 +297,14 @@ class Selection_class extends Base_tools_class {
 		//do erase
 		this.tmpCanvasCtx.clearRect(mouse_x, mouse_y, selection.width, selection.height);
 
-		this.Base_layers.update_layer_image(this.tmpCanvas);
-		this.selection = {
-			x: null,
-			y: null,
-			width: null,
-			height: null,
-		};
-		this.Base_selection.reset_selection();
-		this.reset_tmp_canvas();
+		app.State.do_action(
+			new app.Actions.Bundle_action('delete_selection', 'Delete Selection', [
+				new app.Actions.Update_layer_image_action(this.tmpCanvas),
+				new app.Actions.Reset_selection_action(this.selection)
+			])
+		);
 
+		this.reset_tmp_canvas();
 		delete config.layer.link_canvas;
 		this.reset_tmp_canvas();
 	}
@@ -329,19 +318,18 @@ class Selection_class extends Base_tools_class {
 	}
 
 	on_leave() {
-		this.selection = {
-			x: null,
-			y: null,
-			width: null,
-			height: null,
-		};
-		this.Base_selection.reset_selection();
+		let actions = [
+			new app.Actions.Reset_selection_action(this.selection)
+		];
 		delete config.layer.link_canvas;
 		this.reset_tmp_canvas();
+		return actions;
 	}
 
 	clear_selection() {
-		this.on_leave();
+		app.State.do_action(
+			new app.Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave())
+		);
 	}
 
 	reset_tmp_canvas() {

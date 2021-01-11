@@ -3,12 +3,35 @@ import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_layers_class from './../../core/base-layers.js';
 
+var instance = null;
+
 class Image_information_class {
 
 	constructor() {
+		//singleton
+		if (instance) {
+			return instance;
+		}
+		instance = this;
+
 		this.Base_layers = new Base_layers_class();
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
+
+		this.set_events();
+	}
+
+	set_events() {
+		document.addEventListener('keydown', (event) => {
+			var code = event.key.toLowerCase();
+			if (this.Helper.is_input(event.target))
+				return;
+
+			if (code == "i") {
+				this.information();
+				event.preventDefault();
+			}
+		}, false);
 	}
 
 	information() {

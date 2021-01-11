@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -11,32 +12,11 @@ class Effects_pencil_class {
 	}
 
 	pencil() {
-		var _this = this;
-
 		if (config.layer.type != 'image') {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
 			return;
 		}
 
-		var settings = {
-			title: 'Pencil',
-			preview: true,
-			effects: true,
-			params: [],
-			on_change: function (params, canvas_preview, w, h, canvas_) {
-				var data = _this.change(canvas_, canvas_.width, canvas_.height);
-				canvas_preview.clearRect(0, 0, canvas_.width, canvas_.height);
-				canvas_preview.drawImage(data, 0, 0);
-			},
-			on_finish: function (params) {
-				window.State.save();
-				_this.save(params);
-			},
-		};
-		this.POP.show(settings);
-	}
-
-	save(params) {
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");
@@ -47,7 +27,9 @@ class Effects_pencil_class {
 		ctx.drawImage(data, 0, 0);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(canvas, width, height) {
@@ -72,6 +54,18 @@ class Effects_pencil_class {
 		ctx2.filter = 'none';
 		
 		return canvas2;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//modify
+		var params = {};
+		var data = this.change(canvas_thumb, canvas_thumb.width, canvas_thumb.height);
+
+		//draw
+		ctx.drawImage(data, 0, 0);
 	}
 
 }
