@@ -56,6 +56,7 @@ class Layer_composition_class {
 				config.need_render = true;
 			},
 			on_finish: function (params) {
+				console.log(params)
 				config.layer.composition = initial_composition;
 				window.State.save();
 				if (params.composition == '-- Default --') {

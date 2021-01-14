@@ -45,6 +45,11 @@ config.TOOLS = [
 		on_activate: 'on_activate',
 	},
 	{
+		name: 'mask',
+		title: 'Clipping Mask',
+		on_activate: 'on_activate',
+	},
+	{
 		name: 'borders',
 		title: 'Border',
 		on_activate: 'on_activate',
