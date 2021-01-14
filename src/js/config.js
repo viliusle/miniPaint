@@ -50,6 +50,11 @@ config.TOOLS = [
 		on_activate: 'on_activate',
 	},
 	{
+		name: 'rotate',
+		title: 'Rotate',
+		on_activate: 'on_activate',
+	},
+	{
 		name: 'borders',
 		title: 'Border',
 		on_activate: 'on_activate',
