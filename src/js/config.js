@@ -40,6 +40,11 @@ config.TOOLS = [
 		on_leave: 'on_leave',
 	},
 	{
+		name: 'file_import',
+		title: 'Open File',
+		on_activate: 'on_activate',
+	},
+	{
 		name: 'borders',
 		title: 'Border',
 		on_activate: 'on_activate',
