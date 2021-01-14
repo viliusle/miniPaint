@@ -34,12 +34,6 @@ config.TOOLS = [
 		},
 	},
 	{
-		name: 'selection',
-		title: 'Selection',
-		attributes: {},
-		on_leave: 'on_leave',
-	},
-	{
 		name: 'file_import',
 		title: 'Open File',
 		on_activate: 'on_activate',
@@ -55,12 +49,25 @@ config.TOOLS = [
 		on_activate: 'on_activate',
 	},
 	{
-		name: 'borders',
-		title: 'Border',
-		on_activate: 'on_activate',
+		name: 'text',
+		title: 'Text',
+		attributes: {},
+	},
+	{
+		name: 'selection',
+		title: 'Selection',
+		attributes: {},
+		on_leave: 'on_leave',
+	},
+	{
+		name: 'erase',
+		title: 'Erase',
+		on_update: 'on_params_update',
 		attributes: {
-			size: 12
-		}
+			size: 30,
+			circle: true,
+			strict: true,
+		},
 	},
 	{
 		name: 'shadow_a',
@@ -72,6 +79,19 @@ config.TOOLS = [
 		title: 'Shadow B',
 		on_activate: 'on_activate',
 	},
+	{
+		name: 'borders',
+		title: 'Border',
+		on_activate: 'on_activate',
+		attributes: {
+			size: 12
+		}
+	},
+	{
+		name: 'undo',
+		title: 'Undo',
+		on_activate: 'on_activate',
+	}
 	// {
 	// 	name: 'brush',
 	// 	title: 'Brush',
@@ -80,15 +100,15 @@ config.TOOLS = [
 	// 		pressure: false,
 	// 	},
 	// },
-	{
-		name: 'pencil',
-		title: 'Pencil',
-		on_update: 'on_params_update',
-		attributes: {
-			antialiasing: true,
-			size: 2,
-		},
-	},
+	// {
+	// 	name: 'pencil',
+	// 	title: 'Pencil',
+	// 	on_update: 'on_params_update',
+	// 	attributes: {
+	// 		antialiasing: true,
+	// 		size: 2,
+	// 	},
+	// },
 	// {
 	// 	name: 'pick_color',
 	// 	title: 'Pick Color',
@@ -96,16 +116,6 @@ config.TOOLS = [
 	// 		global: false,
 	// 	},
 	// },
-	{
-		name: 'erase',
-		title: 'Erase',
-		on_update: 'on_params_update',
-		attributes: {
-			size: 30,
-			circle: true,
-			strict: true,
-		},
-	},
 	// {
 	// 	name: 'magic_wand',
 	// 	title: 'Magic Wand Tool',
@@ -154,19 +164,14 @@ config.TOOLS = [
 	// 		circle: false,
 	// 	},
 	// },
-	{
-		name: 'media',
-		title: 'Search Images',
-		on_activate: 'on_activate',
-		attributes: {
-			size: 30,
-		},
-	},
-	{
-		name: 'text',
-		title: 'Text',
-		attributes: {},
-	},
+	// {
+	// 	name: 'media',
+	// 	title: 'Search Images',
+	// 	on_activate: 'on_activate',
+	// 	attributes: {
+	// 		size: 30,
+	// 	},
+	// },
 	// {
 	// 	name: 'gradient',
 	// 	title: 'Gradient',
@@ -190,15 +195,15 @@ config.TOOLS = [
 	// 		},
 	// 	},
 	// },
-	{
-		name: 'crop',
-		title: 'Crop',
-		on_update: 'on_params_update',
-		on_leave: 'on_leave',
-		attributes: {
-			crop: true,
-		},
-	},
+	// {
+	// 	name: 'crop',
+	// 	title: 'Crop',
+	// 	on_update: 'on_params_update',
+	// 	on_leave: 'on_leave',
+	// 	attributes: {
+	// 		crop: true,
+	// 	},
+	// },
 	// {
 	// 	name: 'blur',
 	// 	title: 'Blur tool',
