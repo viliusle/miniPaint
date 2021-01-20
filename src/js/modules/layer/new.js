@@ -1,8 +1,10 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import GUI_tools_class from './../../core/gui/gui-tools.js';
 import Base_selection_class from './../../core/base-selection.js';
 import Selection_class from './../../tools/selection.js';
+import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Layer_new_class {
@@ -12,28 +14,28 @@ class Layer_new_class {
 		this.Selection = new Selection_class();
 		this.Base_selection = new Base_selection_class(this.Base_layers.ctx);
 		this.GUI_tools = new GUI_tools_class();
+		this.Helper = new Helper_class();
 
 		this.set_events();
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 78 && event.ctrlKey != true && event.metaKey != true) {
 				//N
-				_this.new();
+				this.new();
 			}
 		}, false);
 	}
 
-	new () {
-		window.State.save();
-		this.Base_layers.insert();
+	new() {
+		app.State.do_action(
+			new app.Actions.Insert_layer_action()
+		);
 	}
 
 	new_selection() {
@@ -49,8 +51,6 @@ class Layer_new_class {
 			return;
 		}
 
-		window.State.save();
-		
 		//if image was stretched
 		var width_ratio = (layer.width / layer.width_original);
 		var height_ratio = (layer.height / layer.height_original);
@@ -83,10 +83,13 @@ class Layer_new_class {
 			type: 'image',
 			data: canvas.toDataURL("image/png"),
 		};
-		this.Base_layers.insert(params, false);
-		
-		this.Selection.on_leave();
-		this.GUI_tools.activate_tool('select');
+		app.State.do_action(
+			new app.Actions.Bundle_action('new_layer', 'New Layer', [
+				new app.Actions.Insert_layer_action(params, false),
+				...this.Selection.on_leave(),
+				new app.Actions.Activate_tool_action('select')
+			])
+		);
 	}
 
 }

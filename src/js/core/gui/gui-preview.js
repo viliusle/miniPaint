@@ -40,6 +40,8 @@ class GUI_preview_class {
 		// preview mini window size on right sidebar
 		this.PREVIEW_SIZE = {w: 176, h: 100};
 
+		this.canvas_offset = {x: 0, y: 0};
+
 		this.zoom_data = {
 			x: 0,
 			y: 0,
@@ -65,11 +67,18 @@ class GUI_preview_class {
 
 	set_events() {
 		var _this = this;
+		var is_touch = false;
 
 		document.addEventListener('mousedown', function (e) {
 			_this.mouse_pressed = true;
 		}, false);
 		document.addEventListener('mouseup', function (e) {
+			_this.mouse_pressed = false;
+		}, false);
+		document.addEventListener('touchstart', function (e) {
+			_this.mouse_pressed = true;
+		}, false);
+		document.addEventListener('touchend', function (e) {
 			_this.mouse_pressed = false;
 		}, false);
 		document.getElementById('zoom_range').addEventListener('input', function (e) {
@@ -113,15 +122,36 @@ class GUI_preview_class {
 			config.need_render = true;
 		}, false);
 		document.getElementById("canvas_preview").addEventListener('mousedown', function (e) {
-			//change zoom offset
+			if(is_touch)
+				return;
 			_this.set_zoom_position(e);
 		}, false);
 		document.getElementById("canvas_preview").addEventListener('mousemove', function (e) {
-			//change zoom offset
+			if(is_touch)
+				return;
 			if (_this.mouse_pressed == false)
 				return;
 			_this.set_zoom_position(e);
 		}, false);
+
+		document.getElementById("canvas_preview").addEventListener('touchstart', function (e) {
+			is_touch = true;
+
+			//calc canvas position offset
+			var bodyRect = document.body.getBoundingClientRect();
+			var canvas_el = document.getElementById("canvas_preview").getBoundingClientRect();
+			_this.canvas_offset.x = canvas_el.left - bodyRect.left;
+			_this.canvas_offset.y = canvas_el.top - bodyRect.top;
+
+			//change zoom offset
+			_this.set_zoom_position(e);
+		});
+		document.getElementById("canvas_preview").addEventListener('touchmove', function (e) {
+			//change zoom offset
+			if (_this.mouse_pressed == false)
+				return;
+			_this.set_zoom_position(e);
+		});
 	}
 
 	prepare_canvas() {
@@ -271,14 +301,24 @@ class GUI_preview_class {
 		this.zoom_data.y = config.visible_height / 2;
 	}
 
-	set_zoom_position(e) {
+	set_zoom_position(event) {
+		var mouse_x = event.offsetX;
+		var mouse_y = event.offsetY;
+		if (event.changedTouches) {
+			//touch events
+			event = event.changedTouches[0];
+
+			mouse_x = event.pageX - this.canvas_offset.x;
+			mouse_y = event.pageY - this.canvas_offset.y;
+		}
+
 		var visible_w = config.visible_width / config.ZOOM;
 		var visible_h = config.visible_height / config.ZOOM;
 		var mini_w = this.PREVIEW_SIZE.w * visible_w / config.WIDTH;
 		var mini_h = this.PREVIEW_SIZE.h * visible_h / config.HEIGHT;
 
-		var change_x = (e.offsetX - mini_w / 2) / this.PREVIEW_SIZE.w * config.WIDTH;
-		var change_y = (e.offsetY - mini_h / 2) / this.PREVIEW_SIZE.h * config.HEIGHT;
+		var change_x = (mouse_x - mini_w / 2) / this.PREVIEW_SIZE.w * config.WIDTH;
+		var change_y = (mouse_y - mini_h / 2) / this.PREVIEW_SIZE.h * config.HEIGHT;
 
 		var zoom_data = this.zoom_data;
 		zoom_data.move_pos = {};

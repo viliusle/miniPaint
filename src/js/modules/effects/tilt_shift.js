@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -57,7 +58,6 @@ class Effects_tiltShift_class {
 				canvas_preview.stroke();
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};
@@ -73,7 +73,9 @@ class Effects_tiltShift_class {
 		this.change(canvas, params);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(canvas, params) {
@@ -116,6 +118,25 @@ class Effects_tiltShift_class {
 		var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		var data = ImageFilters.Sharpen(data, param8);
 		ctx.putImageData(data, 0, 0);
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(canvas_thumb, 0, 0);
+
+		//now update
+		var params = {
+			param7: 3,
+			param8: 1,
+			param1: 10,
+			param2: 70,
+			param3: 0,
+			param4: 50,
+			param5: 100,
+			param6: 50,
+		}
+		var data = this.change(canvas, params);
 	}
 
 }

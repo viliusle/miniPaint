@@ -36,13 +36,14 @@ class Borders_class extends Base_tools_class {
 		//set styles
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = size;
+		ctx.lineJoin = "miter";
 
 		if (params.shadow === true) {
 			//with shadow
 			ctx.beginPath();
 			ctx.shadowColor = layer.color;
 			ctx.shadowBlur = size * config.ZOOM;
-			ctx.rect(x -size / 2, y -size / 2, width + size, height + size);
+			ctx.rect(x - (size / 2), y - (size / 2), width + size, height + size);
 			ctx.stroke();
 			ctx.stroke();
 			ctx.stroke();

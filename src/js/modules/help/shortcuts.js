@@ -13,6 +13,7 @@ class Help_shortcuts_class {
 			params: [
 				{title: "F9", value: 'Quick Save'},
 				{title: "F10", value: 'Quick Load'},
+				{title: "O", value: 'Open'},
 				{title: "S", value: 'Save'},
 				{title: "T", value: 'Trim'},
 				{title: "F", value: 'Auto Adjust Colors'},
@@ -20,6 +21,7 @@ class Help_shortcuts_class {
 				{title: "L", value: 'Rotate left'},
 				{title: "N", value: 'New layer'},
 				{title: "R", value: 'Resize'},
+				{title: "I", value: 'Information'},
 				{title: "Scroll up", value: 'Zoom in'},
 				{title: "Scroll down", value: 'Zoom out'},
 				{title: "CTRL + Z", value: 'Undo'},

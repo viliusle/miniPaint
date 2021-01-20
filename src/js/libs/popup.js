@@ -39,7 +39,6 @@
  * - function	function			'custom_function'
  */
 import './../../css/popup.css';
-import app_config from './../config.js';
 import Base_layers_class from './../core/base-layers.js';
 import Base_gui_class from './../core/base-gui.js';
 import Help_translate_class from './../modules/help/translate.js';
@@ -80,7 +79,6 @@ class Dialog_class {
 		this.onchange = false;
 		this.width_mini = 225;
 		this.height_mini = 200;
-		this.effects = false;
 		this.id = 0;
 		this.parameters = [];
 		this.Base_layers = new Base_layers_class();
@@ -89,9 +87,9 @@ class Dialog_class {
 		this.last_params_hash = '';
 		this.layer_active_small = document.createElement("canvas");
 		this.layer_active_small_ctx = this.layer_active_small.getContext("2d");
-		this.ef_index = null; //current effect list key
-		this.ef_prev_index = null;
-		this.ef_next_index = null;
+		this.caller = null;
+		this.resize_clicked = {x: null, y: null}
+		this.element_offset = {x: null, y: null}
 
 		this.set_events();
 	}
@@ -114,9 +112,13 @@ class Dialog_class {
 		this.preview = config.preview || false;
 		this.onchange = config.on_change || false;
 		this.onload = config.on_load || false;
-		this.effects = config.effects || false;
 		this.className = config.className || '';
 		this.comment = config.comment || '';
+
+		//reset position
+		var target = document.querySelector('#popup');
+		target.style.top = null;
+		target.style.left = null;
 
 		this.show_action();
 	}
@@ -139,7 +141,6 @@ class Dialog_class {
 		this.preview = false;
 		this.onload = false;
 		this.onchange = false;
-		this.effects = false;
 		this.title = null;
 		this.className = '';
 		this.comment = '';
@@ -153,12 +154,50 @@ class Dialog_class {
 		var _this = this;
 
 		document.addEventListener('keydown', function (event) {
-			var code = event.keyCode;
+			var code = event.code;
 
-			if (code == 27) {
+			if (code == "Escape") {
 				//escape
 				_this.hide(false);
 			}
+		}, false);
+
+		//register events
+		document.addEventListener('mousedown', function (event) {
+			if(event.target != document.querySelector('#popup h2'))
+				return;
+			event.preventDefault();
+			_this.resize_clicked.x = event.pageX;
+			_this.resize_clicked.y = event.pageY;
+
+			var target = document.querySelector('#popup');
+			_this.element_offset.x = target.offsetLeft;
+			_this.element_offset.y = target.offsetTop;
+		}, false);
+
+		document.addEventListener('mousemove', function (event) {
+			if(_this.resize_clicked.x != null){
+				var dx = _this.resize_clicked.x - event.pageX;
+				var dy = _this.resize_clicked.y - event.pageY;
+
+				var target = document.querySelector('#popup');
+				target.style.left = (_this.element_offset.x - dx) + "px";
+				target.style.top = (_this.element_offset.y - dy) + "px";
+			}
+		}, false);
+
+		document.addEventListener('mouseup', function (event) {
+			if(event.target != document.querySelector('#popup h2'))
+				return;
+			event.preventDefault();
+			_this.resize_clicked.x = null;
+			_this.resize_clicked.y = null;
+		}, false);
+
+		window.addEventListener('resize', function (event) {
+			var target = document.querySelector('#popup');
+			target.style.top = null;
+			target.style.left = null;
 		}, false);
 	}
 
@@ -166,7 +205,7 @@ class Dialog_class {
 		var params = this.get_params();
 
 		var hash = JSON.stringify(params);
-		if (this.last_params_hash == hash) {
+		if (this.last_params_hash == hash && this.onchange == false) {
 			//nothing changed
 			return;
 		}
@@ -249,16 +288,14 @@ class Dialog_class {
 		for (var i = 0; i < selects.length; i++) {
 			if (selects[i].id.substr(0, 9) == 'pop_data_') {
 				var key = selects[i].id.substr(9);
-				var value = selects[i].value;
-				response[key] = value;
+				response[key] = selects[i].value;
 			}
 		}
 		var textareas = document.getElementsByTagName('textarea');
 		for (var i = 0; i < textareas.length; i++) {
 			if (textareas[i].id.substr(0, 9) == 'pop_data_') {
 				var key = textareas[i].id.substr(9);
-				var value = textareas[i].value;
-				response[key] = value;
+				response[key] = textareas[i].value;
 			}
 		}
 
@@ -278,18 +315,21 @@ class Dialog_class {
 		this.active = true;
 
 		//build content
-		var html_pretitle_area = this.render_effect_browser();
+		var html_pretitle_area = '';
 		var html_preview_content = '';
 		var html_params = '';
 
 
 		//preview area
 		if (this.preview !== false) {
-			html_preview_content += '<div style="margin-top:10px;margin-bottom:15px;">';
-			html_preview_content += '<canvas style="position:relative;float:left;margin:0 5px 5px 0;border:1px solid #393939;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_pre"></canvas>';
-			html_preview_content += '<div id="canvas_preview_container">';
-			html_preview_content += '	<canvas style="position:absolute;border:1px solid #393939;background-color:#ffffff;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
-			html_preview_content += '	<canvas style="position:relative;border:1px solid #393939;" width="' + this.width_mini + '" height="' + this.height_mini + '" id="pop_post"></canvas>';
+			html_preview_content += '<div class="preview_container">';
+			html_preview_content += '<canvas class="preview_canvas_left" width="' + this.width_mini + '" height="'
+				+ this.height_mini + '" id="pop_pre"></canvas>';
+			html_preview_content += '<div class="canvas_preview_container">';
+			html_preview_content += '	<canvas class="preview_canvas_post_back" width="' + this.width_mini
+				+ '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
+			html_preview_content += '	<canvas class="preview_canvas_post" width="' + this.width_mini + '" height="'
+				+ this.height_mini + '" id="pop_post"></canvas>';
 			html_preview_content += '</div>';
 			html_preview_content += '</div>';
 		}
@@ -337,9 +377,6 @@ class Dialog_class {
 			this.onload(params);
 		}
 
-		//some events for effects browser
-		this.add_effects_browser_events();
-
 		//load preview
 		if (this.preview !== false) {
 			//get canvas from layer
@@ -379,11 +416,13 @@ class Dialog_class {
 		}
 
 		//call translation again to translate popup
-		this.Help_translate.translate(app_config.LANG);
+		var lang = this.Base_gui.get_language();
+		this.Help_translate.translate(lang);
 	}
 
 	generateParamsHtml() {
-		var html = '<table style="width:99%;">';
+		var html = '<table>';
+		var title = null;
 		for (var i in this.parameters) {
 			var parameter = this.parameters[i];
 
@@ -394,7 +433,8 @@ class Dialog_class {
 				if (parameter.values != undefined) {
 					if (parameter.values.length > 10 || parameter.type == 'select') {
 						//drop down
-						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" style="font-size:12px;" id="pop_data_' + parameter.name + '">';
+						html += '<td colspan="2"><select onchange="POP.onChangeEvent();" id="pop_data_' + parameter.name
+							+ '">';
 						var k = 0;
 						for (var j in parameter.values) {
 							var sel = '';
@@ -402,14 +442,15 @@ class Dialog_class {
 								sel = 'selected="selected"';
 							if (parameter.value == undefined && k == 0)
 								sel = 'selected="selected"';
-							html += '<option ' + sel + ' name="' + parameter.values[j] + '">' + parameter.values[j] + '</option>';
+							html += '<option ' + sel + ' name="' + parameter.values[j] + '">' + parameter.values[j]
+								+ '</option>';
 							k++;
 						}
 						html += '</select></td>';
 					}
 					else {
 						//radio
-						html += '<td colspan="2">';
+						html += '<td class="radios" colspan="2">';
 						if (parameter.values.length > 2)
 							html += '<div class="group">';
 						var k = 0;
@@ -426,8 +467,11 @@ class Dialog_class {
 								title = parts[0] + ' - <span class="trn">' + parts[1] + '</span>';
 							}
 
-							html += '<input type="radio" onchange="POP.onChangeEvent();" ' + ch + ' name="' + parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="' + parameter.values[j] + '">';
-							html += '<label style="margin-right:20px;" class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title + '</label>';
+							html += '<input type="radio" onchange="POP.onChangeEvent();" ' + ch + ' name="'
+								+ parameter.name + '" id="pop_data_' + parameter.name + "_poptmp" + j + '" value="'
+								+ parameter.values[j] + '">';
+							html += '<label class="trn" for="pop_data_' + parameter.name + "_poptmp" + j + '">' + title
+								+ '</label>';
 							if (parameter.values.length > 2)
 								html += '<br />';
 							k++;
@@ -444,34 +488,46 @@ class Dialog_class {
 						step = parameter.step;
 					if (parameter.range != undefined) {
 						//range
-						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="' + parameter.range[1] + '" step="' + step + '" oninput="document.getElementById(\'pv' + i + '\').innerHTML=Math.round(this.value*100)/100;POP.preview_handler();" onchange="POP.onChangeEvent();" /></td>';
-						html += '<td style="padding-left:10px;width:50px;" id="pv' + i + '">' + parameter.value + '</td>';
+						html += '<td><input type="range" name="' + parameter.name + '" id="pop_data_' + parameter.name
+							+ '" value="' + parameter.value + '" min="' + parameter.range[0] + '" max="'
+							+ parameter.range[1] + '" step="' + step
+							+ '" oninput="document.getElementById(\'pv' + i + '\').innerHTML = '
+							+ 'Math.round(this.value*100) / 100;POP.preview_handler();" '
+							+'onchange="POP.onChangeEvent();" /></td>';
+						html += '<td class="range_value" id="pv' + i + '">' + parameter.value + '</td>';
 					}
 					else if (parameter.type == 'color') {
 						//color
-						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value + '" onchange="POP.onChangeEvent();" /></td>';
+						html += '<td><input type="color" id="pop_data_' + parameter.name + '" value="' + parameter.value
+							+ '" onchange="POP.onChangeEvent();" /></td>';
 					}
 					else if (typeof parameter.value == 'boolean') {
 						var checked = '';
 						if (parameter.value === true)
 							checked = 'checked';
-						html += '<td class="checkbox"><input type="checkbox" id="pop_data_' + parameter.name + '" ' + checked + ' onclick="POP.onChangeEvent();" > <label class="trn" for="pop_data_' + parameter.name + '">Toggle</label></td>';
+						html += '<td class="checkbox"><input type="checkbox" id="pop_data_' + parameter.name + '" '
+							+ checked + ' onclick="POP.onChangeEvent();" > <label class="trn" for="pop_data_'
+							+ parameter.name + '">Toggle</label></td>';
 					}
 					else {
 						//input or textarea
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
 						if (parameter.type == 'textarea') {
-							html += '<td><textarea rows="10" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
+							html += '<td><textarea rows="10" id="pop_data_' + parameter.name
+								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">'
+								+ parameter.value + '</textarea></td>';
 						}
 						else {
 							var input_type = "text";
-							if (parameter.placeholder != undefined && parameter.placeholder != '' && !isNaN(parameter.placeholder))
+							if (parameter.placeholder != '' && !isNaN(parameter.placeholder))
 								input_type = 'number';
 							if (parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 
-							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name + '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="' + parameter.placeholder + '" /></td>';
+							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name
+								+ '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="'
+								+ parameter.placeholder + '" /></td>';
 						}
 					}
 				}
@@ -484,11 +540,11 @@ class Dialog_class {
 			}
 			else if (parameter.html != undefined) {
 				//html
-				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2">' + parameter.html + '</td>';
+				html += '<td class="html_value" colspan="2">' + parameter.html + '</td>';
 			}
 			else if (parameter.title == undefined) {
 				//gap
-				html += '<td style="padding-bottom:3px;padding-top:3px;" colspan="2"></td>';
+				html += '<td colspan="2"></td>';
 			}
 			else {
 				//locked fields without name
@@ -496,9 +552,11 @@ class Dialog_class {
 				var id_tmp = parameter.title.toLowerCase().replace(/[^\w]+/g, '').replace(/ +/g, '-');
 				id_tmp = id_tmp.substring(0, 10);
 				if (str.length < 40)
-					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '" style="padding: 2px 0px;">' + parameter.value + '</div></td>';
+					html += '<td colspan="2"><div class="trn" id="pop_data_' + id_tmp + '">' + parameter.value
+						+ '</div></td>';
 				else
-					html += '<td style="font-size:11px;" colspan="2"><textarea disabled="disabled">' + parameter.value + '</textarea></td>';
+					html += '<td class="long_text_value" colspan="2"><textarea disabled="disabled">' + parameter.value
+						+ '</textarea></td>';
 			}
 			html += '</tr>';
 		}
@@ -567,7 +625,9 @@ class Dialog_class {
 	}
 
 	draw_background(canvas, W, H, gap, force) {
-		if (app_config.TRANSPARENCY == false && force == undefined) {
+		var transparent = this.Base_gui.get_transparency_support();
+
+		if (transparent == false && force == undefined) {
 			canvas.beginPath();
 			canvas.rect(0, 0, W, H);
 			canvas.fillStyle = "#ffffff";
@@ -594,114 +654,6 @@ class Dialog_class {
 		}
 	}
 
-	ucfirst(string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	}
-
-	get_effects_list() {
-		var list = [];
-
-		for (var i in this.Base_gui.modules) {
-			if (i.indexOf("effects") == -1 || i.indexOf("abstract") > -1)
-				continue;
-
-			list[i] = this.Base_gui.modules[i];
-		}
-
-		return list;
-	}
-
-	render_effect_browser() {
-		if (this.effects == false)
-			return '';
-
-		var html = '';
-		var filters_config = this.get_effects_list();
-		var breaking = false;
-		this.ef_index = null;
-		this.ef_next_index = null;
-		this.ef_prev_index = null;
-		for (var key in filters_config) {
-			if (breaking == true) {
-				this.ef_next_index = key;
-				break;
-			}
-			var title = this.get_filter_title(key);
-			if (title.toLowerCase() == this.title.toLowerCase()) {
-				this.ef_index = key;
-				breaking = true;
-				continue;
-			}
-			this.ef_prev_index = key;
-		}
-
-		html += '<span style="float:right;">';
-		html += '<input id="previous_filter" type="button" value="&lt;"> ';
-		html += '<select id="effect_browser">';
-		html += '<option class="trn" value="">--- Select effect ---</option>';
-		for (var key in filters_config) {
-			var title = this.get_filter_title(key);
-			title = this.ucfirst(title);
-			var selected = '';
-			if (title.toLowerCase() == this.title.toLowerCase())
-				var selected = 'selected';
-			html += ' <option ' + selected + ' value="' + key + '">' + title + '</option>';
-		}
-		html += '</select>';
-		html += ' <input id="next_filter" onclick="" type="button" value="&gt;"> ';
-		html += '</span>';
-
-		return html;
-	}
-
-	add_effects_browser_events() {
-		if (this.effects == false)
-			return;
-
-		var _this = this;
-		var filters_config = this.get_effects_list();
-		var prev_index = this.ef_prev_index;
-		var next_index = this.ef_next_index;
-
-		document.getElementById('previous_filter').disabled = false;
-		document.getElementById('next_filter').disabled = false;
-		if (prev_index == null) {
-			document.getElementById('previous_filter').disabled = true;
-		}
-		if (next_index == null) {
-			document.getElementById('next_filter').disabled = true;
-		}
-		//previous
-		document.getElementById('previous_filter').addEventListener('click', function (event) {
-			_this.hide(false);
-			var function_name = prev_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[prev_index][function_name]();
-		});
-		//next
-		document.getElementById('next_filter').addEventListener('click', function (event) {
-			_this.hide(false);
-			var function_name = next_index.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[next_index][function_name]();
-		});
-		//onchange
-		var effect_browser = document.getElementById('effect_browser');
-		effect_browser.addEventListener('change', function (event) {
-			_this.hide(false);
-			var value = effect_browser.options[effect_browser.selectedIndex].value;
-			var function_name = value.toLowerCase().replace(/ /g, '_').replace('effects/', '');
-			filters_config[value][function_name]();
-		});
-	}
-
-	get_filter_title(key) {
-		var title = key.replace('effects/', '').replace(/_/g, ' ');
-
-		//exceptions
-		if (title == 'negative')
-			title = 'invert';
-
-		return title;
-	}
 }
 
 export default Dialog_class;

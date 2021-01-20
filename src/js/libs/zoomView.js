@@ -7,7 +7,7 @@ const zoomView = (() => {
 	var im = invMatrix; // alias
 	var scale = 1;   // current scale
 	const bounds = {
-		topLeft: 0,
+		top: 0,
 		left: 0,
 		right: 200,
 		bottom: 200,
@@ -35,6 +35,15 @@ const zoomView = (() => {
 				this.update();
 			}
 			ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+		},
+		getPosition() {
+			return { x: pos.x, y: pos.y };
+		},
+		getContext() {
+			return ctx;
+		},
+		getBounds() {
+			return bounds;
 		},
 		getScale() {
 			return scale;

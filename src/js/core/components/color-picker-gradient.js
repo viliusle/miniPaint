@@ -60,6 +60,7 @@ var Helper = new Helper_class();
     };
 
     const on_mouse_down_secondary_pick = (event) => {
+        event.preventDefault();
         const $el = $(event.target.closest('.ui_color_picker_gradient'));
         const { secondaryPick, secondaryPickHandle, hsv } = $el.data();
         const clientX = event.touches && event.touches.length > 0 ? event.touches[0].clientX : event.clientX;
@@ -140,6 +141,7 @@ var Helper = new Helper_class();
 
                 const id = definition.id != null ? definition.id : el.getAttribute('id'); 
                 const label = definition.label != null ? definition.label : el.getAttribute('aria-label');
+                const hsv = definition.hsv || { h: 0, s: 0, v: 0 };
 
                 $(el).after(template);
                 const oldEl = el;
@@ -178,8 +180,10 @@ var Helper = new Helper_class();
                     primaryRange: $primaryRange[0],
                     secondaryPick,
                     secondaryPickHandle: $el.find('.secondary_pick .handle')[0],
-                    hsv: { h: 0, s: 0, v: 0 }
+                    hsv
                 });
+
+                set_hsv($el, hsv);
 
                 $(secondaryPick).on('keydown', on_key_down_secondary_pick);
                 $(secondaryPick).on('mousedown touchstart', on_mouse_down_secondary_pick);

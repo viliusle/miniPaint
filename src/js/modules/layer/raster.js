@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
@@ -13,8 +14,6 @@ class Layer_raster_class {
 		var current_layer = config.layer;
 		var current_id = current_layer.id;
 
-		window.State.save();
-
 		//show
 		var params = {
 			type: 'image',
@@ -26,9 +25,12 @@ class Layer_raster_class {
 			height: canvas.height,
 			opacity: current_layer.opacity,
 		};
-		this.Base_layers.insert(params, false);
-		
-		this.Base_layers.delete(current_id);
+		app.State.do_action(
+			new app.Actions.Bundle_action('convert_to_raster', 'Convert to Raster', [
+				new app.Actions.Insert_layer_action(params, false),
+				new app.Actions.Delete_layer_action(current_id)
+			])
+		);
 	}
 
 }

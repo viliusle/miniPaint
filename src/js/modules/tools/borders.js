@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -26,7 +27,13 @@ class Tools_borders_class {
 				{name: "size", title: "Size:", value: "5", range: [1, 100]},
 			],
 			on_finish: function (params) {
-				var target = Math.min(config.WIDTH, config.HEIGHT);
+				var target;
+				if (config.layer) {
+					target = Math.min(config.layer.width, config.layer.height)
+				}
+				else {
+					var target = Math.min(config.WIDTH, config.HEIGHT);
+				}
 				params.size = Math.round(target / 100 * params.size);
 				_this.add_borders(params);
 			},
@@ -41,6 +48,7 @@ class Tools_borders_class {
 
 		ctx.save();
 		ctx.lineWidth = size;
+		ctx.lineJoin = "miter";
 		if (params.shadow === true) {
 			//with shadow
 			ctx.beginPath();
@@ -60,8 +68,6 @@ class Tools_borders_class {
 	}
 
 	add_borders(params) {
-		window.State.save();
-
 		//create borders layer
 		this.layer = {
 			name: 'Borders',
@@ -69,13 +75,17 @@ class Tools_borders_class {
 			render_function: ['borders', 'render'],
 			params: {size: params.size, shadow: params.shadow},
 			color: params.color,
-			x: 0,
-			y: 0,
-			width: config.WIDTH,
-			height: config.HEIGHT,
+			x: config.layer ? config.layer.x - params.size / 2 : 0,
+			y: config.layer ? config.layer.y - params.size / 2 : 0,
+			width: config.layer ? config.layer.width + params.size : config.WIDTH,
+			height: config.layer ? config.layer.height + params.size  : config.HEIGHT,
 			is_vector: true,
 		};
-		this.Base_layers.insert(this.layer);
+		app.State.do_action(
+			new app.Actions.Bundle_action('add_borders', 'Add Borders', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
 	}
 
 }

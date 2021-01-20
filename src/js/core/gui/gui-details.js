@@ -3,9 +3,11 @@
  * author: Vilius L.
  */
 
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Text_class from './../../tools/text.js';
+import Base_layers_class from "../base-layers";
 
 var template = `
 	<div class="row">
@@ -40,33 +42,66 @@ var template = `
 		<span class="trn label">Color:</span>
 		<input style="padding: 0px;" type="color" id="detail_color" />
 	</div>
-	<div id="params_details">
+	<div id="text_detail_params">
 		<hr />
 		<div class="row">
+			<span class="trn label">&nbsp;</span>
 			<button type="button" class="trn dots" id="detail_param_text">Edit text...</button>
-			<button type="button" class="trn dots" id="detail_param_bold">Bold</button>
-			<button type="button" class="trn dots" id="detail_param_italic">Italic</button>
-			<button type="button" class="trn dots" id="detail_param_stroke">Stroke</button>
 		</div>
 		<div class="row">
-			<span class="trn label">Size:</span>
-			<input type="number" min="1" id="detail_param_size" />
-		</div>
-		<div class="row">
-			<span class="trn label">Align:</span>
-			<select id="detail_param_align">
-				<option value="Left">Left</option>
-				<option value="Center">Center</option>
-				<option value="Right">Right</option>
+			<span class="trn label" title="Resize Boundary">Bounds:</span>
+			<select id="detail_param_boundary">
+				<option value="box">Box</option>
+				<option value="dynamic">Dynamic</option>
 			</select>
 		</div>
 		<div class="row">
-			<span class="trn label">Font:</span>
-			<select id="detail_param_family"></select>
+			<span class="trn label" title="Auto Kerning">Kerning:</span>
+			<select id="detail_param_kerning">
+				<option value="none">None</option>
+				<option value="metrics">Metrics</option>
+			</select>
+		</div>
+		<div class="row" hidden> <!-- Future implementation -->
+			<span class="trn label">Direction:</span>
+			<select id="detail_param_text_direction">
+				<option value="ltr">Left to Right</option>
+				<option value="rtl">Right to Left</option>
+				<option value="ttb">Top to Bottom</option>
+				<option value="btt">Bottom to Top</option>
+			</select>
+		</div>
+		<div class="row" hidden> <!-- Future implementation -->
+			<span class="trn label">Wrap:</span>
+			<select id="detail_param_wrap_direction">
+				<option value="ltr">Left to Right</option>
+				<option value="rtl">Right to Left</option>
+				<option value="ttb">Top to Bottom</option>
+				<option value="btt">Bottom to Top</option>
+			</select>
 		</div>
 		<div class="row">
-			<span class="trn label">Stroke:</span>
-			<input type="number" min="0" id="detail_param_stroke_size" />
+			<span class="trn label">Wrap At:</span>
+			<select id="detail_param_wrap">
+				<option value="letter">Word + Letter</option>
+				<option value="word">Word</option>
+			</select>
+		</div>
+		<div class="row">
+			<span class="trn label" title="Horizontal Alignment">H. Align:</span>
+			<select id="detail_param_halign">
+				<option value="left">Left</option>
+				<option value="center">Center</option>
+				<option value="right">Right</option>
+			</select>
+		</div>
+		<div class="row" hidden> <!-- Future implementation -->
+			<span class="trn label" title="Vertical Alignment">V. Align:</span>
+			<select id="detail_param_valign">
+				<option value="top">Top</option>
+				<option value="middle">Middle</option>
+				<option value="bottom">Bottom</option>
+			</select>
 		</div>
 	<div>
 `;
@@ -79,6 +114,7 @@ class GUI_details_class {
 	constructor() {
 		this.POP = new Dialog_class();
 		this.Text = new Text_class();
+		this.Base_layers = new Base_layers_class();
 	}
 
 	render_main_details() {
@@ -100,26 +136,34 @@ class GUI_details_class {
 
 		//text - special case
 		if (config.layer != undefined && config.layer.type == 'text') {
-			document.getElementById('params_details').style.display = 'block';
+			document.getElementById('text_detail_params').style.display = 'block';
+			document.getElementById('detail_color').closest('.row').style.display = 'none';
+		}
+		else if (config.layer != undefined && (config.layer.color === null || config.layer.type == 'image')) {
+			//hide color
+			document.getElementById('detail_color').closest('.row').style.display = 'none';
 		}
 		else {
-			document.getElementById('params_details').style.display = 'none';
+			document.getElementById('text_detail_params').style.display = 'none';
+			document.getElementById('detail_color').closest('.row').style.display = 'block';
 		}
 		this.render_text(events);
-		this.render_general_param('size', events);
-		this.render_general_param('bold', events);
-		this.render_general_param('italic', events);
-		this.render_general_param('stroke', events);
-		this.render_general_param('stroke_size', events);
-		this.render_general_select_param('align', events);
-		this.render_general_select_param('family', events);
+		this.render_general_select_param('boundary', events);
+		this.render_general_select_param('kerning', events);
+		this.render_general_select_param('text_direction', events);
+		this.render_general_select_param('wrap', events);
+		this.render_general_select_param('wrap_direction', events);
+		this.render_general_select_param('halign', events);
+		this.render_general_select_param('valign', events);
 	}
 
 	render_general(key, events) {
 		var layer = config.layer;
+		var _this = this;
 
 		if (layer != undefined) {
 			var target = document.getElementById('detail_' + key);
+			target.dataset.layer = layer.id;
 			if (layer[key] == null) {
 				target.value = '';
 				target.disabled = true;
@@ -137,6 +181,24 @@ class GUI_details_class {
 				console.log('Error: missing details event target ' + 'detail_' + key);
 				return;
 			}
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = parseInt(this.value);
+			});
+			target.addEventListener('blur', function (e) {
+				var value = parseInt(this.value);
+				var layer = _this.Base_layers.get_layer(e.target.dataset.layer);
+				layer[key] = focus_value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(layer.id, {
+								[key]: value
+							})
+						])
+					);
+				}
+			});
 			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
 				
@@ -204,17 +266,40 @@ class GUI_details_class {
 
 		if (events) {
 			//events
-			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
+			var target = document.getElementById('detail_param_' + key);
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = parseInt(this.value);
+			});
+			target.addEventListener('blur', function (e) {
+				var value = parseInt(this.value);
+				config.layer.params[key] = focus_value;
+				let params_copy = JSON.parse(JSON.stringify(config.layer.params));
+				params_copy[key] = value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								params: params_copy
+							})
+						])
+					);
+				}
+			});
+			target.addEventListener('change', function (e) {
 				var value = parseInt(this.value);
 				config.layer.params[key] = value;
 				config.need_render = true;
+				config.need_render_changed_params = true;
+
 			});
-			document.getElementById('detail_param_' + key).addEventListener('click', function (e) {
+			target.addEventListener('click', function (e) {
 				if (typeof config.layer.params[key] != 'boolean')
 					return;
 				this.classList.toggle('active');
 				config.layer.params[key] = !config.layer.params[key];
 				config.need_render = true;
+				config.need_render_changed_params = true;
 			});
 		}
 	}
@@ -240,10 +325,31 @@ class GUI_details_class {
 
 		if (events) {
 			//events
-			document.getElementById('detail_param_' + key).addEventListener('change', function (e) {
+			var target = document.getElementById('detail_param_' + key);
+			let focus_value = null;
+			target.addEventListener('focus', function (e) {
+				focus_value = this.value;
+			});
+			target.addEventListener('blur', function (e) {
+				var value = this.value;
+				config.layer.params[key] = focus_value;
+				let params_copy = JSON.parse(JSON.stringify(config.layer.params));
+				params_copy[key] = value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								params: params_copy
+							})
+						])
+					);
+				}
+			});
+			target.addEventListener('change', function (e) {
 				var value = this.value;
 				config.layer.params[key] = value;
 				config.need_render = true;
+				config.need_render_changed_params = true;
 			});
 		}
 	}
@@ -254,16 +360,35 @@ class GUI_details_class {
 	render_color(events) {
 		var layer = config.layer;
 
+		let $colorInput;
+		if (events) {
+			$colorInput = $(document.getElementById('detail_color')).uiColorInput();
+		} else {
+			$colorInput = $(document.getElementById('detail_color'));
+		}
+
 		if (layer != undefined) {
-			document.getElementById('detail_color').value = layer.color;
+			$colorInput.uiColorInput('set_value', layer.color);
 		}
 
 		if (events) {
 			//events
-			document.getElementById('detail_color').addEventListener('change', function (e) {
-				var value = this.value;
-				config.layer.color = value;
-				config.need_render = true;
+			let focus_value = null;
+			$colorInput.on('focus', function (e) {
+				focus_value = $colorInput.uiColorInput('get_value');
+			});
+			$colorInput.on('change', function (e) {
+				const value = $colorInput.uiColorInput('get_value');
+				config.layer.color = focus_value;
+				if (focus_value !== value) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								color: value
+							})
+						])
+					);
+				}
 			});
 		}
 	}
@@ -287,19 +412,38 @@ class GUI_details_class {
 		if (events) {
 			//events
 			document.getElementById('reset_x').addEventListener('click', function (e) {
-				if(config.layer.x != null)
-					config.layer.x = 0;
-				config.need_render = true;
+				if (config.layer.x) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								x: 0
+							})
+						])
+					);
+				}
 			});
 			document.getElementById('reset_y').addEventListener('click', function (e) {
-				if(config.layer.x != null)
-					config.layer.y = 0;
-				config.need_render = true;
+				if (config.layer.y) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								y: 0
+							})
+						])
+					);
+				}
 			});
 			document.getElementById('reset_size').addEventListener('click', function (e) {
-				config.layer.width = config.layer.width_original;
-				config.layer.height = config.layer.height_original;
-				config.need_render = true;
+				if (config.layer.width !== config.layer.width_original || config.layer.height !== config.layer.height_original) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								width: config.layer.width_original,
+								height: config.layer.height_original
+							})
+						])
+					);
+				}
 			});
 		}
 	}
@@ -308,34 +452,13 @@ class GUI_details_class {
 	 * item: text
 	 */
 	render_text(events) {
-		var _this = this;
-		var layer = config.layer;
-
 		if (events) {
 			//events
 			document.getElementById('detail_param_text').addEventListener('click', function (e) {
-				var settings = {
-					title: 'Edit text',
-					params: [
-						{name: "text", title: "Text:", value: config.layer.params.text || "", type: "textarea"},
-					],
-					on_finish: function (params) {
-						config.layer.params.text = params.text;
-						config.need_render = true;
-					},
-				};
-				_this.POP.show(settings);
+				document.querySelector('#tools_container #text').click();
+				document.getElementById('text_tool_keyboard_input').focus();
+				config.need_render = true;
 			});
-			
-			//also show font families
-			var families = this.Text.get_fonts();
-			var select = document.getElementById('detail_param_family');
-			for(var i in families){
-				var opt = document.createElement('option');
-				opt.value = families[i];
-				opt.innerHTML = families[i];
-				select.appendChild(opt);
-			}
 		}
 	}
 

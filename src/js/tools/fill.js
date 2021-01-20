@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -12,6 +13,7 @@ class Fill_class extends Base_tools_class {
 		this.Helper = new Helper_class();
 		this.ctx = ctx;
 		this.name = 'fill';
+		this.working = false;
 	}
 
 	dragStart(event) {
@@ -45,13 +47,15 @@ class Fill_class extends Base_tools_class {
 			return;
 		}
 
-		window.State.save();
-
 		this.fill(mouse);
 	}
 
-	fill(mouse) {
+	async fill(mouse) {
 		var params = this.getParams();
+
+		if(this.working == true){
+			return;
+		}
 
 		if (config.layer.type != 'image' && config.layer.type !== null) {
 			alertify.error('Layer must be image, convert it to raster to apply this tool.');
@@ -94,12 +98,17 @@ class Fill_class extends Base_tools_class {
 		color_to.a = config.ALPHA;
 
 		//change
+		this.working = true;
 		this.fill_general(ctx, config.WIDTH, config.HEIGHT,
 			mouse_x, mouse_y, color_to, params.power, params.anti_aliasing, params.contiguous);
 
 		if (config.layer.type != null) {
 			//update
-			this.Base_layers.update_layer_image(canvas);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
+					new app.Actions.Update_layer_image_action(canvas)
+				])
+			);
 		}
 		else {
 			//create new
@@ -111,8 +120,16 @@ class Fill_class extends Base_tools_class {
 			params.y = parseInt(canvas.dataset.y) || 0;
 			params.width = canvas.width;
 			params.height = canvas.height;
-			this.Base_layers.insert(params);
+			app.State.do_action(
+				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
+					new app.Actions.Insert_layer_action(params)
+				])
+			);
 		}
+
+		//prevent crash bug on touch screen - hard to explain and debug
+		await new Promise(r => setTimeout(r, 10));
+		this.working = false;
 	}
 
 	fill_general(context, W, H, x, y, color_to, sensitivity, anti_aliasing, contiguous = false) {

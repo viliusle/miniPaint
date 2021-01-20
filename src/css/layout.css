@@ -1,9 +1,13 @@
 .wrapper{
 	display: -ms-grid;
 	display: grid;
-	height: calc(100vh - 30px);
 	margin: 0;
-	position: relative;
+	position: fixed; /* dont change it, vh does not work on mobiles with bottom footer */
+	top: 30px;
+	right: 0;
+	left: 0;
+	bottom: 5px;
+	height: auto;
 	overflow: hidden;
 
 	-ms-grid-rows: auto 1fr;
@@ -21,6 +25,9 @@
 }
 .hidden{
 	display:none;
+}
+.center{
+	text-align: center;
 }
 .pointer{
 	cursor: pointer;
@@ -184,6 +191,8 @@ body .sp-preview{
 	margin-bottom: 5px;
 }
 .attributes{
+	display: flex;
+	flex-wrap: nowrap;
 	background-color: var(--area-background-color);
 	width: calc(100% - 125px);
 	margin-top: 5px;
@@ -196,28 +205,26 @@ body .sp-preview{
 	min-height: 30px;
 }
 .attributes .item{
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	margin-right: 20px;
+}
+.attributes .item > label {
+	margin: 0 .5rem 0 0;
 }
 .attributes input[type="number"]{
 	width: 60px;
 	margin-right: 5px;
 }
-.attributes button{
+.attributes input[type="color"] {
+	cursor: pointer;
+	padding: 0;
+	border: .2rem solid var(--input-background-color);
+	width: 3rem;
+}
+.attributes .item > button:not(.ui_icon_button){
 	display: inline-block;
 	padding: 3px 10px;
-	border: 1px solid var(--border-color);
-	background-color: var(--button-background-color);
-	margin-right: 5px;
-}
-.attributes button:hover{
-	background-color: rgba(255, 255, 255, 0.3);
-	background-color: var(--background-color-hover);
-}
-.attributes button.active{
-	background-color: #419147;
-	background-color: var(--background-color-active);
-	color: var(--text-color-active);
 }
 
 /* ========== left sidebar ================================================== */
@@ -277,12 +284,10 @@ body .sp-preview{
 .sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }
 .sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }
 .sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }
-.sidebar_left .magic_wand:after{ background-image: url('images/icons/magic_wand.svg'); }
+.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }
 .sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }
-.sidebar_left .line:after{ background-image: url('images/icons/line.svg'); }
-.sidebar_left .rectangle:after{ background-image: url('images/icons/rectangle.svg'); }
-.sidebar_left .circle:after{ background-image: url('images/icons/circle.svg'); }
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
+.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }
 .sidebar_left .text:after{
 	background-image: url('images/icons/text.svg');
 	background-size: 16px auto;
@@ -384,6 +389,17 @@ body .sp-preview{
 	cursor:pointer;
 	text-decoration:none;
 }
+.dup_layer{
+	display:inline-block;
+	padding:1px 8px;
+	background-color: #419147;
+	background-color: var(--background-color-active);
+	border:1px solid #444;
+	border-color: var(--border-color);
+	color: var(--text-color-active);
+	cursor:pointer;
+	text-decoration:none;
+}
 .layers_list .item{
 	margin-bottom:2px;
 }
@@ -470,7 +486,7 @@ body .sp-preview{
 	clear:both;
 	margin-bottom: 2px;
 }
-.block.details input{
+.block.details input[type="number"]{
 	width: 70px;
 	padding: 3px 5px;
 }
@@ -479,6 +495,7 @@ body .sp-preview{
 	height: 23px;
 }
 .block.details button{
+	width: calc(100% - 70px);
 	height: 23px;
 	border: 1px solid #444;
 }
@@ -510,10 +527,12 @@ body .sp-preview{
 		position: absolute;
 		height: 100%;
 		right: -210px;
+		background: var(--background);
 	}
 	.sidebar_right.active{
 		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 		right: 0;
+		margin-right: 0;
 	}
 }
 
@@ -533,8 +552,11 @@ body .sp-preview{
 }
 .canvas_wrapper canvas{
 	position: absolute;
-	border: 1px solid var(--border-color);
 	box-sizing: content-box;
+	font-kerning: normal !important;
+}
+.loaded .canvas_wrapper canvas{
+	border: 1px solid var(--border-color);
 }
 #mouse{
 	position:absolute;
@@ -608,10 +630,17 @@ canvas{
 .alertify-notifier{
 	color: black;
 }
+.effectsPreview{
+	cursor: pointer;
+	background-color: #ddd;
+}
 
 @media screen and (max-width:700px){
 	body{
 		padding-top:50px;
+	}
+	.wrapper{
+		top: 50px;
 	}
 }
 @media screen and (max-width:550px){
@@ -627,5 +656,29 @@ canvas{
 @media screen and (max-height:450px){
 	.sidebar_left{
 		width: 88px;
+	}
+}
+
+/* ========== dialogs ======================================================= */
+
+#dialog_color_picker_group {
+	width: 60%;
+}
+#dialog_color_channel_group {
+	width: 40%;
+	margin-left: 1rem;
+}
+
+@media screen and (max-width: 450px) {
+	#dialog_color_picker .ui_flex_group {
+		flex-wrap: wrap;
+	}
+	#dialog_color_picker_group {
+		width: 100%;
+	}
+	#dialog_color_channel_group {
+		width: 100%;
+		margin-left: 0;
+		margin-top: 1rem;
 	}
 }

@@ -14,11 +14,13 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'Open File',
-						shortcut: 'Drag&Drop',
+						shortcut: 'O/Drag&Drop',
+						ellipsis: true,
 						target: 'file/open.open_file'
 					},
 					{
 						name: 'Open Directory',
+						ellipsis: true,
 						target: 'file/open.open_dir'
 					},
 					{
@@ -27,10 +29,12 @@ const menuDefinition = [
 					},
 					{
 						name: 'Open URL',
+						ellipsis: true,
 						target: 'file/open.open_url'
 					},
 					{
 						name: 'Open Data URL',
+						ellipsis: true,
 						target: 'file/open.open_data_url'
 					},
 					{
@@ -42,7 +46,7 @@ const menuDefinition = [
 			{
 				name: 'Search Images',
 				ellipsis: true,
-				target: 'file/search.search'
+				target: 'file/open.search'
 			},
 			{
 				divider: true
@@ -84,7 +88,13 @@ const menuDefinition = [
 		children: [
 			{
 				name: 'Undo',
+				shortcut: 'Ctrl+Z',
 				target: 'edit/undo.undo'
+			},
+			{
+				name: 'Redo',
+				shortcut: 'Ctrl+Y',
+				target: 'edit/redo.redo'
 			},
 			{
 				divider: true
@@ -99,6 +109,11 @@ const menuDefinition = [
 				target: 'layer/new.new_selection'
 			},
 			{
+				name: 'Copy to Clipboard',
+				shortcut: 'Ctrl+C',
+				target: 'edit/copy.copy_to_clipboard'
+			},
+			{
 				name: 'Paste',
 				shortcut: 'Ctrl+V',
 				target: 'edit/paste.paste'
@@ -108,6 +123,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Select All',
+				shortcut: 'Ctrl+A',
 				target: 'edit/selection.select_all'
 			}
 		]
@@ -117,6 +133,7 @@ const menuDefinition = [
 		children: [
 			{
 				name: 'Information',
+				shortcut: 'I',
 				ellipsis: true,
 				target: 'image/information.information'
 			},
@@ -161,6 +178,7 @@ const menuDefinition = [
 			{
 				name: 'Resize',
 				ellipsis: true,
+				shortcut: 'R',
 				target: 'image/resize.resize'
 			},
 			{
@@ -201,6 +219,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Auto Adjust Colors',
+				shortcut: 'F',
 				target: 'image/auto_adjust.auto_adjust'
 			},
 			{
@@ -246,6 +265,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Duplicate',
+				shortcut: 'D',
 				target: 'layer/duplicate.duplicate'
 			},
 			{
@@ -311,53 +331,102 @@ const menuDefinition = [
 		name: 'Effects',
 		children: [
 			{
-				name: 'CSS Filters',
+				name: 'Effect browser',
+				ellipsis: true,
+				target: 'effects/browser.browser'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Common Filters',
 				children: [
 					{
 						name: 'Gaussian Blur',
 						ellipsis: true,
-						target: 'effects/blur.blur'
+						target: 'effects/common/blur.blur'
 					},
 					{
 						name: 'Brightness',
 						ellipsis: true,
-						target: 'effects/brightness.brightness'
+						target: 'effects/common/brightness.brightness'
 					},
 					{
 						name: 'Contrast',
 						ellipsis: true,
-						target: 'effects/contrast.contrast'
+						target: 'effects/common/contrast.contrast'
 					},
 					{
 						name: 'Grayscale',
 						ellipsis: true,
-						target: 'effects/grayscale.grayscale'
+						target: 'effects/common/grayscale.grayscale'
 					},
 					{
 						name: 'Hue Rotate',
 						ellipsis: true,
-						target: 'effects/hue_rotate.hue_rotate'
+						target: 'effects/common/hue-rotate.hue_rotate'
 					},
 					{
 						name: 'Negative',
 						ellipsis: true,
-						target: 'effects/invert.invert'
+						target: 'effects/common/invert.invert'
 					},
 					{
 						name: 'Saturate',
 						ellipsis: true,
-						target: 'effects/saturate.saturate'
+						target: 'effects/common/saturate.saturate'
 					},
 					{
 						name: 'Sepia',
 						ellipsis: true,
-						target: 'effects/sepia.sepia'
+						target: 'effects/common/sepia.sepia'
 					},
 					{
 						name: 'Shadow',
 						ellipsis: true,
-						target: 'effects/shadow.shadow'
+						target: 'effects/common/shadow.shadow'
 					},
+				]
+			},
+			{
+				name: 'Instagram Filters',
+				children: [
+					{
+						name: '1977',
+						target: 'effects/instagram/1977.1977'
+					},
+					{
+						name: 'Aden',
+						target: 'effects/instagram/aden.aden'
+					},
+					{
+						name: 'Clarendon',
+						target: 'effects/instagram/clarendon.clarendon'
+					},
+					{
+						name: 'Gingham',
+						target: 'effects/instagram/gingham.gingham'
+					},
+					{
+						name: 'Inkwell',
+						target: 'effects/instagram/inkwell.inkwell'
+					},
+					{
+						name: 'Lo-fi',
+						target: 'effects/instagram/lofi.lofi'
+					},
+					{
+						name: 'Toaster',
+						target: 'effects/instagram/toaster.toaster'
+					},
+					{
+						name: 'Valencia',
+						target: 'effects/instagram/valencia.valencia'
+					},
+					{
+						name: 'X-Pro II',
+						target: 'effects/instagram/xpro2.xpro2'
+					}
 				]
 			},
 			{
@@ -367,7 +436,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Blueprint',
-				ellipsis: true,
 				target: 'effects/blueprint.blueprint'
 			},
 			{
@@ -392,12 +460,10 @@ const menuDefinition = [
 			},
 			{
 				name: 'Edge',
-				ellipsis: true,
 				target: 'effects/edge.edge'
 			},
 			{
 				name: 'Emboss',
-				ellipsis: true,
 				target: 'effects/emboss.emboss'
 			},
 			{
@@ -412,7 +478,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Heatmap',
-				ellipsis: true,
 				target: 'effects/heatmap.heatmap'
 			},
 			{
@@ -422,7 +487,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Night Vision',
-				ellipsis: true,
 				target: 'effects/night_vision.night_vision'
 			},
 			{
@@ -432,7 +496,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Pencil',
-				ellipsis: true,
 				target: 'effects/pencil.pencil'
 			},
 			{
@@ -442,7 +505,6 @@ const menuDefinition = [
 			},
 			{
 				name: 'Solarize',
-				ellipsis: true,
 				target: 'effects/solarize.solarize'
 			},
 			{
@@ -495,11 +557,6 @@ const menuDefinition = [
 			},
 			{
 				divider: true
-			},
-			{
-				name: 'Color to Alpha',
-				ellipsis: true,
-				target: 'tools/color_to_alpha.color_to_alpha'
 			},
 			{
 				name: 'Color Zoom',

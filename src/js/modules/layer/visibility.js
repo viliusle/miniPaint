@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 
@@ -8,8 +9,9 @@ class Layer_visibility_class {
 	}
 
 	toggle() {
-		window.State.save();
-		this.Base_layers.toggle_visibility(config.layer.id);
+		app.State.do_action(
+			new app.Actions.Toggle_layer_visibility_action(config.layer.id)
+		);
 	}
 
 }

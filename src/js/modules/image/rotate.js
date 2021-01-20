@@ -2,7 +2,9 @@ import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Base_gui_class from './../../core/base-gui.js';
+import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import app from '../../app.js';
 
 var instance = null;
 
@@ -17,22 +19,21 @@ class Image_rotate_class {
 
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
+		this.Helper = new Helper_class();
 		this.Dialog = new Dialog_class();
 
 		this.set_events();
 	}
 
 	set_events() {
-		var _this = this;
-
-		document.addEventListener('keydown', function (event) {
+		document.addEventListener('keydown', (event) => {
 			var code = event.keyCode;
-			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
+			if (this.Helper.is_input(event.target))
 				return;
 
 			if (code == 76) {
 				//L - rotate left
-				_this.left();
+				this.left();
 				event.preventDefault();
 			}
 		}, false);
@@ -56,18 +57,21 @@ class Image_rotate_class {
 				{name: "right_angle", title: "Right angle:", values: angles},
 			],
 			on_change: function (params, canvas_preview, w, h) {
-				_this.rotate_handler(params, false);
+				_this.rotate_handler(params);
 			},
 			on_finish: function (params) {
 				config.layer.rotate = initial_angle;
-				window.State.save();
 				_this.rotate_handler(params);
+			},
+			on_cancel: function (params) {
+				config.layer.rotate = initial_angle;
+				config.need_render = true;
 			},
 		};
 		this.Dialog.show(settings);
 	}
 
-	rotate_handler(data, can_resize = true) {
+	rotate_handler(data, can_resize = false) {
 		var value = parseInt(data.rotate);
 		if (data.right_angle != 'Custom') {
 			value = parseInt(data.right_angle);
@@ -77,40 +81,65 @@ class Image_rotate_class {
 			value = 360 + value;
 		if (value >= 360)
 			value = value - 360;
-		config.layer.rotate = value;
+		let new_rotate = value;
 
 		if (can_resize == true) {
-			this.check_sizes();
+			app.State.do_action(
+				new app.Actions.Bundle_action('rotate_layer', 'Rotate Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						rotate: new_rotate
+					}),
+					...this.check_sizes(new_rotate)
+				])
+			);
+		} else {
+			config.layer.rotate = new_rotate;
+			config.need_render = true;
 		}
-		config.need_render = true;
 	}
 
 	left() {
-		config.layer.rotate -= 90;
-		if (config.layer.rotate < 0)
-			config.layer.rotate = 360 + config.layer.rotate;
+		let new_rotate = config.layer.rotate;
+		new_rotate -= 90;
+		if (new_rotate < 0)
+			new_rotate = 360 + new_rotate;
 
-		this.check_sizes();
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Bundle_action('rotate_layer', 'Rotate Layer', [
+				new app.Actions.Update_layer_action(config.layer.id, {
+					rotate: new_rotate
+				}),
+				...this.check_sizes(new_rotate)
+			])
+		);
 	}
 
 	right() {
-		config.layer.rotate += 90;
-		if (config.layer.rotate >= 360)
-			config.layer.rotate = config.layer.rotate - 360;
+		let new_rotate = config.layer.rotate;
+		new_rotate += 90;
+		if (new_rotate >= 360)
+			new_rotate = new_rotate - 360;
 
-		this.check_sizes();
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Bundle_action('rotate_layer', 'Rotate Layer', [
+				new app.Actions.Update_layer_action(config.layer.id, {
+					rotate: new_rotate
+				}),
+				...this.check_sizes(new_rotate)
+			])
+		);
 	}
 
 	/**
-	 * makes sure image fits all after rotation
+	 * Makes sure image fits all after rotation
+	 * @returns {array} actions to perform
 	 */
-	check_sizes() {
+	check_sizes(new_rotate) {
+		let actions = [];
 		var w = config.layer.width;
 		var h = config.layer.height;
 
-		var o = config.layer.rotate * Math.PI / 180;
+		var o = new_rotate * Math.PI / 180;
 		var new_x = w * Math.abs(Math.cos(o)) + h * Math.abs(Math.sin(o));
 		var new_y = w * Math.abs(Math.sin(o)) + h * Math.abs(Math.cos(o));
 
@@ -121,20 +150,30 @@ class Image_rotate_class {
 		if (new_x > config.WIDTH || new_y > config.HEIGHT) {
 			var dx = 0;
 			var dy = 0;
+			let new_width = config.WIDTH;
+			let new_height = config.HEIGHT;
 			if (new_x > config.WIDTH) {
-				dx = Math.ceil(new_x - config.WIDTH) / 2;
-				config.WIDTH = new_x;
+				dx = Math.ceil(new_x - new_width) / 2;
+				new_width = new_x;
 			}
 			if (new_y > config.HEIGHT) {
-				dy = Math.ceil(new_y - config.HEIGHT) / 2;
-				config.HEIGHT = new_y;
+				dy = Math.ceil(new_y - new_height) / 2;
+				new_height = new_y;
 			}
-			config.layer.x += dx;
-			config.layer.y += dy;
-
-			this.Base_gui.prepare_canvas();
-			config.need_render = true;
+			actions.push(
+				new app.Actions.prepare_canvas_action('undo'),
+				new app.Actions.Update_layer_action(config.layer.id, {
+					x: config.layer.x + dx,
+					y: config.layer.y + dy
+				}),
+				new app.Actions.Update_config_action({
+					WIDTH: new_width,
+					HEIGHT: new_height
+				}),
+				new app.Actions.prepare_canvas_action('do')
+			);
 		}
+		return actions;
 	}
 }
 

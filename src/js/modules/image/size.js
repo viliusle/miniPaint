@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Dialog_class from './../../libs/popup.js';
@@ -28,7 +29,6 @@ class Image_size_class {
 				{name: "resolution", title: "Resolution:", values: resolutions},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.size_handler(params);
 			},
 		};
@@ -66,10 +66,16 @@ class Image_size_class {
 			height = dim[1];
 		}
 
-		config.WIDTH = parseInt(width);
-		config.HEIGHT = parseInt(height);
-		this.Base_gui.prepare_canvas();
-		config.need_render = true;
+		app.State.do_action(
+			new app.Actions.Bundle_action('set_image_size', 'Set Image Size', [
+				new app.Actions.Prepare_canvas_action('undo'),
+				new app.Actions.Update_config_action({
+					WIDTH: parseInt(width),
+					HEIGHT: parseInt(height)
+				}),
+				new app.Actions.Prepare_canvas_action('do')
+			])
+		);
 	}
 }
 
