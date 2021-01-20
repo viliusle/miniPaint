@@ -69,19 +69,19 @@ export class Insert_layer_action extends Base_action {
 		// Prepare image
 		let image_load_promise;
 		if (layer.type == 'image') {
-			
+
 			if(layer.name.toLowerCase().indexOf('.svg') == layer.name.length - 4){
 				// We have svg
 				layer.is_vector = true;
 			}
 
-			if (config.layers.length == 1 && (config.layer.width == 0 || config.layer.width === null)
-					&& (config.layer.height == 0 || config.layer.height === null) && config.layer.data == null) {
+//			if (config.layers.length == 1 && (config.layer.width == 0 || config.layer.width === null)
+//					&& (config.layer.height == 0 || config.layer.height === null) && config.layer.data == null) {
 				// Remove first empty layer
 
-				this.delete_layer_action = new app.Actions.Delete_layer_action(config.layer.id, true);
-				await this.delete_layer_action.do();
-			}
+//				this.delete_layer_action = new app.Actions.Delete_layer_action(config.layer.id, true);
+//				await this.delete_layer_action.do();
+//			}
 
 			if (layer.link == null) {
 				if (typeof layer.data == 'object') {
