@@ -9,12 +9,11 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
 
-var PSD = require('psd.js');
 var instance = null;
 
-/**
+/** 
  * manages files / open
- *
+ * 
  * @author ViliusL
  */
 class File_open_class {
@@ -96,23 +95,23 @@ class File_open_class {
 		//force click
 		document.querySelector('#file_open').click();
 	}
-
+	
 	open_webcam(){
 		var _this = this;
 		var video = document.createElement('video');
 		video.autoplay = true;
 		video.style.maxWidth = '100%';
 		var track = null;
-
-		function handleSuccess(stream) {
+		
+		function handleSuccess(stream) {	
 			track = stream.getTracks()[0];
-			video.srcObject = stream;
+			video.srcObject = stream;	
 		}
 
 		function handleError(error) {
 			alertify.error('Sorry, cold not load getUserMedia() data: ' + error);
 		}
-
+		
 		var settings = {
 			title: 'Webcam',
 			params: [
@@ -125,13 +124,13 @@ class File_open_class {
 				//capture data
 				var width = video.videoWidth;
 				var height = video.videoHeight;
-
+				
 				var tmpCanvas = document.createElement('canvas');
 				var tmpCanvasCtx = tmpCanvas.getContext("2d");
 				tmpCanvas.width = width;
 				tmpCanvas.height = height;
 				tmpCanvasCtx.drawImage(video, 0, 0);
-
+				
 				//create requested layer
 				var new_layer = {
 					name: "Webcam #" + _this.Base_layers.auto_increment,
@@ -142,7 +141,6 @@ class File_open_class {
 					width_original: width,
 					height_original: height,
 				};
-
 				app.State.do_action(
 					new app.Actions.Bundle_action('open_file_webcam', 'Open File Webcam', [
 						new app.Actions.Insert_layer_action(new_layer),
@@ -168,7 +166,7 @@ class File_open_class {
 			},
 		};
 		this.POP.show(settings);
-
+		
 		navigator.mediaDevices.getUserMedia({audio: false, video: true})
 			.then(handleSuccess)
 			.catch(handleError);
@@ -193,7 +191,7 @@ class File_open_class {
 
 	/**
 	 * opens data URLs, like: "data:image/png;base64,xxxxxx"
-	 *
+	 * 
 	 * data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAG0lEQVQYV2N89+7df0FBQQbG/////3///j0DAF9wCsg9spQfAAAAAElFTkSuQmCC
 	 */
 	open_data_url() {
@@ -259,11 +257,9 @@ class File_open_class {
 		this.POP.show(settings);
 	}
 
-
 	open_handler(e) {
 		var _this = this;
 		var files = e.target.files;
-
 
 		var auto_increment = this.Base_layers.auto_increment;
 
@@ -285,7 +281,7 @@ class File_open_class {
 
 		for (var i = 0, f; i < files.length; i++) {
 			f = files[i];
-			if (!f.type.match('image.*') && !f.name.match('.json') && !f.name.match('.psd')) {
+			if (!f.type.match('image.*') && !f.name.match('.json')) {
 				alertify.error('Wrong file type, must be image or json.');
 				continue;
 			}
@@ -294,15 +290,6 @@ class File_open_class {
 
 			var FR = new FileReader();
 			FR.file = files[i];
-
-			if (f.name.match('.psd')) {
-				PSD.fromEvent(e).then(function (psd) {
-	 				_this.load_psd(psd);
- 				});
-				return;
-
-
-			}
 
 			FR.onload = function (event) {
 				if (this.file.type.match('image.*')) {
@@ -337,10 +324,9 @@ class File_open_class {
 				FR.readAsDataURL(f);
 		}
 	}
-
+	
 	open_template_test(){
 		var _this = this;
-
 
 		this.Base_layers.debug_rendering = true;
 		
@@ -359,7 +345,7 @@ class File_open_class {
 	maybe_file_open_url_handler() {
 		var _this = this;
 		var url_params = this.Helper.get_url_parameters();
-
+		
 		if (url_params.image != undefined) {
 			//found params - try to load it
 			if(url_params.image.toLowerCase().indexOf('.json') == url_params.image.length - 5){
@@ -419,41 +405,6 @@ class File_open_class {
 		};
 		img.src = url;
 	}
-
-
-	load_psd(psd) {
-
-		var children = psd.tree().children();
-		var doc = psd.tree().export().document;
-
-		config.ZOOM = 1;
-		config.WIDTH = doc.width;
-		config.HEIGHT = doc.height;
-		this.Base_layers.reset_layers();
-		this.Base_gui.prepare_canvas();
-
-		for (var node = children.length - 1; node >= 0; node--) {
-			var child = children[node];
-			//console.log(child);
-			var value = {			};
-			var png = child.layer.image.toPng();
-			value.type = 'image';
-			value.name = child.name;
-			value.id = node;
-			value.height = child.layer.height;
-			value.width = child.layer.width;
-			value.x = child.layer.left;
-			value.y = child.layer.top;
-			value.data = png;
-			var opacity = child.layer.opacity;
-			value.opacity = (opacity * 100 / 255.0);
-
-			this.Base_layers.insert(value, false);
-		}
-
-
-	}
-
 
 	async load_json(data) {
 		var json;
@@ -615,3 +566,4 @@ class File_open_class {
 }
 
 export default File_open_class;
+
