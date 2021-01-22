@@ -53,7 +53,7 @@ class GUI_layers_class {
 			}
 			else if (target.id == 'dup_layer') {
 				//duplicate current layer
-				window.State.save();
+			//	window.State.save(); 
 				_this.Duplicate_layer.duplicate();
 			}
 			else if (target.id == 'layer_up') {
@@ -118,7 +118,7 @@ class GUI_layers_class {
 
 		document.getElementById(target_id).innerHTML = '';
 		var html = '';
-		
+
 		if (config.layer) {
 			for (var i in layers) {
 				var value = layers[i];

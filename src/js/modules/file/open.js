@@ -147,7 +147,7 @@ class File_open_class {
 						new app.Actions.Autoresize_canvas_action(width, height, null, true, true)
 					])
 				);
-				
+
 				//destroy
 				if(track != null){
 					track.stop();
@@ -329,7 +329,7 @@ class File_open_class {
 		var _this = this;
 
 		this.Base_layers.debug_rendering = true;
-		
+
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
 		}).then(function(json) {
@@ -405,6 +405,48 @@ class File_open_class {
 		};
 		img.src = url;
 	}
+
+
+
+	load_psd(psd) {
+
+		var children = psd.tree().children();
+		var doc = psd.tree().export().document;
+
+		config.ZOOM = 1;
+		config.WIDTH = doc.width;
+		config.HEIGHT = doc.height;
+		this.Base_layers.reset_layers();
+		this.Base_gui.prepare_canvas();
+
+		for (var node = children.length - 1; node >= 0; node--) {
+			var child = children[node];
+			var value = {};
+			var png = child.layer.image.toPng();
+			var opacity = child.layer.opacity;
+			value.type = 'image';
+			value.name = child.name;
+			value.id = node;
+			value.height = child.layer.height;
+			value.width = child.layer.width;
+			value.x = child.layer.left;
+			value.y = child.layer.top;
+			value.data = png.src;
+			value.opacity = (opacity * 100 / 255.0);
+
+			app.State.do_action(
+				new app.Actions.Bundle_action('open_image', 'Open Image', [
+					new app.Actions.Insert_layer_action(value)
+				])
+			);
+
+		}
+
+
+
+
+	}
+
 
 	async load_json(data) {
 		var json;
