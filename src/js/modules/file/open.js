@@ -149,7 +149,7 @@ class File_open_class {
 						new app.Actions.Autoresize_canvas_action(width, height, null, true, true)
 					])
 				);
-				
+
 				//destroy
 				if(track != null){
 					track.stop();
@@ -343,7 +343,7 @@ class File_open_class {
 
 
 		this.Base_layers.debug_rendering = true;
-		
+
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
 		}).then(function(json) {
@@ -434,9 +434,9 @@ class File_open_class {
 
 		for (var node = children.length - 1; node >= 0; node--) {
 			var child = children[node];
-			//console.log(child);
-			var value = {			};
+			var value = {};
 			var png = child.layer.image.toPng();
+			var opacity = child.layer.opacity;
 			value.type = 'image';
 			value.name = child.name;
 			value.id = node;
@@ -444,12 +444,18 @@ class File_open_class {
 			value.width = child.layer.width;
 			value.x = child.layer.left;
 			value.y = child.layer.top;
-			value.data = png;
-			var opacity = child.layer.opacity;
+			value.data = png.src;
 			value.opacity = (opacity * 100 / 255.0);
 
-			this.Base_layers.insert(value, false);
+			app.State.do_action(
+				new app.Actions.Bundle_action('open_image', 'Open Image', [
+					new app.Actions.Insert_layer_action(value)
+				])
+			);
+
 		}
+
+
 
 
 	}
