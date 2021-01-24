@@ -123,7 +123,7 @@ class Clone_class extends Base_tools_class {
 			this.Layer_raster.raster();
 		}
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
@@ -152,7 +152,7 @@ class Clone_class extends Base_tools_class {
 			this.Layer_raster.raster();
 		}
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
@@ -185,7 +185,7 @@ class Clone_class extends Base_tools_class {
 			this.Layer_raster.raster();
 		}
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {

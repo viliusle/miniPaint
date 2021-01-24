@@ -33,10 +33,10 @@ config.themes = [
 config.FONTS = [
 	"Arial",
 	"Courier",
-	"Impact", 
+	"Impact",
 	"Helvetica",
-	"Monospace", 
-	"Tahoma", 
+	"Monospace",
+	"Tahoma",
 	"Times New Roman",
 	"Verdana",
 	"Amatic SC",
@@ -427,7 +427,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'bulge_pinch',
-		title: 'Bulge/Pinch tool',
+		title: 'Bulge/Pinch Tool',
 		attributes: {
 			radius: 80,
 			power: 50,

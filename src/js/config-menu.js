@@ -14,7 +14,7 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'Open File',
-						shortcut: 'O/Drag&Drop',
+						shortcut: 'O',
 						ellipsis: true,
 						target: 'file/open.open_file'
 					},

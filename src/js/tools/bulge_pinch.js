@@ -42,7 +42,7 @@ class BulgePinch_class extends Base_tools_class {
 			return;
 		}
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		this.started = true;

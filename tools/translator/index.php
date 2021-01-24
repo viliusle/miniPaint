@@ -16,6 +16,7 @@ $translator = new Translator();
 		<input type="submit" name="action" value="Filter" />
 		<input type="submit" name="action" value="Translate manually" />
 		<input type="submit" name="action" value="Merge" />
+		<input type="submit" name="action" value="Generate empty.json" />
 		<input style="font-weight:bold;" type="submit" name="action" value="Auto Tanslate" />
 		<br /><br />
 		<?php
@@ -58,6 +59,15 @@ $translator = new Translator();
 
 					$translator->auto_translate();
 				}
+				if ($_POST['action'] == 'Generate empty.json') {
+					//prepare
+					$translator->scan();
+					$translator->extract();
+					$translator->filter();
+
+					$translator->save_empty();
+				}
+
 			}
 			catch (Exception $exc) {
 				echo '<div style="margin-top:10px;color:red;">ERROR: ' . $exc->getMessage() . '</div>';
