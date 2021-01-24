@@ -38,7 +38,7 @@ class BulgePinch_class extends Base_tools_class {
 		this.started = false;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 		if (config.layer.type != 'image') {

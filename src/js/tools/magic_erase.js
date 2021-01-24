@@ -37,7 +37,7 @@ class Magic_erase_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {

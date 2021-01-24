@@ -65,7 +65,7 @@ class Clone_class extends Base_tools_class {
 		_this.mousedown(event);
 
 		var mouse = this.get_mouse_info(event);
-		if (mouse.valid == true) {
+		if (mouse.click_valid == true) {
 			this.pressTimer = window.setTimeout(function() {
 				//long press success
 				_this.mouseLongClick();
@@ -116,7 +116,7 @@ class Clone_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 
-		if (mouse.valid == true) {
+		if (e.which == 3 && mouse.valid == true) {
 			e.preventDefault();
 		}
 		if (params.source_layer.value == 'Previous' && config.layer.type === null) {
@@ -177,7 +177,7 @@ class Clone_class extends Base_tools_class {
 		var layer = config.layer;
 		var previous_layer = this.Base_layers.find_previous(config.layer.id);
 
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -239,7 +239,7 @@ class Clone_class extends Base_tools_class {
 
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 		if (this.started == false) {

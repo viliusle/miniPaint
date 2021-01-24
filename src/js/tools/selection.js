@@ -122,7 +122,7 @@ class Selection_class extends Base_tools_class {
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		var layer = config.layer;
-		if (this.Base_selection.is_drag == false || mouse.valid == false || mouse.click_valid == false)
+		if (this.Base_selection.is_drag == false || mouse.click_valid == false)
 			return;
 
 		if (config.layer.type != 'image') {
@@ -167,7 +167,7 @@ class Selection_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (this.Base_selection.is_drag == false || mouse.is_drag == false)
 			return;
-		if (e.type == 'mousedown' && (mouse.valid == false || mouse.click_valid == false) || config.layer.type != 'image') {
+		if (e.type == 'mousedown' && (mouse.click_valid == false) || config.layer.type != 'image') {
 			return;
 		}
 		if (this.selection_coords_from === null) {
