@@ -47,16 +47,12 @@ class Ellipse_class extends Base_tools_class {
 		this.layer = {
 			type: this.name,
 			params: this.clone(this.getParams()),
-			render_function: [this.name, 'render'],
 			status: 'draft',
+			render_function: [this.name, 'render'],
 			x: mouse_x,
 			y: mouse_y,
-			is_vector: true,
 			color: null,
-			data: {
-				center_x: mouse.x,
-				center_y: mouse.y,
-			}
+			is_vector: true,
 		};
 		if (params.circle == true) {
 			//disable rotate
@@ -95,19 +91,31 @@ class Ellipse_class extends Base_tools_class {
 			}
 		}
 
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
 		if (params.circle == true || e.ctrlKey == true || e.metaKey) {
-			width = Math.round(Math.sqrt(width * width + height * height));
-			height = width;
+			if (width < height) {
+				width = height;
+			}
+			else {
+				height = width;
+			}
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
+			}
 		}
 
 		//more data
-		config.layer.x = this.layer.data.center_x - width;
-		config.layer.y = this.layer.data.center_y - height;
-		config.layer.width = width * 2;
-		config.layer.height = height * 2;
+		config.layer.x = x;
+		config.layer.y = y;
+		config.layer.width = width;
+		config.layer.height = height;
 
 		this.Base_layers.render();
 	}
@@ -138,12 +146,24 @@ class Ellipse_class extends Base_tools_class {
 		}
 		this.snap_line_info = {x: null, y: null};
 
+		var x = Math.min(mouse_x, click_x);
+		var y = Math.min(mouse_y, click_y);
 		var width = Math.abs(mouse_x - click_x);
 		var height = Math.abs(mouse_y - click_y);
 
 		if (params.circle == true || e.ctrlKey == true || e.metaKey) {
-			width = Math.round(Math.sqrt(width * width + height * height));
-			height = width;
+			if (width < height) {
+				width = height;
+			}
+			else {
+				height = width;
+			}
+			if (mouse_x < click_x) {
+				x = click_x - width;
+			}
+			if (mouse_y < click_y) {
+				y = click_y - height;
+			}
 		}
 
 		if (width == 0 && height == 0) {
@@ -152,17 +172,11 @@ class Ellipse_class extends Base_tools_class {
 			return;
 		}
 
-		var new_x = Math.round(this.layer.data.center_x - width);
-		var new_y = Math.round(this.layer.data.center_y - height);
-
-		width =  width * 2;
-		height = height * 2;
-
 		//more data
 		app.State.do_action(
 			new app.Actions.Update_layer_action(config.layer.id, {
-				x: new_x,
-				y: new_y,
+				x: x,
+				y: y,
 				width: width,
 				height: height,
 				status: null
@@ -199,7 +213,6 @@ class Ellipse_class extends Base_tools_class {
 
 	render(ctx, layer) {
 		var params = layer.params;
-		var rotateSupport = true;
 
 		ctx.save();
 
@@ -215,36 +228,11 @@ class Ellipse_class extends Base_tools_class {
 		var dist_x = layer.width;
 		var dist_y = layer.height;
 
-		if (rotateSupport == false) {
-			this.ellipse_by_center(
-				ctx,
-				layer.x + Math.round(layer.width / 2),
-				layer.y + Math.round(layer.height / 2),
-				dist_x,
-				dist_y,
-				params.border,
-				params.fill
-			);
-		}
-		else {
-			ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
-			ctx.rotate(layer.rotate * Math.PI / 180);
-			this.ellipse_by_center(
-				ctx,
-				-layer.width / 2 + Math.round(layer.width / 2),
-				-layer.height / 2 + Math.round(layer.height / 2),
-				dist_x,
-				dist_y,
-				params.border,
-				params.fill
-			);
-		}
+		ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+		ctx.rotate(layer.rotate * Math.PI / 180);
+		this.ellipse(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, params.border, params.fill);
 
 		ctx.restore();
-	}
-
-	ellipse_by_center(ctx, cx, cy, w, h, stroke, fill) {
-		this.ellipse(ctx, cx - w / 2.0, cy - h / 2.0, w, h, stroke, fill);
 	}
 
 	ellipse(ctx, x, y, w, h, stroke, fill) {
