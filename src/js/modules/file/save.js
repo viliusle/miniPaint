@@ -52,26 +52,54 @@ class File_save_class {
 
 			if (code == "s") {
 				//save
-				this.save();
+				this.export();
 				event.preventDefault();
 			}
 		}, false);
 	}
 
-	save() {
+	/**
+	 * saves as non destructive mode (including layers, RAW)
+	 */
+	save(){
+		var types = JSON.parse(JSON.stringify(this.SAVE_TYPES));
+		for(var i in types){
+			if(i != 'JSON'){
+				delete types[i];
+			}
+		}
+
+		this.save_general(types, 'Save as');
+
+	}
+
+	/**
+	 * save as encoded image
+	 */
+	export(){
+		var types = JSON.parse(JSON.stringify(this.SAVE_TYPES));
+		delete types.JSON;
+
+		this.save_general(types, 'Export');
+	}
+
+	save_general(file_types, title) {
 		var _this = this;
 
 		//find default format
-		var save_default = this.default_extension;
+		var save_default = null;
 		var save_default_cookie = this.Helper.getCookie('save_default');
 
-		for(var i in this.SAVE_TYPES) {
+		for(var i in file_types) {
 			if(save_default_cookie == i){
 				save_default = i;
 				break;
 			}
 		}
-		save_default = save_default + " - " + this.SAVE_TYPES[save_default];
+		if(save_default == null){
+			save_default = Object.keys(file_types)[0];
+		}
+		save_default = save_default + " - " + file_types[save_default];
 
 		var calc_size_value = false;
 		var calc_size = false;
@@ -87,12 +115,12 @@ class File_save_class {
 		file_name = file_name.replace(/ /g, "-");
 
 		var save_types = [];
-		for(var i in this.SAVE_TYPES) {
-			save_types.push(i + " - " + this.SAVE_TYPES[i]);
+		for(var i in file_types) {
+			save_types.push(i + " - " + file_types[i]);
 		}
 
 		var settings = {
-			title: 'Save as',
+			title: title,
 			params: [
 				{name: "name", title: "File name:", value: file_name},
 				{name: "type", title: "Save as type:", values: save_types, value: save_default},

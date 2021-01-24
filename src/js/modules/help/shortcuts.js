@@ -14,7 +14,7 @@ class Help_shortcuts_class {
 				{title: "F9", value: 'Quick Save'},
 				{title: "F10", value: 'Quick Load'},
 				{title: "O", value: 'Open'},
-				{title: "S", value: 'Save'},
+				{title: "S", value: 'Save (Export)'},
 				{title: "T", value: 'Trim'},
 				{title: "F", value: 'Auto Adjust Colors'},
 				{title: "G", value: 'Grid on/off'},
