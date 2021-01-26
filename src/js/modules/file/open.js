@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Base_gui_class from './../../core/base-gui.js';
@@ -6,12 +7,14 @@ import Helper_class from './../../libs/helpers.js';
 import Clipboard_class from './../../libs/clipboard.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import EXIF from './../../../../node_modules/exif-js/exif.js';
+import GUI_tools_class from "../../core/gui/gui-tools";
 
+var PSD = require('psd.js');
 var instance = null;
 
-/** 
+/**
  * manages files / open
- * 
+ *
  * @author ViliusL
  */
 class File_open_class {
@@ -28,6 +31,7 @@ class File_open_class {
 		this.Base_layers = new Base_layers_class();
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
+		this.GUI_tools = new GUI_tools_class();
 
 		//clipboard class
 		this.Clipboard_class = new Clipboard_class(function (data, w, h) {
@@ -50,6 +54,17 @@ class File_open_class {
 		window.ondragover = function (e) {
 			e.preventDefault();
 		};
+		document.addEventListener('keydown', (event) => {
+			var code = event.key.toLowerCase();
+			if (this.Helper.is_input(event.target))
+				return;
+
+			if (code == "o") {
+				//open
+				this.open_file();
+				event.preventDefault();
+			}
+		}, false);
 	}
 
 	on_paste(data, width, height) {
@@ -58,7 +73,9 @@ class File_open_class {
 			type: 'image',
 			data: data,
 		};
-		this.Base_layers.insert(new_layer);
+		app.State.do_action(
+			new app.Actions.Insert_layer_action(new_layer)
+		);
 	}
 
 	open_file() {
@@ -79,23 +96,23 @@ class File_open_class {
 		//force click
 		document.querySelector('#file_open').click();
 	}
-	
+
 	open_webcam(){
 		var _this = this;
 		var video = document.createElement('video');
 		video.autoplay = true;
 		video.style.maxWidth = '100%';
 		var track = null;
-		
-		function handleSuccess(stream) {	
+
+		function handleSuccess(stream) {
 			track = stream.getTracks()[0];
-			video.srcObject = stream;	
+			video.srcObject = stream;
 		}
 
 		function handleError(error) {
 			alertify.error('Sorry, cold not load getUserMedia() data: ' + error);
 		}
-		
+
 		var settings = {
 			title: 'Webcam',
 			params: [
@@ -108,13 +125,13 @@ class File_open_class {
 				//capture data
 				var width = video.videoWidth;
 				var height = video.videoHeight;
-				
+
 				var tmpCanvas = document.createElement('canvas');
 				var tmpCanvasCtx = tmpCanvas.getContext("2d");
 				tmpCanvas.width = width;
 				tmpCanvas.height = height;
 				tmpCanvasCtx.drawImage(video, 0, 0);
-				
+
 				//create requested layer
 				var new_layer = {
 					name: "Webcam #" + _this.Base_layers.auto_increment,
@@ -125,8 +142,13 @@ class File_open_class {
 					width_original: width,
 					height_original: height,
 				};
-				this.Base_layers.insert(new_layer);
-				_this.Base_layers.autoresize(width, height);
+
+				app.State.do_action(
+					new app.Actions.Bundle_action('open_file_webcam', 'Open File Webcam', [
+						new app.Actions.Insert_layer_action(new_layer),
+						new app.Actions.Autoresize_canvas_action(width, height, null, true, true)
+					])
+				);
 				
 				//destroy
 				if(track != null){
@@ -146,7 +168,7 @@ class File_open_class {
 			},
 		};
 		this.POP.show(settings);
-		
+
 		navigator.mediaDevices.getUserMedia({audio: false, video: true})
 			.then(handleSuccess)
 			.catch(handleError);
@@ -171,7 +193,7 @@ class File_open_class {
 
 	/**
 	 * opens data URLs, like: "data:image/png;base64,xxxxxx"
-	 * 
+	 *
 	 * data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAG0lEQVQYV2N89+7df0FBQQbG/////3///j0DAF9wCsg9spQfAAAAAElFTkSuQmCC
 	 */
 	open_data_url() {
@@ -183,7 +205,6 @@ class File_open_class {
 				{name: "data", title: "Data URL:", type: "textarea", value: ""},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.file_open_data_url_handler(params.data);
 			},
 		};
@@ -207,8 +228,12 @@ class File_open_class {
 				width_original: img.width,
 				height_original: img.height,
 			};
-			_this.Base_layers.insert(new_layer);
-			_this.Base_layers.autoresize(img.width, img.height);
+			app.State.do_action(
+				new app.Actions.Bundle_action('open_file_data_url', 'Open File Data URL', [
+					new app.Actions.Insert_layer_action(new_layer),
+					new app.Actions.Autoresize_canvas_action(img.width, img.height, null, true, true)
+				])
+			);
 			img.onload = function () {
 				config.need_render = true;
 			};
@@ -228,18 +253,18 @@ class File_open_class {
 				{name: "url", title: "URL:", value: ""},
 			],
 			on_finish: function (params) {
-				window.State.save();
 				_this.file_open_url_handler(params);
 			},
 		};
 		this.POP.show(settings);
 	}
 
+
 	open_handler(e) {
 		var _this = this;
 		var files = e.target.files;
 
-		window.State.save();
+
 		var auto_increment = this.Base_layers.auto_increment;
 
 		if (files == undefined) {
@@ -260,7 +285,7 @@ class File_open_class {
 
 		for (var i = 0, f; i < files.length; i++) {
 			f = files[i];
-			if (!f.type.match('image.*') && !f.name.match('.json')) {
+			if (!f.type.match('image.*') && !f.name.match('.json') && !f.name.match('.psd')) {
 				alertify.error('Wrong file type, must be image or json.');
 				continue;
 			}
@@ -269,6 +294,15 @@ class File_open_class {
 
 			var FR = new FileReader();
 			FR.file = files[i];
+
+			if (f.name.match('.psd')) {
+				PSD.fromEvent(e).then(function (psd) {
+	 				_this.load_psd(psd);
+ 				});
+				return;
+
+
+			}
 
 			FR.onload = function (event) {
 				if (this.file.type.match('image.*')) {
@@ -279,9 +313,13 @@ class File_open_class {
 						type: 'image',
 						data: event.target.result,
 						order: order,
+						_exif: _this.extract_exif(this.file)
 					};
-					_this.Base_layers.insert(new_layer);
-					_this.extract_exif(this.file);
+					app.State.do_action(
+						new app.Actions.Bundle_action('open_image', 'Open Image', [
+							new app.Actions.Insert_layer_action(new_layer)
+						])
+					);
 				}
 				else {
 					//json
@@ -299,9 +337,12 @@ class File_open_class {
 				FR.readAsDataURL(f);
 		}
 	}
-	
+
 	open_template_test(){
 		var _this = this;
+
+
+		this.Base_layers.debug_rendering = true;
 		
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
@@ -318,7 +359,7 @@ class File_open_class {
 	maybe_file_open_url_handler() {
 		var _this = this;
 		var url_params = this.Helper.get_url_parameters();
-		
+
 		if (url_params.image != undefined) {
 			//found params - try to load it
 			if(url_params.image.toLowerCase().indexOf('.json') == url_params.image.length - 5){
@@ -350,6 +391,7 @@ class File_open_class {
 
 		var layer_name = url.replace(/^.*[\\\/]/, '');
 
+		console.log
 		var img = new Image();
 		img.crossOrigin = "Anonymous";
 		img.onload = function () {
@@ -365,8 +407,12 @@ class File_open_class {
 			img.onload = function () {
 				config.need_render = true;
 			};
-			_this.Base_layers.insert(new_layer);
-			_this.Base_layers.autoresize(img.width, img.height);
+			app.State.do_action(
+				new app.Actions.Bundle_action('open_file_url', 'Open File URL', [
+					new app.Actions.Insert_layer_action(new_layer),
+					new app.Actions.Autoresize_canvas_action(img.width, img.height, null, true, true)
+				])
+			);
 		};
 		img.onerror = function (ex) {
 			alertify.error('Sorry, image could not be loaded. Try copy image and paste it.');
@@ -374,7 +420,42 @@ class File_open_class {
 		img.src = url;
 	}
 
-	load_json(data) {
+
+	load_psd(psd) {
+
+		var children = psd.tree().children();
+		var doc = psd.tree().export().document;
+
+		config.ZOOM = 1;
+		config.WIDTH = doc.width;
+		config.HEIGHT = doc.height;
+		this.Base_layers.reset_layers();
+		this.Base_gui.prepare_canvas();
+
+		for (var node = children.length - 1; node >= 0; node--) {
+			var child = children[node];
+			//console.log(child);
+			var value = {			};
+			var png = child.layer.image.toPng();
+			value.type = 'image';
+			value.name = child.name;
+			value.id = node;
+			value.height = child.layer.height;
+			value.width = child.layer.width;
+			value.x = child.layer.left;
+			value.y = child.layer.top;
+			value.data = png;
+			var opacity = child.layer.opacity;
+			value.opacity = (opacity * 100 / 255.0);
+
+			this.Base_layers.insert(value, false);
+		}
+
+
+	}
+
+
+	async load_json(data) {
 		var json;
 		if(typeof data == 'string')
 			json = JSON.parse(data);
@@ -383,6 +464,8 @@ class File_open_class {
 		if (json.info.version == undefined) {
 			json.info.version = "3";
 		}
+
+		//migration
 		if (json.info.version < "4") {
 			//convert from v3 to v4
 			for (var i in json.layers) {
@@ -414,16 +497,63 @@ class File_open_class {
 				);
 			}
 		}
+		if(json.info.version < "4.5.0"){
+			//migrate "rectangle", "circle" and "line" types to "shape"
+			for (var i in json.layers) {
+				var old_type = json.layers[i].type;
+
+				if(old_type == 'line' && json.layers[i].params.type.value == "Arrow"){
+					//migrate line (type=arrow) to arrow.
+					json.layers[i].type = 'arrow';
+					delete json.layers[i].params.type;
+					json.layers[i].render_function = ["arrow", "render"];
+				}
+				if(old_type == 'rectangle' || old_type == 'circle'){
+					//migrate params
+					json.layers[i].params.border_size = json.layers[i].params.size;
+					delete json.layers[i].params.size;
+
+					if(json.layers[i].params.fill == true){
+						json.layers[i].params.border = false;
+					}
+					else{
+						json.layers[i].params.border = true;
+					}
+					json.layers[i].params.border_color = json.layers[i].color;
+					json.layers[i].params.fill_color = json.layers[i].color;
+
+					json.layers[i].color = null;
+				}
+				if(old_type == 'circle'){
+					//rename circle to ellipse
+					json.layers[i].type = 'ellipse';
+					json.layers[i].render_function = ["ellipse", "render"];
+				}
+			}
+		}
+
+		const actions = [];
 
 		//set attributes
-		config.ZOOM = 1;
-		config.WIDTH = parseInt(json.info.width);
-		config.HEIGHT = parseInt(json.info.height);
-		this.Base_layers.reset_layers();
-		this.Base_gui.prepare_canvas();
+		actions.push(
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				ZOOM: 1,
+				WIDTH: parseInt(json.info.width),
+				HEIGHT: parseInt(json.info.height)
+			}),
+			new app.Actions.Reset_layers_action(),
+			new app.Actions.Prepare_canvas_action('do'),
+		);
 
+		var max_id_order = 0;
 		for (var i in json.layers) {
 			var value = json.layers[i];
+
+			if(value.id > max_id_order)
+				max_id_order = value.id;
+			if(typeof value.order != undefined && value.order > max_id_order)
+				max_id_order = value.order;
 
 			if (value.type == 'image') {
 				//add image data
@@ -434,14 +564,26 @@ class File_open_class {
 					}
 				}
 			}
-
-			this.Base_layers.insert(value, false);
+			actions.push(
+				new app.Actions.Insert_layer_action(value, false)
+			);
 		}
-		if(json.info.layer_active != undefined) {
-			this.Base_layers.select(json.info.layer_active);
+		if (json.info.layer_active != undefined) {
+			actions.push(
+				new app.Actions.Select_layer_action(json.info.layer_active, true)
+			);
 		}
+		actions.push(
+			new app.Actions.Set_object_property_action(this.Base_layers, 'auto_increment', max_id_order + 1)
+		);
+		await app.State.do_action(
+			new app.Actions.Bundle_action('open_json_file', 'Open JSON File', actions)
+		);
 	}
 
+	/**
+	 * Returns an action that saves the exif data of the provided object to the current layer
+	 */
 	extract_exif(object) {
 		var exif_data = {
 			general: [],
@@ -464,10 +606,12 @@ class File_open_class {
 		if (object.lastModified != undefined)
 			exif_data.general['Last modified'] = this.Helper.format_time(object.lastModified);
 
-		//save
-		config.layer._exif = exif_data;
+		return exif_data;
+	}
+
+	search(){
+		this.GUI_tools.activate_tool('media');
 	}
 }
 
 export default File_open_class;
-

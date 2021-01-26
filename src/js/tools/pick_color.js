@@ -39,6 +39,12 @@ class Pick_color_class extends Base_tools_class {
 		document.addEventListener('mousemove', function (event) {
 			_this.dragMove(event);
 		});
+		document.addEventListener('mouseup', function (event) {
+			var mouse = _this.get_mouse_info(event);
+			if (config.TOOL.name != _this.name || mouse.click_valid == false)
+				return;
+			_this.copy_color_to_clipboard();
+		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
@@ -96,6 +102,10 @@ class Pick_color_class extends Base_tools_class {
 		this.Base_gui.GUI_colors.set_color(newColorDefinition);
 	}
 
+	copy_color_to_clipboard() {
+		navigator.clipboard.writeText(config.COLOR);
+	}
+
 }
-;
+
 export default Pick_color_class;

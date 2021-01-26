@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -12,36 +13,15 @@ class Brush_class extends Base_tools_class {
 		this.params_hash = false;
 		this.pressure_supported = false;
 		this.pointer_pressure = 0; // has range [0 - 1]
-	}
-
-	dragStart(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousedown(event);
-	}
-
-	dragMove(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mousemove(event);
-
-		//mouse cursor
-		var mouse = _this.get_mouse_info(event);
-		var params = _this.getParams();
-		_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
-	}
-
-	dragEnd(event) {
-		var _this = this;
-		if (config.TOOL.name != _this.name)
-			return;
-		_this.mouseup(event);
+		this.max_speed = 20;
+		this.power = 2; //how speed affects size
+		this.event_links = [];
+		this.data_index = 0;
 	}
 
 	load() {
 		var _this = this;
+		var is_touch = false;
 
 		//pointer events
 		document.addEventListener('pointerdown', function (event) {
@@ -53,17 +33,24 @@ class Brush_class extends Base_tools_class {
 
 		//mouse events
 		document.addEventListener('mousedown', function (event) {
+			if(is_touch)
+				return;
 			_this.dragStart(event);
 		});
 		document.addEventListener('mousemove', function (event) {
+			if(is_touch)
+				return;
 			_this.dragMove(event);
 		});
 		document.addEventListener('mouseup', function (event) {
+			if(is_touch)
+				return;
 			_this.dragEnd(event);
 		});
 
 		// collect touch events
 		document.addEventListener('touchstart', function (event) {
+			is_touch = true;
 			_this.dragStart(event);
 		});
 		document.addEventListener('touchmove', function (event) {
@@ -88,17 +75,129 @@ class Brush_class extends Base_tools_class {
 	pointermove(e) {
 		// Pressure of exactly 1 seems to be an input error, sometimes I see it when lifting the pen
 		// off the screen when pressure reading should be near 0.
-		if (this.pressure_supported && e.pressure < 1) { 
+		if (this.pressure_supported && e.pressure < 1) {
 			this.pointer_pressure = e.pressure;
 		}
 	}
 
-	mousedown(e) {
+	dragStart(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+		this.click_counter++;
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.is_drag == false)
+			return;
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+
+		var events = [];
+		if (event.changedTouches) {
+			events = event.changedTouches;
+		}
+		else{
+			events.push(event);
+		}
+		for(var i = 0; i < events.length; i++){
+			var identifier = null;
+			if(typeof events[i].identifier != "undefined") {
+				identifier = events[i].identifier;
+			}
+
+			this.event_links.push({
+				identifier: identifier,
+				index: this.data_index,
+			});
+
+			_this.mousedown_action(events[i], this.data_index, identifier);
+
+			this.data_index++;
+		}
+	}
+
+	dragMove(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+
+		if (typeof event.changedTouches == "undefined") {
+			//mouse cursor
+			var mouse = _this.get_mouse_info(event);
+			var params = _this.getParams();
+			_this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
+		}
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.is_drag == false)
+			return;
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+
+		var events = [];
+		if (event.changedTouches) {
+			events = event.changedTouches;
+		}
+		else{
+			events.push(event);
+		}
+		for(var i = 0; i < events.length; i++){
+			var identifier = null;
+			if(typeof events[i].identifier != "undefined") {
+				identifier = events[i].identifier;
+			}
+
+			for(var j = 0; i < this.event_links.length; j++){
+				if(this.event_links[j].identifier == identifier){
+					//found link
+					_this.mousemove_action(events[i], this.event_links[j].index);
+					break;
+				}
+			}
+		}
+	}
+
+	dragEnd(event) {
+		var _this = this;
+		if (config.TOOL.name != _this.name)
+			return;
+
+		var mouse = this.get_mouse_info(event);
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+
+		var events = [];
+		if (event.changedTouches) {
+			events = event.changedTouches;
+		}
+		else{
+			events.push(event);
+		}
+		for(var i = 0; i < events.length; i++){
+			var identifier = null;
+			if(typeof events[i].identifier != "undefined") {
+				//unlink
+				identifier = events[i].identifier;
+			}
+
+			for(var j = 0; i < this.event_links.length; j++){
+				if(this.event_links[j].identifier == identifier){
+					this.event_links.splice(j, 1);
+					break;
+				}
+			}
+
+			_this.mouseup_action(events[i]);
+		}
+	}
+
+	mousedown_action(e, index, event_identifier) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false)
 			return;
-
-		window.State.save();
 
 		var params_hash = this.get_params_hash();
 
@@ -106,7 +205,7 @@ class Brush_class extends Base_tools_class {
 			//register new object - current layer is not ours or params changed
 			this.layer = {
 				type: this.name,
-				data: [],
+				data: [[]],
 				params: this.clone(this.getParams()),
 				status: 'draft',
 				render_function: [this.name, 'render'],
@@ -117,27 +216,38 @@ class Brush_class extends Base_tools_class {
 				hide_selection_if_active: true,
 				rotate: null,
 				is_vector: true,
+				color: config.COLOR
 			};
-			this.Base_layers.insert(this.layer);
+			app.State.do_action(
+				new app.Actions.Bundle_action('new_brush_layer', 'New Brush Layer', [
+					new app.Actions.Insert_layer_action(this.layer)
+				])
+			);
 			this.params_hash = params_hash;
+
+			//reset event links index
+			this.data_index = 0;
+			index = 0;
+			this.event_links = [];
+			this.event_links.push({
+				identifier: event_identifier,
+				index: this.data_index,
+			});
+		}
+		else {
+			const new_data = JSON.parse(JSON.stringify(config.layer.data));
+			new_data.push([]);
+			app.State.do_action(
+				new app.Actions.Bundle_action('update_brush_layer', 'Update Brush Layer', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						data: new_data
+					})
+				])
+			);
 		}
 
-		config.layer.data.push([]);
-	}
-
-	mousemove(e) {
-		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false)
-			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
-			return;
-		}
-
-		var max_speed = 20;
-		var power = 2; //how speed affects size
+		var current_group = config.layer.data[index];
 		var params = this.getParams();
-		var n = config.layer.data.length;
-		var last_group = config.layer.data[n-1];
 
 		//detect line size
 		var size = params.size;
@@ -148,40 +258,65 @@ class Brush_class extends Base_tools_class {
 				new_size = size * this.pointer_pressure * 2;
 			}
 			else {
-				new_size = size + size / max_speed * mouse.speed_average * power;
+				new_size = size + size / this.max_speed * mouse.speed_average * this.power;
 				new_size = Math.max(new_size, size / 4);
 				new_size = Math.round(new_size);
 			}
 		}
 
-		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
+		var mouse_coords = this.get_mouse_coordinates_from_event(e);
+		var mouse_x = mouse_coords.x;
+		var mouse_y = mouse_coords.y;
+
+		current_group.push([mouse_x - config.layer.x, mouse_y - config.layer.y, new_size]);
+		this.Base_layers.render();
+	}
+
+	mousemove_action(e, index) {
+		var mouse = this.get_mouse_info(e);
+		if (mouse.is_drag == false)
+			return;
+		if (mouse.valid == false || mouse.click_valid == false) {
+			return;
+		}
+
+		var params = this.getParams();
+		var current_group = config.layer.data[index];
+
+		//detect line size
+		var size = params.size;
+		var new_size = size;
+
+		if (params.pressure == true) {
+			if (this.pressure_supported) {
+				new_size = size * this.pointer_pressure * 2;
+			}
+			else {
+				new_size = size + size / this.max_speed * mouse.speed_average * this.power;
+				new_size = Math.max(new_size, size / 4);
+				new_size = Math.round(new_size);
+			}
+		}
+
+		var mouse_coords = this.get_mouse_coordinates_from_event(e);
+		var mouse_x = mouse_coords.x;
+		var mouse_y = mouse_coords.y;
+
+		current_group.push([mouse_x - config.layer.x, mouse_y - config.layer.y, new_size]);
 		config.layer.status = 'draft';
 		this.Base_layers.render();
 	}
 
-	mouseup(e) {
+	mouseup_action(e, index) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.valid == false || mouse.click_valid == false) {
 			config.layer.status = null;
 			return;
 		}
 
-		//more data
-		var params = this.getParams();
-		var n = config.layer.data.length;
-		var last_group = config.layer.data[n-1];
-		var size = params.size;
-		var new_size = size;
-
-		if (this.pressure_supported) {
-			new_size = size * this.pointer_pressure * 2;
-		}
-
-		last_group.push([mouse.x - config.layer.x, mouse.y - config.layer.y, new_size]);
 		config.layer.status = null;
 
 		this.check_dimensions();
-
 		this.Base_layers.render();
 	}
 
@@ -296,41 +431,41 @@ class Brush_class extends Base_tools_class {
 		ctx.moveTo(data[0][0], data[0][1]);
 
 		//prepare
-		var tempdata1 = [data[0]];
+		var temp_data1 = [data[0]];
 		var c, d;
 		for (var i = 1; i < data.length - 1;  i = i+1) {
 			c = (data[i][0] + data[i + 1][0]) / 2;
 			d = (data[i][1] + data[i + 1][1]) / 2;
-			tempdata1.push([c, d]);
+			temp_data1.push([c, d]);
 		}
 
-		var tempdata2 = [tempdata1[0]];
-		for (var i = 1; i < tempdata1.length - 1;  i = i+1) {
-			c = (tempdata1[i][0] + tempdata1[i + 1][0]) / 2;
-			d = (tempdata1[i][1] + tempdata1[i + 1][1]) / 2;
-			tempdata2.push([c, d]);
+		var temp_data2 = [temp_data1[0]];
+		for (var i = 1; i < temp_data1.length - 1;  i = i+1) {
+			c = (temp_data1[i][0] + temp_data1[i + 1][0]) / 2;
+			d = (temp_data1[i][1] + temp_data1[i + 1][1]) / 2;
+			temp_data2.push([c, d]);
 		}
 
-		var tempdata = [tempdata2[0]];
-		for (var i = 1; i < tempdata2.length - 1;  i = i+1) {
-			c = (tempdata2[i][0] + tempdata2[i + 1][0]) / 2;
-			d = (tempdata2[i][1] + tempdata2[i + 1][1]) / 2;
-			tempdata.push([c, d]);
+		var temp_data = [temp_data2[0]];
+		for (var i = 1; i < temp_data2.length - 1;  i = i+1) {
+			c = (temp_data2[i][0] + temp_data2[i + 1][0]) / 2;
+			d = (temp_data2[i][1] + temp_data2[i + 1][1]) / 2;
+			temp_data.push([c, d]);
 		}
 
 		//draw
-		for (var i = 1; i < tempdata.length - 2;  i = i+1) {
-			c = (tempdata[i][0] + tempdata[i + 1][0]) / 2;
-			d = (tempdata[i][1] + tempdata[i + 1][1]) / 2;
-			ctx.quadraticCurveTo(tempdata[i][0], tempdata[i][1], c, d);
+		for (var i = 1; i < temp_data.length - 2;  i = i+1) {
+			c = (temp_data[i][0] + temp_data[i + 1][0]) / 2;
+			d = (temp_data[i][1] + temp_data[i + 1][1]) / 2;
+			ctx.quadraticCurveTo(temp_data[i][0], temp_data[i][1], c, d);
 		}
 
 		// For the last 2 points
 		ctx.quadraticCurveTo(
-			tempdata[i][0],
-			tempdata[i][1],
-			tempdata[i+1][0],
-			tempdata[i+1][1]
+			temp_data[i][0],
+			temp_data[i][1],
+			temp_data[i+1][0],
+			temp_data[i+1][1]
 		);
 		ctx.stroke();
 	}
@@ -361,10 +496,10 @@ class Brush_class extends Base_tools_class {
 	 * recalculate layer x, y, width and height values.
 	 */
 	check_dimensions() {
-		var data = config.layer.data;
+		var data = JSON.parse(JSON.stringify(config.layer.data)); // Deep copy for history
 		this.check_legacy_format(data);
 
-		if(config.layer.data.length == 0)
+		if(config.layer.data.length == 0 || data[0].length == 0)
 			return;
 
 		//find bounds
@@ -398,12 +533,18 @@ class Brush_class extends Base_tools_class {
 		}
 
 		//change layers bounds
-		config.layer.x = config.layer.x + min_x;
-		config.layer.y = config.layer.y + min_y;
-		config.layer.width = max_x - min_x;
-		config.layer.height = max_y - min_y;
-
-		this.Base_layers.render();
+		app.State.do_action(
+			new app.Actions.Update_layer_action(config.layer.id, {
+				x: config.layer.x + min_x,
+				y: config.layer.y + min_y,
+				width: max_x - min_x,
+				height: max_y - min_y,
+				data
+			}),
+			{
+				merge_with_history: ['new_brush_layer', 'update_brush_layer']
+			}
+		);
 	}
 
 }

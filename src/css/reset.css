@@ -1,10 +1,6 @@
-*{
-	box-sizing: border-box;
-	background-repeat: no-repeat;
-}
 :root {
 	/* original - default */
-	--background: radial-gradient(circle, #aaa 0%, #4d5355 100%);
+	--background: #666d6f;
 	--text-color: #f4f3f3;
 	--text-color-muted: #c1c1c1;
 	--text-color-red: #e38282;
@@ -21,6 +17,7 @@
 	--button-shadow-color: rgba(0, 0, 0, 0.3);
 	--button-text-color-active: #adecab;
 	--button-border-radius: .4rem;
+	--button-toggle-background-color: #575f62;
 	--input-background-color: #2f3739;
 	--input-text-color: #f4f3f3;
 	--input-border-color: #0f0f0f;
@@ -40,9 +37,6 @@
 	--scrollbar-thumb-color: #2f3739;
 	--mobile-menu-toggle-filter: invert(1);
 }
-html {
-	font-size: 10px; /* Base is 10px for easy REM calculation */
-}
 body.theme-light{
 	/* light */
 	--background: #f9f9fa;
@@ -57,10 +51,11 @@ body.theme-light{
 	--block-background-color: #eaeaea;
 	--header-background-color: #dbdbdb;
 	--button-background-color: #f9f9fa;
-	--button-background-color-hover: #c4c4c4;
+	--button-background-color-hover: #ddd;
 	--button-background-color-active: #f3f3f3;
 	--button-text-color-active: #59aed8;
 	--button-shadow-color: rgba(0, 0, 0, 0.1);
+	--button-toggle-background-color: #b7b7b7;
 	--input-background-color: #ffffff;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
@@ -94,6 +89,7 @@ body.theme-green{
 	--button-background-color-hover: #58960e;
 	--button-background-color-active:#2b460f;
 	--button-text-color-active: #ccc;
+	--button-toggle-background-color: #243e05;
 	--input-background-color: #ffffff;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
@@ -108,6 +104,14 @@ body.theme-green{
 	--scrollbar-track-color: #050702;
 	--scrollbar-thumb-color: #80937d;
 	--mobile-menu-toggle-filter: invert(1);
+}
+
+*{
+	box-sizing: border-box;
+	background-repeat: no-repeat;
+}
+html {
+	font-size: 10px; /* Base is 10px for easy REM calculation */
 }
 body{
 	margin: 0px;

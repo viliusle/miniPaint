@@ -11,6 +11,11 @@
     max-width: 6.4rem;
     overflow: hidden;
 }
+.label_width_medium {
+    width: 100%;
+    max-width: 10.4rem;
+    overflow: hidden;
+}
 
 /* Font color utility */
 .text_red { color: var(--text-color-red); }

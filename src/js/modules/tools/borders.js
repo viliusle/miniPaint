@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -67,8 +68,6 @@ class Tools_borders_class {
 	}
 
 	add_borders(params) {
-		window.State.save();
-
 		//create borders layer
 		this.layer = {
 			name: 'Borders',
@@ -82,7 +81,11 @@ class Tools_borders_class {
 			height: config.layer ? config.layer.height + params.size  : config.HEIGHT,
 			is_vector: true,
 		};
-		this.Base_layers.insert(this.layer);
+		app.State.do_action(
+			new app.Actions.Bundle_action('add_borders', 'Add Borders', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
 	}
 
 }

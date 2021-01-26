@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
@@ -42,7 +43,6 @@ class Effects_zoomBlur_class {
 				canvas_preview.drawImage(data, 0, 0);
 			},
 			on_finish: function (params) {
-				window.State.save();
 				_this.save(params);
 			},
 		};
@@ -60,7 +60,9 @@ class Effects_zoomBlur_class {
 		ctx.drawImage(data, 0, 0);
 
 		//save
-		this.Base_layers.update_layer_image(canvas);
+		return app.State.do_action(
+			new app.Actions.Update_layer_image_action(canvas)
+		);
 	}
 
 	change(canvas, params) {
@@ -77,6 +79,22 @@ class Effects_zoomBlur_class {
 		this.fx_filter.draw(texture).zoomBlur(param2, param3, param1).update();	//effect
 
 		return this.fx_filter;
+	}
+
+	demo(canvas_id, canvas_thumb){
+		var canvas = document.getElementById(canvas_id);
+		var ctx = canvas.getContext("2d");
+
+		//modify
+		var params = {
+			param1: 0.3,
+			param2: Math.round(canvas_thumb.width / 2),
+			param3: Math.round(canvas_thumb.height / 2),
+		};
+		var data = this.change(canvas_thumb, params);
+
+		//draw
+		ctx.drawImage(data, 0, 0);
 	}
 
 }

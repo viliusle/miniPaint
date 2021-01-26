@@ -12,17 +12,61 @@ config.visible_height = null;
 config.COLOR = '#008000';
 config.ALPHA = 255;
 config.ZOOM = 1;
+config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
 config.layers = [];
 config.layer = null;
 config.need_render = false;
+config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
+config.swatches = {
+	default: [] // Only default used right now, object format for swatch swapping in future.
+};
 
 //requires styles in reset.css
 config.themes = [
 	'dark',
 	'light',
 	'green',
+];
+
+config.FONTS = [
+	"Arial",
+	"Courier",
+	"Impact", 
+	"Helvetica",
+	"Monospace", 
+	"Tahoma", 
+	"Times New Roman",
+	"Verdana",
+	"Amatic SC",
+	"Arimo",
+	"Codystar",
+	"Creepster",
+	"Indie Flower",
+	"Lato",
+	"Lora",
+	"Merriweather",
+	"Monoton",
+	"Montserrat",
+	"Mukta",
+	"Muli",
+	"Nosifer",
+	"Nunito",
+	"Oswald",
+	"Orbitron",
+	"Pacifico",
+	"PT Sans",
+	"PT Serif",
+	"Playfair Display",
+	"Poppins",
+	"Raleway",
+	"Roboto",
+	"Rubik",
+	"Special Elite",
+	"Tangerine",
+	"Titillium Web",
+	"Ubuntu"
 ];
 
 config.TOOLS = [
@@ -50,24 +94,59 @@ config.TOOLS = [
 	},
 	{
 		name: 'text',
-		title: 'Text',
-		attributes: {},
+		on_update: 'on_params_update',
+		attributes: {
+			font: {
+				value: 'Arial',
+				values: ['', ...config.FONTS.sort()],
+			},
+			size: 40,
+			bold: {
+				value: false,
+				icon: `bold.svg`
+			},
+			italic: {
+				value: false,
+				icon: `italic.svg`
+			},
+			underline: {
+				value: false,
+				icon: `underline.svg`
+			},
+			strikethrough: {
+				value: false,
+				icon: `strikethrough.svg`
+			},
+			fill: '#008800',
+			stroke: '#000000',
+			stroke_size: {
+				value: 0,
+				min: 0,
+				step: 0.1
+			},
+			kerning: {
+				value: 0,
+				min: -999,
+				max: 999,
+				step: 1
+			},
+			leading: {
+				value: 0,
+				min: -999,
+				max: 999,
+				step: 1
+			}
+		},
 	},
 	{
 		name: 'selection',
 		title: 'Selection',
 		attributes: {},
-		on_leave: 'on_leave',
 	},
 	{
 		name: 'erase',
 		title: 'Erase',
 		on_update: 'on_params_update',
-		attributes: {
-			size: 30,
-			circle: true,
-			strict: true,
-		},
 	},
 	{
 		name: 'shadow_a',
@@ -251,5 +330,20 @@ config.TOOLS = [
 //link to active tool
 config.TOOL = config.TOOLS[0];
 
+// =======
+// 		name: 'animation',
+// 		on_activate: 'on_activate',
+// 		on_update: 'on_params_update',
+// 		on_leave: 'on_leave',
+// 		attributes: {
+// 			play: false,
+// 			delay: 400,
+// 		},
+// 	},
+// ];
+
+// //link to active tool
+// config.TOOL = config.TOOLS[2];
+// >>>>>>> master
 	
 export default config;

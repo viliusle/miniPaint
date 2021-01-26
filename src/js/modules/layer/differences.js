@@ -1,3 +1,4 @@
+import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
@@ -79,12 +80,13 @@ class Layer_differences_class {
 		//show
 		if (canvas_preview == undefined) {
 			//main
-			window.State.save();
 			var params = [];
 			params.type = 'image';
 			params.name = 'Differences';
 			params.data = canvas.toDataURL("image/png");
-			this.Base_layers.insert(params);
+			app.State.do_action(
+				new app.Actions.Insert_layer_action(params)
+			);
 		}
 		else {
 			//preview

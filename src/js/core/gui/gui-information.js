@@ -21,6 +21,8 @@ class GUI_information_class {
 
 	constructor(ctx) {
 		this.Base_layers = new Base_layers_class();
+		this.last_width = null;
+		this.last_height = null;
 	}
 
 	render_main_information() {
@@ -33,20 +35,29 @@ class GUI_information_class {
 		var _this = this;
 		var target = document.getElementById('mouse_info_mouse');
 
-		//colors
+		//show width and height
+		//should use canvas resize API in future
+		document.addEventListener('mousemove', function (e) {
+			_this.show_size();
+		}, false);
+
+		//show current mouse position
 		document.getElementById('canvas_minipaint').addEventListener('mousemove', function (e) {
 			var global_pos = _this.Base_layers.get_world_coords(e.offsetX, e.offsetY);
 			var mouse_x = Math.ceil(global_pos.x);
 			var mouse_y = Math.ceil(global_pos.y);
 
 			target.innerHTML = mouse_x + ', ' + mouse_y;
-
-			_this.show_size();
 		}, false);
 	}
 
 	show_size() {
+		if(this.last_width == config.WIDTH && this.last_height == config.HEIGHT)
+			return;
+
 		document.getElementById('mouse_info_size').innerHTML = config.WIDTH + ' x ' + config.HEIGHT;
+		this.last_width = config.WIDTH;
+		this.last_height = config.HEIGHT;
 	}
 
 }
