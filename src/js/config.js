@@ -33,10 +33,10 @@ config.themes = [
 config.FONTS = [
 	"Arial",
 	"Courier",
-	"Impact", 
+	"Impact",
 	"Helvetica",
-	"Monospace", 
-	"Tahoma", 
+	"Monospace",
+	"Tahoma",
 	"Times New Roman",
 	"Verdana",
 	"Amatic SC",
@@ -170,7 +170,16 @@ config.TOOLS = [
 		name: 'undo',
 		title: 'Undo',
 		on_activate: 'on_activate',
-	},
+  },
+//   {
+// 		name: 'bulge_pinch',
+// 		title: 'Bulge/Pinch Tool',
+// 		attributes: {
+// 			radius: 80,
+// 			power: 50,
+// 			bulge: true,
+// 		},
+// 	},
 	{
 		name: 'redo',
 		title: 'Redo',

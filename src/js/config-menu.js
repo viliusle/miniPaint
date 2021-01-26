@@ -14,7 +14,7 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'Open File',
-						shortcut: 'O/Drag&Drop',
+						shortcut: 'O',
 						ellipsis: true,
 						target: 'file/open.open_file'
 					},
@@ -52,9 +52,14 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Save As',
+				name: 'Export',
 				ellipsis: true,
 				shortcut: 'S',
+				target: 'file/save.export'
+			},
+			{
+				name: 'Save As',
+				ellipsis: true,
 				target: 'file/save.save'
 			},
 			{

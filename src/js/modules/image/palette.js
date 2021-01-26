@@ -16,7 +16,7 @@ class Image_color_class {
 
 	palette() {
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		var palette = this.alertify.getPalette(config.layer.link);

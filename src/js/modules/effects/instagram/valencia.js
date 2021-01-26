@@ -13,7 +13,7 @@ class Effects_valencia_class {
 
 	valencia() {
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 

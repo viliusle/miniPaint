@@ -53,7 +53,7 @@ class Crop_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (this.Base_selection.is_drag == false || mouse.valid == false || mouse.click_valid == false)
+		if (this.Base_selection.is_drag == false || mouse.click_valid == false)
 			return;
 
 		this.mousedown_selection = JSON.parse(JSON.stringify(this.selection));
@@ -71,7 +71,7 @@ class Crop_class extends Base_tools_class {
 		if (this.Base_selection.is_drag == false || mouse.is_drag == false) {
 			return;
 		}
-		if (e.type == 'mousedown' && (mouse.valid == false || mouse.click_valid == false)) {
+		if (e.type == 'mousedown' && mouse.click_valid == false) {
 			return;
 		}
 		if (this.Base_selection.mouse_lock !== null) {

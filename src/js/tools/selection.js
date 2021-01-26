@@ -122,11 +122,11 @@ class Selection_class extends Base_tools_class {
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		var layer = config.layer;
-		if (this.Base_selection.is_drag == false || mouse.valid == false || mouse.click_valid == false)
+		if (this.Base_selection.is_drag == false || mouse.click_valid == false)
 			return;
 
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 
@@ -167,7 +167,7 @@ class Selection_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (this.Base_selection.is_drag == false || mouse.is_drag == false)
 			return;
-		if (e.type == 'mousedown' && (mouse.valid == false || mouse.click_valid == false) || config.layer.type != 'image') {
+		if (e.type == 'mousedown' && (mouse.click_valid == false) || config.layer.type != 'image') {
 			return;
 		}
 		if (this.selection_coords_from === null) {
@@ -232,7 +232,7 @@ class Selection_class extends Base_tools_class {
 
 	select_all() {
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		let actions = [];
@@ -274,7 +274,7 @@ class Selection_class extends Base_tools_class {
 		var layer = config.layer;
 
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 
