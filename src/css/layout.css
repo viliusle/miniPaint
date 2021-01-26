@@ -288,6 +288,14 @@ body .sp-preview{
 .sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
 .sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }
+.sidebar_left .undo:after{ background-image: url('images/icons/undo.svg'); }
+.sidebar_left .redo:after{ background-image: url('images/icons/redo.svg'); }
+.sidebar_left .mask:after{ background-image: url('images/icons/mask.svg'); }
+.sidebar_left .file_import:after{ background-image: url('images/icons/file_import.svg'); }
+.sidebar_left .rotate:after{ background-image: url('images/icons/rotate.svg'); }
+.sidebar_left .shadow_a:after{ background-image: url('images/icons/shadow_a.svg'); }
+.sidebar_left .shadow_b:after{ background-image: url('images/icons/shadow_b.svg'); }
+.sidebar_left .borders:after{ background-image: url('images/icons/borders.svg'); }
 .sidebar_left .text:after{
 	background-image: url('images/icons/text.svg');
 	background-size: 16px auto;
