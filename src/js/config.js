@@ -170,6 +170,11 @@ config.TOOLS = [
 		name: 'undo',
 		title: 'Undo',
 		on_activate: 'on_activate',
+	},
+	{
+		name: 'redo',
+		title: 'Redo',
+		on_activate: 'on_activate',
 	}
 	// {
 	// 	name: 'brush',
