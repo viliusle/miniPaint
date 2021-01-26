@@ -110,6 +110,16 @@ class Base_gui_class {
 		else{
 			config.SNAP = Boolean(snap_cookie);
 		}
+
+		//guides
+		var guides_cookie = this.Helper.getCookie('guides');
+		if (guides_cookie === null) {
+			//default
+			config.guides_enabled = true;
+		}
+		else{
+			config.guides_enabled = Boolean(guides_cookie);
+		}
 	}
 
 	render_main_gui() {
@@ -357,6 +367,37 @@ class Base_gui_class {
 			ctx.beginPath();
 			ctx.moveTo(0, 0.5 + i);
 			ctx.lineTo(width, 0.5 + i);
+			ctx.stroke();
+		}
+	}
+
+	draw_guides(ctx){
+		if(config.guides_enabled == false){
+			return;
+		}
+
+		for(var i in config.guides) {
+			var guide = config.guides[i];
+
+			if (guide.x === 0 || guide.y === 0) {
+				continue;
+			}
+
+			//set styles
+			ctx.strokeStyle = '#49ffff';
+			ctx.lineWidth = 1;
+
+			ctx.beginPath();
+			if (guide.y === null) {
+				//vertical
+				ctx.moveTo(guide.x, 0);
+				ctx.lineTo(guide.x, config.HEIGHT);
+			}
+			if (guide.x === null) {
+				//horizontal
+				ctx.moveTo(0, guide.y);
+				ctx.lineTo(config.WIDTH, guide.y);
+			}
 			ctx.stroke();
 		}
 	}

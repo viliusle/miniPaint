@@ -22,6 +22,8 @@ config.mouse = {};
 config.swatches = {
 	default: [] // Only default used right now, object format for swatch swapping in future.
 };
+config.guides_enabled = true;
+config.guides = [];
 
 //requires styles in reset.css
 config.themes = [

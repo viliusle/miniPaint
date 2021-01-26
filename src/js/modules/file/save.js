@@ -594,6 +594,7 @@ class File_save_class {
 			date: today,
 			version: VERSION,
 			layer_active: config.layer.id,
+			guides: config.guides,
 		};
 
 		//layers

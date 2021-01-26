@@ -168,6 +168,9 @@ class Base_layers_class {
 			//grid
 			this.Base_gui.draw_grid(this.ctx);
 
+			//guides
+			this.Base_gui.draw_guides(this.ctx);
+
 			//render selected object controls
 			this.Base_selection.draw_selection();
 
@@ -691,6 +694,15 @@ class Base_layers_class {
 			width: config.WIDTH,
 			height: config.HEIGHT,
 		};
+	}
+
+	/**
+	 * returns all layers
+	 *
+	 * @returns {array}
+	 */
+	get_layers() {
+		return config.layers;
 	}
 
 }

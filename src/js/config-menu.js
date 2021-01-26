@@ -243,6 +243,24 @@ const menuDefinition = [
 				target: 'image/grid.grid'
 			},
 			{
+				name: 'Guides',
+				children: [
+					{
+						name: 'Insert',
+						ellipsis: true,
+						target: 'image/guides.insert'
+					},
+					{
+						name: 'Update',
+						target: 'image/guides.update'
+					},
+					{
+						name: 'Remove all',
+						target: 'image/guides.remove'
+					}
+				]
+			},
+			{
 				divider: true
 			},
 			{

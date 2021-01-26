@@ -585,6 +585,16 @@ class Base_tools_class {
 				config.HEIGHT,
 			],
 		};
+		if(config.guides_enabled == true){
+			//use guides
+			for(var i in config.guides){
+				var guide = config.guides[i];
+				if(guide.y === null)
+					snap_positions.x.push(guide.x);
+				else
+					snap_positions.y.push(guide.y);
+			}
+		}
 		for(var i in config.layers){
 			if(exclude_id != null && exclude_id == config.layers[i].id){
 				continue;
