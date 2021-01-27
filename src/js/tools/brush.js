@@ -89,7 +89,7 @@ class Brush_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(event);
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -132,7 +132,7 @@ class Brush_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(event);
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -165,7 +165,7 @@ class Brush_class extends Base_tools_class {
 			return;
 
 		var mouse = this.get_mouse_info(event);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -196,7 +196,7 @@ class Brush_class extends Base_tools_class {
 
 	mousedown_action(e, index, event_identifier) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.click_valid == false)
 			return;
 
 		var params_hash = this.get_params_hash();
@@ -276,7 +276,7 @@ class Brush_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -309,7 +309,7 @@ class Brush_class extends Base_tools_class {
 
 	mouseup_action(e, index) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			config.layer.status = null;
 			return;
 		}

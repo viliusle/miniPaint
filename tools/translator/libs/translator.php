@@ -60,12 +60,20 @@ class Translator {
 				throw new Exception('can not get file content: ' . $content);
 
 			$strings = array();
+
+			//drop svg
+			$content = preg_replace('|<path.*/>|i', '', $content);
+
+			//drop
+			$content = stripslashes($content);
+
 			if (stripos($file, '.js') !== false) {
 				//json
 
 				$ignore_matches = [
 					'\.addEventListener',
 					'\.style\.',
+					'aria-label',
 				];
 				foreach ($ignore_matches as $ignore_match) {
 					$content = preg_replace('/' . $ignore_match . '.*/', '', $content);
@@ -85,7 +93,7 @@ class Translator {
 			}
 			if (stripos($file, '.htm') !== false || true) {
 				//html
-				$ignore_tags = [
+				$ignore_attributes = [
 					'dir',
 					'lang',
 					'http-equiv',
@@ -102,9 +110,10 @@ class Translator {
 					'onKeyUp',
 					'oninput',
 					'src',
+					'aria-label',
 				];
-				foreach ($ignore_tags as $ignore_tag) {
-					$content = preg_replace('/' . $ignore_tag . '="[^"]*"/', '', $content);
+				foreach ($ignore_attributes as $ignore_attribute) {
+					$content = preg_replace('/' . $ignore_attribute . '="[^"]*"/', '', $content);
 				}
 
 				//extract between " "
@@ -197,7 +206,7 @@ class Translator {
 			$lang = $_POST['lang'];
 
 		echo '<textarea name="out" style="width:100%;height:25vh;">' . implode("\n", $data) . '</textarea><br /><br />';
-		echo 'Transalte text above with <a href="https://translate.google.com/">translator</a> and paste result below:<br /><br />';
+		echo 'Translate text above with <a href="https://translate.google.com/">translator</a> and paste result below:<br /><br />';
 		echo '<textarea name="in" style="width:100%;height:25vh;">' . $in_content . '</textarea><br />';
 		echo '<input type="submit" name="action" value="Translate manually" />';
 	}
@@ -252,7 +261,7 @@ class Translator {
 
 			$translation = $service->translate('en', $lang, $text);
 			if ($translation == '') {
-				throw new Exception('empty response from transation service');
+				throw new Exception('empty response from translation service');
 			}
 			$translation = str_replace("\r", '', $translation);
 			$translation = explode("\n", $translation);
@@ -270,7 +279,7 @@ class Translator {
 
 			//merge
 			$merged = (object) array_merge((array) $this->translations, (array) $old);
-			
+
 			//remove not use elements
 			foreach ($merged as $k => $v) {
 				if (isset($this->translations->$k) == false) {
@@ -295,8 +304,6 @@ class Translator {
 			//sleep 05-1s
 			usleep(rand(500, 1000) * 1000);
 		}
-
-		$this->save_empty();
 	}
 
 	/**
@@ -312,10 +319,10 @@ class Translator {
 		foreach($this->strings as $value){
 			$data->$value = '';
 		}
-		
-		$html = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-		$written = file_put_contents($LANG_DIR_EMPTY, $html);
+		$data_encoded = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+		$written = file_put_contents($LANG_DIR_EMPTY, $data_encoded);
 		if ($written == 0) {
 			throw new Exception('can not write to: ' . $LANG_DIR_EMPTY);
 		}
@@ -325,7 +332,7 @@ class Translator {
 	}
 
 	/**
-	 * show formated translation, use json. parameters are only for testing mode
+	 * show formatted translation, use json. parameters are only for testing mode
 	 */
 	public function show_merged() {
 		echo '<textarea style="width:100%;height:30vh;margin-top:10px;">';

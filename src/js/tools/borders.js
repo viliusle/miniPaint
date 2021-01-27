@@ -56,6 +56,31 @@ class Borders_class extends Base_tools_class {
 		ctx.restore();
 	}
 
+	add_borders(params) {
+		window.State.save();
+
+		//create borders layer
+		this.layer = {
+			name: 'Borders',
+			type: 'borders',
+			render_function: ['borders', 'render'],
+			params: {size: params.size, shadow: params.shadow},
+			color: params.color,
+			x: config.layer ? config.layer.x - params.size / 2 : 0,
+			y: config.layer ? config.layer.y - params.size / 2 : 0,
+			width: config.layer ? config.layer.width + params.size : config.WIDTH,
+			height: config.layer ? config.layer.height + params.size  : config.HEIGHT,
+			is_vector: true,
+		};
+		this.Base_layers.insert(this.layer);
+	}
+
+	on_activate() {
+		var params = this.getParams();
+		console.log('params', params);
+		this.add_borders({size:params.size, shadow:false, color:config.COLOR});
+	}
+
 }
 ;
 export default Borders_class;

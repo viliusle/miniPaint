@@ -29,7 +29,7 @@ class GUI_tools_class {
 		this.Base_gui = new Base_gui_class();
 
 		//active tool
-		this.active_tool = 'brush';
+		this.active_tool = 'select';
 		this.tools_modules = {};
 	}
 

@@ -57,7 +57,7 @@ class Pick_color_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -66,7 +66,7 @@ class Pick_color_class extends Base_tools_class {
 
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false || mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.is_drag == false || mouse.click_valid == false) {
 			return;
 		}
 

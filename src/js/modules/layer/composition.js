@@ -57,6 +57,7 @@ class Layer_composition_class {
 				config.need_render = true;
 			},
 			on_finish: function (params) {
+				console.log(params)
 				config.layer.composition = initial_composition;
 				if (params.composition == '-- Default --') {
 					params.composition = 'source-over';
