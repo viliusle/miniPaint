@@ -27,6 +27,7 @@ class Help_shortcuts_class {
 				{title: "CTRL + Z", value: 'Undo'},
 				{title: "CTRL + A", value: 'Select All'},
 				{title: "CTRL + V", value: 'Paste'},
+				{title: "CTRL + B", value: 'Toggle Top Toolbar'},
 			],
 		};
 		this.POP.show(settings);
