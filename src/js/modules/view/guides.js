@@ -4,7 +4,7 @@ import Helper_class from './../../libs/helpers.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
-class Image_guides_class {
+class View_guides_class {
 
 
 	constructor() {
@@ -120,4 +120,4 @@ class Image_guides_class {
 
 }
 
-export default Image_guides_class;
+export default View_guides_class;

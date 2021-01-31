@@ -5,7 +5,7 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 
 var instance = null;
 
-class Help_translate_class {
+class Tools_translate_class {
 
 	constructor() {
 		//singleton
@@ -67,4 +67,4 @@ class Help_translate_class {
 	}
 }
 
-export default Help_translate_class;
+export default Tools_translate_class;

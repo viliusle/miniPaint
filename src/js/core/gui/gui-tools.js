@@ -6,7 +6,7 @@
 import app from './../../app.js';
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
-import Help_translate_class from './../../modules/help/translate.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Base_gui_class from '../base-gui.js';
 
@@ -25,7 +25,7 @@ class GUI_tools_class {
 		instance = this;
 
 		this.Helper = new Helper_class();
-		this.Help_translate = new Help_translate_class();
+		this.Tools_translate = new Tools_translate_class();
 		this.Base_gui = new Base_gui_class();
 
 		//active tool
@@ -362,7 +362,7 @@ class GUI_tools_class {
 
 		if (config.LANG != 'en') {
 			//retranslate
-			this.Help_translate.translate(config.LANG);
+			this.Tools_translate.translate(config.LANG);
 		}
 	}
 
