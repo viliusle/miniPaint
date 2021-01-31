@@ -24,6 +24,7 @@ config.swatches = {
 };
 config.guides_enabled = true;
 config.guides = [];
+config.ruler_active = false;
 
 //requires styles in reset.css
 config.themes = [

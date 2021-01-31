@@ -184,6 +184,10 @@ const menuDefinition = [
 				]
 			},
 			{
+				name: 'Ruler',
+				target: 'view/ruler.ruler'
+			},
+			{
 				divider: true
 			},
 			{

@@ -22,6 +22,7 @@ class Help_shortcuts_class {
 				{title: "N", value: 'New layer'},
 				{title: "R", value: 'Resize'},
 				{title: "I", value: 'Information'},
+				{title: "U", value: 'Ruler'},
 				{title: "Scroll up", value: 'Zoom in'},
 				{title: "Scroll down", value: 'Zoom out'},
 				{title: "CTRL + Z", value: 'Undo'},

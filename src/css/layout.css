@@ -527,14 +527,40 @@ body .sp-preview{
 
 /* ========== content ======================================================= */
 
-.main_wrapper{
+.ruler_left{
+	display: none;
+	position: absolute;
+	left:0;
+	top: 20px;
+	background-color: #ccc;
+}
+.ruler_top{
+	display: none;
+	position: absolute;
+	left: 20px;
+	top:0;
+	background-color: #ccc;
+}
+.middle_area{
+	position: relative;
 	-ms-grid-row: 2;
 	-ms-grid-column: 2;
 	grid-area: main;
+}
+.main_wrapper{
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
 	overflow: hidden;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+.middle_area.has-ruler .main_wrapper{
+	top: 20px;
+	left: 20px;
 }
 .canvas_wrapper{
 	position:relative;
