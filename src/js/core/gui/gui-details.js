@@ -139,14 +139,19 @@ class GUI_details_class {
 			document.getElementById('text_detail_params').style.display = 'block';
 			document.getElementById('detail_color').closest('.row').style.display = 'none';
 		}
-		else if (config.layer != undefined && (config.layer.color === null || config.layer.type == 'image')) {
-			//hide color
-			document.getElementById('detail_color').closest('.row').style.display = 'none';
-		}
-		else {
+		else{
 			document.getElementById('text_detail_params').style.display = 'none';
-			document.getElementById('detail_color').closest('.row').style.display = 'block';
+
+			if (config.layer != undefined && (config.layer.color === null || config.layer.type == 'image')) {
+				//hide color
+				document.getElementById('detail_color').closest('.row').style.display = 'none';
+			}
+			else {
+				//show color
+				document.getElementById('detail_color').closest('.row').style.display = 'block';
+			}
 		}
+
 		this.render_text(events);
 		this.render_general_select_param('boundary', events);
 		this.render_general_select_param('kerning', events);

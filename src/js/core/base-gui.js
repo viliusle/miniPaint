@@ -11,7 +11,7 @@ import GUI_layers_class from './gui/gui-layers.js';
 import GUI_information_class from './gui/gui-information.js';
 import GUI_details_class from './gui/gui-details.js';
 import GUI_menu_class from './gui/gui-menu.js';
-import Help_translate_class from './../modules/help/translate.js';
+import Tools_translate_class from './../modules/tools/translate.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -61,7 +61,7 @@ class Base_gui_class {
 		this.GUI_information = new GUI_information_class(this);
 		this.GUI_details = new GUI_details_class(this);
 		this.GUI_menu = new GUI_menu_class();
-		this.Help_translate = new Help_translate_class();
+		this.Tools_translate = new Tools_translate_class();
 		this.modules = {};
 	}
 
@@ -109,6 +109,16 @@ class Base_gui_class {
 		}
 		else{
 			config.SNAP = Boolean(snap_cookie);
+		}
+
+		//guides
+		var guides_cookie = this.Helper.getCookie('guides');
+		if (guides_cookie === null) {
+			//default
+			config.guides_enabled = true;
+		}
+		else{
+			config.guides_enabled = Boolean(guides_cookie);
 		}
 	}
 
@@ -245,7 +255,7 @@ class Base_gui_class {
 		
 		if (lang != null && lang != config.LANG) {
 			config.LANG = lang.replace(/([^a-z]+)/gi, '');
-			this.Help_translate.translate(config.LANG);
+			this.Tools_translate.translate(config.LANG);
 		}
 	}
 
@@ -357,6 +367,37 @@ class Base_gui_class {
 			ctx.beginPath();
 			ctx.moveTo(0, 0.5 + i);
 			ctx.lineTo(width, 0.5 + i);
+			ctx.stroke();
+		}
+	}
+
+	draw_guides(ctx){
+		if(config.guides_enabled == false){
+			return;
+		}
+
+		for(var i in config.guides) {
+			var guide = config.guides[i];
+
+			if (guide.x === 0 || guide.y === 0) {
+				continue;
+			}
+
+			//set styles
+			ctx.strokeStyle = '#49ffff';
+			ctx.lineWidth = 1;
+
+			ctx.beginPath();
+			if (guide.y === null) {
+				//vertical
+				ctx.moveTo(guide.x, 0);
+				ctx.lineTo(guide.x, config.HEIGHT);
+			}
+			if (guide.x === null) {
+				//horizontal
+				ctx.moveTo(0, guide.y);
+				ctx.lineTo(config.WIDTH, guide.y);
+			}
 			ctx.stroke();
 		}
 	}

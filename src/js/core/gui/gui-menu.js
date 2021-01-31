@@ -5,7 +5,7 @@
 
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
-import Help_translate_class from './../../modules/help/translate.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 
 /**
  * class responsible for rendering main menu
@@ -20,7 +20,7 @@ class GUI_menu_class {
 		this.lastFocusedMenuBarLink = 0;
 		this.dropdownStack = [];
 
-		this.Help_translate = new Help_translate_class();
+		this.Tools_translate = new Tools_translate_class();
 	}
 
 	render_main() {
@@ -339,7 +339,7 @@ class GUI_menu_class {
 		this.menuContainer.appendChild(dropdownElement);
 
 		if (config.LANG != 'en') {
-			this.Help_translate.translate(config.LANG, this.menuContainer);
+			this.Tools_translate.translate(config.LANG, this.menuContainer);
 		}
 
 		if (focusAfterCreation) {

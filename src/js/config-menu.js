@@ -14,7 +14,7 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'Open File',
-						shortcut: 'O/Drag&Drop',
+						shortcut: 'O',
 						ellipsis: true,
 						target: 'file/open.open_file'
 					},
@@ -52,9 +52,14 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Save As',
+				name: 'Export',
 				ellipsis: true,
 				shortcut: 'S',
+				target: 'file/save.export'
+			},
+			{
+				name: 'Save As',
+				ellipsis: true,
 				target: 'file/save.save'
 			},
 			{
@@ -129,6 +134,69 @@ const menuDefinition = [
 		]
 	},
 	{
+		name: 'View',
+		children: [
+			{
+				name: 'Zoom',
+				children: [
+					{
+						name: 'Zoom In',
+						target: 'view/zoom.in'
+					},
+					{
+						name: 'Zoom Out',
+						target: 'view/zoom.out'
+					},
+					{
+						divider: true
+					},
+					{
+						name: 'Original Size',
+						target: 'view/zoom.original'
+					},
+					{
+						name: 'Fit Window',
+						target: 'view/zoom.auto'
+					}
+				]
+			},
+			{
+				name: 'Grid',
+				shortcut: 'G',
+				target: 'view/grid.grid'
+			},
+			{
+				name: 'Guides',
+				children: [
+					{
+						name: 'Insert',
+						ellipsis: true,
+						target: 'view/guides.insert'
+					},
+					{
+						name: 'Update',
+						target: 'view/guides.update'
+					},
+					{
+						name: 'Remove all',
+						target: 'view/guides.remove'
+					}
+				]
+			},
+			{
+				name: 'Ruler',
+				target: 'view/ruler.ruler'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Full Screen',
+				target: 'view/full_screen.fs'
+			}
+		]
+	},
+	{
 		name: 'Image',
 		children: [
 			{
@@ -147,30 +215,6 @@ const menuDefinition = [
 				ellipsis: true,
 				shortcut: 'T',
 				target: 'image/trim.trim'
-			},
-			{
-				name: 'Zoom',
-				children: [
-					{
-						name: 'Zoom In',
-						target: 'image/zoom.in'
-					},
-					{
-						name: 'Zoom Out',
-						target: 'image/zoom.out'
-					},
-					{
-						divider: true
-					},
-					{
-						name: 'Original Size',
-						target: 'image/zoom.original'
-					},
-					{
-						name: 'Fit Window',
-						target: 'image/zoom.auto'
-					}
-				]
 			},
 			{
 				divider: true
@@ -230,12 +274,6 @@ const menuDefinition = [
 				name: 'Color Palette',
 				ellipsis: true,
 				target: 'image/palette.palette'
-			},
-			{
-				name: 'Grid',
-				ellipsis: true,
-				shortcut: 'G',
-				target: 'image/grid.grid'
 			},
 			{
 				divider: true
@@ -598,6 +636,62 @@ const menuDefinition = [
 				divider: true
 			},
 			{
+				name: 'Language',
+				children: [
+					{
+						name: 'English',
+						target: 'tools/translate.translate.en'
+					},
+					{
+						divider: true
+					},
+					{
+						name: '简体中文',
+						target: 'tools/translate.translate.zh'
+					},
+					{
+						name: 'Español',
+						target: 'tools/translate.translate.es'
+					},
+					{
+						name: 'Français',
+						target: 'tools/translate.translate.fr'
+					},
+					{
+						name: 'Deutsch',
+						target: 'tools/translate.translate.de'
+					},
+					{
+						name: 'Italiano',
+						target: 'tools/translate.translate.it'
+					},
+					{
+						name: '日本語',
+						target: 'tools/translate.translate.ja'
+					},
+					{
+						name: '한국어',
+						target: 'tools/translate.translate.ko'
+					},
+					{
+						name: 'Lietuvių',
+						target: 'tools/translate.translate.lt'
+					},
+					{
+						name: 'Português',
+						target: 'tools/translate.translate.pt'
+					},
+					{
+						name: 'русский язык',
+						target: 'tools/translate.translate.ru'
+					},
+					{
+						name: 'Türkçe',
+						target: 'tools/translate.translate.tr'
+					}
+				]
+			},
+			{
 				name: 'Settings',
 				ellipsis: true,
 				target: 'tools/settings.settings'
@@ -615,62 +709,6 @@ const menuDefinition = [
 			{
 				name: 'Report Issues',
 				href: 'https://github.com/viliusle/miniPaint/issues'
-			},
-			{
-				name: 'Language',
-				children: [
-					{
-						name: 'English',
-						target: 'help/translate.translate.en'
-					},
-					{
-						divider: true
-					},
-					{
-						name: '简体中文',
-						target: 'help/translate.translate.zh'
-					},
-					{
-						name: 'Español',
-						target: 'help/translate.translate.es'
-					},
-					{
-						name: 'Français',
-						target: 'help/translate.translate.fr'
-					},
-					{
-						name: 'Deutsch',
-						target: 'help/translate.translate.de'
-					},
-					{
-						name: 'Italiano',
-						target: 'help/translate.translate.it'
-					},
-					{
-						name: '日本語',
-						target: 'help/translate.translate.ja'
-					},
-					{
-						name: '한국어',
-						target: 'help/translate.translate.ko'
-					},
-					{
-						name: 'Lietuvių',
-						target: 'help/translate.translate.lt'
-					},
-					{
-						name: 'Português',
-						target: 'help/translate.translate.pt'
-					},
-					{
-						name: 'русский язык',
-						target: 'help/translate.translate.ru'
-					},
-					{
-						name: 'Türkçe',
-						target: 'help/translate.translate.tr'
-					}
-				]
 			},
 			{
 				divider: true

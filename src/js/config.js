@@ -22,6 +22,9 @@ config.mouse = {};
 config.swatches = {
 	default: [] // Only default used right now, object format for swatch swapping in future.
 };
+config.guides_enabled = true;
+config.guides = [];
+config.ruler_active = false;
 
 //requires styles in reset.css
 config.themes = [
@@ -33,10 +36,10 @@ config.themes = [
 config.FONTS = [
 	"Arial",
 	"Courier",
-	"Impact", 
+	"Impact",
 	"Helvetica",
-	"Monospace", 
-	"Tahoma", 
+	"Monospace",
+	"Tahoma",
 	"Times New Roman",
 	"Verdana",
 	"Amatic SC",
@@ -427,7 +430,7 @@ config.TOOLS = [
 	},
 	{
 		name: 'bulge_pinch',
-		title: 'Bulge/Pinch tool',
+		title: 'Bulge/Pinch Tool',
 		attributes: {
 			radius: 80,
 			power: 50,

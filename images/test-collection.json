@@ -5,7 +5,11 @@
 		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
 		"date": "2021-01-02",
 		"version": "4.5.0",
-		"layer_active": 1
+		"layer_active": 1,
+		"guides": [
+			{ "x": null, "y": 400},
+			{ "x": null, "y": 600}
+		]
 	},
 	"layers": [
 		{

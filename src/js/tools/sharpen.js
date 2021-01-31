@@ -38,11 +38,11 @@ class Sharpen_class extends Base_tools_class {
 		this.started = false;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 		if (config.layer.type != 'image') {
-			alertify.error('Layer must be image, convert it to raster to apply this tool.');
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
@@ -71,7 +71,7 @@ class Sharpen_class extends Base_tools_class {
 		var params = this.getParams();
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 		if (this.started == false) {

@@ -22,7 +22,7 @@ class Gradient_class extends Base_tools_class {
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.click_valid == false)
 			return;
 
 		var name = this.name;
@@ -61,7 +61,7 @@ class Gradient_class extends Base_tools_class {
 		var params = this.getParams();
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -85,7 +85,7 @@ class Gradient_class extends Base_tools_class {
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			config.layer.status = null;
 			return;
 		}

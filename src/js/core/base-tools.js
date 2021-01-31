@@ -125,7 +125,7 @@ class Base_tools_class {
 
 		var eventType = event.type;
 
-		if (event.target.id != "canvas_minipaint") {
+		if (event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') {
 			//outside canvas
 			this.mouse_valid = false;
 		}
@@ -134,7 +134,7 @@ class Base_tools_class {
 		}
 
 		if (eventType === 'mousedown' || eventType === 'touchstart') {
-			if (event.target.id != "canvas_minipaint" || (event.which != 1 && eventType !== 'touchstart'))
+			if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.which != 1 && eventType !== 'touchstart'))
 				this.mouse_click_valid = false;
 			else
 				this.mouse_click_valid = true;
@@ -390,7 +390,7 @@ class Base_tools_class {
 
 	shape_mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.click_valid == false)
 			return;
 
 		var mouse_x = mouse.x;
@@ -434,7 +434,7 @@ class Base_tools_class {
 
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -487,7 +487,7 @@ class Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			config.layer.status = null;
 			return;
 		}
@@ -585,6 +585,16 @@ class Base_tools_class {
 				config.HEIGHT,
 			],
 		};
+		if(config.guides_enabled == true){
+			//use guides
+			for(var i in config.guides){
+				var guide = config.guides[i];
+				if(guide.y === null)
+					snap_positions.x.push(guide.x);
+				else
+					snap_positions.y.push(guide.y);
+			}
+		}
 		for(var i in config.layers){
 			if(exclude_id != null && exclude_id == config.layers[i].id){
 				continue;

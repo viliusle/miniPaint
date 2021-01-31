@@ -1,11 +1,10 @@
 import config from './../../config.js';
-import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_gui_class from './../../core/base-gui.js';
 
 var instance = null;
 
-class Image_grid_class {
+class View_grid_class {
 
 	constructor() {
 		//singleton
@@ -14,7 +13,6 @@ class Image_grid_class {
 		}
 		instance = this;
 
-		this.POP = new Dialog_class();
 		this.GUI = new Base_gui_class();
 		this.Helper = new Helper_class();
 
@@ -29,29 +27,14 @@ class Image_grid_class {
 
 			if (code == 71 && event.ctrlKey != true && event.metaKey != true) {
 				//G - grid
-				this.toggle_grid({visible: !this.GUI.grid});
+				this.grid({visible: !this.GUI.grid});
 				event.preventDefault();
 			}
 		}, false);
 	}
 
 	grid() {
-		var _this = this;
-
-		var settings = {
-			title: 'Grid',
-			params: [
-				{name: "visible", title: "Visible:", value: this.GUI.grid},
-			],
-			on_finish: function (params) {
-				_this.toggle_grid(params);
-			},
-		};
-		this.POP.show(settings);
-	}
-
-	toggle_grid(params) {
-		if (params.visible == true) {
+		if (this.GUI.grid == false) {
 			this.GUI.grid = true;
 		}
 		else {
@@ -62,4 +45,4 @@ class Image_grid_class {
 
 }
 
-export default Image_grid_class;
+export default View_grid_class;

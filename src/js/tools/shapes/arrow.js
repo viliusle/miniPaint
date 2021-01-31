@@ -22,8 +22,9 @@ class Arrow_class extends Base_tools_class {
 
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false)
+		if (mouse.click_valid == false) {
 			return;
+		}
 
 		var mouse_x = mouse.x;
 		var mouse_y = mouse.y;
@@ -48,8 +49,8 @@ class Arrow_class extends Base_tools_class {
 			params: this.clone(this.getParams()),
 			status: 'draft',
 			render_function: [this.name, 'render'],
-			x: mouse_x,
-			y: mouse_y,
+			x: Math.round(mouse_x),
+			y: Math.round(mouse_y),
 			rotate: null,
 			is_vector: true,
 			color: config.COLOR
@@ -65,7 +66,7 @@ class Arrow_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.is_drag == false)
 			return;
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			return;
 		}
 
@@ -104,7 +105,7 @@ class Arrow_class extends Base_tools_class {
 
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.valid == false || mouse.click_valid == false) {
+		if (mouse.click_valid == false) {
 			config.layer.status = null;
 			return;
 		}
@@ -125,7 +126,6 @@ class Arrow_class extends Base_tools_class {
 			}
 		}
 		this.snap_line_info = {x: null, y: null};
-
 
 		var width = mouse_x - this.layer.x;
 		var height = mouse_y - this.layer.y;

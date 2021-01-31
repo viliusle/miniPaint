@@ -524,6 +524,9 @@ class File_open_class {
 				new app.Actions.Select_layer_action(json.info.layer_active, true)
 			);
 		}
+		if (json.info.guides != undefined) {
+			config.guides = json.info.guides;
+		}
 		actions.push(
 			new app.Actions.Set_object_property_action(this.Base_layers, 'auto_increment', max_id_order + 1)
 		);

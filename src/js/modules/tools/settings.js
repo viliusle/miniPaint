@@ -56,6 +56,15 @@ class Tools_settings_class {
 			var snap = Boolean(snap_cookie);
 		}
 
+		//guides
+		var guides_cookie = this.Helper.getCookie('guides');
+		if (guides_cookie === null) {
+			var guides = true; //default
+		}
+		else{
+			var guides = Boolean(guides_cookie);
+		}
+
 		var settings = {
 			title: 'Settings',
 			params: [
@@ -65,6 +74,7 @@ class Tools_settings_class {
 				{name: "theme", title: "Theme", values: config.themes, value: theme},
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
 				{name: "snap", title: "Enable snap:", value: snap},
+				{name: "guides", title: "Enable guides:", value: guides},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -118,6 +128,16 @@ class Tools_settings_class {
 		else {
 			this.Helper.setCookie('snap', 0);
 			config.SNAP = false;
+		}
+
+		//guides
+		if (params.guides) {
+			this.Helper.setCookie('guides', 1);
+			config.guides_enabled = true;
+		}
+		else {
+			this.Helper.setCookie('guides', 0);
+			config.guides_enabled = false;
 		}
 
 		//finish

@@ -1,6 +1,6 @@
 import GUI_preview_class from './../../core/gui/gui-preview.js';
 
-class Image_translate_class {
+class View_zoom_class {
 
 	constructor() {
 		this.GUI_preview = new GUI_preview_class();
@@ -23,4 +23,4 @@ class Image_translate_class {
 	}
 }
 
-export default Image_translate_class;
+export default View_zoom_class;

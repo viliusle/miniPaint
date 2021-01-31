@@ -8,6 +8,7 @@ import config from './../config.js';
 import Base_gui_class from './base-gui.js';
 import Base_selection_class from './base-selection.js';
 import Image_trim_class from './../modules/image/trim.js';
+import View_ruler_class from './../modules/view/ruler.js';
 import zoomView from './../libs/zoomView.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
@@ -53,6 +54,7 @@ class Base_layers_class {
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
 		this.Image_trim = new Image_trim_class();
+		this.View_ruler = new View_ruler_class();
 
 		this.canvas = document.getElementById('canvas_minipaint');
 		this.ctx = document.getElementById('canvas_minipaint').getContext("2d");
@@ -168,6 +170,9 @@ class Base_layers_class {
 			//grid
 			this.Base_gui.draw_grid(this.ctx);
 
+			//guides
+			this.Base_gui.draw_guides(this.ctx);
+
 			//render selected object controls
 			this.Base_selection.draw_selection();
 
@@ -182,6 +187,7 @@ class Base_layers_class {
 			this.last_zoom = config.ZOOM;
 
 			this.Base_gui.GUI_details.render_details();
+			this.View_ruler.render_ruler();
 
 			if(this.render_success === false){
 				alertify.error('Rendered with errors.');
@@ -691,6 +697,15 @@ class Base_layers_class {
 			width: config.WIDTH,
 			height: config.HEIGHT,
 		};
+	}
+
+	/**
+	 * returns all layers
+	 *
+	 * @returns {array}
+	 */
+	get_layers() {
+		return config.layers;
 	}
 
 }
