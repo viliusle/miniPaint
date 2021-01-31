@@ -182,6 +182,13 @@ const menuDefinition = [
 						target: 'view/guides.remove'
 					}
 				]
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Full Screen',
+				target: 'view/full_screen.fs'
 			}
 		]
 	},
