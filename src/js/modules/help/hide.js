@@ -7,7 +7,6 @@ class Help_about_class {
 	constructor() {
 		this.Helper = new Helper_class();
 		this.target = document.getElementById("main_menu");
-		this.original = this.target.style['display'];
 
 		this.set_events();
 	}
@@ -19,7 +18,6 @@ class Help_about_class {
 				return;
 
 			if (key == "b" && (event.ctrlKey == true || event.metaKey)) {
-				// Undo
 				this.toggle();
 				event.preventDefault();
 			}
@@ -27,10 +25,10 @@ class Help_about_class {
 	}
 
 	toggle() {
-		if (this.target.style['display'] == this.original) {
+		if (this.target.style['display'] != 'none') {
 			this.target.style['display'] = 'none';
 		} else {
-			this.target.style['display'] = this.original;
+			this.target.style['display'] = 'inline';
 		}
 	}
 
