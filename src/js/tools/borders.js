@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -57,8 +58,6 @@ class Borders_class extends Base_tools_class {
 	}
 
 	add_borders(params) {
-		window.State.save();
-
 		//create borders layer
 		this.layer = {
 			name: 'Borders',
@@ -72,13 +71,15 @@ class Borders_class extends Base_tools_class {
 			height: config.layer ? config.layer.height + params.size  : config.HEIGHT,
 			is_vector: true,
 		};
-		this.Base_layers.insert(this.layer);
+		app.State.do_action(
+			new app.Actions.Bundle_action('add_borders', 'Add Borders', [
+				new app.Actions.Insert_layer_action(this.layer)
+			])
+		);
 	}
 
 	on_activate() {
-		var params = this.getParams();
-		console.log('params', params);
-		this.add_borders({size:params.size, shadow:false, color:config.COLOR});
+		this.add_borders({size:12, shadow:false, color:config.COLOR});
 	}
 
 }

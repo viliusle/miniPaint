@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
@@ -19,13 +20,21 @@ class Mask_class extends Base_tools_class {
 	}
 
 	on_activate() {
-		window.State.save();
+		var composition;
 		if (config.layer.composition == 'source-atop'){
-			config.layer.composition = 'source-over';
+			composition = 'source-over';
 		} else {
-			config.layer.composition = 'source-atop';
+			composition = 'source-atop';
 		}
 		config.need_render = true;
+
+		app.State.do_action(
+			new app.Actions.Bundle_action('change_composition', 'Change Composition', [
+				new app.Actions.Update_layer_action(config.layer.id, {
+					composition: composition
+				})
+			])
+		);
 	}
 
 }
