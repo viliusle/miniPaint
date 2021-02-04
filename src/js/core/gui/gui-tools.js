@@ -147,222 +147,235 @@ class GUI_tools_class {
 		var target_id = "action_attributes";
 
 		const itemContainer = document.getElementById(target_id);
-
 		itemContainer.innerHTML = "";
 
-		const attributes = this.action_data().attributes;
+		const attributes = this.action_data().attributes || {};
 
-		let itemDom;
-		let currentButtonGroup = null;
-		for (var k in attributes) {
-			var item = attributes[k];
+		if (!('no_show' in attributes && attributes['no_show'] == true)) {
+			let itemDom;
+			let currentButtonGroup = null;
+			for (var k in attributes) {
+				var item = attributes[k];
 
-			var title = k[0].toUpperCase() + k.slice(1);
-			title = title.replace("_", " ");
+				var title = k[0].toUpperCase() + k.slice(1);
+				title = title.replace("_", " ");
 
-			if (typeof item == 'object' && typeof item.value == 'boolean' && item.icon) {
-				if (currentButtonGroup == null) {
-					currentButtonGroup = document.createElement('div');
-					currentButtonGroup.className = 'ui_button_group no_wrap';
+				if (title == "No show"){
+					continue;
+				}
+
+				if (typeof item == 'object' && typeof item.value == 'boolean' && item.icon) {
+					if (currentButtonGroup == null) {
+						currentButtonGroup = document.createElement('div');
+						currentButtonGroup.className = 'ui_button_group no_wrap';
+						itemDom = document.createElement('div');
+						itemDom.className = 'item ' + k;
+						itemContainer.appendChild(itemDom);
+						itemDom.appendChild(currentButtonGroup);
+					} else {
+						itemDom.classList.add(k);
+					}
+				} else {
 					itemDom = document.createElement('div');
 					itemDom.className = 'item ' + k;
 					itemContainer.appendChild(itemDom);
-					itemDom.appendChild(currentButtonGroup);
-				} else {
-					itemDom.classList.add(k);
+					currentButtonGroup = null;
 				}
-			} else {
-				itemDom = document.createElement('div');
-				itemDom.className = 'item ' + k;
-				itemContainer.appendChild(itemDom);
-				currentButtonGroup = null;
-			}
 
-			if (typeof item == 'boolean' || (typeof item == 'object' && typeof item.value == 'boolean')) {
-				//boolean - true, false
+				if (typeof item == 'boolean' || (typeof item == 'object' && typeof item.value == 'boolean')) {
 
-				let value = item;
-				let icon = null;
-				if (typeof item == 'object') {
-					value = item.value;
-					if (item.icon) {
-						icon = item.icon;
+					//boolean - true, false
+					let value = item;
+					let icon = null;
+					if (typeof item == 'object') {
+						value = item.value;
+						if (item.icon) {
+							icon = item.icon;
+						}
 					}
-				}
 
-				const element = document.createElement('button');
-				element.className = 'trn';
-				element.type = 'button';
-				element.id = k;
-				element.innerHTML = title;
-				element.setAttribute('aria-pressed', value);
-				if (icon) {
-					element.classList.add('ui_icon_button');
-					element.classList.add('input_height');
-					element.innerHTML = icon;
-					element.innerHTML = '<img style="width:16px;height:16px;" alt="'+title+'" src="images/icons/'+icon+'" />';
-				} else {
-					element.classList.add('ui_toggle_button');
-				}
-				//event
-				element.addEventListener('click', (event) => {
-					//toggle boolean
-					var new_value = element.getAttribute('aria-pressed') !== 'true';
-					const actionData = this.action_data();
-					const attributes = actionData.attributes;
-					const id = event.target.closest('button').id;
-					if (typeof attributes[id] === 'object') {
-						attributes[id].value = new_value;
+					const element = document.createElement('button');
+					element.className = 'trn';
+					element.type = 'button';
+					element.id = k;
+					element.innerHTML = title;
+					element.setAttribute('aria-pressed', value);
+					if (icon) {
+						element.classList.add('ui_icon_button');
+						element.classList.add('input_height');
+						element.innerHTML = icon;
+						element.innerHTML = '<img style="width:16px;height:16px;" alt="'+title+'" src="images/icons/'+icon+'" />';
 					} else {
-						attributes[id] = new_value;
+						element.classList.add('ui_toggle_button');
 					}
-					element.setAttribute('aria-pressed', new_value);
-					if (actionData.on_update != undefined) {
-						//send event
-						var moduleKey = actionData.name;
-						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey].object[functionName]({ key: id, value: new_value });
-					}
-				});
-
-				if (currentButtonGroup) {
-					currentButtonGroup.appendChild(element);
-				} else {
-					itemDom.appendChild(element);
-				}
-			}
-			else if (typeof item == 'number' || (typeof item == 'object' && typeof item.value == 'number')) {
-				//numbers
-				let min = 1;
-				let max = k === 'power' ? 100 : 999;
-				let value = item;
-				let step = null;
-				if (typeof item == 'object') {
-					value = item.value;
-					if (item.min != null) {
-						min = item.min;
-					}
-					if (item.max != null) {
-						max = item.max;
-					}
-					if (item.step != null) {
-						step = item.step;
-					}
-				}
-
-				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
-				elementTitle.id = 'attribute_label_' + k;
-
-				const elementInput = document.createElement('input');
-				elementInput.type = 'number';
-				elementInput.setAttribute('aria-labelledby', 'attribute_label_' + k);
-				const $numberInput = $(elementInput)
-					.uiNumberInput({
-						id: k,
-						min,
-						max,
-						value,
-						step: step || 1,
-						exponentialStepButtons: !step
-					})
-					.on('input', () => {
-						let value = $numberInput.uiNumberInput('get_value');
-						const id = $numberInput.uiNumberInput('get_id');
+					//event
+					element.addEventListener('click', (event) => {
+						//toggle boolean
+						var new_value = element.getAttribute('aria-pressed') !== 'true';
 						const actionData = this.action_data();
 						const attributes = actionData.attributes;
+						const id = event.target.closest('button').id;
 						if (typeof attributes[id] === 'object') {
-							attributes[id].value = value;
+							attributes[id].value = new_value;
 						} else {
-							attributes[id] = value;
+							attributes[id] = new_value;
 						}
-
+						element.setAttribute('aria-pressed', new_value);
 						if (actionData.on_update != undefined) {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: id, value: new_value });
 						}
 					});
 
-				itemDom.appendChild(elementTitle);
-				itemDom.appendChild($numberInput[0]);
-			}
-			else if (typeof item == 'object') {
-				//select
-
-				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
-				elementTitle.for = k;
-
-				var selectList = document.createElement("select");
-				selectList.id = k;
-				for (var j in item.values) {
-					var option = document.createElement("option");
-					if (item.value == item.values[j]) {
-						option.selected = 'selected';
+					if (currentButtonGroup) {
+						currentButtonGroup.appendChild(element);
+					} else {
+						itemDom.appendChild(element);
 					}
-					option.className = 'trn';
-					option.name = item.values[j];
-					option.value = item.values[j];
-					option.text = item.values[j];
-					selectList.appendChild(option);
 				}
-				//event
-				selectList.addEventListener('change', (event) => {
-					const actionData = this.action_data();
-					actionData.attributes[event.target.id].value = event.target.value;
-					this.show_action_attributes();
-
-					if (actionData.on_update != undefined) {
-						//send event
-						var moduleKey = actionData.name;
-						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
+				else if (typeof item == 'number' || (typeof item == 'object' && typeof item.value == 'number')) {
+					//numbers
+					let min = 1;
+					let max = k === 'power' ? 100 : 999;
+					let value = item;
+					let step = null;
+					if (typeof item == 'object') {
+						value = item.value;
+						if (item.min != null) {
+							min = item.min;
+						}
+						if (item.max != null) {
+							max = item.max;
+						}
+						if (item.step != null) {
+							step = item.step;
+						}
 					}
-				});
 
-				itemDom.appendChild(elementTitle);
-				itemDom.appendChild(selectList);
-			}
-			else if (typeof item == 'string' && item[0] == '#') {
-				//color
+					var elementTitle = document.createElement('label');
+					elementTitle.innerHTML = title + ': ';
+					elementTitle.id = 'attribute_label_' + k;
 
-				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
-				elementTitle.for = k;
+					const elementInput = document.createElement('input');
+					elementInput.type = 'number';
+					elementInput.setAttribute('aria-labelledby', 'attribute_label_' + k);
+					const $numberInput = $(elementInput)
+						.uiNumberInput({
+							id: k,
+							min,
+							max,
+							value,
+							step: step || 1,
+							exponentialStepButtons: !step
+						})
+						.on('input', () => {
+							let value = $numberInput.uiNumberInput('get_value');
+							const id = $numberInput.uiNumberInput('get_id');
+							const actionData = this.action_data();
+							const attributes = actionData.attributes;
+							if (typeof attributes[id] === 'object') {
+								attributes[id].value = value;
+							} else {
+								attributes[id] = value;
+							}
 
-				var colorInput = document.createElement('input');
-				colorInput.type = 'color';
-				const $colorInput = $(colorInput)
-					.uiColorInput({
-						id: k,
-						value: item
-					})
-					.on('change', () => {
-						let value = $colorInput.uiColorInput('get_value');
-						const id = $colorInput.uiColorInput('get_id');
+							if (actionData.on_update != undefined) {
+								//send event
+								var moduleKey = actionData.name;
+								var functionName = actionData.on_update;
+								this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
+							}
+						});
+
+					itemDom.appendChild(elementTitle);
+					itemDom.appendChild($numberInput[0]);
+				}
+				else if (typeof item == 'object') {
+					//select
+
+					var elementTitle = document.createElement('label');
+					elementTitle.innerHTML = title + ': ';
+					elementTitle.for = k;
+
+					var selectList = document.createElement("select");
+					selectList.id = k;
+					for (var j in item.values) {
+						var option = document.createElement("option");
+						if (item.value == item.values[j]) {
+							option.selected = 'selected';
+						}
+						option.className = 'trn';
+						option.name = item.values[j];
+						option.value = item.values[j];
+						option.text = item.values[j];
+						selectList.appendChild(option);
+					}
+					//event
+					selectList.addEventListener('change', (event) => {
 						const actionData = this.action_data();
-						actionData.attributes[id] = value;
+						actionData.attributes[event.target.id].value = event.target.value;
+						this.show_action_attributes();
+
 						if (actionData.on_update != undefined) {
 							//send event
 							var moduleKey = actionData.name;
 							var functionName = actionData.on_update;
-							this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
+							this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
 						}
 					});
 
-				itemDom.appendChild(elementTitle);
-				itemDom.appendChild($colorInput[0]);
+					itemDom.appendChild(elementTitle);
+					itemDom.appendChild(selectList);
+				}
+				else if (typeof item == 'string' && item[0] == '#') {
+					//color
+
+					var elementTitle = document.createElement('label');
+					elementTitle.innerHTML = title + ': ';
+					elementTitle.for = k;
+
+					var colorInput = document.createElement('input');
+					colorInput.type = 'color';
+					const $colorInput = $(colorInput)
+						.uiColorInput({
+							id: k,
+							value: item
+						})
+						.on('change', () => {
+							let value = $colorInput.uiColorInput('get_value');
+							const id = $colorInput.uiColorInput('get_id');
+							const actionData = this.action_data();
+							actionData.attributes[id] = value;
+							if (actionData.on_update != undefined) {
+								//send event
+								var moduleKey = actionData.name;
+								var functionName = actionData.on_update;
+								this.tools_modules[moduleKey].object[functionName]({ key: id, value: value });
+							}
+						});
+
+					itemDom.appendChild(elementTitle);
+					itemDom.appendChild($colorInput[0]);
+				}
+				else {
+					alertify.error('Error: unsupported attribute type:' + typeof item + ', ' + k);
+				}
 			}
-			else {
-				alertify.error('Error: unsupported attribute type:' + typeof item + ', ' + k);
+
+			if (config.LANG != 'en') {
+				//retranslate
+				this.Help_translate.translate(config.LANG);
 			}
 		}
 
-		if (config.LANG != 'en') {
-			//retranslate
-			this.Help_translate.translate(config.LANG);
+		if (itemContainer.innerHTML == "" && !('no_show' in attributes && attributes['no_show'] == false)) {
+			var submenu = itemContainer.parentElement;
+			submenu.style['visibility'] = 'hidden';
+		} else {
+			var submenu = itemContainer.parentElement;
+			submenu.style['visibility'] = 'visible';
 		}
 	}
 

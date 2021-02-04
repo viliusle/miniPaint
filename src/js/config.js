@@ -162,6 +162,10 @@ config.TOOLS = [
 		name: 'borders',
 		title: 'Border',
 		on_activate: 'on_activate',
+		attributes: {
+			size: 12,
+			no_show: true,
+		},
 	},
 	{
 		name: 'undo',
