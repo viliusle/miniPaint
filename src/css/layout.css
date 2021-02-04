@@ -648,7 +648,7 @@ canvas{
 		padding-top:50px;
 	}
 	.wrapper{
-		top: 50px;
+		top: 0px;
 	}
 }
 @media screen and (max-width:550px){

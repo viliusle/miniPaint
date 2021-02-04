@@ -619,7 +619,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'Hide/Show Top Menu',
-				shortcut: 'Ctrl+B',
+				shortcut: 'Ctrl+E',
 				target: 'help/hide.toggle'
 			},
 			{
