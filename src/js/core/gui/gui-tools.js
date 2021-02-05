@@ -372,10 +372,10 @@ class GUI_tools_class {
 
 		if (itemContainer.innerHTML == "" && !('no_show' in attributes && attributes['no_show'] == false)) {
 			var submenu = itemContainer.parentElement;
-			submenu.style['visibility'] = 'hidden';
+			submenu.style['display'] = 'none';
 		} else {
 			var submenu = itemContainer.parentElement;
-			submenu.style['visibility'] = 'visible';
+			submenu.style['display'] = 'flex';
 		}
 	}
 

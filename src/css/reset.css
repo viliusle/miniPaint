@@ -116,7 +116,7 @@ html {
 body{
 	margin: 0px;
 	padding: 0px;
-	padding-top: 30px;
+	padding-top: 0px;
 	background-color: #424F5A;
 	background: var(--background);
 	font-size: 1.3rem;

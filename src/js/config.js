@@ -74,6 +74,7 @@ config.TOOLS = [
 		name: 'select',
 		title: 'Select object tool',
 		attributes: {
+			no_show: true,
 			auto_select: true,
 		},
 	},
