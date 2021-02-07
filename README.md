@@ -26,7 +26,7 @@ browser.
 
 ## Features
 
-- **Files**: open images, directories, URL, data URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, JSON 
+- **Files**: open images, directories, URL, data URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON 
 (layers data), print.
 - **Edit**: Undo, cut, copy, paste, selection, paste from clipboard.
 - **Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, 

@@ -7,6 +7,7 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
 import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
 import GIF from './../../libs/gifjs/gif.js';
+import CanvasToTIFF from './../../libs/canvastotiff.js';
 
 var instance = null;
 
@@ -39,6 +40,7 @@ class File_save_class {
 			WEBP: "Weppy File Format",
 			GIF: "Graphics Interchange Format",
 			BMP: "Windows Bitmap",
+			TIFF: "Tag Image File Format",
 		};
 
 		this.default_extension = 'PNG';
@@ -354,6 +356,14 @@ class File_save_class {
 				_this.update_file_size(blob.size);
 			}, data_header);
 		}
+		else if (type == 'TIFF') {
+			//tiff
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
+				_this.update_file_size(blob.size);
+			});
+		}
 		else if (type == 'JSON') {
 			//json
 			var data_json = this.export_as_json();
@@ -499,6 +509,16 @@ class File_save_class {
 			canvas.toBlob(function (blob) {
 				filesaver.saveAs(blob, fname);
 			}, data_header);
+		}
+		else if (type == 'TIFF') {
+			//tiff
+			if (this.Helper.strpos(fname, '.tiff') == false)
+				fname = fname + ".tiff";
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
+				filesaver.saveAs(blob, fname);
+			});
 		}
 		else if (type == 'JSON') {
 			//json - full data with layers
