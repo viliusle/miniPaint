@@ -164,6 +164,11 @@
 	text-align: center;
 	max-width: 150px;
 }
+#popup .field_comment{
+	display: inline-block;
+	margin-left: 10px;
+	opacity: 0.5;
+}
 
 @media screen and (max-width:500px){
 	#popup {

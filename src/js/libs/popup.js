@@ -514,20 +514,27 @@ class Dialog_class {
 						if (parameter.placeholder == undefined)
 							parameter.placeholder = '';
 						if (parameter.type == 'textarea') {
+							//textarea
 							html += '<td><textarea rows="10" id="pop_data_' + parameter.name
 								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">'
 								+ parameter.value + '</textarea></td>';
 						}
 						else {
+							//text or number
 							var input_type = "text";
 							if (parameter.placeholder != '' && !isNaN(parameter.placeholder))
 								input_type = 'number';
 							if (parameter.value != undefined && typeof parameter.value == 'number')
 								input_type = 'number';
 
+							var comment_html = '';
+							if (typeof parameter.comment !== 'undefined') {
+								comment_html = '<span class="field_comment trn">' + parameter.comment + '</span>';
+							}
+
 							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name
 								+ '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="'
-								+ parameter.placeholder + '" /></td>';
+								+ parameter.placeholder + '" />'+comment_html+'</td>';
 						}
 					}
 				}

@@ -22,10 +22,10 @@ class Image_size_class {
 		}
 
 		var settings = {
-			title: 'Size',
+			title: 'Canvas size',
 			params: [
-				{name: "w", title: "Width:", value: config.WIDTH, placeholder: config.WIDTH},
-				{name: "h", title: "Height:", value: config.HEIGHT, placeholder: config.HEIGHT},
+				{name: "w", title: "Width:", value: config.WIDTH, placeholder: config.WIDTH, comment: "in pixels"},
+				{name: "h", title: "Height:", value: config.HEIGHT, placeholder: config.HEIGHT, comment: "in pixels"},
 				{name: "resolution", title: "Resolution:", values: resolutions},
 			],
 			on_finish: function (params) {

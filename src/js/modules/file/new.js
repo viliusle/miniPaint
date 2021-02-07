@@ -60,8 +60,8 @@ class File_new_class {
 		var settings = {
 			title: 'New file',
 			params: [
-				{name: "width", title: "Width:", value: w},
-				{name: "height", title: "Height:", value: h},
+				{name: "width", title: "Width:", value: w, comment: "in pixels"},
+				{name: "height", title: "Height:", value: h, comment: "in pixels"},
 				{name: "resolution", title: "Resolution:", values: resolutions},
 				{name: "transparency", title: "Transparent:", value: transparency},
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
