@@ -12,12 +12,6 @@ const sidebarTemplate = `
 	<div class="ui_flex_group justify_content_space_between stacked">
 		<div id="selected_color_sample" class="ui_color_sample" title="Current Color Preview"></div>
 		<div class="ui_button_group">
-			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Swatches">
-				<span class="sr_only">Toggle Swatches</span>
-				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-grid-3x2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-8zM1.5 3a.5.5 0 0 0-.5.5V7h4V3H1.5zM5 8H1v3.5a.5.5 0 0 0 .5.5H5V8zm1 0h4v4H6V8zm4-1H6V3h4v4zm1 1v4h3.5a.5.5 0 0 0 .5-.5V8h-4zm0-1V3h3.5a.5.5 0 0 1 .5.5V7h-4z"/>
-				</svg>
-			</button>
 			<button id="toggle_color_picker_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Color Picker">
 				<span class="sr_only">Toggle Color Picker</span>
 				<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -39,6 +33,12 @@ const sidebarTemplate = `
 					<circle cx="3.5" cy="10.5" r=".5"/>
 				</svg>
 			</button>
+			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Swatches">
+				<span class="sr_only">Toggle Swatches</span>
+				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-grid-3x2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-8zM1.5 3a.5.5 0 0 0-.5.5V7h4V3H1.5zM5 8H1v3.5a.5.5 0 0 0 .5.5H5V8zm1 0h4v4H6V8zm4-1H6V3h4v4zm1 1v4h3.5a.5.5 0 0 0 .5-.5V8h-4zm0-1V3h3.5a.5.5 0 0 1 .5.5V7h-4z"/>
+				</svg>
+			</button>
 		</div>
 	</div>
 	<div id="color_section_swatches" class="block_section">
@@ -46,12 +46,12 @@ const sidebarTemplate = `
 	</div>
 	<div id="color_section_picker" class="block_section">
 		<input id="color_picker_gradient" type="color" aria-label="Color Selection">
-	</div>
-	<div id="color_section_channels" class="block_section color_section_channels">
 		<div class="ui_input_group stacked">
 			<label id="color_hex_label" title="Hex" class="label_width_small">Hex</label>
 			<input id="color_hex" aria-labelledby="color_hex_label" value="#000000" maxlength="7" type="text" />
 		</div>
+	</div>
+	<div id="color_section_channels" class="block_section color_section_channels">
 		<div class="ui_input_grid stacked">
 			<div class="ui_input_group">
 				<label id="rgb_r_label" title="Red" class="label_width_character text_red"><strong>R<span class="sr_only">ed</span></strong></label>
@@ -195,6 +195,8 @@ class GUI_colors_class {
 	}
 
 	init_components() {
+		var _this = this;
+
 		// Store button references
 		this.buttons = {
 			toggleColorSwatches: $('#toggle_color_swatches_section_button', this.el),
@@ -287,6 +289,20 @@ class GUI_colors_class {
 				}
 				Helper.setCookie('toggle_color_picker', isPressed ? 1 : 0);
 			});
+		document.getElementById('selected_color_sample').addEventListener('click', function (event) {
+			_this.buttons.toggleColorPicker.attr('aria-pressed', 'true' === _this.buttons.toggleColorPicker.attr('aria-pressed') ? 'false' : 'true');
+			const isPressed = _this.buttons.toggleColorPicker.attr('aria-pressed') === 'true';
+			if (isPressed) {
+				//show
+				_this.sections.pickerPlaceholder.parentNode.insertBefore(_this.sections.picker[0], _this.sections.pickerPlaceholder.nextSibling);
+				_this.sections.pickerPlaceholder.parentNode.removeChild(_this.sections.pickerPlaceholder);
+			}
+			else {
+				//hide
+				_this.sections.picker[0].parentNode.insertBefore(_this.sections.pickerPlaceholder, _this.sections.picker[0].nextSibling);
+				_this.sections.picker[0].parentNode.removeChild(_this.sections.picker[0]);
+			}
+		});
 		// Restore toggle preference, default to visible for picker
 		const saved_toggle_color_picker = Helper.getCookie('toggle_color_picker');
 		if (saved_toggle_color_picker === 0) {
