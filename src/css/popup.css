@@ -1,4 +1,4 @@
-#popup {
+#popups .popup {
 	position:fixed;
 	display:none;
 	top: 15vh;
@@ -18,13 +18,13 @@
 	font-size: 13px;
 	overflow: hidden;
 }
-#popup.wide{
+#popups .popup.wide{
 	max-width: 840px;
 }
-#popup a{
+#popups .popup a{
 	color: var(--link-color);
 }
-#popup h2{
+#popups .popup h2{
 	display: block;
 	position: absolute;
 	top: 0;
@@ -40,12 +40,12 @@
 	z-index: 0;
 	cursor:move;
 }
-#popup #dialog_content {
+#popups .popup .dialog_content {
 	overflow-y: auto;
 	max-height: calc(80vh - 9rem);
 	padding: 1rem;
 }
-#popup .buttons{
+#popups .popup .buttons{
 	position: absolute;
 	background-color: var(--block-background-color);
 	bottom: 0;
@@ -59,7 +59,7 @@
 	border-top: 1px solid var(--header-background-color);
 	z-index: 3;
 }
-#popup .close{
+#popups .popup .close{
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -73,32 +73,32 @@
 	background: none;
 	z-index: 1;
 }
-#popup input[type="range"]{
+#popups .popup input[type="range"]{
 	margin:0;
 	width: 100%;
 }
-#popup table{
+#popups .popup table{
 	box-sizing: border-box;
 	width: 100%;
 }
-#popup td, #popup th{
+#popups .popup td, #popups .popup th{
 	height: 25px;
 }
-#popup td{
+#popups .popup td{
 	vertical-align: middle;
 }
-#popup th{
+#popups .popup th{
 	text-align:left;
 	padding: 5px 5px 5px 0;
 	width: 130px;
 }
-#popup textarea{
+#popups .popup textarea{
 	color: var(--input-text-color);
 	width:100%;
 	border:1px solid #393939;
 	padding-left:5px;
 }
-#popup .button{
+#popups .popup .button{
 	margin: 0 3px;
 	background-color: rgba(255, 255, 255, 0.2);
 	background-color: var(--button-background-color);
@@ -107,90 +107,90 @@
 	border:1px solid var(--border-color);
 	padding: 5px 10px;
 }
-#popup input[type="text"], #popup input[type="number"], #popup textarea{
+#popups .popup input[type="text"], #popups .popup input[type="number"], #popups .popup textarea{
 	width:100%;
 }
-#popup input[type="number"]{
+#popups .popup input[type="number"]{
 	width:100px;
 }
-#popup input[type="radio"], #popup input[type="checkbox"]{
+#popups .popup input[type="radio"], #popups .popup input[type="checkbox"]{
 	margin-left: 0;
 }
-#popup label span{
+#popups .popup label span{
 	color:var(--text-color-muted);
 }
-#popup .checkbox label{
+#popups .popup .checkbox label{
 	margin-top: 5px;
 	color:var(--text-color-muted);
 }
-#popup .preview_container{
+#popups .popup .preview_container{
 	margin-top:10px;
 	margin-bottom:15px;
 	text-align: center;
 }
-#popup .preview_canvas_left{
+#popups .popup .preview_canvas_left{
 	position:relative;
 	margin:0 5px 5px 0;
 	border:1px solid #393939;
 	display: inline-block;
 	vertical-align: top;
 }
-#popup .preview_canvas_post_back{
+#popups .popup .preview_canvas_post_back{
 	position:absolute;
 	border:1px solid #393939;
 	background-color:#ffffff;
 }
-#popup .preview_canvas_post{
+#popups .popup .preview_canvas_post{
 	position:relative;
 	border:1px solid #393939;
 }
-#popup .canvas_preview_container{
+#popups .popup .canvas_preview_container{
 	position:relative;
 	display: inline-block;
 	vertical-align: top;
 }
-#popup .radios label{
+#popups .popup .radios label{
 	display: inline-block;
 	margin-right: 10px;
 }
-#popup .range_value{
+#popups .popup .range_value{
 	padding-left:10px;
 	width:50px;
 }
-#popup .long_text_value{
+#popups .popup .long_text_value{
 	font-size: 12px;
 }
-#popup .preview-item-title{
+#popups .popup .preview-item-title{
 	text-align: center;
 	max-width: 150px;
 }
-#popup .field_comment{
+#popups .popup .field_comment{
 	display: inline-block;
 	margin-left: 10px;
 	opacity: 0.5;
 }
 
 @media screen and (max-width:500px){
-	#popup {
+	#popups .popup {
 		max-height: calc(80vh - 20px); /* mobile phones has bottom menu */
 	}
-	#popup tr{
+	#popups .popup tr{
 		display: block;
 		margin-bottom: 10px;
 	}
-	#popup td, #popup th{
+	#popups .popup td, #popups .popup th{
 		display: block;
 		width: 100%;
 		height: auto;
 		padding: 5px;
 	}
-	#popup th{
+	#popups .popup th{
 		padding: 5px 5px 0px 5px;
 	}
-	#popup td{
+	#popups .popup td{
 		padding: 5px 5px 5px 5px;
 	}
-	#popup .range_value{
+	#popups .popup .range_value{
 		display: none;
 	}
 }

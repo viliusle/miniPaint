@@ -43,33 +43,31 @@ import Base_layers_class from './../core/base-layers.js';
 import Base_gui_class from './../core/base-gui.js';
 import Tools_translate_class from './../modules/tools/translate.js';
 
-var instance = null;
-
 var template = `
-	<button type="button" class="close" id="popup_close">&times;</button>
-	<div id="pretitle_area"></div>
-	<span class="text_muted right" id="popup_comment"></span>
-	<h2 class="trn" id="popup_title"></h2>
-	<div id="dialog_content">
-		<div id="preview_content"></div>
-		<div id="params_content"></div>
+	<button type="button" class="close" data-id="popup_close">&times;</button>
+	<div data-id="pretitle_area"></div>
+	<span class="text_muted right" data-id="popup_comment"></span>
+	<h2 class="trn" data-id="popup_title"></h2>
+	<div class="dialog_content" data-id="dialog_content">
+		<div data-id="preview_content"></div>
+		<div data-id="params_content"></div>
 	</div>
 	<div class="buttons">
-		<button type="button" id="popup_ok" class="button trn">Ok</button>
-		<button type="button" id="popup_cancel" class="button trn">Cancel</button>
+		<button type="button" data-id="popup_ok" class="button trn">Ok</button>
+		<button type="button" data-id="popup_cancel" class="button trn">Cancel</button>
 	</div>
 `;
 
 class Dialog_class {
 
 	constructor() {
-		//singleton
-		if (instance) {
-			return instance;
+		if (!window.POP) {
+			window.POP = this;
 		}
-		instance = this;
-		window.POP = this;
 
+		this.previousPOP = null;
+		this.el = null;
+		this.eventHandles = [];
 		this.active = false;
 		this.title = null;
 		this.onfinish = false;
@@ -90,8 +88,6 @@ class Dialog_class {
 		this.caller = null;
 		this.resize_clicked = {x: null, y: null}
 		this.element_offset = {x: null, y: null}
-
-		this.set_events();
 	}
 
 	/**
@@ -100,6 +96,8 @@ class Dialog_class {
 	 * @param {array} config
 	 */
 	show(config) {
+		this.previousPOP = window.POP;
+		window.POP = this;
 
 		if (this.active == true) {
 			this.hide();
@@ -116,11 +114,15 @@ class Dialog_class {
 		this.comment = config.comment || '';
 
 		//reset position
-		var target = document.querySelector('#popup');
-		target.style.top = null;
-		target.style.left = null;
+		this.el = document.createElement('div');
+		this.el.classList = 'popup';
+		this.el.role = 'dialog';
+		document.querySelector('#popups').appendChild(this.el);
+		this.el.style.top = null;
+		this.el.style.left = null;
 
 		this.show_action();
+		this.set_events();
 	}
 
 	/**
@@ -130,12 +132,15 @@ class Dialog_class {
 	 * @returns {undefined}
 	 */
 	hide(success) {
+		window.POP = this.previousPOP;
 		var params = this.get_params();
 
 		if (success === false && this.oncancel) {
 			this.oncancel(params);
 		}
-		document.getElementById("popup").style.display = 'none';
+		if (this.el && this.el.parentNode) {
+			this.el.parentNode.removeChild(this.el);
+		}
 		this.parameters = [];
 		this.active = false;
 		this.preview = false;
@@ -146,59 +151,77 @@ class Dialog_class {
 		this.comment = '';
 		this.onfinish = false;
 		this.oncancel = false;
+
+		this.remove_events();
 	}
 
 	/* ----------------- private functions ---------------------------------- */
 
-	set_events() {
-		var _this = this;
+	addEventListener(target, type, listener, options) {
+		target.addEventListener(type, listener, options);
+		const handle = {
+			target, type, listener,
+			remove() {
+				target.removeEventListener(type, listener);
+			}
+		};
+		this.eventHandles.push(handle);
+	}
 
-		document.addEventListener('keydown', function (event) {
+	set_events() {
+		this.addEventListener(document, 'keydown', (event) => {
 			var code = event.code;
 
 			if (code == "Escape") {
 				//escape
-				_this.hide(false);
+				this.hide(false);
 			}
 		}, false);
 
 		//register events
-		document.addEventListener('mousedown', function (event) {
-			if(event.target != document.querySelector('#popup h2'))
+		this.addEventListener(document, 'mousedown', (event) => {
+			if(event.target != this.el.querySelector('h2'))
 				return;
 			event.preventDefault();
-			_this.resize_clicked.x = event.pageX;
-			_this.resize_clicked.y = event.pageY;
+			this.resize_clicked.x = event.pageX;
+			this.resize_clicked.y = event.pageY;
 
-			var target = document.querySelector('#popup');
-			_this.element_offset.x = target.offsetLeft;
-			_this.element_offset.y = target.offsetTop;
+			var target = this.el;
+			this.element_offset.x = target.offsetLeft;
+			this.element_offset.y = target.offsetTop;
 		}, false);
 
-		document.addEventListener('mousemove', function (event) {
-			if(_this.resize_clicked.x != null){
-				var dx = _this.resize_clicked.x - event.pageX;
-				var dy = _this.resize_clicked.y - event.pageY;
+		this.addEventListener(document, 'mousemove', (event) => {
+			if(this.resize_clicked.x != null){
+				var dx = this.resize_clicked.x - event.pageX;
+				var dy = this.resize_clicked.y - event.pageY;
 
-				var target = document.querySelector('#popup');
-				target.style.left = (_this.element_offset.x - dx) + "px";
-				target.style.top = (_this.element_offset.y - dy) + "px";
+				var target = this.el;
+				target.style.left = (this.element_offset.x - dx) + "px";
+				target.style.top = (this.element_offset.y - dy) + "px";
 			}
 		}, false);
 
-		document.addEventListener('mouseup', function (event) {
-			if(event.target != document.querySelector('#popup h2'))
+		this.addEventListener(document, 'mouseup', (event) => {
+			if(event.target != this.el.querySelector('h2'))
 				return;
 			event.preventDefault();
-			_this.resize_clicked.x = null;
-			_this.resize_clicked.y = null;
+			this.resize_clicked.x = null;
+			this.resize_clicked.y = null;
 		}, false);
 
-		window.addEventListener('resize', function (event) {
-			var target = document.querySelector('#popup');
+		this.addEventListener(window, 'resize', (event) => {
+			var target = this.el;
 			target.style.top = null;
 			target.style.left = null;
 		}, false);
+	}
+
+	remove_events() {
+		for (let handle of this.eventHandles) {
+			handle.remove();
+		}
+		this.eventHandles = [];
 	}
 
 	onChangeEvent(e) {
@@ -213,7 +236,7 @@ class Dialog_class {
 
 		if (this.onchange != false) {
 			if (this.preview != false) {
-				var canvas_right = document.getElementById("pop_post");
+				var canvas_right = this.el.querySelector('[data-id="pop_post"]');
 				var ctx_right = canvas_right.getContext("2d");
 
 				ctx_right.clearRect(0, 0, this.width_mini, this.height_mini);
@@ -255,7 +278,7 @@ class Dialog_class {
 
 	get_params() {
 		var response = {};
-		var inputs = document.getElementsByTagName('input');
+		var inputs = this.el.querySelectorAll('input');
 		for (var i = 0; i < inputs.length; i++) {
 			if (inputs[i].id.substr(0, 9) == 'pop_data_') {
 				var key = inputs[i].id.substr(9);
@@ -284,14 +307,14 @@ class Dialog_class {
 
 			}
 		}
-		var selects = document.getElementsByTagName('select');
+		var selects = this.el.querySelectorAll('select');
 		for (var i = 0; i < selects.length; i++) {
 			if (selects[i].id.substr(0, 9) == 'pop_data_') {
 				var key = selects[i].id.substr(9);
 				response[key] = selects[i].value;
 			}
 		}
-		var textareas = document.getElementsByTagName('textarea');
+		var textareas = this.el.querySelectorAll('textarea');
 		for (var i = 0; i < textareas.length; i++) {
 			if (textareas[i].id.substr(0, 9) == 'pop_data_') {
 				var key = textareas[i].id.substr(9);
@@ -324,12 +347,12 @@ class Dialog_class {
 		if (this.preview !== false) {
 			html_preview_content += '<div class="preview_container">';
 			html_preview_content += '<canvas class="preview_canvas_left" width="' + this.width_mini + '" height="'
-				+ this.height_mini + '" id="pop_pre"></canvas>';
+				+ this.height_mini + '" data-id="pop_pre"></canvas>';
 			html_preview_content += '<div class="canvas_preview_container">';
 			html_preview_content += '	<canvas class="preview_canvas_post_back" width="' + this.width_mini
-				+ '" height="' + this.height_mini + '" id="pop_post_back"></canvas>';
+				+ '" height="' + this.height_mini + '" data-id="pop_post_back"></canvas>';
 			html_preview_content += '	<canvas class="preview_canvas_post" width="' + this.width_mini + '" height="'
-				+ this.height_mini + '" id="pop_post"></canvas>';
+				+ this.height_mini + '" data-id="pop_post"></canvas>';
 			html_preview_content += '</div>';
 			html_preview_content += '</div>';
 		}
@@ -337,44 +360,57 @@ class Dialog_class {
 		//generate params
 		html_params += this.generateParamsHtml();
 
-		document.getElementById("popup").innerHTML = template;
-		document.getElementById("pretitle_area").innerHTML = html_pretitle_area;
-		document.getElementById("popup_title").innerHTML = this.title;
-		document.getElementById("popup_comment").innerHTML = this.comment;
-		document.getElementById("preview_content").innerHTML = html_preview_content;
-		document.getElementById("params_content").innerHTML = html_params;
+		this.el.innerHTML = template;
+		this.el.querySelector('[data-id="pretitle_area"').innerHTML = html_pretitle_area;
+		this.el.querySelector('[data-id="popup_title"').innerHTML = this.title;
+		this.el.querySelector('[data-id="popup_comment"').innerHTML = this.comment;
+		this.el.querySelector('[data-id="preview_content"').innerHTML = html_preview_content;
+		this.el.querySelector('[data-id="params_content"').innerHTML = html_params;
 		if (this.onfinish != false) {
-			document.getElementById("popup_cancel").style.display = '';
+			this.el.querySelector('[data-id="popup_cancel"').style.display = '';
 		}
 		else {
-			document.getElementById("popup_cancel").style.display = 'none';
+			this.el.querySelector('[data-id="popup_cancel"').style.display = 'none';
 		}
 
-		document.getElementById("popup").style.display = "block";
-		document.getElementById("popup").className = this.className;
+		this.el.style.display = "block";
+		if (this.className) {
+			this.el.classList.add(this.className);
+		}
+
+		//replace color inputs
+		this.el.querySelectorAll('input[type="color"]').forEach((colorInput) => {
+			const id = colorInput.getAttribute('id');
+			colorInput.removeAttribute('id');
+			$(colorInput)
+				.uiColorInput({ inputId: id })
+				.on('change', (e) => {
+					this.onChangeEvent(e);
+				});
+		});
 
 		//events
 		var _this = this;
-		document.getElementById('popup_ok').addEventListener('click', function (event) {
-			_this.save();
+		this.el.querySelector('[data-id="popup_ok"').addEventListener('click', (event) => {
+			this.save();
 		});
-		document.getElementById('popup_cancel').addEventListener('click', function (event) {
-			_this.hide(false);
+		this.el.querySelector('[data-id="popup_cancel"').addEventListener('click', (event) => {
+			this.hide(false);
 		});
-		document.getElementById('popup_close').addEventListener('click', function (event) {
-			_this.hide(false);
+		this.el.querySelector('[data-id="popup_close"').addEventListener('click', (event) => {
+			this.hide(false);
 		});
-		var targets = document.querySelectorAll('#popup input');
+		var targets = this.el.querySelectorAll('input');
 		for (var i = 0; i < targets.length; i++) {
-			targets[i].addEventListener('keyup', function (event) {
-				_this.onkeyup(event);
+			targets[i].addEventListener('keyup', (event) => {
+				this.onkeyup(event);
 			});
 		}
 
 		//onload
 		if (this.onload) {
 			var params = this.get_params();
-			this.onload(params);
+			this.onload(params, this);
 		}
 
 		//load preview
@@ -383,7 +419,7 @@ class Dialog_class {
 			var canvas = this.Base_layers.convert_layer_to_canvas();
 
 			//draw original image
-			var canvas_left = document.getElementById("pop_pre");
+			var canvas_left = this.el.querySelector('[data-id="pop_pre"]');
 			var pop_pre = canvas_left.getContext("2d");
 			pop_pre.clearRect(0, 0, this.width_mini, this.height_mini);
 			pop_pre.rect(0, 0, this.width_mini, this.height_mini);
@@ -403,11 +439,11 @@ class Dialog_class {
 			this.layer_active_small_ctx.scale(1, 1);
 
 			//draw right background
-			var canvas_right_back = document.getElementById("pop_post_back").getContext("2d");
+			var canvas_right_back = this.el.querySelector('[data-id="pop_post_back"]').getContext("2d");
 			this.draw_background(canvas_right_back, this.width_mini, this.height_mini, 10);
 
 			//copy to right side
-			var canvas_right = document.getElementById("pop_post").getContext("2d");
+			var canvas_right = this.el.querySelector('[data-id="pop_post"]').getContext("2d");
 			canvas_right.clearRect(0, 0, this.width_mini, this.height_mini);
 			canvas_right.drawImage(canvas_left, 0, 0, this.width_mini, this.height_mini);
 
