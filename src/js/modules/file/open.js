@@ -8,6 +8,7 @@ import Clipboard_class from './../../libs/clipboard.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
+import Media_class from "../../tools/media";
 
 var PSD = require('psd.js');
 var instance = null;
@@ -32,6 +33,7 @@ class File_open_class {
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
 		this.GUI_tools = new GUI_tools_class();
+		this.Media = new Media_class();
 
 		//clipboard class
 		this.Clipboard_class = new Clipboard_class(function (data, w, h) {
@@ -142,14 +144,13 @@ class File_open_class {
 					width_original: width,
 					height_original: height,
 				};
-
 				app.State.do_action(
 					new app.Actions.Bundle_action('open_file_webcam', 'Open File Webcam', [
 						new app.Actions.Insert_layer_action(new_layer),
 						new app.Actions.Autoresize_canvas_action(width, height, null, true, true)
 					])
 				);
-				
+
 				//destroy
 				if(track != null){
 					track.stop();
@@ -259,11 +260,9 @@ class File_open_class {
 		this.POP.show(settings);
 	}
 
-
 	open_handler(e) {
 		var _this = this;
 		var files = e.target.files;
-
 
 		var auto_increment = this.Base_layers.auto_increment;
 
@@ -297,11 +296,9 @@ class File_open_class {
 
 			if (f.name.match('.psd')) {
 				PSD.fromEvent(e).then(function (psd) {
-	 				_this.load_psd(psd);
- 				});
+					_this.load_psd(psd);
+				});
 				return;
-
-
 			}
 
 			FR.onload = function (event) {
@@ -341,9 +338,8 @@ class File_open_class {
 	open_template_test(){
 		var _this = this;
 
-
 		this.Base_layers.debug_rendering = true;
-		
+
 		window.fetch("images/test-collection.json").then(function(response) {
 			return response.json();
 		}).then(function(json) {
@@ -421,6 +417,7 @@ class File_open_class {
 	}
 
 
+
 	load_psd(psd) {
 
 		var children = psd.tree().children();
@@ -434,9 +431,9 @@ class File_open_class {
 
 		for (var node = children.length - 1; node >= 0; node--) {
 			var child = children[node];
-			//console.log(child);
-			var value = {			};
+			var value = {};
 			var png = child.layer.image.toPng();
+			var opacity = child.layer.opacity;
 			value.type = 'image';
 			value.name = child.name;
 			value.id = node;
@@ -444,12 +441,18 @@ class File_open_class {
 			value.width = child.layer.width;
 			value.x = child.layer.left;
 			value.y = child.layer.top;
-			value.data = png;
-			var opacity = child.layer.opacity;
+			value.data = png.src;
 			value.opacity = (opacity * 100 / 255.0);
 
-			this.Base_layers.insert(value, false);
+			app.State.do_action(
+				new app.Actions.Bundle_action('open_image', 'Open Image', [
+					new app.Actions.Insert_layer_action(value)
+				])
+			);
+
 		}
+
+
 
 
 	}
@@ -610,7 +613,8 @@ class File_open_class {
 	}
 
 	search(){
-		this.GUI_tools.activate_tool('media');
+		// this.GUI_tools.activate_tool('media');
+		this.Media.on_activate();
 	}
 }
 
