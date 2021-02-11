@@ -8,6 +8,7 @@ import Clipboard_class from './../../libs/clipboard.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
+import Media_class from "../../tools/media";
 
 var PSD = require('psd.js');
 var instance = null;
@@ -32,6 +33,7 @@ class File_open_class {
 		this.Base_gui = new Base_gui_class();
 		this.Helper = new Helper_class();
 		this.GUI_tools = new GUI_tools_class();
+		this.Media = new Media_class();
 
 		//clipboard class
 		this.Clipboard_class = new Clipboard_class(function (data, w, h) {
@@ -611,7 +613,8 @@ class File_open_class {
 	}
 
 	search(){
-		this.GUI_tools.activate_tool('media');
+		// this.GUI_tools.activate_tool('media');
+		this.Media.on_activate();
 	}
 }
 
