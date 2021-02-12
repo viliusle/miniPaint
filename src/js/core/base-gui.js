@@ -122,7 +122,7 @@ class Base_gui_class {
 		// this.GUI_colors.render_main_colors();
 		this.GUI_layers.render_main_layers();
 		// this.GUI_information.render_main_information();
-		// this.GUI_details.render_main_details();
+		this.GUI_details.render_main_details();
 		this.GUI_menu.render_main();
 		this.load_saved_changes();
 

@@ -119,6 +119,7 @@ class GUI_details_class {
 
 	render_main_details() {
 		document.getElementById('toggle_details').innerHTML = template;
+		document.getElementById('details_base').style['display'] = 'none';
 
 		this.render_details(true);
 	}
