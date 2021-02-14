@@ -33,6 +33,7 @@ config.themes = [
 	'green',
 ];
 
+//no-translate BEGIN
 config.FONTS = [
 	"Arial",
 	"Courier",
@@ -71,6 +72,7 @@ config.FONTS = [
 	"Titillium Web",
 	"Ubuntu"
 ];
+//no-translate END
 
 config.TOOLS = [
 	{

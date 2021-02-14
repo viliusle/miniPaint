@@ -47,7 +47,7 @@ const sidebarTemplate = `
 	<div id="color_section_picker" class="block_section">
 		<input id="color_picker_gradient" type="color" aria-label="Color Selection">
 		<div class="ui_input_group stacked">
-			<label id="color_hex_label" title="Hex" class="label_width_small">Hex</label>
+			<label id="color_hex_label" title="Hex" class="label_width_small trn">Hex</label>
 			<input id="color_hex" aria-labelledby="color_hex_label" value="#000000" maxlength="7" type="text" />
 		</div>
 	</div>
@@ -113,7 +113,7 @@ const dialogTemplate = `
 		</div>
 		<div id="dialog_color_channel_group">
 			<div class="ui_input_group stacked">
-				<label id="dialog_color_hex_label" title="Hex" class="label_width_small">Hex</label>
+				<label id="dialog_color_hex_label" title="Hex" class="label_width_small trn">Hex</label>
 				<input id="dialog_color_hex" aria-labelledby="dialog_color_hex_label" value="#000000" maxlength="7" type="text" />
 			</div>
 			<div class="ui_input_grid stacked">

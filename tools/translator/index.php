@@ -10,14 +10,17 @@ $translator = new Translator();
 	<title>Translator</title>
 </head>
 <body>
-	<h3 style="margin: 10px 0px;"><a href="">Translator</a></h3>
+	<h3 style="margin: 10px 0;"><a href="">Translator</a></h3>
 	<form action="" method="post">
+		<b>Helpers</b>:
 		<input type="submit" name="action" value="Import" />
 		<input type="submit" name="action" value="Filter" />
 		<input type="submit" name="action" value="Translate manually" />
 		<input type="submit" name="action" value="Merge" />
+		<br /><br />
+		<b>Actions</b>:
 		<input type="submit" name="action" value="Generate empty.json" />
-		<input style="font-weight:bold;" type="submit" name="action" value="Auto Tanslate" />
+		<input style="font-weight:bold;" type="submit" name="action" value="Auto Translate" />
 		<br /><br />
 		<?php
 		if (count($_POST) > 0) {
@@ -25,13 +28,13 @@ $translator = new Translator();
 				if ($_POST['action'] == 'Import') {
 					$translator->scan();
 					$translator->extract();
-					echo "<xmp>"; print_r($translator->strings); echo "</xmp>\n";
+					echo "<pre>"; print_r($translator->strings); echo "</pre>\n";
 				}
 				if ($_POST['action'] == 'Filter') {
 					$translator->scan();
 					$translator->extract();
 					$translator->filter();
-					echo "<xmp>"; print_r($translator->strings); echo "</xmp>\n";
+					echo "<pre>"; print_r($translator->strings); echo "</pre>\n";
 				}
 				if ($_POST['action'] == 'Translate manually') {
 					//show form
@@ -51,7 +54,7 @@ $translator = new Translator();
 				if ($_POST['action'] == 'Merge') {
 					$translator->merge();
 				}
-				if ($_POST['action'] == 'Auto Tanslate') {
+				if ($_POST['action'] == 'Auto Translate') {
 					//prepare
 					$translator->scan();
 					$translator->extract();
