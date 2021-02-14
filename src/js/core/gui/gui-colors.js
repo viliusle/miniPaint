@@ -195,7 +195,6 @@ class GUI_colors_class {
 	}
 
 	init_components() {
-		var _this = this;
 
 		// Store button references
 		this.buttons = {
@@ -289,20 +288,10 @@ class GUI_colors_class {
 				}
 				Helper.setCookie('toggle_color_picker', isPressed ? 1 : 0);
 			});
-		document.getElementById('selected_color_sample').addEventListener('click', function (event) {
-			_this.buttons.toggleColorPicker.attr('aria-pressed', 'true' === _this.buttons.toggleColorPicker.attr('aria-pressed') ? 'false' : 'true');
-			const isPressed = _this.buttons.toggleColorPicker.attr('aria-pressed') === 'true';
-			if (isPressed) {
-				//show
-				_this.sections.pickerPlaceholder.parentNode.insertBefore(_this.sections.picker[0], _this.sections.pickerPlaceholder.nextSibling);
-				_this.sections.pickerPlaceholder.parentNode.removeChild(_this.sections.pickerPlaceholder);
-			}
-			else {
-				//hide
-				_this.sections.picker[0].parentNode.insertBefore(_this.sections.pickerPlaceholder, _this.sections.picker[0].nextSibling);
-				_this.sections.picker[0].parentNode.removeChild(_this.sections.picker[0]);
-			}
+		this.inputs.sample.on('click', (event) => {
+			this.buttons.toggleColorPicker.click();
 		});
+
 		// Restore toggle preference, default to visible for picker
 		const saved_toggle_color_picker = Helper.getCookie('toggle_color_picker');
 		if (saved_toggle_color_picker === 0) {
