@@ -3,7 +3,7 @@
 	display: grid;
 	margin: 0;
 	position: fixed; /* dont change it, vh does not work on mobiles with bottom footer */
-	padding-top: 5px;
+	/*padding-top: 5px;*/
 	top: 0;
 	right: 0;
 	left: 0;
