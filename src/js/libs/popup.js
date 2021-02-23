@@ -363,16 +363,16 @@ class Dialog_class {
 		html_params += this.generateParamsHtml();
 
 		this.el.innerHTML = template;
-		this.el.querySelector('[data-id="pretitle_area"').innerHTML = html_pretitle_area;
-		this.el.querySelector('[data-id="popup_title"').innerHTML = this.title;
-		this.el.querySelector('[data-id="popup_comment"').innerHTML = this.comment;
-		this.el.querySelector('[data-id="preview_content"').innerHTML = html_preview_content;
-		this.el.querySelector('[data-id="params_content"').innerHTML = html_params;
+		this.el.querySelector('[data-id="pretitle_area"]').innerHTML = html_pretitle_area;
+		this.el.querySelector('[data-id="popup_title"]').innerHTML = this.title;
+		this.el.querySelector('[data-id="popup_comment"]').innerHTML = this.comment;
+		this.el.querySelector('[data-id="preview_content"]').innerHTML = html_preview_content;
+		this.el.querySelector('[data-id="params_content"]').innerHTML = html_params;
 		if (this.onfinish != false) {
-			this.el.querySelector('[data-id="popup_cancel"').style.display = '';
+			this.el.querySelector('[data-id="popup_cancel"]').style.display = '';
 		}
 		else {
-			this.el.querySelector('[data-id="popup_cancel"').style.display = 'none';
+			this.el.querySelector('[data-id="popup_cancel"]').style.display = 'none';
 		}
 
 		this.el.style.display = "block";
@@ -392,14 +392,13 @@ class Dialog_class {
 		});
 
 		//events
-		var _this = this;
-		this.el.querySelector('[data-id="popup_ok"').addEventListener('click', (event) => {
+		this.el.querySelector('[data-id="popup_ok"]').addEventListener('click', (event) => {
 			this.save();
 		});
-		this.el.querySelector('[data-id="popup_cancel"').addEventListener('click', (event) => {
+		this.el.querySelector('[data-id="popup_cancel"]').addEventListener('click', (event) => {
 			this.hide(false);
 		});
-		this.el.querySelector('[data-id="popup_close"').addEventListener('click', (event) => {
+		this.el.querySelector('[data-id="popup_close"]').addEventListener('click', (event) => {
 			this.hide(false);
 		});
 		var targets = this.el.querySelectorAll('input');
@@ -610,54 +609,12 @@ class Dialog_class {
 		return html;
 	}
 
-	//validate input field, unless browser supports input=range
-	validate(field) {
-		for (var i in this.parameters) {
-			var parameter = this.parameters[i];
-			if ("pop_data_" + parameter.name == field.id && parameter.range != undefined) {
-				if (field.value == '-' || field.value == '')
-					return true;
-
-				var value = parseFloat(field.value);
-				if (isNaN(value) || value != field.value)
-					field.value = parameter.value;	//not number
-				if (value < parameter.range[0])
-					field.value = parameter.range[0];	//less then min
-				else if (value > parameter.range[1])
-					field.value = parameter.range[1];	//more then max
-			}
-		}
-	}
-
 	//on key press inside input text
 	onkeyup(event) {
 		if (event.keyCode == "13") {
 			//Enter was pressed
 			this.save();
 		}
-	}
-
-	get_dimensions() {
-		var theWidth, theHeight;
-		if (window.innerWidth) {
-			theWidth = window.innerWidth;
-		}
-		else if (document.documentElement && document.documentElement.clientWidth) {
-			theWidth = document.documentElement.clientWidth;
-		}
-		else if (document.body) {
-			theWidth = document.body.clientWidth;
-		}
-		if (window.innerHeight) {
-			theHeight = window.innerHeight;
-		}
-		else if (document.documentElement && document.documentElement.clientHeight) {
-			theHeight = document.documentElement.clientHeight;
-		}
-		else if (document.body) {
-			theHeight = document.body.clientHeight;
-		}
-		return [theWidth, theHeight];
 	}
 
 	getRandomInt(min, max) {
