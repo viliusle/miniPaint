@@ -13,10 +13,11 @@ class Translator {
 	public $files;
 	public $strings;
 	public $translations;
-	public $lang;
 
 	/**
 	 * scan external resources
+	 *
+	 * @throws Exception
 	 */
 	public function scan() {
 		global $SOURCE_DIRS;
@@ -51,6 +52,8 @@ class Translator {
 
 	/**
 	 * extracts strings from files
+	 *
+	 * @throws Exception
 	 */
 	public function extract() {
 		$this->strings = array();
@@ -63,6 +66,9 @@ class Translator {
 
 			//drop svg
 			$content = preg_replace('|<path.*/>|i', '', $content);
+
+			//drop exceptions
+			$content = preg_replace('|\/\/no-translate BEGIN[\s\S]+?\/\/no-translate END|mi', '', $content);
 
 			//drop
 			$content = stripslashes($content);
@@ -179,8 +185,6 @@ class Translator {
 				continue;
 			}
 
-			//$string = $this->my_mb_ucfirst(mb_strtolower($string));
-
 			$this->strings[] = $string;
 		}
 		$this->strings = array_unique($this->strings);
@@ -189,6 +193,8 @@ class Translator {
 
 	/**
 	 * prepare strings for translating for user
+	 *
+	 * @throws Exception
 	 */
 	public function prepare() {
 		$this->scan();
@@ -201,10 +207,6 @@ class Translator {
 		if (isset($_POST['in']))
 			$in_content = $_POST['in'];
 
-		$lang = '';
-		if (isset($_POST['lang']))
-			$lang = $_POST['lang'];
-
 		echo '<textarea name="out" style="width:100%;height:25vh;">' . implode("\n", $data) . '</textarea><br /><br />';
 		echo 'Translate text above with <a href="https://translate.google.com/">translator</a> and paste result below:<br /><br />';
 		echo '<textarea name="in" style="width:100%;height:25vh;">' . $in_content . '</textarea><br />';
@@ -214,8 +216,9 @@ class Translator {
 	/**
 	 * combines source strings and manually translated strings to json format
 	 * 
-	 * @param array $translation
-	 * @param string $lang 2 lang cde
+	 * @param string $translation
+	 *
+	 * @throws Exception
 	 */
 	public function add_translation($translation) {
 		$translation = trim($translation);
@@ -237,6 +240,11 @@ class Translator {
 		}
 	}
 
+	/**
+	 * translates everything automatically
+	 *
+	 * @throws Exception
+	 */
 	public function auto_translate() {
 		global $LANGUAGES, $LANG_DIR;
 
@@ -308,6 +316,8 @@ class Translator {
 
 	/**
 	 * saves current data as empty file
+	 *
+	 * @throws Exception
 	 */
 	public function save_empty() {
 		global $LANG_DIR_EMPTY;
@@ -342,6 +352,8 @@ class Translator {
 
 	/**
 	 * merge two translations
+	 *
+	 * @throws Exception
 	 */
 	public function merge() {
 		echo 'Old translations: <b>(priority on same keys)</b><br />';
@@ -384,11 +396,6 @@ class Translator {
 		echo '<textarea style="width:100%;height:30vh;">';
 		echo json_encode($merged, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 		echo '</textarea>';
-	}
-
-	private function my_mb_ucfirst($str) {
-		$fc = mb_strtoupper(mb_substr($str, 0, 1));
-		return $fc . mb_substr($str, 1);
 	}
 
 }

@@ -42,8 +42,8 @@ class Image_information_class {
 		var settings = {
 			title: 'Information',
 			params: [
-				{title: "Width:", value: config.WIDTH},
-				{title: "Height:", value: config.HEIGHT},
+				{title: "Width:", value: config.WIDTH + ' ' + 'pixels'},
+				{title: "Height:", value: config.HEIGHT + ' ' + 'pixels'},
 				{title: "Pixels:", value: pixels},
 				{title: "Layers:", value: config.layers.length},
 				{title: "Unique colors:", value: '...'},

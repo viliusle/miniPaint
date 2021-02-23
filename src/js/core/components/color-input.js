@@ -3,7 +3,6 @@ import Dialog_class from './../../libs/popup.js';
 import GUI_colors_class from './../gui/gui-colors.js';
 
 const Helper = new Helper_class();
-let POP;
 
 /**
  * This input opens a custom color picker dialog that is more tightly integrated with the application (swatch selection, etc).
@@ -33,9 +32,7 @@ let POP;
 		event.preventDefault();
 		const $el = $(event.target.closest('.ui_color_input'));
 		const { value } = $el.data();
-		if (!POP) {
-			POP = new Dialog_class();
-		}
+		const POP = new Dialog_class();
 		let colorsDialog = new GUI_colors_class();
 		var settings = {
 			title: 'Color Picker',
@@ -112,6 +109,7 @@ let POP;
 
 				const classList = el.className;
 				const id = definition.id != null ? definition.id : el.getAttribute('id');
+				const inputId = definition.inputId || '';
 				const disabled = definition.disabled != null ? definition.disabled : el.hasAttribute('disabled') ? true : false;
 				const value = definition.value != null ? definition.value : el.value || 0;
 				const ariaLabeledBy = el.getAttribute('aria-labelledby');
@@ -138,6 +136,9 @@ let POP;
 				}
 				if (id) {
 					el.setAttribute('id', id);
+				}
+				if (inputId) {
+					input.setAttribute('id', inputId);
 				}
 				if (ariaLabeledBy) {
 					input.setAttribute('aria-labelledby', ariaLabeledBy);

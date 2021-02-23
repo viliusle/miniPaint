@@ -15,10 +15,10 @@ var template = `
 	</div>
 	<div class="canvas_preview_details">
 		<div class="details">
-			<input title="Zoom out" class="layer_add" id="zoom_less" type="button" value="-" />
-			<input title="Reset zoom level" class="layer_add" id="zoom_100" type="button" value="100%" />
-			<input title="Zoom in" class="layer_add" id="zoom_more" type="button" value="+" />
-			<input class="layer_add" id="zoom_fit" type="button" value="Fit" />
+			<button title="Zoom out" class="layer_add trn" id="zoom_less"">-</button>
+			<button title="Reset zoom level"  class="layer_add trn" id="zoom_100"">100%</button>
+			<button title="Zoom in" class="layer_add trn" id="zoom_more"">+</button>
+			<button class="layer_add trn" id="zoom_fit">Fit</button>
 		</div>
 		<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" />
 	</div>

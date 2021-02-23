@@ -7,6 +7,7 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
 import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
 import GIF from './../../libs/gifjs/gif.js';
+import CanvasToTIFF from './../../libs/canvastotiff.js';
 
 var instance = null;
 
@@ -39,6 +40,7 @@ class File_save_class {
 			WEBP: "Weppy File Format",
 			GIF: "Graphics Interchange Format",
 			BMP: "Windows Bitmap",
+			TIFF: "Tag Image File Format",
 		};
 
 		this.default_extension = 'PNG';
@@ -131,7 +133,7 @@ class File_save_class {
 				{name: "delay", title: "Gif delay:", value: 400},
 			],
 			on_change: function (params, canvas_preview, w, h) {
-				_this.save_dialog_onchange();
+				_this.save_dialog_onchange(true);
 			},
 			on_finish: function (params) {
 				if (params.layers == 'Separated') {
@@ -157,7 +159,10 @@ class File_save_class {
 
 		if (calc_size == true) {
 			//calc size once
-			this.save_dialog_onchange();
+			this.save_dialog_onchange(true);
+		}
+		else{
+			this.save_dialog_onchange(false);
 		}
 	}
 
@@ -211,11 +216,11 @@ class File_save_class {
 
 	/**
 	 * /activated on save dialog parameters change - used for calculating file size
+	 *
+	 * @param {boolean} calculate_file_size
 	 */
-	save_dialog_onchange() {
+	save_dialog_onchange(calculate_file_size) {
 		var _this = this;
-		this.update_file_size('...');
-
 		var user_response = this.POP.get_params();
 
 		var quality = parseInt(user_response.quality);
@@ -247,6 +252,12 @@ class File_save_class {
 			document.getElementById('pop_data_name').disabled = true;
 		else
 			document.getElementById('pop_data_name').disabled = false;
+
+		if(calculate_file_size == false){
+			return;s
+		}
+
+		this.update_file_size('...');
 
 		if (user_response.calc_size == false || user_response.layers == 'Separated') {
 			document.getElementById('file_size').innerHTML = '-';
@@ -353,6 +364,14 @@ class File_save_class {
 			canvas.toBlob(function (blob) {
 				_this.update_file_size(blob.size);
 			}, data_header);
+		}
+		else if (type == 'TIFF') {
+			//tiff
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
+				_this.update_file_size(blob.size);
+			});
 		}
 		else if (type == 'JSON') {
 			//json
@@ -499,6 +518,16 @@ class File_save_class {
 			canvas.toBlob(function (blob) {
 				filesaver.saveAs(blob, fname);
 			}, data_header);
+		}
+		else if (type == 'TIFF') {
+			//tiff
+			if (this.Helper.strpos(fname, '.tiff') == false)
+				fname = fname + ".tiff";
+			var data_header = "image/tiff";
+
+			CanvasToTIFF.toBlob(canvas, function(blob) {
+				filesaver.saveAs(blob, fname);
+			});
 		}
 		else if (type == 'JSON') {
 			//json - full data with layers

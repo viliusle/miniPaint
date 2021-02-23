@@ -59,13 +59,13 @@ class Media_class extends Base_tools_class {
 			params: [
 				{name: "query", title: "Keyword:", value: query},
 			],
-			on_load: function (params) {
+			on_load: function (params, popup) {
 				var node = document.createElement("div");
 				node.classList.add('flex-container');
 				node.innerHTML = html;
-				document.querySelector('#popup #dialog_content').appendChild(node);
+				popup.el.querySelector('.dialog_content').appendChild(node);
 				//events
-				var targets = document.querySelectorAll('#popup .item img');
+				var targets = popup.el.querySelectorAll('.item img');
 				for (var i = 0; i < targets.length; i++) {
 					targets[i].addEventListener('click', function (event) {
 						//we have click

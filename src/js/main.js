@@ -50,9 +50,6 @@ window.addEventListener('load', function (e) {
 	window.FileSave = File_save;
 
 	// Render all
-	GUI.load_modules();
-	GUI.load_default_values();
-	GUI.render_main_gui();
-
+	GUI.init();
 	Layers.init();
 }, false);

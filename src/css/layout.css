@@ -278,6 +278,9 @@ body .sp-preview{
 	filter: var(--menu-icons-filter-active);
 }
 
+/*
+IMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated !!!
+ */
 .sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }
 .sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }
 .sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }
@@ -288,15 +291,8 @@ body .sp-preview{
 .sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
 .sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }
-.sidebar_left .text:after{
-	background-image: url('images/icons/text.svg');
-	background-size: 16px auto;
-}
-.sidebar_left .gradient:after{
-	background-image: url('images/icons/gradient.png');
-	background-size: 18px 12px;
-	filter: none;
-}
+.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }
+.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: none; }
 .sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }
 .sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }
 .sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }

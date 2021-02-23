@@ -65,6 +65,13 @@ class Base_gui_class {
 		this.modules = {};
 	}
 
+	init() {
+		this.load_modules();
+		this.load_default_values();
+		this.render_main_gui();
+		this.init_service_worker();
+	}
+
 	load_modules() {
 		var _this = this;
 		var modules_context = require.context("./../modules/", true, /\.js$/);
@@ -138,6 +145,16 @@ class Base_gui_class {
 
 		this.set_events();
 		this.load_translations();
+	}
+
+	init_service_worker() {
+		/*if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
+				//Successfully registered service worker
+			}).catch(function(err) {
+				console.warn('Error registering service worker', err);
+			});
+		}*/
 	}
 
 	set_events() {

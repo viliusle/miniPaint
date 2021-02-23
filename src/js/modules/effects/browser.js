@@ -40,13 +40,13 @@ class Effects_browser_class extends Base_tools_class {
 		var settings = {
 			title: 'Effects browser',
 			className: 'wide',
-			on_load: function (params) {
+			on_load: function (params, popup) {
 				var node = document.createElement("div");
 				node.classList.add('flex-container');
 				node.innerHTML = html;
-				document.querySelector('#popup #dialog_content').appendChild(node);
+				popup.el.querySelector('.dialog_content').appendChild(node);
 				//events
-				var targets = document.querySelectorAll('#popup .item canvas');
+				var targets = popup.el.querySelectorAll('.item canvas');
 				for (var i = 0; i < targets.length; i++) {
 					targets[i].addEventListener('click', function (event) {
 						//we have click
