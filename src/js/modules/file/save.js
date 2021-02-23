@@ -133,7 +133,7 @@ class File_save_class {
 				{name: "delay", title: "Gif delay:", value: 400},
 			],
 			on_change: function (params, canvas_preview, w, h) {
-				_this.save_dialog_onchange();
+				_this.save_dialog_onchange(true);
 			},
 			on_finish: function (params) {
 				if (params.layers == 'Separated') {
@@ -159,7 +159,10 @@ class File_save_class {
 
 		if (calc_size == true) {
 			//calc size once
-			this.save_dialog_onchange();
+			this.save_dialog_onchange(true);
+		}
+		else{
+			this.save_dialog_onchange(false);
 		}
 	}
 
@@ -213,11 +216,11 @@ class File_save_class {
 
 	/**
 	 * /activated on save dialog parameters change - used for calculating file size
+	 *
+	 * @param {boolean} calculate_file_size
 	 */
-	save_dialog_onchange() {
+	save_dialog_onchange(calculate_file_size) {
 		var _this = this;
-		this.update_file_size('...');
-
 		var user_response = this.POP.get_params();
 
 		var quality = parseInt(user_response.quality);
@@ -249,6 +252,12 @@ class File_save_class {
 			document.getElementById('pop_data_name').disabled = true;
 		else
 			document.getElementById('pop_data_name').disabled = false;
+
+		if(calculate_file_size == false){
+			return;s
+		}
+
+		this.update_file_size('...');
 
 		if (user_response.calc_size == false || user_response.layers == 'Separated') {
 			document.getElementById('file_size').innerHTML = '-';
