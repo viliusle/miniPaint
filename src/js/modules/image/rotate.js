@@ -161,7 +161,7 @@ class Image_rotate_class {
 				new_height = new_y;
 			}
 			actions.push(
-				new app.Actions.prepare_canvas_action('undo'),
+				new app.Actions.Prepare_canvas_action('undo'),
 				new app.Actions.Update_layer_action(config.layer.id, {
 					x: config.layer.x + dx,
 					y: config.layer.y + dy
@@ -170,7 +170,7 @@ class Image_rotate_class {
 					WIDTH: new_width,
 					HEIGHT: new_height
 				}),
-				new app.Actions.prepare_canvas_action('do')
+				new app.Actions.Prepare_canvas_action('do')
 			);
 		}
 		return actions;
