@@ -553,7 +553,7 @@ class Dialog_class {
 						if (parameter.type == 'textarea') {
 							//textarea
 							html += '<td><textarea rows="10" id="pop_data_' + parameter.name
-								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">'
+								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '" ' + (parameter.prevent_submission ? 'data-prevent-submission=""' : '' ) + '>'
 								+ parameter.value + '</textarea></td>';
 						}
 						else {
@@ -571,7 +571,7 @@ class Dialog_class {
 
 							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name
 								+ '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="'
-								+ parameter.placeholder + '" />'+comment_html+'</td>';
+								+ parameter.placeholder + '" ' + (parameter.prevent_submission ? 'data-prevent-submission=""' : '' ) + ' />'+comment_html+'</td>';
 						}
 					}
 				}
@@ -611,9 +611,12 @@ class Dialog_class {
 
 	//on key press inside input text
 	onkeyup(event) {
-		if (event.keyCode == "13") {
-			//Enter was pressed
-			this.save();
+		if (event.key == 'Enter') {
+			if (event.target.hasAttribute('data-prevent-submission')) {
+				event.preventDefault();
+			} else {
+				this.save();
+			}
 		}
 	}
 

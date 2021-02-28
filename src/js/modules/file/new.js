@@ -90,6 +90,7 @@ class File_new_class {
 		// Prepare layers		
 		app.State.do_action(
 			new app.Actions.Bundle_action('new_file', 'New File', [
+				new app.Actions.Refresh_action_attributes_action('undo'),
 				new app.Actions.Prepare_canvas_action('undo'),
 				new app.Actions.Update_config_action({
 					TRANSPARENCY: !!transparency,
@@ -99,9 +100,11 @@ class File_new_class {
 					COLOR: '#008000',
 					mouse: {},
 					visible_width: null,
-					visible_height: null
+					visible_height: null,
+					user_fonts: {}
 				}),
 				new app.Actions.Prepare_canvas_action('do'),
+				new app.Actions.Refresh_action_attributes_action('do'),
 				new app.Actions.Reset_layers_action(),
 				new app.Actions.Init_canvas_zoom_action(),
 				new app.Actions.Insert_layer_action({})

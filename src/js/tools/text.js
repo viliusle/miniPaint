@@ -50,6 +50,40 @@ fontLoadMap.set('Tahoma', true);
 fontLoadMap.set('Times New Roman', true);
 fontLoadMap.set('Verdana', true);
 
+function load_font_family({ family, variants }, successCallback) {
+	if (fontLoadMap.get(family) == null) {
+		fontLoadMap.set(family, false);
+		const loadPromise = new Promise((resolve, reject) => {
+			WebFont.load({
+				google: {
+					families: [family + (variants ? ':' + variants.join(',') : '')]
+				},
+				fontactive: (family) => {
+					fontLoadMap.set(family, true);
+					fontLoadPromiseMap.delete(family);
+					resolve();
+				},
+				fontinactive: (family) => {
+					alertify.error('Font ' + family + ' could not be loaded.');
+					fontLoadPromiseMap.delete(family);
+					reject();
+				}
+			});
+		});
+		fontLoadPromiseMap.set(family, loadPromise);
+	}
+	if (successCallback) {
+		const loadPromise = fontLoadPromiseMap.get(family);
+		if (loadPromise) {
+			loadPromise.then(successCallback);
+		} else if (fontLoadMap.get(family) == true) {
+			requestAnimationFrame(() => {
+				successCallback();
+			});
+		}
+	}
+}
+
 /**
  * The canvas's native font metrics implementation doesn't really give us enough information...
  */
@@ -1264,40 +1298,6 @@ class Text_editor_class {
 		this.mouseSelectionMoveX = null;
 		this.mouseSelectionMoveY = null;
 	}
-
-	load_font_family(family, successCallback) {
-		if (fontLoadMap.get(family) == null) {
-			fontLoadMap.set(family, false);
-			const loadPromise = new Promise((resolve, reject) => {
-				WebFont.load({
-					google: {
-						families: [family]
-					},
-					fontactive: (family) => {
-						fontLoadMap.set(family, true);
-						fontLoadPromiseMap.delete(family);
-						resolve();
-					},
-					fontinactive: (family) => {
-						alertify.error('Font ' + family + ' could not be loaded.');
-						fontLoadPromiseMap.delete(family);
-						reject();
-					}
-				});
-			});
-			fontLoadPromiseMap.set(family, loadPromise);
-		}
-		if (successCallback) {
-			const loadPromise = fontLoadPromiseMap.get(family);
-			if (loadPromise) {
-				loadPromise.then(successCallback);
-			} else if (fontLoadMap.get(family) == true) {
-				requestAnimationFrame(() => {
-					successCallback();
-				});
-			}
-		}
-	}
 	
 	get_cursor_position_from_absolute_position(layer, x, y) {
 		let line = -1;
@@ -1639,7 +1639,8 @@ class Text_editor_class {
 						const family = span.meta.family || metaDefaults.family;
 
 						if (fontLoadMap.get(family) !== true) {
-							this.load_font_family(family, () => {
+							const variants = config.user_fonts[family] ? config.user_fonts[family].variants : undefined;
+							load_font_family({ family, variants }, () => {
 								this.hasValueChanged = true;
 								this.Base_layers.render();
 							});
@@ -1802,6 +1803,154 @@ class Text_editor_class {
 	}
 }
 
+class Google_fonts_search_class {
+	constructor() {
+		this.POP = new Dialog_class();
+		this.GUI_tools = new GUI_tools_class();
+		this.popup = null;
+		this.fontsPerPage = 8;
+		this.dialogContentNode = null;
+		this.fontListNode = null;
+		this.fontList = [];
+		this.fontListFiltered = [];
+		this.selectedFonts = {};
+		this.searchTimeoutHandle = null;
+	}
+
+	render_font_list(page) {
+		page = page || 1;
+		const pageCount = Math.ceil(this.fontListFiltered.length / 8);
+		const startIndex = (page - 1) * this.fontsPerPage;
+		let html = '<div class="selection_card_list">';
+		for (let i = startIndex; i < startIndex + this.fontsPerPage; i++) {
+			const font = this.fontListFiltered[i];
+			if (!font) break;
+			const isSelected = !!this.selectedFonts[font.family];
+			load_font_family({ family: font.family, variants: font.variants });
+			html += `
+				<div class="selection_card">
+					<input type="checkbox" id="google_font_selection_${font.family}" value="${font.family}" ${isSelected ? 'checked="checked"' : ''}>
+					<label for="google_font_selection_${font.family}"">
+						<div class="font_preview" style="font-family: '${font.family}'">
+							The quick brown fox jumps over the lazy dog.
+						</div>
+						<div class="text_muted">
+							${font.family}
+						</div>
+					</label>
+				</div>
+			`;
+		}
+		html += `
+				</div>
+				<div class="pagination">
+					${page > 1 ? '<button title="Previous Page" data-page="' + (page - 1) + '">&laquo;</button>' : ''}
+					${page - 2 > 0 ? '<button title="Page ' + (page - 2) + '" data-page="' + (page - 2) + '">' + (page - 2) + '</button>' : ''}
+					${page - 1 > 0 ? '<button title="Page ' + (page - 1) + '" data-page="' + (page - 1) + '">' + (page - 1) + '</button>' : ''}
+					<button title="Page ${page}" aria-pressed="true" data-page="${page}">${page}</button>
+					${page + 1 <= pageCount ? '<button title="Page ' + (page + 1) + '" data-page="' + (page + 1) + '">' + (page + 1) + '</button>' : ''}
+					${page + 2 <= pageCount ? '<button title="Page ' + (page + 2) + '" data-page="' + (page + 2) + '">' + (page + 2) + '</button>' : ''}
+					${page < pageCount ? '<button title="Next Page" data-page="' + (page + 1) + '">&raquo;</button>' : ''}
+				</div>
+			</div>
+		`;
+		this.fontListNode.innerHTML = html;
+
+		// Attempt to remove vertical scroll by decreasing page size.
+		if (this.fontsPerPage > 3 && this.dialogContentNode.scrollHeight > this.dialogContentNode.clientHeight) {
+			this.fontsPerPage--;
+			this.render_font_list(page);
+			return;
+		}
+
+		// Handle checkbox
+		this.fontListNode.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+			checkbox.addEventListener('change', (e) => {
+				if (checkbox.checked) {
+					this.selectedFonts[checkbox.value] = this.fontListFiltered
+						.slice(startIndex, startIndex + this.fontsPerPage)
+						.filter((font) => { return font.family === checkbox.value; })[0];
+				} else {
+					delete this.selectedFonts[checkbox.value];
+				}
+			});
+		});
+
+		// Handle pagination
+		this.fontListNode.querySelector('.pagination').addEventListener('click', (e) => {
+			const page = parseInt(e.target.getAttribute('data-page'), 10);
+			this.render_font_list(page);
+		});
+	}
+
+	show() {
+		this.POP.show({
+			title: 'Search for Font',
+			params: [
+				{ name: "query", title: "Search:", value: '', prevent_submission: true }
+			],
+			on_load: (params, popup) => {
+				this.popup = popup;
+				var node = document.createElement("div");
+				this.dialogContentNode = popup.el.querySelector('.dialog_content');
+				this.dialogContentNode.appendChild(node);
+				this.fontListNode = node;				
+
+				const queryInput = popup.el.querySelector('#pop_data_query');
+				queryInput.addEventListener('input', (e) => {
+					const query = (e.target.value || '').toLowerCase();
+					if (!query) {
+						this.fontListFiltered = this.fontList;
+						this.render_font_list();
+					} else {
+					clearTimeout(this.searchTimeoutHandle);
+						this.searchTimeoutHandle = setTimeout(() => {
+							this.fontListFiltered = [];
+							for (let i = 0; i < this.fontList.length; i++) {
+								const fontFamily = this.fontList[i].family.toLowerCase();
+								if (fontFamily.includes(query)) {
+									this.fontListFiltered.push(this.fontList[i]);
+								}
+							}
+							this.render_font_list();
+						}, 350);
+					}
+				});
+
+				const apiKey = config.google_webfonts_key;
+				$.getJSON(`https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`, (data) => {
+					this.fontList = data.items;
+					this.fontListFiltered = data.items;
+					this.render_font_list();
+				}).fail(function () {
+					alertify.error('Error loading the list of fonts from Google.');
+				});
+			},
+			on_finish: () => {
+				this.popup = null;
+				this.POP = null;
+				if (Object.keys(this.selectedFonts).length > 0) {
+					let firstFont = null;
+					for (let font in this.selectedFonts) {
+						if (!firstFont) {
+							firstFont = font;
+						}
+						config.user_fonts[font] = this.selectedFonts[font];
+					}
+					app.GUI.GUI_tools.action_data().attributes.font.value = firstFont;
+					app.GUI.GUI_tools.show_action_attributes();
+					try {
+						const changeEvent = new Event('change');
+						document.querySelector('#action_attributes select#font').dispatchEvent(changeEvent);
+					} catch (error) {
+						console.warn('Application markup may have changed, ', error);
+					}
+				}
+			}
+		});
+	}
+}
+
 
 class Text_class extends Base_tools_class {
 
@@ -1810,7 +1959,6 @@ class Text_class extends Base_tools_class {
 		this.Base_layers = new Base_layers_class();
 		this.GUI_tools = new GUI_tools_class();
 		this.Helper = new Helper_class();
-		this.POP = new Dialog_class();
 		this.ctx = ctx;
 		this.name = 'text';
 		this.layer = {};
@@ -2241,9 +2389,18 @@ class Text_class extends Base_tools_class {
 		const editor = this.get_editor(config.layer);
 		const value = param.value;
 		const meta = {};
+		let returnValue = undefined;
 		switch (param.key) {
 			case 'font':
-				if (value) meta.family = value;
+				if (value.includes('...')) {
+					returnValue = {
+						new_values: {
+							font: ''
+						}
+					};
+					new Google_fonts_search_class().show();
+				}
+				else if (value) meta.family = value;
 				break;
 			case 'size':
 				if (value) meta.size = value;
@@ -2294,6 +2451,7 @@ class Text_class extends Base_tools_class {
 			);
 			this.Base_layers.render();
 		}
+		return returnValue;
 	}
 
 	update_tool_attributes(layer, editor) {
@@ -2413,7 +2571,7 @@ class Text_class extends Base_tools_class {
 
 				// Change leading offset so line height matches legacy line height calculation... need to load the font first to do this.
 				// This is an approximate calculation, but seems to be pretty close.
-				editor.load_font_family(family, () => {
+				load_font_family({ family }, () => {
 					const line = layer.data[0];
 					if (!line) return;
 					const span = line[0];

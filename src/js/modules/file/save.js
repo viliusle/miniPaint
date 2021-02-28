@@ -626,6 +626,9 @@ class File_save_class {
 			guides: config.guides,
 		};
 
+		//fonts
+		export_data.user_fonts = config.user_fonts;
+
 		//layers
 		export_data.layers = [];
 		for (var i in config.layers) {
