@@ -345,7 +345,7 @@ config.TOOLS = [
 				value: 'Arial',
 				values() {
 					const user_font_names = Object.keys(config.user_fonts);
-					return ['', '[Add Font...]', ...[...config.FONTS, ...user_font_names].sort()];
+					return ['', '[Add Font...]', ...Array.from(new Set([...config.FONTS, ...user_font_names].sort()))];
 				}
 			},
 			size: 40,
