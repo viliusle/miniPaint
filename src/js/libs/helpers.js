@@ -176,11 +176,11 @@ class Helper_class {
 			for (var i = 0; i < 3; i++)
 				hex += temp[i] + temp[i];
 		}
-		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex).slice(1);
+		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/i.exec(hex).slice(1);
 		return {
-			r: parseInt(triplets[1], 16),
-			g: parseInt(triplets[2], 16),
-			b: parseInt(triplets[3], 16),
+			r: parseInt(triplets[0], 16),
+			g: parseInt(triplets[1], 16),
+			b: parseInt(triplets[2], 16),
 			a: 255
 		};
 	}

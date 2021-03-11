@@ -96,7 +96,7 @@ export class Insert_layer_action extends Base_action {
 					};
 					layer.data = null;
 					autoresize_as = [config.layer.width, config.layer.height, null, true, true];
-					need_autoresize = true;
+					//need_autoresize = true;
 				}
 				else if (typeof layer.data == 'string') {
 					image_load_promise = new Promise((resolve, reject) => {
