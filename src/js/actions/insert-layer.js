@@ -95,7 +95,7 @@ export class Insert_layer_action extends Base_action {
 						config.need_render = true;
 					};
 					layer.data = null;
-					autoresize_as = [config.layer.width, config.layer.height, null, true, true];
+					autoresize_as = [layer.width, layer.height, null, true, true];
 					//need_autoresize = true;
 				}
 				else if (typeof layer.data == 'string') {
