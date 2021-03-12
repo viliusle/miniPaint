@@ -19,6 +19,7 @@
 	--button-border-radius: .4rem;
 	--button-toggle-background-color: #575f62;
 	--input-background-color: #2f3739;
+	--input-background-color-hover: #383f44;
 	--input-text-color: #f4f3f3;
 	--input-border-color: #0f0f0f;
 	--input-border-color-active: #70996e;
@@ -57,6 +58,7 @@ body.theme-light{
 	--button-shadow-color: rgba(0, 0, 0, 0.1);
 	--button-toggle-background-color: #b7b7b7;
 	--input-background-color: #ffffff;
+	--input-background-color-hover: #ddd;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
 	--input-border-color-active: #59aed8;
@@ -91,6 +93,7 @@ body.theme-green{
 	--button-text-color-active: #ccc;
 	--button-toggle-background-color: #243e05;
 	--input-background-color: #ffffff;
+	--input-background-color-hover: #ddd;
 	--input-text-color: #0c0c0d;
 	--input-border-color: #ccc;
 	--menu-background-color: #1c2e04;

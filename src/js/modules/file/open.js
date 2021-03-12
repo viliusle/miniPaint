@@ -487,14 +487,17 @@ class File_open_class {
 
 		//set attributes
 		actions.push(
+			new app.Actions.Refresh_action_attributes_action('undo'),
 			new app.Actions.Prepare_canvas_action('undo'),
 			new app.Actions.Update_config_action({
 				ZOOM: 1,
 				WIDTH: parseInt(json.info.width),
-				HEIGHT: parseInt(json.info.height)
+				HEIGHT: parseInt(json.info.height),
+				user_fonts: json.user_fonts || {}
 			}),
 			new app.Actions.Reset_layers_action(),
 			new app.Actions.Prepare_canvas_action('do'),
+			new app.Actions.Refresh_action_attributes_action('do')
 		);
 
 		var max_id_order = 0;
