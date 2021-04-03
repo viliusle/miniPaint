@@ -13,64 +13,20 @@ class Tools_settings_class {
 
 	settings() {
 		var _this = this;
+		var transparency_values = ['squares', 'green', 'grey'];
 
-		//transparency
-		var transparency_cookie = this.Helper.getCookie('transparency');
-		if (transparency_cookie === null) {
-			//default
-			transparency_cookie = false;
-		}
-		if (transparency_cookie) {
-			var transparency = true;
-		}
-		else {
-			var transparency = false;
-		}
-
-		//resolution
-		var save_resolution_cookie = this.Helper.getCookie('save_resolution');
-		if (save_resolution_cookie) {
-			var save_resolution = true;
-		}
-		else {
-			var save_resolution = false;
-		}
-
-		//theme
-		var theme_cookie = this.Helper.getCookie('theme');
-		if (theme_cookie) {
-			var theme = theme_cookie;
-		}
-		else {
-			var theme = config.themes[0];
-		}
-		
-		var t_values = ['squares', 'green', 'grey'];
-
-		//snap
-		var snap_cookie = this.Helper.getCookie('snap');
-		if (snap_cookie === null) {
-			var snap = true; //default
-		}
-		else{
-			var snap = Boolean(snap_cookie);
-		}
-
-		//guides
-		var guides_cookie = this.Helper.getCookie('guides');
-		if (guides_cookie === null) {
-			var guides = true; //default
-		}
-		else{
-			var guides = Boolean(guides_cookie);
-		}
+		var transparency = this.get_setting('transparency');
+		var save_resolution = this.get_setting('save_resolution');
+		var theme = this.get_setting('theme');
+		var snap = this.get_setting('snap');
+		var guides = this.get_setting('guides');
 
 		var settings = {
 			title: 'Settings',
 			params: [
 				{name: "transparency", title: "Transparent:", value: transparency},
 				{name: "transparency_type", title: "Transparency background:", 
-					value: config.TRANSPARENCY_TYPE, values: t_values},
+					value: config.TRANSPARENCY_TYPE, values: transparency_values},
 				{name: "theme", title: "Theme", values: config.themes, value: theme},
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
 				{name: "snap", title: "Enable snap:", value: snap},
@@ -90,59 +46,75 @@ class Tools_settings_class {
 	}
 
 	save_values(params) {
-		var save_resolution = params.save_resolution;
-		var transparency = params.transparency;
-		var theme = params.theme;
 
-		//save_resolution
-		if (save_resolution) {
-			this.Helper.setCookie('save_resolution', 1);
-		}
-		else {
-			this.Helper.setCookie('save_resolution', 0);
-		}
+		//save
+		this.save_setting('theme', params.theme);
+		this.save_setting('save_resolution', params.save_resolution);
+		this.save_setting('transparency', params.transparency);
+		this.save_setting('transparency_type', params.transparency_type);
+		this.save_setting('snap', params.snap);
+		this.save_setting('guides', params.guides);
 
-		//transparency
-		if (transparency) {
-			this.Helper.setCookie('transparency', 1);
-			config.TRANSPARENCY = true;
-		}
-		else {
-			this.Helper.setCookie('transparency', 0);
-			config.TRANSPARENCY = false;
-		}
-
-		//save theme
-		this.Helper.setCookie('theme', theme);
-		this.Base_gui.change_theme(theme);
+		//update config
+		config.TRANSPARENCY = this.get_setting('transparency');
+		config.TRANSPARENCY_TYPE = this.get_setting('transparency_type');
+		config.SNAP = this.get_setting('snap');
+		config.guides_enabled = this.get_setting('guides');
+		this.Base_gui.change_theme(this.get_setting('theme'));
 		
-		//transparency_type
-		config.TRANSPARENCY_TYPE = params.transparency_type;
-		this.Helper.setCookie('transparency_type', config.TRANSPARENCY_TYPE);
-
-		//snap
-		if (params.snap) {
-			this.Helper.setCookie('snap', 1);
-			config.SNAP = true;
-		}
-		else {
-			this.Helper.setCookie('snap', 0);
-			config.SNAP = false;
-		}
-
-		//guides
-		if (params.guides) {
-			this.Helper.setCookie('guides', 1);
-			config.guides_enabled = true;
-		}
-		else {
-			this.Helper.setCookie('guides', 0);
-			config.guides_enabled = false;
-		}
-
 		//finish
 		this.Base_gui.prepare_canvas();
 		config.need_render = true;
+	}
+
+	/**
+	 * set global setting. Values can be string(1 or 0 will be converted to boolean) or boolean
+	 *
+	 * @param key
+	 * @param value
+	 */
+	save_setting(key, value) {
+		//prepare
+		if(value === true){
+			value = 1;
+		}
+		if(value === false){
+			value = 0;
+		}
+
+		this.Helper.setCookie(key, value);
+	}
+
+	/**
+	 * get global setting. If settings does not exists, default valye will be used.
+	 *
+	 * @param key
+	 * @returns {Object|string}
+	 */
+	get_setting(key) {
+		var default_values = {
+			'theme': config.themes[0],
+			'transparency': false,
+			'save_resolution': true,
+			'snap': true,
+			'guides': true,
+		};
+
+		var value = this.Helper.getCookie(key);
+		if(value == null && default_values[key] != undefined){
+			//set default value
+			value = default_values[key];
+		}
+
+		//finalize values
+		if(value === 1){
+			value = true;
+		}
+		if(value === 0){
+			value = false;
+		}
+
+		return value;
 	}
 
 }
