@@ -20,6 +20,7 @@ class Tools_settings_class {
 		var theme = this.get_setting('theme');
 		var snap = this.get_setting('snap');
 		var guides = this.get_setting('guides');
+		var safe_search = this.get_setting('safe_search');
 
 		var settings = {
 			title: 'Settings',
@@ -31,6 +32,7 @@ class Tools_settings_class {
 				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
 				{name: "snap", title: "Enable snap:", value: snap},
 				{name: "guides", title: "Enable guides:", value: guides},
+				{name: "safe_search", title: "Safe search:", value: safe_search},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -54,6 +56,7 @@ class Tools_settings_class {
 		this.save_setting('transparency_type', params.transparency_type);
 		this.save_setting('snap', params.snap);
 		this.save_setting('guides', params.guides);
+		this.save_setting('safe_search', params.safe_search);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -98,6 +101,7 @@ class Tools_settings_class {
 			'save_resolution': true,
 			'snap': true,
 			'guides': true,
+			'safe_search': false,
 		};
 
 		var value = this.Helper.getCookie(key);

@@ -1,6 +1,7 @@
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import File_open_class from './../modules/file/open.js';
+import Tools_settings_class from './../modules/tools/settings.js';
 import Dialog_class from './../libs/popup.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -9,6 +10,7 @@ class Media_class extends Base_tools_class {
 	constructor(ctx) {
 		super();
 		this.File_open = new File_open_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.POP = new Dialog_class();
 		this.name = 'media';
 		this.cache = [];
@@ -39,6 +41,8 @@ class Media_class extends Base_tools_class {
 		var key = config.pixabay_key;
 		key = key.split("").reverse().join("");
 
+		var safe_search = this.Tools_settings.get_setting('safe_search');
+
 		if (data.length > 0) {
 			for (var i in data) {
 				html += '<div class="item">';
@@ -58,6 +62,7 @@ class Media_class extends Base_tools_class {
 			className: 'wide',
 			params: [
 				{name: "query", title: "Keyword:", value: query},
+				{name: "safe_search", title: "Safe search:", value: safe_search},
 			],
 			on_load: function (params, popup) {
 				var node = document.createElement("div");
@@ -78,6 +83,8 @@ class Media_class extends Base_tools_class {
 				}
 			},
 			on_finish: function (params) {
+				_this.Tools_settings.save_setting('safe_search', params.safe_search);
+
 				if (params.query == '')
 					return;
 
@@ -95,7 +102,10 @@ class Media_class extends Base_tools_class {
 				}
 				else {
 					//query to service
-					var URL = "https://pixabay.com/api/?key=" + key + "&per_page=50&q=" + encodeURIComponent(params.query);
+					var URL = "https://pixabay.com/api/?key=" + key
+						+ "&per_page=50"
+						+ "&safesearch=" + params.safe_search
+						+ "&q="	+ encodeURIComponent(params.query);
 					$.getJSON(URL, function (data) {
 						_this.cache[params.query] = data;
 
