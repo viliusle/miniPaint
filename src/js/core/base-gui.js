@@ -401,7 +401,7 @@ class Base_gui_class {
 			}
 
 			//set styles
-			ctx.strokeStyle = '#49ffff';
+			ctx.strokeStyle = '#00b8b8';
 			ctx.lineWidth = 1;
 
 			ctx.beginPath();
