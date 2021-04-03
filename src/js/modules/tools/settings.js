@@ -21,6 +21,7 @@ class Tools_settings_class {
 		var snap = this.get_setting('snap');
 		var guides = this.get_setting('guides');
 		var safe_search = this.get_setting('safe_search');
+		var exit_confirm = this.get_setting('exit_confirm');
 
 		var settings = {
 			title: 'Settings',
@@ -33,6 +34,7 @@ class Tools_settings_class {
 				{name: "snap", title: "Enable snap:", value: snap},
 				{name: "guides", title: "Enable guides:", value: guides},
 				{name: "safe_search", title: "Safe search:", value: safe_search},
+				{name: "exit_confirm", title: "Exit confirmation:", value: exit_confirm},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -57,6 +59,7 @@ class Tools_settings_class {
 		this.save_setting('snap', params.snap);
 		this.save_setting('guides', params.guides);
 		this.save_setting('safe_search', params.safe_search);
+		this.save_setting('exit_confirm', params.exit_confirm);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -102,6 +105,7 @@ class Tools_settings_class {
 			'snap': true,
 			'guides': true,
 			'safe_search': false,
+			'exit_confirm': true,
 		};
 
 		var value = this.Helper.getCookie(key);

@@ -501,7 +501,7 @@ class Base_layers_class {
 	is_layer_empty(id) {
 		var link = this.get_layer(id);
 
-		if (link.width == 0 && link.height == 0 && link.data == null) {
+		if ((link.width == 0 || link.width === null) && (link.height == 0 || link.height === null) && link.data == null) {
 			return true;
 		}
 
