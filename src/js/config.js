@@ -98,11 +98,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'pencil',
-		on_update: 'on_params_update',
-		attributes: {
-			antialiasing: true,
-			size: 2,
-		},
 	},
 	{
 		name: 'pick_color',
