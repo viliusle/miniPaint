@@ -112,7 +112,7 @@ class File_new_class {
 		);
 
 		// Last resolution
-		var last_resolution = JSON.stringify([config.WIDTH, config.HEIGHT]);
+		var last_resolution = JSON.stringify([width, height]);
 		this.Helper.setCookie('last_resolution', last_resolution);
 
 		// Save resolution
