@@ -12,7 +12,7 @@
 	--block-background-color: #464d4f;
 	--header-background-color: #373d3f;
 	--button-background-color: #2f3739;
-	--button-background-color-hover: #575f62;
+	--button-background-color-hover: #75df72;
 	--button-background-color-active: #4d5153;
 	--button-shadow-color: rgba(0, 0, 0, 0.3);
 	--button-text-color-active: #adecab;
@@ -117,14 +117,12 @@ html {
 	font-size: 10px; /* Base is 10px for easy REM calculation */
 }
 body{
-	margin: 0px;
-	padding: 0px;
-	padding-top: 30px;
+	margin: 0;
+	padding: 30px 0 0 0;
 	background-color: #424F5A;
 	background: var(--background);
 	font-size: 1.3rem;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #000000;
 	color: var(--text-color);
 	line-height: 1.4;
 	font-weight: normal;
@@ -182,7 +180,7 @@ select{
 	padding: 2px 4px;
 }
 input[type="range"]{
-	margin-left:0px;
+	margin-left: 0;
 	width:100%;
 }
 button, input[type="button"]{
@@ -191,7 +189,7 @@ button, input[type="button"]{
 	cursor: pointer;
 	border: 1px solid var(--border-color);
 	background-color: var(--button-background-color);
-	color: var(--color-text);
+	color: var(--text-color);
 }
 button:hover, input[type="button"]:hover{
 	background-color: var(--button-background-color-hover);
