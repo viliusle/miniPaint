@@ -280,6 +280,9 @@ class Dialog_class {
 
 	get_params() {
 		var response = {};
+		if(this.el == undefined){
+			return null;
+		}
 		var inputs = this.el.querySelectorAll('input');
 		for (var i = 0; i < inputs.length; i++) {
 			if (inputs[i].id.substr(0, 9) == 'pop_data_') {
