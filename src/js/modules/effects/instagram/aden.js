@@ -1,4 +1,5 @@
 import app from '../../../app.js';
+import config from '../../../config.js';
 import Dialog_class from '../../../libs/popup.js';
 import Base_layers_class from '../../../core/base-layers.js';
 import alertify from 'alertifyjs/build/alertify.min.js';
