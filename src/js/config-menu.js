@@ -206,7 +206,7 @@ const menuDefinition = [
 				target: 'image/information.information'
 			},
 			{
-				name: 'Size',
+				name: 'Canvas Size',
 				ellipsis: true,
 				target: 'image/size.size'
 			},
@@ -287,7 +287,7 @@ const menuDefinition = [
 		]
 	},
 	{
-		name: 'Layers',
+		name: 'Layer',
 		children: [
 			{
 				name: 'New',
