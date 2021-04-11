@@ -99,7 +99,7 @@ class File_save_class {
 			}
 		}
 		if(save_default == null){
-			save_default = this.default_extension;
+			save_default = Object.keys(file_types)[0];
 		}
 		save_default = save_default + " - " + file_types[save_default];
 
