@@ -277,11 +277,15 @@ class File_save_class {
 			document.getElementById('pop_data_name').disabled = false;
 
 		if (user_response.layers == 'Separated (original types)') {
-			document.getElementById('popup-group-type').style.opacity = "0.5";
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "0.5";
+			}
 			document.getElementById('popup-tr-quality').style.display = '';
 		}
 		else {
-			document.getElementById('popup-group-type').style.opacity = "1";
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "1";
+			}
 		}
 
 		if(calculate_file_size == false){
