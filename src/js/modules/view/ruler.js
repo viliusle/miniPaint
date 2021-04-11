@@ -2,6 +2,7 @@ import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_gui_class from './../../core/base-gui.js';
 import Base_layers_class from './../../core/base-layers.js';
+import Tools_settings_class from './../tools/settings.js';
 
 var instance = null;
 
@@ -16,6 +17,7 @@ class View_ruler_class {
 
 		this.GUI = new Base_gui_class();
 		this.Base_layers = new Base_layers_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.Helper = new Helper_class();
 
 		this.set_events();
@@ -35,7 +37,6 @@ class View_ruler_class {
 				return;
 
 			if (event.code == "KeyU" && event.ctrlKey != true && event.metaKey != true) {
-				//G - grid
 				_this.ruler();
 				event.preventDefault();
 			}
@@ -92,6 +93,9 @@ class View_ruler_class {
 		if(config.ruler_active == false)
 			return;
 
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
 		var ruler_left = document.getElementById('ruler_left');
 		var ruler_top = document.getElementById('ruler_top');
 
@@ -138,7 +142,16 @@ class View_ruler_class {
 			ctx_left.lineTo(size, i + 0.5);
 
 			var global_pos = this.Base_layers.get_world_coords(0, i - begin_y);
-			var text = Math.ceil(global_pos.y).toString();
+			var value = this.Helper.get_user_unit(global_pos.y, units, resolution);
+
+			if(units == 'inches'){
+				//more decimals value
+				var text = this.Helper.number_format(value, 1);
+			}
+			else{
+				var text = Math.ceil(value);
+			}
+			text = text.toString();
 
 			//text
 			for (var j = 0; j < text.length; j++) {
@@ -170,7 +183,16 @@ class View_ruler_class {
 			ctx_top.lineTo(i + 0.5, size);
 
 			var global_pos = this.Base_layers.get_world_coords(i - begin_x, 0);
-			var text = Math.ceil(global_pos.x).toString();
+			var value = this.Helper.get_user_unit(global_pos.x, units, resolution);
+
+			if(units == 'inches'){
+				//more decimals value
+				var text = this.Helper.number_format(value, 1);
+			}
+			else{
+				var text = Math.ceil(value);
+			}
+			text = text.toString();
 
 			//text
 			ctx_top.fillText(text, i + 3, 9);

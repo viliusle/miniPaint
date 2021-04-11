@@ -4,6 +4,7 @@ import Base_gui_class from './../../core/base-gui.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
+import Tools_settings_class from './../tools/settings.js';
 
 /** 
  * manages files / new
@@ -17,32 +18,21 @@ class File_new_class {
 		this.Base_layers = new Base_layers_class();
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
+		this.Tools_settings = new Tools_settings_class();
 	}
 
 	new () {
 		var _this = this;
-		var w = config.WIDTH;
-		var h = config.HEIGHT;
+		var width = config.WIDTH;
+		var height = config.HEIGHT;
 		var common_dimensions = this.Base_gui.common_dimensions;
-		var resolutions = ['Custom'];
+		var resolution_types = ['Custom'];
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 
 		for (var i in common_dimensions) {
 			var value = common_dimensions[i];
-			resolutions.push(value[0] + 'x' + value[1] + ' - ' + value[2]);
-		}
-
-		var save_resolution_cookie = this.Helper.getCookie('save_resolution');
-		if (save_resolution_cookie) {
-			var save_resolution = true;
-			var last_resolution = this.Helper.getCookie('last_resolution');
-			if (last_resolution) {
-				last_resolution = JSON.parse(last_resolution);
-				w = parseInt(last_resolution[0]);
-				h = parseInt(last_resolution[1]);
-			}
-		}
-		else {
-			var save_resolution = false;
+			resolution_types.push(value[0] + 'x' + value[1] + ' - ' + value[2]);
 		}
 
 		var transparency_cookie = this.Helper.getCookie('transparency');
@@ -57,14 +47,17 @@ class File_new_class {
 			var transparency = false;
 		}
 
+		//convert units
+		width = this.Helper.get_user_unit(width, units, resolution);
+		height = this.Helper.get_user_unit(height, units, resolution);
+
 		var settings = {
 			title: 'New file',
 			params: [
-				{name: "width", title: "Width:", value: w, comment: "in pixels"},
-				{name: "height", title: "Height:", value: h, comment: "in pixels"},
-				{name: "resolution", title: "Resolution:", values: resolutions},
+				{name: "width", title: "Width:", value: width, comment: units},
+				{name: "height", title: "Height:", value: height, comment: units},
+				{name: "resolution_type", title: "Resolution:", values: resolution_types},
 				{name: "transparency", title: "Transparent:", value: transparency},
-				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
 			],
 			on_finish: function (params) {
 				_this.new_handler(params);
@@ -73,23 +66,30 @@ class File_new_class {
 		this.POP.show(settings);
 	}
 
-	new_handler(response) {
-		var width = parseInt(response.width);
-		var height = parseInt(response.height);
-		var resolution = response.resolution;
-		var save_resolution = response.save_resolution;
+	async new_handler(response) {
+		var width = parseFloat(response.width);
+		var height = parseFloat(response.height);
+		var resolution_type = response.resolution_type;
 		var transparency = response.transparency;
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 
-		if (resolution != 'Custom') {
-			var dim = resolution.split(" ");
+		if (resolution_type != 'Custom') {
+			var dim = resolution_type.split(" ");
 			dim = dim[0].split("x");
-			width = dim[0];
-			height = dim[1];
+			width = parseInt(dim[0]);
+			height = parseInt(dim[1]);
+		}
+		else {
+			//convert units
+			width = this.Helper.get_internal_unit(width, units, resolution);
+			height = this.Helper.get_internal_unit(height, units, resolution);
 		}
 
 		// Prepare layers		
 		app.State.do_action(
 			new app.Actions.Bundle_action('new_file', 'New File', [
+				new app.Actions.Refresh_action_attributes_action('undo'),
 				new app.Actions.Prepare_canvas_action('undo'),
 				new app.Actions.Update_config_action({
 					TRANSPARENCY: !!transparency,
@@ -99,26 +99,23 @@ class File_new_class {
 					COLOR: '#008000',
 					mouse: {},
 					visible_width: null,
-					visible_height: null
+					visible_height: null,
+					user_fonts: {}
 				}),
 				new app.Actions.Prepare_canvas_action('do'),
+				new app.Actions.Refresh_action_attributes_action('do'),
 				new app.Actions.Reset_layers_action(),
 				new app.Actions.Init_canvas_zoom_action(),
 				new app.Actions.Insert_layer_action({})
 			])
 		);
 
-		// Last resolution
-		var last_resolution = JSON.stringify([config.WIDTH, config.HEIGHT]);
-		this.Helper.setCookie('last_resolution', last_resolution);
+		//sleep, lets wait till DOM is finished
+		await new Promise(r => setTimeout(r, 10));
 
-		// Save resolution
-		if (save_resolution) {
-			this.Helper.setCookie('save_resolution', 1);
-		}
-		else {
-			this.Helper.setCookie('save_resolution', 0);
-		}
+		//fit to screen?
+		this.Base_gui.GUI_preview.zoom_auto(true);
+
 		// Save transparency
 		if (transparency) {
 			this.Helper.setCookie('transparency', 1);

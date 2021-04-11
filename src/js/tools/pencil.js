@@ -21,12 +21,6 @@ class Pencil_class extends Base_tools_class {
 		if (config.TOOL.name != this.name)
 			return;
 		this.mousemove(event);
-
-		//mouse cursor
-		var mouse = this.get_mouse_info(event);
-		var params = this.getParams();
-		if (params.antialiasing == true)
-			this.show_mouse_cursor(mouse.x, mouse.y, params.size || 1, 'circle');
 	}
 
 	mousedown(e) {
@@ -36,9 +30,7 @@ class Pencil_class extends Base_tools_class {
 
 		var params_hash = this.get_params_hash();
 		var params = this.getParams();
-		var opacity = 100;
-		if (params.antialiasing == false)
-			opacity = Math.round(config.ALPHA / 255 * 100);
+		var opacity = Math.round(config.ALPHA / 255 * 100);
 		
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
 			//register new object - current layer is not ours or params changed
@@ -89,10 +81,7 @@ class Pencil_class extends Base_tools_class {
 		}
 
 		//more data
-		if (params.antialiasing == false)
-			config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
-		else
-			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
 		this.Base_layers.render();
 	}
 
@@ -105,10 +94,7 @@ class Pencil_class extends Base_tools_class {
 		}
 
 		//more data
-		if (params.antialiasing == false)
-			config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
-		else
-			config.layer.data.push([mouse.x - config.layer.x, mouse.y - config.layer.y]);
+		config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
 
 		this.check_dimensions();
 
@@ -116,27 +102,15 @@ class Pencil_class extends Base_tools_class {
 		this.Base_layers.render();
 	}
 
-	on_params_update() {
-		var params = this.getParams();
-		var strict_element = document.querySelector('.block .item.size');
-
-		if (params.antialiasing == false) {
-			//hide strict controls
-			strict_element.style.display = 'none';
-		}
-		else {
-			//show strict controls
-			strict_element.style.display = 'inline_block';
-		}
-	}
-
 	render(ctx, layer) {
 		var params = layer.params;
 
-		if (params.antialiasing == true)
-			this.render_antialiased(ctx, layer);
-		else
+		if (params.antialiasing == true) {
+			this.render_antialiased(ctx, layer);	// remove it in future, users should use brush
+		}
+		else {
 			this.render_aliased(ctx, layer);
+		}
 	}
 	
 	/**

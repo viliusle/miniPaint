@@ -2,6 +2,7 @@ import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_layers_class from './../../core/base-layers.js';
+import Tools_settings_class from './../tools/settings.js';
 
 var instance = null;
 
@@ -17,6 +18,7 @@ class Image_information_class {
 		this.Base_layers = new Base_layers_class();
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
+		this.Tools_settings = new Tools_settings_class();
 
 		this.set_events();
 	}
@@ -39,16 +41,26 @@ class Image_information_class {
 		var pixels = config.WIDTH * config.HEIGHT;
 		pixels = this.Helper.number_format(pixels, 0);
 
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
+		var width = this.Helper.get_user_unit(config.WIDTH, units, resolution);
+		var height = this.Helper.get_user_unit(config.HEIGHT, units, resolution);
+
 		var settings = {
 			title: 'Information',
 			params: [
-				{title: "Width:", value: config.WIDTH + ' ' + 'pixels'},
-				{title: "Height:", value: config.HEIGHT + ' ' + 'pixels'},
+				{title: "Width:", value: width + ' ' + units},
+				{title: "Height:", value: height + ' ' + units},
 				{title: "Pixels:", value: pixels},
 				{title: "Layers:", value: config.layers.length},
 				{title: "Unique colors:", value: '...'},
 			],
 		};
+		if(units != 'pixels'){
+			settings.params[0].value += " (" + config.WIDTH + " pixels)";
+			settings.params[1].value += " (" + config.HEIGHT + " pixels)";
+		}
 
 		//exif data
 		if (config.layer._exif != undefined) {

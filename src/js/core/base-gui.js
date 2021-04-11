@@ -4,6 +4,7 @@
  */
 
 import config from './../config.js';
+import Base_layers_class from './base-layers.js';
 import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
 import GUI_colors_class from './gui/gui-colors.js';
@@ -12,6 +13,7 @@ import GUI_information_class from './gui/gui-information.js';
 import GUI_details_class from './gui/gui-details.js';
 import GUI_menu_class from './gui/gui-menu.js';
 import Tools_translate_class from './../modules/tools/translate.js';
+import Tools_settings_class from './../modules/tools/settings.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -30,6 +32,7 @@ class Base_gui_class {
 		instance = this;
 
 		this.Helper = new Helper_class();
+		this.Base_layers = new Base_layers_class();
 
 		//last used menu id
 		this.last_menu = '';
@@ -62,6 +65,7 @@ class Base_gui_class {
 		this.GUI_details = new GUI_details_class(this);
 		this.GUI_menu = new GUI_menu_class();
 		this.Tools_translate = new Tools_translate_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.modules = {};
 	}
 
@@ -205,6 +209,16 @@ class Base_gui_class {
 			config.need_render = true;
 		}, false);
 		this.check_canvas_offset();
+
+		//confirmation on exit
+		var exit_confirm = this.Tools_settings.get_setting('exit_confirm');
+		window.addEventListener('beforeunload', function (e) {
+			if(exit_confirm && (config.layers.length > 1 || _this.Base_layers.is_layer_empty(config.layer.id) == false)){
+				e.preventDefault();
+				e.returnValue = '';
+			}
+			return undefined;
+		});
 	}
 
 	check_canvas_offset() {
@@ -282,34 +296,23 @@ class Base_gui_class {
 		var page_h = wrapper.clientHeight;
 		var auto_size = false;
 
-		var save_resolution_cookie = this.Helper.getCookie('save_resolution');
-		var last_resolution = this.Helper.getCookie('last_resolution');
-		if (save_resolution_cookie != null && save_resolution_cookie != ''
-			&& last_resolution != null && last_resolution != '') {
-			//load last saved resolution
-			last_resolution = JSON.parse(last_resolution);
-			config.WIDTH = parseInt(last_resolution[0]);
-			config.HEIGHT = parseInt(last_resolution[1]);
+		//use largest possible
+		for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
+			if (this.common_dimensions[i][0] > page_w
+				|| this.common_dimensions[i][1] > page_h) {
+				//browser size is too small
+				continue;
+			}
+			config.WIDTH = parseInt(this.common_dimensions[i][0]);
+			config.HEIGHT = parseInt(this.common_dimensions[i][1]);
+			auto_size = true;
+			break;
 		}
-		else {
-			//use largest possible
-			for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
-				if (this.common_dimensions[i][0] > page_w
-					|| this.common_dimensions[i][1] > page_h) {
-					//browser size is too small
-					continue;
-				}
-				config.WIDTH = parseInt(this.common_dimensions[i][0]);
-				config.HEIGHT = parseInt(this.common_dimensions[i][1]);
-				auto_size = true;
-				break;
-			}
 
-			if (auto_size == false) {
-				//screen size is smaller then 400x300
-				config.WIDTH = parseInt(page_w) - 15;
-				config.HEIGHT = parseInt(page_h) - 10;
-			}
+		if (auto_size == false) {
+			//screen size is smaller then 400x300
+			config.WIDTH = parseInt(page_w) - 15;
+			config.HEIGHT = parseInt(page_h) - 10;
 		}
 	}
 
@@ -392,6 +395,7 @@ class Base_gui_class {
 		if(config.guides_enabled == false){
 			return;
 		}
+		var thick_guides = this.Tools_settings.get_setting('thick_guides');
 
 		for(var i in config.guides) {
 			var guide = config.guides[i];
@@ -401,8 +405,11 @@ class Base_gui_class {
 			}
 
 			//set styles
-			ctx.strokeStyle = '#49ffff';
-			ctx.lineWidth = 1;
+			ctx.strokeStyle = '#00b8b8';
+			if(thick_guides == false)
+				ctx.lineWidth = 1;
+			else
+				ctx.lineWidth = 3;
 
 			ctx.beginPath();
 			if (guide.y === null) {

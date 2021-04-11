@@ -176,7 +176,7 @@ class Helper_class {
 			for (var i = 0; i < 3; i++)
 				hex += temp[i] + temp[i];
 		}
-		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex).slice(1);
+		var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/i.exec(hex).slice(1);
 		return {
 			r: parseInt(triplets[0], 16),
 			g: parseInt(triplets[1], 16),
@@ -434,7 +434,8 @@ class Helper_class {
 		var sign = n < 0 ? "-" : "";
 		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
 		var j = (j = i.length) > 3 ? j % 3 : 0;
-		return sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
+		var result = sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
+		return parseFloat(result);
 	}
 
 	check_input_color_support() {
@@ -633,6 +634,58 @@ class Helper_class {
 		ctx.moveTo(start_x - halfLineWidth, start_y);
 		ctx.lineTo(end_x - halfLineWidth, end_y);
 		ctx.stroke();
+	}
+
+	/**
+	 * converts internal unit (pixel) to user defined
+	 *
+	 * @param data
+	 * @param type
+	 * @param resolution
+	 * @returns {string|number}
+	 */
+	get_user_unit(data, type, resolution){
+		data = parseFloat(data);
+
+		if(type == 'pixels'){
+			//no conversion
+			return parseInt(data);
+		}
+		else if(type == 'inches'){
+			return this.number_format(data / resolution, 3);
+		}
+		else if(type == 'centimeters'){
+			return this.number_format(data / resolution * 2.54, 3);
+		}
+		else if(type == 'millimetres'){
+			return this.number_format(data / resolution * 25.4, 3);
+		}
+	}
+
+	/**
+	 * converts user defined unit to internal (pixels)
+	 *
+	 * @param data
+	 * @param type
+	 * @param resolution
+	 * @returns {number}
+	 */
+	get_internal_unit(data, type, resolution){
+		data = parseFloat(data);
+
+		if(type == 'pixels'){
+			//no conversion
+			return parseInt(data);
+		}
+		else if(type == 'inches'){
+			return Math.ceil(data * resolution);
+		}
+		else if(type == 'centimeters'){
+			return Math.ceil(data * resolution / 2.54);
+		}
+		else if(type == 'millimetres'){
+			return Math.ceil(data * resolution / 25.4);
+		}
 	}
 
 }

@@ -3,6 +3,7 @@ import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import Tools_settings_class from './../tools/settings.js';
 
 class View_guides_class {
 
@@ -10,17 +11,24 @@ class View_guides_class {
 	constructor() {
 		this.POP = new Dialog_class();
 		this.Base_layers = new Base_layers_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.Helper = new Helper_class();
 	}
 
 	insert() {
 		var _this = this;
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
+		//convert units
+		var position = 20;
+		var position = this.Helper.get_user_unit(position, units, resolution);
 
 		var settings = {
 			title: 'Insert guides',
 			params: [
 				{name: "type", title: "Type:", values: ["Vertical", "Horizontal"], value :"Vertical"},
-				{name: "position", title: "Position:",  value: 20},
+				{name: "position", title: "Position:",  value: position},
 			],
 			on_finish: function (params) {
 				_this.insert_handler(params);
@@ -31,17 +39,12 @@ class View_guides_class {
 
 	insert_handler(data){
 		var type = data.type;
-		var position = parseInt(data.position);
+		var position = parseFloat(data.position);
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 
-		//check if we have guides layer
-		var layers = this.Base_layers.get_layers();
-		var layer = null;
-		for(var i in layers){
-			if(layers[i].type == 'guides'){
-				layer = layers[i];
-				break;
-			}
-		}
+		//convert units
+		position = this.Helper.get_internal_unit(position, units, resolution);
 
 		var x = null;
 		var y = null;
@@ -65,19 +68,31 @@ class View_guides_class {
 
 	update(){
 		var _this = this;
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 
 		var params = [];
 		for(var i in config.guides){
 			var guide = config.guides[i];
 
-			if(guide.y === null)
-				params.push({name: i, title: "Vertical:",  value: guide.x});
+			//convert units
+			var value = guide.x;
+			var value = this.Helper.get_user_unit(value, units, resolution);
+
+			if(guide.y === null) {
+				params.push({name: i, title: "Vertical:", value: value});
+			}
 		}
 		for(var i in config.guides){
 			var guide = config.guides[i];
 
-			if(guide.x === null)
-				params.push({name: i, title: "Horizontal:",  value: guide.y});
+			//convert units
+			var value = guide.y;
+			var value = this.Helper.get_user_unit(value, units, resolution);
+
+			if(guide.x === null) {
+				params.push({name: i, title: "Horizontal:", value: value});
+			}
 		}
 
 		var settings = {
@@ -91,10 +106,16 @@ class View_guides_class {
 	}
 
 	update_handler(data){
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
 		//update
 		for (var i in data) {
 			var key = parseInt(i);
-			var value = parseInt(data[i]);
+			var value = parseFloat(data[i]);
+
+			//convert units
+			value = this.Helper.get_internal_unit(value, units, resolution);
 
 			if (config.guides[key].x === null)
 				config.guides[key].y = value;

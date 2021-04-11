@@ -8,6 +8,7 @@ import Hermite_class from 'hermite-resize';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Pica from './../../../../node_modules/pica/dist/pica.js';
 import Helper_class from './../../libs/helpers.js';
+import Tools_settings_class from './../tools/settings.js';
 import { metaDefaults as textMetaDefaults } from '../../tools/text.js';
 
 var instance = null;
@@ -26,6 +27,7 @@ class Image_resize_class {
 		this.POP = new Dialog_class();
 		this.ImageFilters = ImageFilters_class;
 		this.Hermite = new Hermite_class();
+		this.Tools_settings = new Tools_settings_class();
 		this.pica = Pica();
 		this.Helper = new Helper_class();
 
@@ -48,14 +50,20 @@ class Image_resize_class {
 
 	resize() {
 		var _this = this;
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
+		//convert units
+		var width = this.Helper.get_user_unit(config.WIDTH, units, resolution);
+		var height = this.Helper.get_user_unit(config.HEIGHT, units, resolution);
 
 		var settings = {
 			title: 'Resize',
 			params: [
-				{name: "width", title: "Width:", value: '', placeholder: config.WIDTH},
-				{name: "height", title: "Height:", value: '', placeholder: config.HEIGHT},
-				{name: "width_percent", title: "Width (%):", value: '', placeholder: 100},
-				{name: "height_percent", title: "Height (%):", value: '', placeholder: 100},
+				{name: "width", title: "Width:", value: '', placeholder: width, comment: units},
+				{name: "height", title: "Height:", value: '', placeholder: height, comment: units},
+				{name: "width_percent", title: "Width (%):", value: '', placeholder: 100, comment: "%"},
+				{name: "height_percent", title: "Height (%):", value: '', placeholder: 100, comment: "%"},
 				{name: "mode", title: "Mode:", values: ["Lanczos", "Hermite", "Basic"]},
 
 				{name: "sharpen", title: "Sharpen:", value: false},
@@ -72,9 +80,6 @@ class Image_resize_class {
 		//validate
 		if (isNaN(params.width) && isNaN(params.height) && isNaN(params.width_percent) && isNaN(params.height_percent)) {
 			alertify.error('Missing at least 1 size parameter.');
-			return false;
-		}
-		if (params.layers == 'All' && params.width == config.WIDTH && params.height == config.HEIGHT) {
 			return false;
 		}
 		
@@ -113,15 +118,25 @@ class Image_resize_class {
 	 * @returns {Promise<object>} Returns array of actions to perform
 	 */
 	async resize_layer(layer, params) {
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 		var mode = params.mode;
-		var width = parseInt(params.width);
-		var height = parseInt(params.height);
+		var width = parseFloat(params.width);
+		var height = parseFloat(params.height);
 		var width_100 = parseInt(params.width_percent);
 		var height_100 = parseInt(params.height_percent);
 		var canvas_width = layer.width;
 		var canvas_height = layer.height;
 		var sharpen = params.sharpen;
 		var _this = this;
+
+		//convert units
+		if (isNaN(width) == false){
+			width = this.Helper.get_internal_unit(width, units, resolution);
+		}
+		if (isNaN(height) == false){
+			height = this.Helper.get_internal_unit(height, units, resolution);
+		}
 
 		//if dimension with percent provided
 		if (isNaN(width) && isNaN(height)) {
@@ -262,10 +277,21 @@ class Image_resize_class {
 	}
 	
 	resize_gui(params) {
-		var width = parseInt(params.width);
-		var height = parseInt(params.height);
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
+
+		var width = parseFloat(params.width);
+		var height = parseFloat(params.height);
 		var width_100 = parseInt(params.width_percent);
 		var height_100 = parseInt(params.height_percent);
+
+		//convert units
+		if (isNaN(width) == false){
+			width = this.Helper.get_internal_unit(width, units, resolution);
+		}
+		if (isNaN(height) == false){
+			height = this.Helper.get_internal_unit(height, units, resolution);
+		}
 
 		//if dimension with percent provided
 		if (isNaN(width) && isNaN(height)) {

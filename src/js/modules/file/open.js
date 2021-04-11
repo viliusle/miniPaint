@@ -257,7 +257,7 @@ class File_open_class {
 		this.POP.show(settings);
 	}
 
-	open_handler(e) {
+	async open_handler(e) {
 		var _this = this;
 		var files = e.target.files;
 
@@ -322,6 +322,9 @@ class File_open_class {
 				FR.readAsText(f);
 			else
 				FR.readAsDataURL(f);
+
+			//sleep after last image import, it maybe not be finished yet
+			await new Promise(r => setTimeout(r, 10));
 		}
 	}
 	
@@ -487,14 +490,17 @@ class File_open_class {
 
 		//set attributes
 		actions.push(
+			new app.Actions.Refresh_action_attributes_action('undo'),
 			new app.Actions.Prepare_canvas_action('undo'),
 			new app.Actions.Update_config_action({
 				ZOOM: 1,
 				WIDTH: parseInt(json.info.width),
-				HEIGHT: parseInt(json.info.height)
+				HEIGHT: parseInt(json.info.height),
+				user_fonts: json.user_fonts || {}
 			}),
 			new app.Actions.Reset_layers_action(),
 			new app.Actions.Prepare_canvas_action('do'),
+			new app.Actions.Refresh_action_attributes_action('do')
 		);
 
 		var max_id_order = 0;

@@ -11,6 +11,7 @@ export { Insert_layer_action } from './insert-layer.js';
 export { Prepare_canvas_action } from './prepare-canvas.js';
 export { Reorder_layer_action } from './reorder-layer.js';
 export { Reset_layers_action } from './reset-layers.js';
+export { Refresh_action_attributes_action } from './refresh-action-attributes.js';
 export { Refresh_layers_gui_action } from './refresh-layers-gui.js';
 export { Reset_selection_action } from './reset-selection.js';
 export { Select_layer_action } from './select-layer.js';

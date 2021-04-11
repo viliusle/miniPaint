@@ -130,7 +130,10 @@ class Effects_browser_class extends Base_tools_class {
 
 	get_function_from_path(path){
 		var parts = path.split("/");
-		return parts[parts.length - 1];
+		var result = parts[parts.length - 1];
+		result = result.replace(/-/, '_');
+
+		return result;
 	}
 }
 

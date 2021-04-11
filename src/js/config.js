@@ -14,6 +14,7 @@ config.ALPHA = 255;
 config.ZOOM = 1;
 config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
+config.google_webfonts_key = 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg';
 config.layers = [];
 config.layer = null;
 config.need_render = false;
@@ -22,6 +23,7 @@ config.mouse = {};
 config.swatches = {
 	default: [] // Only default used right now, object format for swatch swapping in future.
 };
+config.user_fonts = {};
 config.guides_enabled = true;
 config.guides = [];
 config.ruler_active = false;
@@ -96,11 +98,6 @@ config.TOOLS = [
 	},
 	{
 		name: 'pencil',
-		on_update: 'on_params_update',
-		attributes: {
-			antialiasing: true,
-			size: 2,
-		},
 	},
 	{
 		name: 'pick_color',
@@ -341,7 +338,10 @@ config.TOOLS = [
 		attributes: {
 			font: {
 				value: 'Arial',
-				values: ['', ...config.FONTS.sort()],
+				values() {
+					const user_font_names = Object.keys(config.user_fonts);
+					return ['', '[Add Font...]', ...Array.from(new Set([...config.FONTS, ...user_font_names].sort()))];
+				}
 			},
 			size: 40,
 			bold: {

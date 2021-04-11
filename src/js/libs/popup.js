@@ -280,6 +280,9 @@ class Dialog_class {
 
 	get_params() {
 		var response = {};
+		if(this.el == undefined){
+			return null;
+		}
 		var inputs = this.el.querySelectorAll('input');
 		for (var i = 0; i < inputs.length; i++) {
 			if (inputs[i].id.substr(0, 9) == 'pop_data_') {
@@ -489,7 +492,7 @@ class Dialog_class {
 						//radio
 						html += '<td class="radios" colspan="2">';
 						if (parameter.values.length > 2)
-							html += '<div class="group">';
+							html += '<div class="group" id="popup-group-' + this.parameters[i].name + '">';
 						var k = 0;
 						for (var j in parameter.values) {
 							var ch = '';
@@ -553,7 +556,7 @@ class Dialog_class {
 						if (parameter.type == 'textarea') {
 							//textarea
 							html += '<td><textarea rows="10" id="pop_data_' + parameter.name
-								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '">'
+								+ '" onchange="POP.onChangeEvent();" placeholder="' + parameter.placeholder + '" ' + (parameter.prevent_submission ? 'data-prevent-submission=""' : '' ) + '>'
 								+ parameter.value + '</textarea></td>';
 						}
 						else {
@@ -571,7 +574,7 @@ class Dialog_class {
 
 							html += '<td colspan="2"><input type="' + input_type + '" id="pop_data_' + parameter.name
 								+ '" onchange="POP.onChangeEvent();" value="' + parameter.value + '" placeholder="'
-								+ parameter.placeholder + '" />'+comment_html+'</td>';
+								+ parameter.placeholder + '" ' + (parameter.prevent_submission ? 'data-prevent-submission=""' : '' ) + ' />'+comment_html+'</td>';
 						}
 					}
 				}
@@ -611,9 +614,12 @@ class Dialog_class {
 
 	//on key press inside input text
 	onkeyup(event) {
-		if (event.keyCode == "13") {
-			//Enter was pressed
-			this.save();
+		if (event.key == 'Enter') {
+			if (event.target.hasAttribute('data-prevent-submission')) {
+				event.preventDefault();
+			} else {
+				this.save();
+			}
 		}
 	}
 

@@ -121,6 +121,13 @@ class File_save_class {
 			save_types.push(i + " - " + file_types[i]);
 		}
 
+		var save_layers_types = [
+			'All',
+			'Selected',
+			'Separated',
+			'Separated (original types)',
+		];
+
 		var settings = {
 			title: title,
 			params: [
@@ -129,19 +136,35 @@ class File_save_class {
 				{name: "quality", title: "Quality:", value: 90, range: [1, 100]},
 				{title: "File size:", html: '<span id="file_size">-</span>'},
 				{name: "calc_size", title: "Show file size:", value: calc_size_value},
-				{name: "layers", title: "Save layers:", values: ['All', 'Selected', 'Separated']},
+				{name: "layers", title: "Save layers:", values: save_layers_types},
 				{name: "delay", title: "Gif delay:", value: 400},
 			],
 			on_change: function (params, canvas_preview, w, h) {
 				_this.save_dialog_onchange(true);
 			},
 			on_finish: function (params) {
-				if (params.layers == 'Separated') {
+				if (params.layers == 'Separated' || params.layers == 'Separated (original types)') {
 					var active_layer = config.layer.id;
+					var original_layer_type = params.layers;
+
+					//alter params
 					params.layers = 'Selected';
+
 					for (var i in config.layers) {
 						if (config.layers[i].visible == false)
 							continue;
+
+						//detect type
+						if (original_layer_type == 'Separated (original types)') {
+							//detect type from file name
+							params.type = _this.SAVE_TYPES[_this.default_extension];
+							for (var j in _this.SAVE_TYPES) {
+								if (_this.Helper.strpos(config.layers[i].name.toLowerCase(), '.' + j.toLowerCase()) !== false) {
+									params.type = j;
+									break;
+								}
+							}
+						}
 						
 						new app.Actions.Select_layer_action(config.layers[i].id, true).do();
 						_this.save_action(params, true);
@@ -253,13 +276,27 @@ class File_save_class {
 		else
 			document.getElementById('pop_data_name').disabled = false;
 
+		if (user_response.layers == 'Separated (original types)') {
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "0.5";
+			}
+			document.getElementById('popup-tr-quality').style.display = '';
+		}
+		else {
+			if(document.getElementById('popup-group-type')) {
+				document.getElementById('popup-group-type').style.opacity = "1";
+			}
+		}
+
 		if(calculate_file_size == false){
-			return;s
+			return;
 		}
 
 		this.update_file_size('...');
 
-		if (user_response.calc_size == false || user_response.layers == 'Separated') {
+		if (user_response.calc_size == false || user_response.layers == 'Separated'
+			|| user_response.layers == 'Separated (original types)') {
+
 			document.getElementById('file_size').innerHTML = '-';
 			return;
 		}
@@ -371,7 +408,7 @@ class File_save_class {
 
 			CanvasToTIFF.toBlob(canvas, function(blob) {
 				_this.update_file_size(blob.size);
-			});
+			}, data_header);
 		}
 		else if (type == 'JSON') {
 			//json
@@ -527,7 +564,7 @@ class File_save_class {
 
 			CanvasToTIFF.toBlob(canvas, function(blob) {
 				filesaver.saveAs(blob, fname);
-			});
+			}, data_header);
 		}
 		else if (type == 'JSON') {
 			//json - full data with layers
@@ -625,6 +662,9 @@ class File_save_class {
 			layer_active: config.layer.id,
 			guides: config.guides,
 		};
+
+		//fonts
+		export_data.user_fonts = config.user_fonts;
 
 		//layers
 		export_data.layers = [];

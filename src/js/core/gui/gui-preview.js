@@ -270,7 +270,7 @@ class GUI_preview_class {
 			config.ZOOM = Math.min(config.ZOOM, 500);
 		}
 
-		document.getElementById("zoom_100").value = Math.round(config.ZOOM * 100) + '%';
+		document.getElementById("zoom_100").innerHTML = Math.round(config.ZOOM * 100) + '%';
 		document.getElementById("zoom_range").value = (config.ZOOM * 100);
 
 		config.need_render = true;

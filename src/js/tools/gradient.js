@@ -130,7 +130,14 @@ class Gradient_class extends Base_tools_class {
 
 		var params = layer.params;
 		var power = params.radial_power;
+		if(power > 99){
+			power = 99;
+		}
 		var alpha = params.alpha / 100 * 255;
+		if(power > 255){
+			power = 255;
+		}
+
 		var color1 = layer.color;
 		var color2 = params.color_2;
 		var radial = params.radial;

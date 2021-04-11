@@ -49,7 +49,7 @@
 }
 #popups .popup .dialog_content {
 	overflow-y: auto;
-	max-height: calc(80vh - 9rem);
+	max-height: calc(80vh - 11rem);
 	padding: 1rem;
 }
 #popups .popup .buttons{
@@ -175,6 +175,74 @@
 	display: inline-block;
 	margin-left: 10px;
 	opacity: 0.5;
+}
+
+#popups .popup .selection_card {
+	background: var(--input-background-color);
+	display: block;
+	width: 100%;
+	padding: 0;
+	border-bottom: 0.1rem solid var(--input-border-color);
+	overflow: hidden;
+	position: relative;
+}
+#popups .popup .selection_card:first-child {
+	margin-top: 1rem;
+	border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
+}
+#popups .popup .selection_card:last-child {
+	border-radius: 0 0 var(--input-border-radius) var(--input-border-radius);
+	border-bottom: none;
+}
+#popups .popup .selection_card > input[type="checkbox"] {
+	flex-grow: 0;
+	flex-shrink: 0;
+	margin: 0;
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	left: 1.5rem;
+	transform: translateY(-50%) scale(1.5);
+}
+#popups .popup .selection_card > input[type="checkbox"] + label {
+	display: block;
+	width: 100%;
+	flex-grow: 1;
+	flex-shrink: 1;
+	margin: 0;
+	padding: 1rem 0.5rem 1rem 5.5rem;
+	cursor: pointer;
+}
+#popups .popup .selection_card > input[type="checkbox"] + label:hover {
+	background: var(--input-background-color-hover);
+}
+#popups .popup .selection_card .font_preview {
+	font-size: 1.6rem;
+	height: 2.5rem;
+	line-height: 2.5rem;
+	white-space: nowrap;
+}
+
+#popups .popup .pagination {
+	display: flex;
+	text-align: center;
+	margin: 1rem 0 0 0;
+}
+#popups .popup .pagination button {
+	flex-grow: 0;
+	height: 2.8rem;
+	line-height: 2.8rem;
+	border-radius: 0;
+	margin-left: -1px;
+	min-width: 3.3rem;
+}
+#popups .popup .pagination button:first-child {
+	border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
+	margin-left: auto;
+}
+#popups .popup .pagination button:last-child {
+	border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+	margin-right: auto;
 }
 
 @media screen and (max-width:500px){

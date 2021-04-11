@@ -297,29 +297,39 @@ class GUI_tools_class {
 
 				var selectList = document.createElement("select");
 				selectList.id = k;
-				for (var j in item.values) {
+				const values = typeof item.values === 'function' ? item.values() : item.values;
+				for (var j in values) {
 					var option = document.createElement("option");
-					if (item.value == item.values[j]) {
+					if (item.value == values[j]) {
 						option.selected = 'selected';
 					}
 					option.className = 'trn';
-					option.name = item.values[j];
-					option.value = item.values[j];
-					option.text = item.values[j];
+					option.name = values[j];
+					option.value = values[j];
+					option.text = values[j];
 					selectList.appendChild(option);
 				}
 				//event
 				selectList.addEventListener('change', (event) => {
 					const actionData = this.action_data();
 					actionData.attributes[event.target.id].value = event.target.value;
-					this.show_action_attributes();
 
 					if (actionData.on_update != undefined) {
 						//send event
 						var moduleKey = actionData.name;
 						var functionName = actionData.on_update;
-						this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
+						const result = this.tools_modules[moduleKey].object[functionName]({ key: event.target.id, value: event.target.value });
+						if (result) {
+							// Allow the on_update function to modify the attribute value if necessary.
+							if (result.new_values) {
+								for (let key in result.new_values) {
+									actionData.attributes[key].value = result.new_values[key];
+								}
+							}
+						}
 					}
+
+					this.show_action_attributes();
 				});
 
 				itemDom.appendChild(elementTitle);
