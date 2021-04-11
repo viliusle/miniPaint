@@ -110,7 +110,7 @@ class Tools_settings_class {
 			'transparency': false,
 			'snap': true,
 			'guides': true,
-			'safe_search': false,
+			'safe_search': true,
 			'exit_confirm': true,
 			'default_units': 'pixels',
 			'resolution': 72,

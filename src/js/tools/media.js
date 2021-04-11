@@ -82,7 +82,6 @@ class Media_class extends Base_tools_class {
 			className: 'wide',
 			params: [
 				{name: "query", title: "Keyword:", value: query},
-				{name: "safe_search", title: "Safe search:", value: safe_search},
 			],
 			on_load: function (params, popup) {
 				var node = document.createElement("div");
@@ -111,15 +110,13 @@ class Media_class extends Base_tools_class {
 				}
 			},
 			on_finish: function (params) {
-				_this.Tools_settings.save_setting('safe_search', params.safe_search);
-
 				if (params.query == '')
 					return;
 
 				var URL = "https://pixabay.com/api/?key=" + key
 					+ "&page=" + _this.page
 					+ "&per_page=" + _this.per_page
-					+ "&safesearch=" + params.safe_search
+					+ "&safesearch=" + safe_search
 					+ "&q="	+ encodeURIComponent(params.query);
 
 				if (_this.cache[URL] != undefined) {
