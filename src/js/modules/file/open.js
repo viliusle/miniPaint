@@ -257,7 +257,7 @@ class File_open_class {
 		this.POP.show(settings);
 	}
 
-	open_handler(e) {
+	async open_handler(e) {
 		var _this = this;
 		var files = e.target.files;
 
@@ -322,6 +322,9 @@ class File_open_class {
 				FR.readAsText(f);
 			else
 				FR.readAsDataURL(f);
+
+			//sleep after last image import, it maybe not be finished yet
+			await new Promise(r => setTimeout(r, 10));
 		}
 	}
 	
