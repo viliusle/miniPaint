@@ -136,7 +136,6 @@ export class Insert_layer_action extends Base_action {
 			&& (config.layer.width == 0 || config.layer.width === null) && (config.layer.height == 0 || config.layer.height === null)
 			&& config.layer.data == null && layer.type != 'image' && this.can_automate !== false) {
 			// Update existing layer, because it's empty
-			delete layer.name;
 			this.update_layer_action = new app.Actions.Update_layer_action(config.layer.id, layer);
 			await this.update_layer_action.do();
 		}
