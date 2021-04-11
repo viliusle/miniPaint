@@ -25,6 +25,7 @@ class Tools_settings_class {
 		var exit_confirm = this.get_setting('exit_confirm');
 		var default_units = this.get_setting('default_units');
 		var resolution = this.get_setting('resolution');
+		var thick_guides = this.get_setting('thick_guides');
 
 		var settings = {
 			title: 'Settings',
@@ -40,6 +41,7 @@ class Tools_settings_class {
 				{name: "guides", title: "Enable guides:", value: guides},
 				{name: "safe_search", title: "Safe search:", value: safe_search},
 				{name: "exit_confirm", title: "Exit confirmation:", value: exit_confirm},
+				{name: "thick_guides", title: "Thick guides:", value: thick_guides},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -66,6 +68,7 @@ class Tools_settings_class {
 		this.save_setting('exit_confirm', params.exit_confirm);
 		this.save_setting('default_units', params.default_units);
 		this.save_setting('resolution', params.resolution);
+		this.save_setting('thick_guides', params.thick_guides);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -114,6 +117,7 @@ class Tools_settings_class {
 			'exit_confirm': true,
 			'default_units': 'pixels',
 			'resolution': 72,
+			'thick_guides': false,
 		};
 
 		var value = this.Helper.getCookie(key);

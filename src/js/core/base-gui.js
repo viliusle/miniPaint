@@ -395,6 +395,7 @@ class Base_gui_class {
 		if(config.guides_enabled == false){
 			return;
 		}
+		var thick_guides = this.Tools_settings.get_setting('thick_guides');
 
 		for(var i in config.guides) {
 			var guide = config.guides[i];
@@ -405,7 +406,10 @@ class Base_gui_class {
 
 			//set styles
 			ctx.strokeStyle = '#00b8b8';
-			ctx.lineWidth = 1;
+			if(thick_guides == false)
+				ctx.lineWidth = 1;
+			else
+				ctx.lineWidth = 3;
 
 			ctx.beginPath();
 			if (guide.y === null) {
