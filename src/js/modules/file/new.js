@@ -66,7 +66,7 @@ class File_new_class {
 		this.POP.show(settings);
 	}
 
-	new_handler(response) {
+	async new_handler(response) {
 		var width = parseFloat(response.width);
 		var height = parseFloat(response.height);
 		var resolution_type = response.resolution_type;
@@ -109,6 +109,12 @@ class File_new_class {
 				new app.Actions.Insert_layer_action({})
 			])
 		);
+
+		//sleep, lets wait till DOM is finished
+		await new Promise(r => setTimeout(r, 10));
+
+		//fit to screen?
+		this.Base_gui.GUI_preview.zoom_auto(true);
 
 		// Save transparency
 		if (transparency) {
