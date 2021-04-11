@@ -492,7 +492,7 @@ class Dialog_class {
 						//radio
 						html += '<td class="radios" colspan="2">';
 						if (parameter.values.length > 2)
-							html += '<div class="group">';
+							html += '<div class="group" id="popup-group-' + this.parameters[i].name + '">';
 						var k = 0;
 						for (var j in parameter.values) {
 							var ch = '';
