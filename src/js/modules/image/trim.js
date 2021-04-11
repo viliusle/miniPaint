@@ -40,6 +40,7 @@ class Image_trim_class {
 	}
 	
 	trim() {
+		var _this = this;
 		var removeWhiteColor = false;
 		if(config.TRANSPARENCY == false)
 			removeWhiteColor = true;
@@ -53,21 +54,36 @@ class Image_trim_class {
 				{name: "remove_white", title: "Trim white color?", value: removeWhiteColor},
 			],
 			on_finish: (params) => {
-				let actions = [];
-				if (params.trim_layer == true)
+				if (params.trim_layer == true) {
+					//first trim
+					let actions = [];
 					actions = actions.concat(this.trim_layer(config.layer.id, params.remove_white));
-				if (params.trim_all == true)
-					actions = actions.concat(this.trim_all(params.remove_white));
-				if (actions.length > 0) {
 					app.State.do_action(
 						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
 					);
+				}
+				if (params.trim_all == true) {
+					//second trim
+					setInterval(function(){
+						let actions = [];
+						actions = actions.concat(_this.trim_all(params.remove_white));
+						app.State.do_action(
+							new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
+						);
+					}, 100); //ust wait a little after first trim, ugly, but works...
 				}
 			},
 		};
 		this.Dialog.show(settings);
 	}
-	
+
+	/**
+	 * removes empty (white/transparent) area from top, right, bottom and left sides
+	 * This affects layer data
+	 *
+	 * @param layer_id
+	 * @param removeWhiteColor
+	 */
 	trim_layer(layer_id, removeWhiteColor = false) {
 		var layer = this.Base_layers.get_layer(layer_id);
 		
@@ -106,7 +122,13 @@ class Image_trim_class {
 			})
 		];
 	}
-	
+
+	/**
+	 * change canvas size, so there is no empty (white/transparent) areas on top, right, bottom and left sides
+	 * this affect canvas size and all layers positions
+	 *
+	 * @param removeWhiteColor
+	 */
 	trim_all(removeWhiteColor = false) {
 		let actions = [];
 
