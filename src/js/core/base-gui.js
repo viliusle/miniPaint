@@ -296,34 +296,23 @@ class Base_gui_class {
 		var page_h = wrapper.clientHeight;
 		var auto_size = false;
 
-		var save_resolution_cookie = this.Helper.getCookie('save_resolution');
-		var last_resolution = this.Helper.getCookie('last_resolution');
-		if (save_resolution_cookie != null && save_resolution_cookie != ''
-			&& last_resolution != null && last_resolution != '') {
-			//load last saved resolution
-			last_resolution = JSON.parse(last_resolution);
-			config.WIDTH = parseInt(last_resolution[0]);
-			config.HEIGHT = parseInt(last_resolution[1]);
+		//use largest possible
+		for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
+			if (this.common_dimensions[i][0] > page_w
+				|| this.common_dimensions[i][1] > page_h) {
+				//browser size is too small
+				continue;
+			}
+			config.WIDTH = parseInt(this.common_dimensions[i][0]);
+			config.HEIGHT = parseInt(this.common_dimensions[i][1]);
+			auto_size = true;
+			break;
 		}
-		else {
-			//use largest possible
-			for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
-				if (this.common_dimensions[i][0] > page_w
-					|| this.common_dimensions[i][1] > page_h) {
-					//browser size is too small
-					continue;
-				}
-				config.WIDTH = parseInt(this.common_dimensions[i][0]);
-				config.HEIGHT = parseInt(this.common_dimensions[i][1]);
-				auto_size = true;
-				break;
-			}
 
-			if (auto_size == false) {
-				//screen size is smaller then 400x300
-				config.WIDTH = parseInt(page_w) - 15;
-				config.HEIGHT = parseInt(page_h) - 10;
-			}
+		if (auto_size == false) {
+			//screen size is smaller then 400x300
+			config.WIDTH = parseInt(page_w) - 15;
+			config.HEIGHT = parseInt(page_h) - 10;
 		}
 	}
 

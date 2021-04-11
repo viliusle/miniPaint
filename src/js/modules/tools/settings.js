@@ -14,23 +14,28 @@ class Tools_settings_class {
 	settings() {
 		var _this = this;
 		var transparency_values = ['squares', 'green', 'grey'];
+		var default_units_all = ['pixels', 'inches', 'centimeters', 'millimetres'];
+		var resolutions_values = [72, 150, 300, 600];
 
 		var transparency = this.get_setting('transparency');
-		var save_resolution = this.get_setting('save_resolution');
 		var theme = this.get_setting('theme');
 		var snap = this.get_setting('snap');
 		var guides = this.get_setting('guides');
 		var safe_search = this.get_setting('safe_search');
 		var exit_confirm = this.get_setting('exit_confirm');
+		var default_units = this.get_setting('default_units');
+		var resolution = this.get_setting('resolution');
 
 		var settings = {
 			title: 'Settings',
 			params: [
 				{name: "transparency", title: "Transparent:", value: transparency},
-				{name: "transparency_type", title: "Transparency background:", 
+				{name: "transparency_type", title: "Transparency background:", type: "select",
 					value: config.TRANSPARENCY_TYPE, values: transparency_values},
-				{name: "theme", title: "Theme", values: config.themes, value: theme},
-				{name: "save_resolution", title: "Save resolution:", value: save_resolution},
+				{name: "theme", title: "Theme", values: config.themes, value: theme, type: "select"},
+				{name: "default_units", title: "Units", values: default_units_all, value: default_units, type: "select"},
+				{name: "resolution", title: "Resolution:", type: "select",
+					value: resolution, values: resolutions_values},
 				{name: "snap", title: "Enable snap:", value: snap},
 				{name: "guides", title: "Enable guides:", value: guides},
 				{name: "safe_search", title: "Safe search:", value: safe_search},
@@ -53,13 +58,14 @@ class Tools_settings_class {
 
 		//save
 		this.save_setting('theme', params.theme);
-		this.save_setting('save_resolution', params.save_resolution);
 		this.save_setting('transparency', params.transparency);
 		this.save_setting('transparency_type', params.transparency_type);
 		this.save_setting('snap', params.snap);
 		this.save_setting('guides', params.guides);
 		this.save_setting('safe_search', params.safe_search);
 		this.save_setting('exit_confirm', params.exit_confirm);
+		this.save_setting('default_units', params.default_units);
+		this.save_setting('resolution', params.resolution);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -67,6 +73,7 @@ class Tools_settings_class {
 		config.SNAP = this.get_setting('snap');
 		config.guides_enabled = this.get_setting('guides');
 		this.Base_gui.change_theme(this.get_setting('theme'));
+		this.Base_gui.GUI_information.update_units();
 		
 		//finish
 		this.Base_gui.prepare_canvas();
@@ -101,11 +108,12 @@ class Tools_settings_class {
 		var default_values = {
 			'theme': config.themes[0],
 			'transparency': false,
-			'save_resolution': true,
 			'snap': true,
 			'guides': true,
 			'safe_search': false,
 			'exit_confirm': true,
+			'default_units': 'pixels',
+			'resolution': 72,
 		};
 
 		var value = this.Helper.getCookie(key);

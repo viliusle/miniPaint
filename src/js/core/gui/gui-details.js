@@ -8,26 +8,28 @@ import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Text_class from './../../tools/text.js';
 import Base_layers_class from "../base-layers";
+import Tools_settings_class from './../../modules/tools/settings.js';
+import Helper_class from './../../libs/helpers.js';
 
 var template = `
 	<div class="row">
 		<span class="trn label">X</span>
-		<input type="number" id="detail_x" />
+		<input type="number" id="detail_x" step="any" />
 		<button class="extra reset" type="button" id="reset_x" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Y:</span>
-		<input type="number" id="detail_y" />
+		<input type="number" id="detail_y" step="any" />
 		<button class="extra reset" type="button" id="reset_y" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Width:</span>
-		<input type="number" id="detail_width" />
+		<input type="number" id="detail_width" step="any" />
 		<button class="extra reset" type="button" id="reset_size" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Height:</span>
-		<input type="number" id="detail_height" />
+		<input type="number" id="detail_height" step="any" />
 	</div>
 	<hr />
 	<div class="row">
@@ -115,6 +117,8 @@ class GUI_details_class {
 		this.POP = new Dialog_class();
 		this.Text = new Text_class();
 		this.Base_layers = new Base_layers_class();
+		this.Tools_settings = new Tools_settings_class();
+		this.Helper = new Helper_class();
 	}
 
 	render_main_details() {
@@ -165,6 +169,8 @@ class GUI_details_class {
 	render_general(key, events) {
 		var layer = config.layer;
 		var _this = this;
+		var units = this.Tools_settings.get_setting('default_units');
+		var resolution = this.Tools_settings.get_setting('resolution');
 
 		if (layer != undefined) {
 			var target = document.getElementById('detail_' + key);
@@ -174,7 +180,18 @@ class GUI_details_class {
 				target.disabled = true;
 			}
 			else {
-				target.value = Math.round(layer[key]);
+				var value = layer[key];
+
+				if(key == 'x' || key == 'y' || key == 'width' || key == 'height'){
+					//convert units
+					value = this.Helper.get_user_unit(value, units, resolution);
+				}
+				else {
+					value = Math.round(value);
+				}
+
+				//set
+				target.value = value;
 				target.disabled = false;
 			}
 		}
@@ -188,10 +205,16 @@ class GUI_details_class {
 			}
 			let focus_value = null;
 			target.addEventListener('focus', function (e) {
-				focus_value = parseInt(this.value);
+				focus_value = parseFloat(this.value);
 			});
 			target.addEventListener('blur', function (e) {
-				var value = parseInt(this.value);
+				if(key == 'x' || key == 'y' || key == 'width' || key == 'height'){
+					//convert units
+					var value = _this.Helper.get_internal_unit(this.value, units, resolution);
+				}
+				else {
+					var value = parseInt(this.value);
+				}
 				var layer = _this.Base_layers.get_layer(e.target.dataset.layer);
 				layer[key] = focus_value;
 				if (focus_value !== value) {
@@ -205,7 +228,13 @@ class GUI_details_class {
 				}
 			});
 			target.addEventListener('change', function (e) {
-				var value = parseInt(this.value);
+				if(key == 'x' || key == 'y' || key == 'width' || key == 'height'){
+					//convert units
+					var value = _this.Helper.get_internal_unit(this.value, units, resolution);
+				}
+				else {
+					var value = parseInt(this.value);
+				}
 				
 				if(this.min != undefined && this.min != '' && value < this.min){
 					document.getElementById('detail_opacity').value = value;
@@ -221,9 +250,17 @@ class GUI_details_class {
 			});
 			target.addEventListener('keyup', function (e) {
 				//for edge....
-				if (e.keyCode != 13) 
+				if (e.keyCode != 13) {
 					return;
-				var value = parseInt(this.value);
+				}
+
+				if(key == 'x' || key == 'y' || key == 'width' || key == 'height'){
+					//convert units
+					var value = _this.Helper.get_internal_unit(this.value, units, resolution);
+				}
+				else {
+					var value = parseInt(this.value);
+				}
 				
 				if(this.min != undefined && this.min != '' && value < this.min){
 					document.getElementById('detail_opacity').value = value;

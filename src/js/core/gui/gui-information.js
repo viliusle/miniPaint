@@ -5,6 +5,8 @@
 
 import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
+import Tools_settings_class from './../../modules/tools/settings.js';
+import Helper_class from './../../libs/helpers.js';
 
 var template = `
 	<span class="trn label">Size:</span>
@@ -21,8 +23,13 @@ class GUI_information_class {
 
 	constructor(ctx) {
 		this.Base_layers = new Base_layers_class();
+		this.Tools_settings = new Tools_settings_class();
+		this.Helper = new Helper_class();
+
 		this.last_width = null;
 		this.last_height = null;
+		this.units = this.Tools_settings.get_setting('default_units');
+		this.resolution = this.Tools_settings.get_setting('resolution');
 	}
 
 	render_main_information() {
@@ -47,15 +54,28 @@ class GUI_information_class {
 			var mouse_x = Math.ceil(global_pos.x);
 			var mouse_y = Math.ceil(global_pos.y);
 
+			mouse_x = _this.Helper.get_user_unit(mouse_x, _this.units, _this.resolution);
+			mouse_y = _this.Helper.get_user_unit(mouse_y, _this.units, _this.resolution);
+
 			target.innerHTML = mouse_x + ', ' + mouse_y;
 		}, false);
 	}
 
-	show_size() {
-		if(this.last_width == config.WIDTH && this.last_height == config.HEIGHT)
-			return;
+	update_units(){
+		this.units = this.Tools_settings.get_setting('default_units');
+		this.resolution = this.Tools_settings.get_setting('resolution');
+		this.show_size(true);
+	}
 
-		document.getElementById('mouse_info_size').innerHTML = config.WIDTH + ' x ' + config.HEIGHT;
+	show_size(force) {
+		if(force == undefined && this.last_width == config.WIDTH && this.last_height == config.HEIGHT) {
+			return;
+		}
+
+		var width = this.Helper.get_user_unit(config.WIDTH, this.units, this.resolution);
+		var height = this.Helper.get_user_unit(config.HEIGHT, this.units, this.resolution);
+
+		document.getElementById('mouse_info_size').innerHTML = width + ' x ' + height;
 		this.last_width = config.WIDTH;
 		this.last_height = config.HEIGHT;
 	}
