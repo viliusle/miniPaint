@@ -16,6 +16,7 @@ class Tools_translate_class {
 
 		this.Helper = new Helper_class();
 		this.translations = {};
+		this.trans_lang_codes = [];
 
 		this.load_translations();
 	}
@@ -34,9 +35,7 @@ class Tools_translate_class {
 			this.Helper.setCookie('language', lang_code);
 		}
 
-		var first = this.translations[Object.keys(this.translations)[0]];
-
-		if (first[lang_code] != undefined || lang_code == 'en') {
+		if (this.trans_lang_codes.includes(lang_code) || lang_code == 'en') {
 			//translate
 			$(element || 'body').translate({lang: lang_code, t: this.translations});
 			config.LANG = lang_code;
@@ -62,6 +61,7 @@ class Tools_translate_class {
 					}
 					_this.translations[i][moduleKey] = classObj[i];
 				}
+				_this.trans_lang_codes.push(moduleKey);
 			}
 		});
 	}
