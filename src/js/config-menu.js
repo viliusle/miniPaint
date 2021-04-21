@@ -646,6 +646,10 @@ const menuDefinition = [
 						divider: true
 					},
 					{
+						name: 'Greek',
+						target: 'tools/translate.translate.el'
+					},					
+					{
 						name: 'عربي',
 						target: 'tools/translate.translate.ar'
 					},
