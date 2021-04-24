@@ -27,7 +27,7 @@
     "babel-preset-env": "^1.7.0",
     "css-loader": "^3.6.0",
     "source-map-loader": "^0.2.4",
-    "style-loader": "^0.21.0",
+    "style-loader": "^2.0.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
