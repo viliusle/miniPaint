@@ -13,3 +13,5 @@ nbproject/
 *.log
 
 /node_modules/
+*.js.ignore
+
