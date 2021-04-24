@@ -690,6 +690,10 @@ const menuDefinition = [
 						target: 'tools/translate.translate.ru'
 					},
 					{
+						name: 'Greek',
+						target: 'tools/translate.translate.el'
+					},
+					{
 						name: 'Türkçe',
 						target: 'tools/translate.translate.tr'
 					}
