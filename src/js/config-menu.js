@@ -646,12 +646,18 @@ const menuDefinition = [
 						divider: true
 					},
 					{
+						//Arabic
 						name: 'عربي',
 						target: 'tools/translate.translate.ar'
 					},
 					{
+						//Chinese simplified
 						name: '简体中文',
 						target: 'tools/translate.translate.zh'
+					},
+					{
+						name: 'Deutsch',
+						target: 'tools/translate.translate.de'
 					},
 					{
 						name: 'Español',
@@ -662,18 +668,20 @@ const menuDefinition = [
 						target: 'tools/translate.translate.fr'
 					},
 					{
-						name: 'Deutsch',
-						target: 'tools/translate.translate.de'
+						name: 'Greek',
+						target: 'tools/translate.translate.el'
 					},
 					{
 						name: 'Italiano',
 						target: 'tools/translate.translate.it'
 					},
 					{
+						//Japanese
 						name: '日本語',
 						target: 'tools/translate.translate.ja'
 					},
 					{
+						//Korean
 						name: '한국어',
 						target: 'tools/translate.translate.ko'
 					},
@@ -688,10 +696,6 @@ const menuDefinition = [
 					{
 						name: 'русский язык',
 						target: 'tools/translate.translate.ru'
-					},
-					{
-						name: 'Greek',
-						target: 'tools/translate.translate.el'
 					},
 					{
 						name: 'Türkçe',

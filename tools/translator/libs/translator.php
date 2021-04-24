@@ -80,6 +80,7 @@ class Translator {
 					'\.addEventListener',
 					'\.style\.',
 					'aria-label',
+					'\.font',
 				];
 				foreach ($ignore_matches as $ignore_match) {
 					$content = preg_replace('/' . $ignore_match . '.*/', '', $content);
@@ -166,6 +167,10 @@ class Translator {
 			}
 			if (preg_replace("/[^A-Z0-9]+/", "", $string[0]) == '') {
 				//first letter must be common uppercase letter or number
+				continue;
+			}
+			if (is_numeric($string[0]) && strpos($string, ' ') === false) {
+				//if first letter is number - try to skip some
 				continue;
 			}
 			if (strpos($string, '(') !== false && strpos($string, ')') !== false && strpos($string, '.') !== false) {
