@@ -246,6 +246,14 @@ class Brush_class extends Base_tools_class {
 			);
 		}
 
+		//in case of undo, recalculate index
+		for(var i = index; i >= 0; i++){
+			if(typeof config.layer.data[index] != "undefined"){
+				break;
+			}
+			index--;
+		}
+
 		var current_group = config.layer.data[index];
 		var params = this.getParams();
 
@@ -278,6 +286,14 @@ class Brush_class extends Base_tools_class {
 			return;
 		if (mouse.click_valid == false) {
 			return;
+		}
+
+		//in case of undo, recalculate index
+		for(var i = index; i >= 0; i++){
+			if(typeof config.layer.data[index] != "undefined"){
+				break;
+			}
+			index--;
 		}
 
 		var params = this.getParams();
