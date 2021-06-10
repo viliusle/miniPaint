@@ -60,6 +60,7 @@ const menuDefinition = [
 			{
 				name: 'Save As',
 				ellipsis: true,
+				shortcut: 'Shift + S',
 				target: 'file/save.save'
 			},
 			{
@@ -70,7 +71,7 @@ const menuDefinition = [
 			{
 				name: 'Print',
 				ellipsis: true,
-				shortcut: 'Ctrl-P',
+				shortcut: 'Ctrl+P',
 				target: 'file/print.print'
 			},
 			{

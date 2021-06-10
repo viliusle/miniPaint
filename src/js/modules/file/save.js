@@ -53,8 +53,14 @@ class File_save_class {
 				return;
 
 			if (code == "s") {
-				//save
-				this.export();
+				if(event.shiftKey){
+					//export
+					this.save();
+				}
+				else{
+					//save
+					this.export();
+				}
 				event.preventDefault();
 			}
 		}, false);
