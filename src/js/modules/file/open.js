@@ -285,7 +285,7 @@ class File_open_class {
 			var items = e.dataTransfer.items;
 			for (var i=0; i<items.length; i++) {
 				var item = items[i].webkitGetAsEntry();
-				if(item.isDirectory){
+				if(item && item.isDirectory){
 					dir_opened = true;
 				}
 			}
