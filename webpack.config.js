@@ -3,7 +3,6 @@ var path = require('path');
 
 module.exports = {
 	entry: [
-		'babel-polyfill',
 		'./src/js/main.js',
 	],
 	output: {
@@ -32,12 +31,7 @@ module.exports = {
 			{
 				test: /\.js$/,
 				exclude: /(node_modules|bower_components)/,
-				use: {
-				loader: 'babel-loader',
-					options: {
-					presets: ['env']
-					}
-				}
+				use: ['babel-loader']
 			},
 		]
 	},
