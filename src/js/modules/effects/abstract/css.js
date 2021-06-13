@@ -18,15 +18,24 @@ class Effects_common_class {
 		var title = this.Helper.ucfirst(type);
 		title = title.replace(/-/g, ' ');
 
+		var preview_padding = 0;
+		if(typeof this.preview_padding != "undefined"){
+			preview_padding = this.preview_padding;
+		}
+
 		var settings = {
 			title: title,
 			preview: true,
+			preview_padding: preview_padding,
 			effects: true,
 			params: params,
 			on_change: function (params, canvas_preview, w, h) {
 				_this.params = params;
 				canvas_preview.filter = _this.preview(params, type);
-				canvas_preview.drawImage(this.layer_active_small, 0, 0);
+				canvas_preview.drawImage(this.layer_active_small,
+					preview_padding, preview_padding,
+					_this.POP.width_mini - preview_padding * 2, _this.POP.height_mini - preview_padding * 2
+				);
 			},
 			on_finish: function (params) {
 				_this.params = params;

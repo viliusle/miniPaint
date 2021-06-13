@@ -1,12 +1,15 @@
 import config from '../../../config.js';
 import Effects_common_class from '../abstract/css.js';
 import Dialog_class from '../../../libs/popup.js';
+import Effects_browser_class from '../browser.js';
 
 class Effects_brightness_class extends Effects_common_class {
 
 	constructor() {
 		super();
 		this.POP = new Dialog_class();
+		this.Effects_browser = new Effects_browser_class();
+		this.preview_padding = 20;
 	}
 
 	shadow() {
@@ -16,7 +19,7 @@ class Effects_brightness_class extends Effects_common_class {
 			{name: "value", title: "Radius:", value: 5, range: [0, 100]},
 			{name: "color", title: "Color:", value: "#000000", type: 'color'},
 		];
-		this.show_dialog('shadow', params);
+		this.show_dialog('drop-shadow', params);
 	}
 
 	convert_value(value, params, type) {
@@ -42,7 +45,9 @@ class Effects_brightness_class extends Effects_common_class {
 		//draw
 		var size = this.convert_value(null, {x: 5, y: 5, value: 5, color: '#000000'}, 'preview');
 		ctx.filter = "drop-shadow("+size+")";
-		ctx.drawImage(canvas_thumb, 0, 0);
+		ctx.drawImage(canvas_thumb,
+			10, 10,
+			this.Effects_browser.preview_width - 20, this.Effects_browser.preview_height - 20);
 		ctx.filter = 'none';
 	}
 
