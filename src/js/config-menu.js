@@ -661,6 +661,10 @@ const menuDefinition = [
 						target: 'tools/translate.translate.de'
 					},
 					{
+						name: 'English (UK)',
+						target: 'tools/translate.translate.uk'
+					},
+					{
 						name: 'Español',
 						target: 'tools/translate.translate.es'
 					},
