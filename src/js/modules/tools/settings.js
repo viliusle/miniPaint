@@ -125,6 +125,10 @@ class Tools_settings_class {
 			//set default value
 			value = default_values[key];
 		}
+		if(key == 'safe_search' && config.safe_search_can_be_disabled === false){
+			//not allowed
+			value = 1;
+		}
 
 		//finalize values
 		if(value === 1){

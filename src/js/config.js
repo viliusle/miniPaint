@@ -14,6 +14,7 @@ config.ALPHA = 255;
 config.ZOOM = 1;
 config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
+config.safe_search_can_be_disabled = true;
 config.google_webfonts_key = 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg';
 config.layers = [];
 config.layer = null;
