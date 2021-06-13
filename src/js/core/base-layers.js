@@ -64,6 +64,7 @@ class Base_layers_class {
 		this.stable_dimensions = [];
 		this.debug_rendering = false;
 		this.render_success = null;
+		this.disabled_filter_id = null;
 	}
 
 	/**
@@ -254,6 +255,10 @@ class Base_layers_class {
 		//apply pre-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
+			if(filter.id == this.disabled_filter_id){
+				continue;
+			}
+
 			filter.name = filter.name.replace('drop-shadow', 'shadow');
 
 			//find filter
@@ -706,6 +711,15 @@ class Base_layers_class {
 	 */
 	get_layers() {
 		return config.layers;
+	}
+
+	/**
+	 * disabled filter by id
+	 *
+	 * @param filter_id
+	 */
+	disable_filter(filter_id) {
+		this.disabled_filter_id = filter_id;
 	}
 
 }

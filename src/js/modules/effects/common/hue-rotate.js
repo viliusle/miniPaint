@@ -2,11 +2,13 @@ import Effects_common_class from '../abstract/css.js';
 
 class Effects_hueRotate_class extends Effects_common_class {
 
-	hue_rotate() {
+	hue_rotate(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'hue-rotate');
+
 		var params = [
-			{name: "value", title: "Degree:", value: 90, range: [0, 360]},
+			{name: "value", title: "Degree:", value: filter.value ??= 90, range: [0, 360]},
 		];
-		this.show_dialog('hue-rotate', params);
+		this.show_dialog('hue-rotate', params, filter_id);
 	}
 
 	convert_value(value) {

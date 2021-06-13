@@ -2,11 +2,13 @@ import Effects_common_class from '../abstract/css.js';
 
 class Effects_grayscale_class extends Effects_common_class {
 
-	grayscale() {
+	grayscale(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'grayscale');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: 100, range: [0, 100]},
+			{name: "value", title: "Percentage:", value: filter.value ??= 100, range: [0, 100]},
 		];
-		this.show_dialog('grayscale', params);
+		this.show_dialog('grayscale', params, filter_id);
 	}
 
 	convert_value(value) {

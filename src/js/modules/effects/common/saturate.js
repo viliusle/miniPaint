@@ -2,11 +2,13 @@ import Effects_common_class from '../abstract/css.js';
 
 class Effects_saturate_class extends Effects_common_class {
 
-	saturate() {
+	saturate(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'saturate');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: -50, range: [-100, 100]},
+			{name: "value", title: "Percentage:", value: filter.value ??= -50, range: [-100, 100]},
 		];
-		this.show_dialog('saturate', params);
+		this.show_dialog('saturate', params, filter_id);
 	}
 
 	convert_value(value) {

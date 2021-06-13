@@ -10,14 +10,14 @@ export class Add_layer_filter_action extends Base_action {
 	 * @param {string} name
 	 * @param {object} params
 	 */
-	constructor(layer_id, name, params) {
+	constructor(layer_id, name, params, filter_id) {
 		super('add_layer_filter', 'Add Layer Filter');
 		if (layer_id == null)
 			layer_id = config.layer.id;
 		this.layer_id = parseInt(layer_id);
-		this.filter_id = Math.floor(Math.random() * 999999999) + 1; // A good UUID library would 
 		this.name = name;
 		this.params = params;
+		this.filter_id = filter_id;
 		this.reference_layer = null;
 	}
 
@@ -32,8 +32,20 @@ export class Add_layer_filter_action extends Base_action {
 			name: this.name,
 			params: this.params,
 		};
-		this.reference_layer.filters.push(filter);
-
+		if(this.filter_id) {
+			//update
+			for(var i in this.reference_layer.filters) {
+				if(this.reference_layer.filters[i].id == this.filter_id){
+					this.reference_layer.filters[i] = filter;
+					break;
+				}
+			}
+		}
+		else{
+			//insert
+			filter.id = Math.floor(Math.random() * 999999999) + 1; // A good UUID library would
+			this.reference_layer.filters.push(filter);
+		}
 		config.need_render = true;
 		app.GUI.GUI_layers.render_layers();
 	}

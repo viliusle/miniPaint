@@ -8,6 +8,7 @@ import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Layer_rename_class from './../../modules/layer/rename.js';
+import Effects_browser_class from './../../modules/effects/browser.js';
 
 var template = `
 	<span class="trn">Insert:</span>
@@ -28,6 +29,7 @@ class GUI_layers_class {
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.Layer_rename = new Layer_rename_class();
+		this.Effects_browser = new Effects_browser_class();
 	}
 
 	render_main_layers() {
@@ -86,6 +88,18 @@ class GUI_layers_class {
 					new app.Actions.Delete_layer_filter_action(target.dataset.pid, target.dataset.id)
 				);
 			}
+			else if (target.id == 'filter_name') {
+				//edit filter
+				var effects = _this.Effects_browser.get_effects_list();
+				var key = target.dataset.filter.toLowerCase();
+				for (var i in effects) {
+					if(effects[i].title.toLowerCase() == key){
+						_this.Base_layers.select(target.dataset.pid);
+						var function_name = _this.Effects_browser.get_function_from_path(key);
+						effects[i].object[function_name](target.dataset.id);
+					}
+				}
+			}
 		});
 
 		document.getElementById('layers_base').addEventListener('dblclick', function (event) {
@@ -138,7 +152,7 @@ class GUI_layers_class {
 
 						html += '<div class="filter">';
 						html += '	<span class="delete" id="delete_filter" data-pid="' + layers[i].id + '" data-id="' + filter.id + '" title="delete"></span>';
-						html += '	<span class="layer_name" id="filter_name" data-pid="' + layers[i].id + '" data-id="' + filter.id + '">' + title + '</span>';
+						html += '	<span class="layer_name" id="filter_name" data-pid="' + layers[i].id + '" data-id="' + filter.id + '" data-filter="' + filter.name + '">' + title + '</span>';
 						html += '	<div class="clear"></div>';
 						html += '</div>';
 					}

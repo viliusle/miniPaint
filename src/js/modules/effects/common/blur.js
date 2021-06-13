@@ -9,11 +9,13 @@ class Effects_blur_class extends Effects_common_class {
 		this.POP = new Dialog_class();
 	}
 
-	blur() {
+	blur(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'blur');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: 5, range: [0, 50]},
+			{name: "value", title: "Percentage:", value: filter.value ??= 5, range: [0, 50]},
 		];
-		this.show_dialog('blur', params);
+		this.show_dialog('blur', params, filter_id);
 	}
 
 	convert_value(value, params, type) {

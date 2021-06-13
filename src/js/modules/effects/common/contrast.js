@@ -2,11 +2,13 @@ import Effects_common_class from '../abstract/css.js';
 
 class Effects_contrast_class extends Effects_common_class {
 
-	contrast() {
+	contrast(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'contrast');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: 40, range: [-100, 100]},
+			{name: "value", title: "Percentage:", value: filter.value ??= 40, range: [-100, 100]},
 		];
-		this.show_dialog('contrast', params);
+		this.show_dialog('contrast', params, filter_id);
 	}
 
 	convert_value(value) {

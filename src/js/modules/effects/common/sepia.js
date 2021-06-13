@@ -2,11 +2,13 @@ import Effects_common_class from '../abstract/css.js';
 
 class Effects_sepia_class extends Effects_common_class {
 
-	sepia() {
+	sepia(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'sepia');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: 60, range: [0, 100]},
+			{name: "value", title: "Percentage:", value: filter.value ??= 60, range: [0, 100]},
 		];
-		this.show_dialog('sepia', params);
+		this.show_dialog('sepia', params, filter_id);
 	}
 
 	convert_value(value) {

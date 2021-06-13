@@ -12,14 +12,16 @@ class Effects_brightness_class extends Effects_common_class {
 		this.preview_padding = 20;
 	}
 
-	shadow() {
+	shadow(filter_id) {
+		var filter = this.find_filter_by_id(filter_id, 'shadow');
+
 		var params = [
-			{name: "x", title: "Offset X:", value: 10, range: [-100, 100]},
-			{name: "y", title: "Offset Y:", value: 10, range: [-100, 100]},
-			{name: "value", title: "Radius:", value: 5, range: [0, 100]},
-			{name: "color", title: "Color:", value: "#000000", type: 'color'},
+			{name: "x", title: "Offset X:", value: filter.x ??= 10, range: [-100, 100]},
+			{name: "y", title: "Offset Y:", value: filter.y ??= 10, range: [-100, 100]},
+			{name: "value", title: "Radius:", value: filter.value ??= 5, range: [0, 100]},
+			{name: "color", title: "Color:", value: filter.color ??= "#000000", type: 'color'},
 		];
-		this.show_dialog('drop-shadow', params);
+		this.show_dialog('shadow', params, filter_id);
 	}
 
 	convert_value(value, params, type) {

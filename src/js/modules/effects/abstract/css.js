@@ -13,7 +13,7 @@ class Effects_common_class {
 		this.params = null;
 	}
 
-	show_dialog(type, params) {
+	show_dialog(type, params, filter_id) {
 		var _this = this;
 		var title = this.Helper.ucfirst(type);
 		title = title.replace(/-/g, ' ');
@@ -39,25 +39,42 @@ class Effects_common_class {
 			},
 			on_finish: function (params) {
 				_this.params = params;
-				_this.save(params, type);
+				_this.save(params, type, filter_id);
 			},
 		};
+		this.Base_layers.disable_filter(filter_id);
 		this.POP.show(settings);
+		this.Base_layers.disable_filter(null);
 	}
 
-	save(params, type) {
+	save(params, type, filter_id) {
 		return app.State.do_action(
-			new app.Actions.Add_layer_filter_action(null, type, params)
+			new app.Actions.Add_layer_filter_action(null, type, params, filter_id)
 		);
 	}
 
 	preview(params, type) {
+		if(type == 'shadow'){
+			type = 'drop-shadow';
+		}
+
 		var value = this.convert_value(params.value, params, 'preview');
 		return type + "(" + value + ")";
 	}
 
 	convert_value(value, params) {
 		return value;
+	}
+
+	find_filter_by_id(filter_id, filter_name) {
+		var filter = {};
+		for(var i in config.layer.filters){
+			if(config.layer.filters[i].name == filter_name && config.layer.filters[i].id == filter_id) {
+				return config.layer.filters[i].params;
+			}
+		}
+
+		return {};
 	}
 
 }
