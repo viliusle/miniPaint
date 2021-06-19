@@ -200,6 +200,9 @@ class Base_gui_class {
 			});
 		}
 
+		document.getElementById('left_mobile_menu_button').addEventListener('click', function (event) {
+			document.querySelector('.sidebar_left').classList.toggle('active');
+		});
 		document.getElementById('mobile_menu_button').addEventListener('click', function (event) {
 			document.querySelector('.sidebar_right').classList.toggle('active');
 		});

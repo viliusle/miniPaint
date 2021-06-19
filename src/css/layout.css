@@ -508,6 +508,22 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 }
 
 @media screen and (max-width:700px){
+	body{
+		padding-top:50px;
+	}
+	.wrapper{
+		top: 50px;
+	}
+	.sidebar_left{
+		position: absolute;
+		left: -90px;
+		background: var(--background);
+	}
+	.sidebar_left.active{
+		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
+		left: 0;
+		z-index: 3;
+	}
 	.sidebar_right{
 		position: absolute;
 		height: 100%;
@@ -646,20 +662,12 @@ canvas{
 	background-color: #ddd;
 }
 
-@media screen and (max-width:700px){
-	body{
-		padding-top:50px;
-	}
-	.wrapper{
-		top: 50px;
-	}
-}
 @media screen and (max-width:550px){
 	.canvas_wrapper{
 		margin-left: 0px;
 	}
 }
-@media screen and (max-height: 740px){
+@media screen and (max-height: 690px){
 	.sidebar_left{
 		width: 75px;
 	}
