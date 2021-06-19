@@ -555,7 +555,7 @@ class File_open_class {
 				}
 			}
 		}
-		if(json.info.version < "4.8"){
+		if(json.info.version < "4.8.0"){
 			//migrate "borders" layer to rectangle
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
