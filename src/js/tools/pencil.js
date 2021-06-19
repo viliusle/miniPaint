@@ -129,6 +129,7 @@ class Pencil_class extends Base_tools_class {
 		var size = params.size || 1;
 
 		//set styles
+		ctx.save();
 		ctx.fillStyle = layer.color;
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = size;
@@ -169,6 +170,7 @@ class Pencil_class extends Base_tools_class {
 		}
 
 		ctx.translate(-layer.x, -layer.y);
+		ctx.restore();
 	}
 
 	/**

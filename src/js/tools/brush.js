@@ -344,6 +344,7 @@ class Brush_class extends Base_tools_class {
 		var size = params.size;
 
 		//set styles
+		ctx.save();
 		ctx.fillStyle = layer.color;
 		ctx.strokeStyle = layer.color;
 		ctx.lineWidth = params.size;
@@ -406,6 +407,7 @@ class Brush_class extends Base_tools_class {
 		}
 
 		ctx.translate(-layer.x, -layer.y);
+		ctx.restore();
 	}
 
 	/**
