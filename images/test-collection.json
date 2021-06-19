@@ -712,7 +712,7 @@
 			"rotate": 0,
 			"data": null,
 			"params": {
-				"size": 7,
+				"size": 15,
 				"shadow": false
 			},
 			"status": null,
@@ -1588,7 +1588,7 @@
 		{
 			"id": 43,
 			"parent_id": 0,
-			"name": "Cog #43",
+			"name": "Cog",
 			"type": "cog",
 			"link": null,
 			"x": 50,
@@ -1617,7 +1617,7 @@
 		{
 			"id": 44,
 			"parent_id": 0,
-			"name": "Tear #44",
+			"name": "Tear",
 			"type": "tear",
 			"link": null,
 			"x": 140,
@@ -1652,7 +1652,7 @@
 		{
 			"id": 45,
 			"parent_id": 0,
-			"name": "Moon #45",
+			"name": "Moon",
 			"type": "moon",
 			"link": null,
 			"x": 220,
@@ -1687,7 +1687,7 @@
 		{
 			"id": 46,
 			"parent_id": 0,
-			"name": "Callout #46",
+			"name": "Callout",
 			"type": "callout",
 			"link": null,
 			"x": 300,

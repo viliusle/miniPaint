@@ -1,9 +1,21 @@
 import Effects_common_class from '../abstract/css.js';
+import Base_layers_class from './../../../core/base-layers.js';
+import config from "../../../config";
+import alertify from './../../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Effects_brightness_class extends Effects_common_class {
 
+	constructor() {
+		super();
+		this.Base_layers = new Base_layers_class();
+	}
+
 	brightness(filter_id) {
-		var filter = this.find_filter_by_id(filter_id, 'brightness');
+		if (config.layer.type == null) {
+			alertify.error('Layer is empty.');
+			return;
+		}
+		var filter = this.Base_layers.find_filter_by_id(filter_id, 'brightness');
 
 		var params = [
 			{name: "value", title: "Percentage:", value: filter.value ??= 50, range: [-100, 100]},

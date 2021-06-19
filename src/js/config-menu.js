@@ -473,6 +473,11 @@ const menuDefinition = [
 				target: 'effects/black_and_white.black_and_white'
 			},
 			{
+				name: 'Borders',
+				ellipsis: true,
+				target: 'effects/borders.borders'
+			},
+			{
 				name: 'Blueprint',
 				target: 'effects/blueprint.blueprint'
 			},
@@ -575,11 +580,6 @@ const menuDefinition = [
 	{
 		name: 'Tools',
 		children: [
-			{
-				name: 'Borders',
-				ellipsis: true,
-				target: 'tools/borders.borders'
-			},
 			{
 				name: 'Sprites',
 				target: 'tools/sprites.sprites'

@@ -66,17 +66,6 @@ class Effects_common_class {
 		return value;
 	}
 
-	find_filter_by_id(filter_id, filter_name) {
-		var filter = {};
-		for(var i in config.layer.filters){
-			if(config.layer.filters[i].name == filter_name && config.layer.filters[i].id == filter_id) {
-				return config.layer.filters[i].params;
-			}
-		}
-
-		return {};
-	}
-
 }
 
 export default Effects_common_class;

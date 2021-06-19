@@ -555,6 +555,27 @@ class File_open_class {
 				}
 			}
 		}
+		if(json.info.version < "4.8"){
+			//migrate "borders" layer to rectangle
+			for (var i in json.layers) {
+				var old_type = json.layers[i].type;
+
+				if(old_type == 'borders'){
+					json.layers[i].type = 'rectangle';
+					json.layers[i].name += ' (legacy)';
+					json.layers[i].params = {
+						radius: 0,
+						fill: false,
+						square: false,
+						border_size: json.layers[i].params.size,
+						border: true,
+						border_color: json.layers[i].color,
+						fill_color: "#000000",
+					};
+					json.layers[i].render_function = ["rectangle", "render"];
+				}
+			}
+		}
 
 		const actions = [];
 

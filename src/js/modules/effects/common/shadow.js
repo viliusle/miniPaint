@@ -2,6 +2,8 @@ import config from '../../../config.js';
 import Effects_common_class from '../abstract/css.js';
 import Dialog_class from '../../../libs/popup.js';
 import Effects_browser_class from '../browser.js';
+import Base_layers_class from './../../../core/base-layers.js';
+import alertify from './../../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Effects_brightness_class extends Effects_common_class {
 
@@ -9,11 +11,17 @@ class Effects_brightness_class extends Effects_common_class {
 		super();
 		this.POP = new Dialog_class();
 		this.Effects_browser = new Effects_browser_class();
+		this.Base_layers = new Base_layers_class();
 		this.preview_padding = 20;
 	}
 
 	shadow(filter_id) {
-		var filter = this.find_filter_by_id(filter_id, 'shadow');
+		if (config.layer.type == null) {
+			alertify.error('Layer is empty.');
+			return;
+		}
+
+		var filter = this.Base_layers.find_filter_by_id(filter_id, 'shadow');
 
 		var params = [
 			{name: "x", title: "Offset X:", value: filter.x ??= 10, range: [-100, 100]},
