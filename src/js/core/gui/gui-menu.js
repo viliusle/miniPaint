@@ -59,10 +59,10 @@ class GUI_menu_class {
 		}
 	}
 
-	emit(eventName, payload) {
+	emit(eventName, payload, object) {
 		if (this.eventSubscriptions[eventName]) {
 			for (let callback of this.eventSubscriptions[eventName]) {
-				callback(payload);
+				callback(payload, object);
 			}
 		}
 	}
@@ -297,10 +297,10 @@ class GUI_menu_class {
 
 		// Emit callback events for triggered links
 		if (definition.target) {
-			this.emit('select_target', definition.target);
+			this.emit('select_target', definition.target, definition);
 		}
 		else if (definition.href) {
-			this.emit('select_href', definition.href);
+			this.emit('select_href', definition.href, null);
 		}
 	}
 

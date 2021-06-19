@@ -165,11 +165,11 @@ class Base_gui_class {
 		var _this = this;
 
 		//menu events
-		this.GUI_menu.on('select_target', (target) => {
+		this.GUI_menu.on('select_target', (target, object) => {
 			var parts = target.split('.');
 			var module = parts[0];
 			var function_name = parts[1];
-			var param = parts[2];
+			var param = object.parameter ??= null;
 
 			//call module
 			if (this.modules[module] == undefined) {

@@ -419,26 +419,36 @@ class File_open_class {
 	maybe_file_open_url_handler() {
 		var _this = this;
 		var url_params = this.Helper.get_url_parameters();
-		
+
 		if (url_params.image != undefined) {
-			//found params - try to load it
-			if(url_params.image.toLowerCase().indexOf('.json') == url_params.image.length - 5){
-				//load json
-				window.fetch(url_params.image).then(function(response) {
-					return response.json();
-				}).then(function(json) {
-					_this.load_json(json, false);
-				}).catch(function(ex) {
-					alertify.error('Sorry, image could not be loaded.');
-				});
-			}
-			else{
-				//load image
-				var data = {
-					url: url_params.image,
-				};
-				this.file_open_url_handler(data);
-			}
+			this.open_resource(url_params.image);
+		}
+	}
+
+	/**
+	 * includes provided resource (iamge or json)
+	 *
+	 * @param string resource_url
+	 */
+	open_resource(resource_url) {
+		var _this = this;
+
+		if(resource_url.toLowerCase().indexOf('.json') == resource_url.length - 5){
+			//load json
+			window.fetch(resource_url).then(function(response) {
+				return response.json();
+			}).then(function(json) {
+				_this.load_json(json, false);
+			}).catch(function(ex) {
+				alertify.error('Sorry, image could not be loaded.');
+			});
+		}
+		else{
+			//load image
+			var data = {
+				url: resource_url,
+			};
+			this.file_open_url_handler(data);
 		}
 	}
 
