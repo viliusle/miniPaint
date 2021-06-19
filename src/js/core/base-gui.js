@@ -249,10 +249,12 @@ class Base_gui_class {
 		config.visible_width = w;
 		config.visible_height = h;
 
-		ctx.webkitImageSmoothingEnabled = false;
-		ctx.oImageSmoothingEnabled = false;
-		ctx.msImageSmoothingEnabled = false;
-		ctx.imageSmoothingEnabled = false;
+		if(config.ZOOM >= 1) {
+			ctx.imageSmoothingEnabled = false;
+		}
+		else{
+			ctx.imageSmoothingEnabled = true;
+		}
 
 		this.render_canvas_background('canvas_minipaint');
 

@@ -337,8 +337,6 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
-	background-color: #424F5A;
-	background-color: var(--background-color);
 	transition: 0.2s;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -628,13 +626,7 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	/*background: url(images/icons/grid.png) repeat top left;*/
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;
 	z-index:1;
-	/* disable antialiasing */
-	image-rendering: optimizeSpeed;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: -o-crisp-edges;
-	image-rendering: pixelated;
-	-ms-interpolation-mode: nearest-neighbor;
+	image-rendering: pixelated; /* disable antialiasing */
 }
 .transparent-grid.white{
 	background:white;
