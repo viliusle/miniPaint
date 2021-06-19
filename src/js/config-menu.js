@@ -282,7 +282,6 @@ const menuDefinition = [
 			{
 				name: 'Histogram',
 				ellipsis: true,
-				shortcut: 'H',
 				target: 'image/histogram.histogram'
 			}
 		]

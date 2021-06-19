@@ -5,10 +5,19 @@ import Base_layers_class from './../core/base-layers.js';
 import Dialog_class from './../libs/popup.js';
 import GUI_tools_class from './../core/gui/gui-tools.js';
 
+var instance = null;
+
 class Shape_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
+
+		//singleton
+		if (instance) {
+			return instance;
+		}
+		instance = this;
+
 		this.Base_layers = new Base_layers_class();
 		this.GUI_tools = new GUI_tools_class();
 		this.POP = new Dialog_class();
@@ -17,6 +26,21 @@ class Shape_class extends Base_tools_class {
 		this.layer = {};
 		this.preview_width = 150;
 		this.preview_height = 120;
+
+		this.set_events();
+	}
+
+	set_events() {
+		document.addEventListener('keydown', (event) => {
+			var code = event.keyCode;
+			if (this.Helper.is_input(event.target))
+				return;
+
+			if (code == 72) {
+				//H
+				this.show_shapes();
+			}
+		}, false);
 	}
 
 	load() {

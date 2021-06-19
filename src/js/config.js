@@ -135,6 +135,7 @@ config.TOOLS = [
 	{
 		name: 'shape',
 		on_activate: 'on_activate',
+		title: 'Shapes (H)',
 		attributes: {
 			size: 3,
 			stroke: '#00aa00',

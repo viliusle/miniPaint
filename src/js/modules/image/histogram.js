@@ -3,35 +3,12 @@ import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 
-var instance = null;
-
 class Image_histogram_class {
 
 	constructor() {
-		//singleton
-		if (instance) {
-			return instance;
-		}
-		instance = this;
-
 		this.POP = new Dialog_class();
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
-
-		this.set_events();
-	}
-
-	set_events() {
-		document.addEventListener('keydown', (event) => {
-			var code = event.keyCode;
-			if (this.Helper.is_input(event.target))
-				return;
-
-			if (code == 72) {
-				//H - trim
-				this.histogram();
-			}
-		}, false);
 	}
 
 	histogram() {
