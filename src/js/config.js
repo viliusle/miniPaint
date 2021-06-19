@@ -160,7 +160,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -176,7 +176,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -196,7 +196,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -207,7 +207,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -218,7 +218,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -229,7 +229,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -240,7 +240,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -251,7 +251,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -262,7 +262,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -273,7 +273,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -284,7 +284,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -296,7 +296,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -307,7 +307,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -339,7 +339,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -355,7 +355,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
