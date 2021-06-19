@@ -1,14 +1,15 @@
 {
 	"info": {
 		"width": 1000,
-		"height": 700,
+		"height": 750,
 		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
-		"date": "2021-01-02",
-		"version": "4.5.0",
+		"date": "2021-06-16",
+		"version": "4.7.1",
 		"layer_active": 1,
 		"guides": [
 			{ "x": null, "y": 400},
-			{ "x": null, "y": 600}
+			{ "x": null, "y": 600},
+			{ "x": null, "y": 650}
 		]
 	},
 	"layers": [
@@ -700,7 +701,7 @@
 			"y": 0,
 			"width": 1000,
 			"width_original": null,
-			"height": 700,
+			"height": 750,
 			"height_original": null,
 			"visible": true,
 			"is_vector": false,
@@ -1581,6 +1582,140 @@
 			"filters": [],
 			"render_function": [
 				"human",
+				"render"
+			]
+		},
+		{
+			"id": 43,
+			"parent_id": 0,
+			"name": "Cog #43",
+			"type": "cog",
+			"link": null,
+			"x": 50,
+			"y": 650,
+			"width": 77,
+			"width_original": null,
+			"height": 77,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 43,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"cog",
+				"render"
+			]
+		},
+		{
+			"id": 44,
+			"parent_id": 0,
+			"name": "Tear #44",
+			"type": "tear",
+			"link": null,
+			"x": 140,
+			"y": 650,
+			"width": 61,
+			"width_original": null,
+			"height": 76.25,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 44,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"border_size": 4,
+				"border": true,
+				"fill": true,
+				"border_color": "#555555",
+				"fill_color": "#aaaaaa"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"tear",
+				"render"
+			]
+		},
+		{
+			"id": 45,
+			"parent_id": 0,
+			"name": "Moon #45",
+			"type": "moon",
+			"link": null,
+			"x": 220,
+			"y": 650,
+			"width": 58,
+			"width_original": null,
+			"height": 72.5,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 45,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"border_size": 4,
+				"border": true,
+				"fill": true,
+				"border_color": "#555555",
+				"fill_color": "#aaaaaa"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"moon",
+				"render"
+			]
+		},
+		{
+			"id": 46,
+			"parent_id": 0,
+			"name": "Callout #46",
+			"type": "callout",
+			"link": null,
+			"x": 300,
+			"y": 650,
+			"width": 81.60000000000001,
+			"width_original": null,
+			"height": 69,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 46,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"border_size": 4,
+				"border": true,
+				"fill": true,
+				"border_color": "#555555",
+				"fill_color": "#aaaaaa"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"callout",
 				"render"
 			]
 		}
