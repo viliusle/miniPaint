@@ -57,6 +57,7 @@ class File_new_class {
 				{name: "width", title: "Width:", value: width, comment: units},
 				{name: "height", title: "Height:", value: height, comment: units},
 				{name: "resolution_type", title: "Resolution:", values: resolution_types},
+				{name: "layout", title: "Layout:", value: "Custom", values: ["Custom", "Landscape", "Portrait"]},
 				{name: "transparency", title: "Transparent:", value: transparency},
 			],
 			on_finish: function (params) {
@@ -79,6 +80,12 @@ class File_new_class {
 			dim = dim[0].split("x");
 			width = parseInt(dim[0]);
 			height = parseInt(dim[1]);
+
+			if(response.layout == 'Portrait'){
+				var tmp = width;
+				width = height;
+				height = tmp;
+			}
 		}
 		else {
 			//convert units
