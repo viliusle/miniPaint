@@ -1,19 +1,29 @@
 import config from '../../../config.js';
 import Effects_common_class from '../abstract/css.js';
 import Dialog_class from '../../../libs/popup.js';
+import Base_layers_class from './../../../core/base-layers.js';
+import alertify from './../../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Effects_blur_class extends Effects_common_class {
 
 	constructor() {
 		super();
 		this.POP = new Dialog_class();
+		this.Base_layers = new Base_layers_class();
 	}
 
-	blur() {
+	blur(filter_id) {
+		if (config.layer.type == null) {
+			alertify.error('Layer is empty.');
+			return;
+		}
+
+		var filter = this.Base_layers.find_filter_by_id(filter_id, 'blur');
+
 		var params = [
-			{name: "value", title: "Percentage:", value: 5, range: [0, 50]},
+			{name: "value", title: "Percentage:", value: filter.value ??= 5, range: [0, 50]},
 		];
-		this.show_dialog('blur', params);
+		this.show_dialog('blur', params, filter_id);
 	}
 
 	convert_value(value, params, type) {

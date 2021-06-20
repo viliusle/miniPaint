@@ -60,6 +60,7 @@ const menuDefinition = [
 			{
 				name: 'Save As',
 				ellipsis: true,
+				shortcut: 'Shift + S',
 				target: 'file/save.save'
 			},
 			{
@@ -70,7 +71,7 @@ const menuDefinition = [
 			{
 				name: 'Print',
 				ellipsis: true,
-				shortcut: 'Ctrl-P',
+				shortcut: 'Ctrl+P',
 				target: 'file/print.print'
 			},
 			{
@@ -281,7 +282,6 @@ const menuDefinition = [
 			{
 				name: 'Histogram',
 				ellipsis: true,
-				shortcut: 'H',
 				target: 'image/histogram.histogram'
 			}
 		]
@@ -473,6 +473,11 @@ const menuDefinition = [
 				target: 'effects/black_and_white.black_and_white'
 			},
 			{
+				name: 'Borders',
+				ellipsis: true,
+				target: 'effects/borders.borders'
+			},
+			{
 				name: 'Blueprint',
 				target: 'effects/blueprint.blueprint'
 			},
@@ -576,11 +581,6 @@ const menuDefinition = [
 		name: 'Tools',
 		children: [
 			{
-				name: 'Borders',
-				ellipsis: true,
-				target: 'tools/borders.borders'
-			},
-			{
 				name: 'Sprites',
 				target: 'tools/sprites.sprites'
 			},
@@ -640,58 +640,85 @@ const menuDefinition = [
 				children: [
 					{
 						name: 'English',
-						target: 'tools/translate.translate.en'
+						target: 'tools/translate.translate',
+						parameter: 'en',
 					},
 					{
 						divider: true
 					},
 					{
+						//Arabic
 						name: 'عربي',
-						target: 'tools/translate.translate.ar'
+						target: 'tools/translate.translate',
+						parameter: 'ar',
 					},
 					{
+						//Chinese simplified
 						name: '简体中文',
-						target: 'tools/translate.translate.zh'
-					},
-					{
-						name: 'Español',
-						target: 'tools/translate.translate.es'
-					},
-					{
-						name: 'Français',
-						target: 'tools/translate.translate.fr'
+						target: 'tools/translate.translate',
+						parameter: 'zh',
 					},
 					{
 						name: 'Deutsch',
-						target: 'tools/translate.translate.de'
+						target: 'tools/translate.translate',
+						parameter: 'de',
+					},
+					{
+						name: 'English (UK)',
+						target: 'tools/translate.translate',
+						parameter: 'uk',
+					},
+					{
+						name: 'Español',
+						target: 'tools/translate.translate',
+						parameter: 'es',
+					},
+					{
+						name: 'Français',
+						target: 'tools/translate.translate',
+						parameter: 'fr',
+					},
+					{
+						name: 'Greek',
+						target: 'tools/translate.translate',
+						parameter: 'el',
 					},
 					{
 						name: 'Italiano',
-						target: 'tools/translate.translate.it'
+						target: 'tools/translate.translate',
+						parameter: 'it',
 					},
 					{
+						//Japanese
 						name: '日本語',
-						target: 'tools/translate.translate.ja'
+						target: 'tools/translate.translate',
+						parameter: 'ja',
 					},
 					{
+						//Korean
 						name: '한국어',
-						target: 'tools/translate.translate.ko'
+						target: 'tools/translate.translate',
+						parameter: 'ko',
 					},
 					{
 						name: 'Lietuvių',
-						target: 'tools/translate.translate.lt'
+						target: 'tools/translate.translate',
+						parameter: 'lt',
 					},
 					{
 						name: 'Português',
-						target: 'tools/translate.translate.pt'
+						target: 'tools/translate.translate',
+						parameter: 'pt',
 					},
 					{
 						name: 'русский язык',
-						target: 'tools/translate.translate.ru'
+						target: 'tools/translate.translate',
+						parameter: 'ru',
 					},
 					{
 						name: 'Türkçe',
-						target: 'tools/translate.translate.tr'
+						target: 'tools/translate.translate',
+						parameter: 'tr',
 					}
 				]
 			},

@@ -14,6 +14,7 @@ config.ALPHA = 255;
 config.ZOOM = 1;
 config.SNAP = true;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
+config.safe_search_can_be_disabled = true;
 config.google_webfonts_key = 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg';
 config.layers = [];
 config.layer = null;
@@ -134,6 +135,7 @@ config.TOOLS = [
 	{
 		name: 'shape',
 		on_activate: 'on_activate',
+		title: 'Shapes (H)',
 		attributes: {
 			size: 3,
 			stroke: '#00aa00',
@@ -158,7 +160,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -174,7 +176,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -194,7 +196,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -205,7 +207,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -216,7 +218,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -227,7 +229,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -238,7 +240,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -249,7 +251,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -260,7 +262,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -271,7 +273,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -282,7 +284,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -294,7 +296,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -305,7 +307,7 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: false,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',
@@ -327,6 +329,44 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'tear',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'cog',
+		visible: false,
+		attributes: {},
+	},
+	{
+		name: 'moon',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
+		name: 'callout',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			border: true,
 			fill: true,
 			border_color: '#555555',
 			fill_color: '#aaaaaa',

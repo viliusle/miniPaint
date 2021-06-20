@@ -43,7 +43,7 @@ Gingham, Inkwell, Lo-fi, Toaster, Valencia, X-Pro II.
 ## Embed
 To embed this app in the other page, use this HTML code:
 
-    <iframe style="width:100%; height:1000px;" id="miniPaint" src="https://viliusle.github.io/miniPaint/"></iframe>
+    <iframe style="width:100%; height:1000px;" id="miniPaint" src="https://viliusle.github.io/miniPaint/" allow="camera"></iframe>
 
 ## Build instructions
 See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions)

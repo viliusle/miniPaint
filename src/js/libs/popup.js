@@ -73,6 +73,7 @@ class Dialog_class {
 		this.onfinish = false;
 		this.oncancel = false;
 		this.preview = false;
+		this.preview_padding = 0;
 		this.onload = false;
 		this.onchange = false;
 		this.width_mini = 225;
@@ -108,6 +109,7 @@ class Dialog_class {
 		this.onfinish = config.on_finish || false;
 		this.oncancel = config.on_cancel || false;
 		this.preview = config.preview || false;
+		this.preview_padding = config.preview_padding || 0;
 		this.onchange = config.on_change || false;
 		this.onload = config.on_load || false;
 		this.className = config.className || '';
@@ -144,6 +146,7 @@ class Dialog_class {
 		this.parameters = [];
 		this.active = false;
 		this.preview = false;
+		this.preview_padding = 0;
 		this.onload = false;
 		this.onchange = false;
 		this.title = null;
@@ -153,6 +156,10 @@ class Dialog_class {
 		this.oncancel = false;
 
 		this.remove_events();
+	}
+
+	get_active_instances() {
+		return document.getElementById('popups').children.length;
 	}
 
 	/* ----------------- private functions ---------------------------------- */
@@ -242,7 +249,10 @@ class Dialog_class {
 				var ctx_right = canvas_right.getContext("2d");
 
 				ctx_right.clearRect(0, 0, this.width_mini, this.height_mini);
-				ctx_right.drawImage(this.layer_active_small, 0, 0, this.width_mini, this.height_mini);
+				ctx_right.drawImage(this.layer_active_small,
+					this.preview_padding, this.preview_padding,
+					this.width_mini - this.preview_padding * 2, this.height_mini - this.preview_padding * 2
+				);
 
 				this.onchange(params, ctx_right, this.width_mini, this.height_mini, canvas_right);
 			}
@@ -347,7 +357,6 @@ class Dialog_class {
 		var html_preview_content = '';
 		var html_params = '';
 
-
 		//preview area
 		if (this.preview !== false) {
 			html_preview_content += '<div class="preview_container">';
@@ -449,7 +458,9 @@ class Dialog_class {
 			//copy to right side
 			var canvas_right = this.el.querySelector('[data-id="pop_post"]').getContext("2d");
 			canvas_right.clearRect(0, 0, this.width_mini, this.height_mini);
-			canvas_right.drawImage(canvas_left, 0, 0, this.width_mini, this.height_mini);
+			canvas_right.drawImage(canvas_left,
+				this.preview_padding, this.preview_padding,
+				this.width_mini - this.preview_padding * 2, this.height_mini - this.preview_padding * 2);
 
 			//prepare temp canvas
 			this.preview_handler();

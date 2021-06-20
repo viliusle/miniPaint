@@ -1,12 +1,27 @@
 import Effects_common_class from '../abstract/css.js';
+import Base_layers_class from './../../../core/base-layers.js';
+import config from "../../../config";
+import alertify from './../../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Effects_hueRotate_class extends Effects_common_class {
 
-	hue_rotate() {
+	constructor() {
+		super();
+		this.Base_layers = new Base_layers_class();
+	}
+
+	hue_rotate(filter_id) {
+		if (config.layer.type == null) {
+			alertify.error('Layer is empty.');
+			return;
+		}
+
+		var filter = this.Base_layers.find_filter_by_id(filter_id, 'hue-rotate');
+
 		var params = [
-			{name: "value", title: "Degree:", value: 90, range: [0, 360]},
+			{name: "value", title: "Degree:", value: filter.value ??= 90, range: [0, 360]},
 		];
-		this.show_dialog('hue-rotate', params);
+		this.show_dialog('hue-rotate', params, filter_id);
 	}
 
 	convert_value(value) {

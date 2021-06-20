@@ -64,6 +64,7 @@ class Base_layers_class {
 		this.stable_dimensions = [];
 		this.debug_rendering = false;
 		this.render_success = null;
+		this.disabled_filter_id = null;
 	}
 
 	/**
@@ -254,6 +255,10 @@ class Base_layers_class {
 		//apply pre-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
+			if(filter.id == this.disabled_filter_id){
+				continue;
+			}
+
 			filter.name = filter.name.replace('drop-shadow', 'shadow');
 
 			//find filter
@@ -324,6 +329,9 @@ class Base_layers_class {
 		//apply post-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
+			if(filter.id == this.disabled_filter_id){
+				continue;
+			}
 			filter.name = filter.name.replace('drop-shadow', 'shadow');
 
 			//find filter
@@ -706,6 +714,41 @@ class Base_layers_class {
 	 */
 	get_layers() {
 		return config.layers;
+	}
+
+	/**
+	 * disabled filter by id
+	 *
+	 * @param filter_id
+	 */
+	disable_filter(filter_id) {
+		this.disabled_filter_id = filter_id;
+	}
+
+	/**
+	 * finds layer filter by filter ID
+	 *
+	 * @param filter_id
+	 * @param filter_name
+	 * @param layer_id
+	 * @returns {object}
+	 */
+	find_filter_by_id(filter_id, filter_name, layer_id) {
+		if(typeof layer_id == 'undefined'){
+			var layer = config.layer;
+		}
+		else{
+			var layer = this.get_layer(layer_id);
+		}
+
+		var filter = {};
+		for(var i in layer.filters){
+			if(layer.filters[i].name == filter_name && layer.filters[i].id == filter_id) {
+				return layer.filters[i].params;
+			}
+		}
+
+		return filter;
 	}
 
 }

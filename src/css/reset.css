@@ -18,6 +18,7 @@
 	--button-text-color-active: #adecab;
 	--button-border-radius: .4rem;
 	--button-toggle-background-color: #575f62;
+	--button-toggle-background-color-hover: #575f62;
 	--input-background-color: #2f3739;
 	--input-background-color-hover: #383f44;
 	--input-text-color: #f4f3f3;
@@ -57,6 +58,7 @@ body.theme-light{
 	--button-text-color-active: #59aed8;
 	--button-shadow-color: rgba(0, 0, 0, 0.1);
 	--button-toggle-background-color: #b7b7b7;
+	--button-toggle-background-color-hover: #b7b7b7;
 	--input-background-color: #ffffff;
 	--input-background-color-hover: #ddd;
 	--input-text-color: #0c0c0d;
@@ -92,6 +94,7 @@ body.theme-green{
 	--button-background-color-active:#2b460f;
 	--button-text-color-active: #ccc;
 	--button-toggle-background-color: #243e05;
+	--button-toggle-background-color-hover: #243e05;
 	--input-background-color: #ffffff;
 	--input-background-color-hover: #ddd;
 	--input-text-color: #0c0c0d;
@@ -132,19 +135,9 @@ canvas{
 	outline: none;
 	/* disable select canvas */
 	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
 	-ms-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-	/* disable antialiasing */
-	image-rendering: optimizeSpeed;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: -o-crisp-edges;
-	image-rendering: pixelated;
-	-ms-interpolation-mode: nearest-neighbor;
 }
 img{
 	border: none;
@@ -204,6 +197,9 @@ button[aria-pressed="true"], input[type="button"][aria-pressed="true"]{
 }
 button[aria-pressed="true"]:hover, input[type="button"][aria-pressed="true"]:hover{
 	background-color: var(--button-background-color-hover);
+}
+button.ui_toggle_button:hover{
+	background-color: var(--button-toggle-background-color-hover);
 }
 label{
 	display: inline-block;

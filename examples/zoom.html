@@ -1,56 +1,70 @@
 <html>
 <body style="margin:0;">
-	
-<iframe id="myFrame" style="width:100%;height:100vh;border:0;" src="../"></iframe>
+
+<iframe id="myFrame" style="width:100%;height:100vh;border:0;" src="../" allow="camera"></iframe>
 
 <script>
 	window.addEventListener('load', function (e) {
 		main();
 	}, false);
-	
-	function main() {
+
+	async function main() {
 		var Layers = document.getElementById('myFrame').contentWindow.Layers;
 		var config = document.getElementById('myFrame').contentWindow.AppConfig;
-		
+
+		var canvas_width = 800;
+		var canvas_height = 600;
+
 		//set size
-		Layers.Base_gui.set_size(1000, 1000);
-		
+		Layers.Base_gui.set_size(canvas_width, canvas_height);
+
 		//add rectangle
 		this.layer = {
+			name: 'layer1',
 			type: 'rectangle',
-			params: {fill: true, size: 2 },
+			params: {
+				fill: true,
+				square: false,
+				border_size: 2,
+				border: false,
+				border_color: "#1b1bd8",
+				fill_color: "#1b1bd8"
+			},
 			color: '#ff0000',
 			render_function: ['rectangle', 'render'],
-			x: 500,
-			y: 500,
+			x: canvas_width/2 - 25,
+			y: canvas_height/2 - 25,
 			width: 50,
 			height: 50,
 		};
-		Layers.insert(this.layer);
-		
+		await Layers.insert(this.layer);
+
 		//zoom to 500%
-		Layers.Base_gui.GUI_preview.zoom(500);					//change zoom power
-		
+		setTimeout(function () {
+			Layers.Base_gui.GUI_preview.zoom_to_position(0, 0);
+			Layers.Base_gui.GUI_preview.zoom(500);
+		}, 100);
+
 		//do this after system changed zoom position
 		setTimeout(function () {
 			//move visible area to begin of rectangle
 			Layers.Base_gui.GUI_preview.zoom_to_position(500, 500);		//change zoom position
-		}, 200);
-		
+		}, 500);
+
 		//action after 1 s - for preview purpose
 		setTimeout(function () {
 			//move visible area so rect is in center
-			
+
 			var visible_area = Layers.Base_gui.get_visible_area_size();
-			
+
 			//center of rect
-			var cx = 500 + 50/2; 
-			var cy = 500 + 50/2;
-			
+			var cx = canvas_width/2;
+			var cy = canvas_height/2;
+
 			//calc needed coords
 			var x = cx - visible_area.width / 2;
 			var y = cy - visible_area.height / 2;
-			
+
 			Layers.Base_gui.GUI_preview.zoom_to_position(x, y);		//change zoom position
 		}, 1000);
 	}

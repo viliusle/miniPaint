@@ -26,31 +26,41 @@ class Image_colorCorrections_class {
 		var settings = {
 			title: 'Color Corrections',
 			preview: true,
-			on_change: function (params, canvas_preview, w, h) {
-				var img = canvas_preview.getImageData(0, 0, w, h);
-				var data = _this.do_corrections(img, params);
+			on_change: function (params, canvas_preview, w, h, canvas) {
+				//destructive effects
+				var img = this.layer_active_small_ctx.getImageData(0, 0, w, h);
+				var data = _this.do_corrections(img, params, false);
 				canvas_preview.putImageData(data, 0, 0);
+
+				//non-destructive
+				canvas_preview.filter = "brightness(" + (1 + (params.param_b / 100)) + ")";
+				canvas_preview.filter += " contrast(" + (1 + (params.param_c / 100)) + ")";
+				canvas_preview.filter += " saturate(" + (1 + (params.param_s / 100)) + ")";
+				canvas_preview.filter += " hue-rotate(" + params.param_h + "deg)";
+
+				canvas_preview.drawImage(canvas, 0, 0);
 			},
 			params: [
-				{name: "param1", title: "Brightness:", value: "0", range: [-100, 100]},
-				{name: "param2", title: "Contrast:", value: "0", range: [-100, 100]},
+				{name: "param_b", title: "Brightness:", value: "0", range: [-100, 100]},
+				{name: "param_c", title: "Contrast:", value: "0", range: [-100, 100]},
+				{name: "param_s", title: "Saturation:", value: "0", range: [-100, 100]},
+				{name: "param_h", title: "Hue:", value: "0", range: [-180, 180]},
+				{},
+				{name: "param_l", title: "Luminance:", value: "0", range: [-100, 100]},
 				{},
 				{name: "param_red", title: "Red channel:", value: "0", range: [-255, 255]},
 				{name: "param_green", title: "Green channel:", value: "0", range: [-255, 255]},
 				{name: "param_blue", title: "Blue channel:", value: "0", range: [-255, 255]},
-				{},
-				{name: "param_h", title: "Hue:", value: "0", range: [-180, 180]},
-				{name: "param_s", title: "Saturation:", value: "0", range: [-100, 100]},
-				{name: "param_l", title: "Luminance:", value: "0", range: [-100, 100]},
 			],
 			on_finish: function (params) {
-				_this.save_alpha(params);
+				_this.save_changes(params);
 			},
 		};
 		this.POP.show(settings);
 	}
 
-	save_alpha(params) {
+	save_changes(params) {
+
 		//get canvas from layer
 		var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
 		var ctx = canvas.getContext("2d");
@@ -61,29 +71,62 @@ class Image_colorCorrections_class {
 		ctx.putImageData(data, 0, 0);
 
 		//save
-		return app.State.do_action(
+		app.State.do_action(
 			new app.Actions.Update_layer_image_action(canvas)
 		);
+
+		//non-destructive filters
+		//multiple do_action() + do_corrections() does not work together yet.
+		if(params.param_b != 0) {
+			var parameters = {value: params.param_b};
+			var filter_id = null;
+			app.State.do_action(
+				new app.Actions.Add_layer_filter_action(null, 'brightness', parameters, filter_id)
+			);
+		}
+		if(params.param_c != 0) {
+			var parameters = {value: params.param_c};
+			var filter_id = null;
+			app.State.do_action(
+				new app.Actions.Add_layer_filter_action(null, 'contrast', parameters, filter_id)
+			);
+		}
+		if(params.param_s != 0) {
+			var parameters = {value: params.param_s};
+			var filter_id = null;
+			app.State.do_action(
+				new app.Actions.Add_layer_filter_action(null, 'saturate', parameters, filter_id)
+			);
+		}
+		if(params.param_h != 0) {
+			var parameters = {value: params.param_h};
+			var filter_id = null;
+			app.State.do_action(
+				new app.Actions.Add_layer_filter_action(null, 'hue-rotate', parameters, filter_id)
+			);
+		}
 	}
 
+	/**
+	 * corrections (destructive)
+	 *
+	 * @param data
+	 * @param params
+	 * @returns {*}
+	 */
 	do_corrections(data, params) {
-		var param1 = params.param1;
-		var param2 = params.param2;
-		var param_red = params.param_red;
-		var param_green = params.param_green;
-		var param_blue = params.param_blue;
-		var param_h = params.param_h;
-		var param_s = params.param_s;
-		var param_l = params.param_l;
+		//luminance
+		if(params.param_l != 0) {
+			var data = this.ImageFilters.HSLAdjustment(data, 0, 0, params.param_l);
+		}
 
-		//Brightness/Contrast
-		var filtered = this.ImageFilters.BrightnessContrastPhotoshop(data, param1, param2);
 		//RGB corrections
-		var filtered = this.ImageFilters.ColorTransformFilter(filtered, 1, 1, 1, 1, param_red, param_green, param_blue, 1);
-		//hue/saturation/luminance
-		var filtered = this.ImageFilters.HSLAdjustment(filtered, param_h, param_s, param_l);
+		if(params.param_red != 0 || params.param_green != 0 || params.param_blue != 0) {
+			var data = this.ImageFilters.ColorTransformFilter(data, 1, 1, 1, 1,
+				params.param_red, params.param_green, params.param_blue, 1);
+		}
 
-		return filtered;
+		return data;
 	}
 
 }

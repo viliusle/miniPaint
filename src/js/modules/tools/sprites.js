@@ -22,10 +22,9 @@ class Tools_sprites_class {
 			title: 'Sprites',
 			params: [
 				{name: "gap", title: "Gap:", value: "50", values: ["0", "10", "50", "100"]},
-				{name: "width", title: "Width:", value: config.WIDTH},
 			],
 			on_finish: function (params) {
-				_this.generate_sprites(params.gap, params.width);
+				_this.generate_sprites(params.gap);
 			},
 		};
 		this.POP.show(settings);
@@ -33,31 +32,18 @@ class Tools_sprites_class {
 
 	generate_sprites(gap, sprite_width) {
 		gap = parseInt(gap);
-		sprite_width = parseInt(sprite_width);
 
 		if (config.layers.length == 1) {
 			alertify.error('There is only 1 layer.');
-			return false;
-		}
-		if (sprite_width < config.WIDTH) {
-			alertify.error('New width can not be smaller then current width');
 			return false;
 		}
 
 		var xx = 0;
 		var yy = 0;
 		var max_height = 0;
-		var W = sprite_width;
-		var H = config.HEIGHT;
-
 		let actions = [];
-
-		let new_width = config.WIDTH;
 		let new_height = config.HEIGHT;
-
-		//prepare width
-		new_width = parseInt(sprite_width);
-		this.Base_gui.prepare_canvas();
+		let new_width = config.WIDTH;
 
 		//collect trim info
 		var trim_details_array = [];
@@ -80,10 +66,10 @@ class Tools_sprites_class {
 				//empty layer
 				continue;
 			}
-			var width = W - trim_details.left - trim_details.right;
-			var height = H - trim_details.top - trim_details.bottom;
+			var width = new_width - trim_details.left - trim_details.right;
+			var height = config.HEIGHT - trim_details.top - trim_details.bottom;
 
-			if (xx + width > sprite_width) {
+			if (xx + width > new_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;
@@ -111,7 +97,7 @@ class Tools_sprites_class {
 			if (height > max_height) {
 				max_height = height;
 			}
-			if (xx > sprite_width) {
+			if (xx > new_width) {
 				xx = 0;
 				yy += max_height;
 				max_height = 0;

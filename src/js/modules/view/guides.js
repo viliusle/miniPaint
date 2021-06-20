@@ -4,6 +4,7 @@ import Helper_class from './../../libs/helpers.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Tools_settings_class from './../tools/settings.js';
+import app from './../../app.js';
 
 class View_guides_class {
 
@@ -125,7 +126,8 @@ class View_guides_class {
 
 		//remove empty
 		for (var i = 0; i < config.guides.length; i++) {
-			if(config.guides[i].x === 0 || config.guides[i].y === 0){
+			if(config.guides[i].x === 0 || config.guides[i].y === 0
+				|| isNaN(config.guides[i].x) || isNaN( config.guides[i].y)){
 				config.guides.splice(i, 1);
 				i--;
 			}

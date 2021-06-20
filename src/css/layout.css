@@ -174,6 +174,27 @@ body .sp-preview{
 	font-size:15px;
 	font-weight:bold;
 }
+.undo_button {
+	display: none;
+	width: 50px;
+	height: 50px;
+	top: 0;
+	border: 0;
+	outline: none;
+	cursor: pointer;
+	filter: var(--mobile-menu-toggle-filter);
+	background: url(images/icons/undo.svg) no-repeat center center;
+	background-size: auto 25px;
+	margin-left: 10px;
+}
+.undo_button:hover {
+	background-color: transparent;
+}
+@media screen and (max-width: 700px){
+	.undo_button {
+		display: block;
+	}
+}
 
 /* ========== sub-header ==================================================== */
 
@@ -316,8 +337,6 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
-	background-color: #424F5A;
-	background-color: var(--background-color);
 	transition: 0.2s;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -508,6 +527,22 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 }
 
 @media screen and (max-width:700px){
+	body{
+		padding-top:50px;
+	}
+	.wrapper{
+		top: 50px;
+	}
+	.sidebar_left{
+		position: absolute;
+		left: -90px;
+		background: var(--background);
+	}
+	.sidebar_left.active{
+		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
+		left: 0;
+		z-index: 3;
+	}
 	.sidebar_right{
 		position: absolute;
 		height: 100%;
@@ -591,13 +626,7 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	/*background: url(images/icons/grid.png) repeat top left;*/
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;
 	z-index:1;
-	/* disable antialiasing */
-	image-rendering: optimizeSpeed;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: -o-crisp-edges;
-	image-rendering: pixelated;
-	-ms-interpolation-mode: nearest-neighbor;
+	image-rendering: pixelated; /* disable antialiasing */
 }
 .transparent-grid.white{
 	background:white;
@@ -646,20 +675,12 @@ canvas{
 	background-color: #ddd;
 }
 
-@media screen and (max-width:700px){
-	body{
-		padding-top:50px;
-	}
-	.wrapper{
-		top: 50px;
-	}
-}
 @media screen and (max-width:550px){
 	.canvas_wrapper{
 		margin-left: 0px;
 	}
 }
-@media screen and (max-height: 740px){
+@media screen and (max-height: 690px){
 	.sidebar_left{
 		width: 75px;
 	}

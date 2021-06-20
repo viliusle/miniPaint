@@ -279,14 +279,29 @@ class File_open_class {
 			order_map[orders[i]] = parseInt(i);
 		}
 
+		//check if dropped directory
+		var dir_opened = false;
+		if (e.dataTransfer && e.dataTransfer.items)	{
+			var items = e.dataTransfer.items;
+			for (var i=0; i<items.length; i++) {
+				var item = items[i].webkitGetAsEntry();
+				if(item && item.isDirectory){
+					dir_opened = true;
+				}
+			}
+		}
+
 		for (var i = 0, f; i < files.length; i++) {
 			f = files[i];
 			if (!f.type.match('image.*') && !f.name.match('.json')) {
-				alertify.error('Wrong file type, must be image or json.');
+				if(dir_opened == false) {
+					alertify.error('Wrong file type, must be image or json.');
+				}
 				continue;
 			}
-			if (files.length == 1)
+			if (files.length == 1) {
 				this.SAVE_NAME = f.name.split('.')[f.name.split('.').length - 2];
+			}
 
 			var FR = new FileReader();
 			FR.file = files[i];
@@ -326,6 +341,62 @@ class File_open_class {
 			//sleep after last image import, it maybe not be finished yet
 			await new Promise(r => setTimeout(r, 10));
 		}
+
+		//try to open dropped directory
+		if (e.dataTransfer && e.dataTransfer.items)	{
+			var items = e.dataTransfer.items;
+			for (var i=0; i<items.length; i++) {
+				var item = items[i].webkitGetAsEntry();
+				if (item) {
+					this.traverseFileTree(item);
+				}
+			}
+		}
+	}
+
+	traverseFileTree(item, path) {
+		var _this = this;
+		var auto_increment = this.Base_layers.auto_increment;
+
+		path = path || "";
+		if (item.isFile) {
+			item.file(async function(file) {
+				var FR = new FileReader();
+				FR.file = file;
+
+				FR.onload = function (event) {
+					if (this.file.type.match('image.*')) {
+						//image
+						var new_layer = {
+							name: this.file.name,
+							type: 'image',
+							data: event.target.result,
+							_exif: _this.extract_exif(this.file)
+						};
+						app.State.do_action(
+							new app.Actions.Bundle_action('open_image', 'Open Image', [
+								new app.Actions.Insert_layer_action(new_layer)
+							])
+						);
+					}
+				};
+
+				FR.readAsDataURL(file);
+
+				//sleep after last image import, it maybe not be finished yet
+				await new Promise(r => setTimeout(r, 10));
+
+			});
+		}
+		else if (item.isDirectory) {
+			// Get folder contents
+			var dirReader = item.createReader();
+			dirReader.readEntries(function(entries) {
+				for (var i=0; i<entries.length; i++) {
+					_this.traverseFileTree(entries[i], path + item.name + "/");
+				}
+			});
+		}
 	}
 	
 	open_template_test(){
@@ -348,26 +419,36 @@ class File_open_class {
 	maybe_file_open_url_handler() {
 		var _this = this;
 		var url_params = this.Helper.get_url_parameters();
-		
+
 		if (url_params.image != undefined) {
-			//found params - try to load it
-			if(url_params.image.toLowerCase().indexOf('.json') == url_params.image.length - 5){
-				//load json
-				window.fetch(url_params.image).then(function(response) {
-					return response.json();
-				}).then(function(json) {
-					_this.load_json(json, false);
-				}).catch(function(ex) {
-					alertify.error('Sorry, image could not be loaded.');
-				});
-			}
-			else{
-				//load image
-				var data = {
-					url: url_params.image,
-				};
-				this.file_open_url_handler(data);
-			}
+			this.open_resource(url_params.image);
+		}
+	}
+
+	/**
+	 * includes provided resource (iamge or json)
+	 *
+	 * @param string resource_url
+	 */
+	open_resource(resource_url) {
+		var _this = this;
+
+		if(resource_url.toLowerCase().indexOf('.json') == resource_url.length - 5){
+			//load json
+			window.fetch(resource_url).then(function(response) {
+				return response.json();
+			}).then(function(json) {
+				_this.load_json(json, false);
+			}).catch(function(ex) {
+				alertify.error('Sorry, image could not be loaded.');
+			});
+		}
+		else{
+			//load image
+			var data = {
+				url: resource_url,
+			};
+			this.file_open_url_handler(data);
 		}
 	}
 
@@ -380,7 +461,6 @@ class File_open_class {
 
 		var layer_name = url.replace(/^.*[\\\/]/, '');
 
-		console.log
 		var img = new Image();
 		img.crossOrigin = "Anonymous";
 		img.onload = function () {
@@ -482,6 +562,27 @@ class File_open_class {
 					//rename circle to ellipse
 					json.layers[i].type = 'ellipse';
 					json.layers[i].render_function = ["ellipse", "render"];
+				}
+			}
+		}
+		if(json.info.version < "4.8.0"){
+			//migrate "borders" layer to rectangle
+			for (var i in json.layers) {
+				var old_type = json.layers[i].type;
+
+				if(old_type == 'borders'){
+					json.layers[i].type = 'rectangle';
+					json.layers[i].name += ' (legacy)';
+					json.layers[i].params = {
+						radius: 0,
+						fill: false,
+						square: false,
+						border_size: json.layers[i].params.size,
+						border: true,
+						border_color: json.layers[i].color,
+						fill_color: "#000000",
+					};
+					json.layers[i].render_function = ["rectangle", "render"];
 				}
 			}
 		}

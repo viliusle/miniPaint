@@ -64,7 +64,7 @@ class Image_trim_class {
 				}
 				if (params.trim_all == true) {
 					//second trim
-					setInterval(function(){
+					setTimeout(function(){
 						let actions = [];
 						actions = actions.concat(_this.trim_all(params.remove_white));
 						app.State.do_action(

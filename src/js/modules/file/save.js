@@ -5,8 +5,8 @@ import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js';
-import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
-import GIF from './../../libs/gifjs/gif.js';
+import filesaver from './../../../../node_modules/file-saver/dist/FileSaver.min.js';
+import GIF from './../../../../node_modules/gif.js.optimized/';
 import CanvasToTIFF from './../../libs/canvastotiff.js';
 
 var instance = null;
@@ -53,8 +53,14 @@ class File_save_class {
 				return;
 
 			if (code == "s") {
-				//save
-				this.export();
+				if(event.shiftKey){
+					//export
+					this.save();
+				}
+				else{
+					//save
+					this.export();
+				}
 				event.preventDefault();
 			}
 		}, false);
@@ -301,7 +307,7 @@ class File_save_class {
 			return;
 		}
 
-		if (type != 'JSON' && type != 'GIF') {
+		if (type != 'JSON') {
 			//create temp canvas
 			var canvas = document.createElement('canvas');
 			var ctx = canvas.getContext("2d");
@@ -587,7 +593,7 @@ class File_save_class {
 				width: config.WIDTH,
 				height: config.HEIGHT,
 				dither: 'FloydSteinberg-serpentine',
-				workerScript: './src/js/libs/gifjs/gif.worker.js',
+				workerScript: './../../../../node_modules/gif.js.optimized/dist/gif.worker.js',
 			};
 			if (config.TRANSPARENCY == true) {
 				gif_settings.transparent = 'rgba(0,0,0,0)';

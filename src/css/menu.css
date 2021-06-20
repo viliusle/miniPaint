@@ -194,12 +194,9 @@
 	.mobile_menu {
 		display: block;
 	}
-	.left_mobile_menu {
-		display: none;
-	}
 	.main_menu > ul.menu_bar {
 		height: 50px;
-		padding-left: 0;
+		padding-left: 50px;
 		padding-right: 50px;
 	}
 }

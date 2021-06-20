@@ -165,11 +165,11 @@ class Base_gui_class {
 		var _this = this;
 
 		//menu events
-		this.GUI_menu.on('select_target', (target) => {
+		this.GUI_menu.on('select_target', (target, object) => {
 			var parts = target.split('.');
 			var module = parts[0];
 			var function_name = parts[1];
-			var param = parts[2];
+			var param = object.parameter ??= null;
 
 			//call module
 			if (this.modules[module] == undefined) {
@@ -200,6 +200,9 @@ class Base_gui_class {
 			});
 		}
 
+		document.getElementById('left_mobile_menu_button').addEventListener('click', function (event) {
+			document.querySelector('.sidebar_left').classList.toggle('active');
+		});
 		document.getElementById('mobile_menu_button').addEventListener('click', function (event) {
 			document.querySelector('.sidebar_right').classList.toggle('active');
 		});
@@ -246,10 +249,12 @@ class Base_gui_class {
 		config.visible_width = w;
 		config.visible_height = h;
 
-		ctx.webkitImageSmoothingEnabled = false;
-		ctx.oImageSmoothingEnabled = false;
-		ctx.msImageSmoothingEnabled = false;
-		ctx.imageSmoothingEnabled = false;
+		if(config.ZOOM >= 1) {
+			ctx.imageSmoothingEnabled = false;
+		}
+		else{
+			ctx.imageSmoothingEnabled = true;
+		}
 
 		this.render_canvas_background('canvas_minipaint');
 

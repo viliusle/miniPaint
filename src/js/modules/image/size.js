@@ -37,6 +37,7 @@ class Image_size_class {
 				{name: "w", title: "Width:", value: width, placeholder: width, comment: units},
 				{name: "h", title: "Height:", value: height, placeholder: height, comment: units},
 				{name: "resolution", title: "Resolution:", values: resolutions},
+				{name: "layout", title: "Layout:", value: "Custom", values: ["Custom", "Landscape", "Portrait"]},
 			],
 			on_finish: function (params) {
 				_this.size_handler(params);
@@ -76,6 +77,12 @@ class Image_size_class {
 			dim = dim[0].split("x");
 			width = parseInt(dim[0]);
 			height = parseInt(dim[1]);
+
+			if(data.layout == 'Portrait'){
+				var tmp = width;
+				width = height;
+				height = tmp;
+			}
 		}
 		else{
 			//convert units
