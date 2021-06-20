@@ -158,6 +158,10 @@ class Dialog_class {
 		this.remove_events();
 	}
 
+	get_active_instances() {
+		return document.getElementById('popups').children.length;
+	}
+
 	/* ----------------- private functions ---------------------------------- */
 
 	addEventListener(target, type, listener, options) {

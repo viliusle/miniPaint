@@ -64,8 +64,9 @@ class Select_tool_class extends Base_tools_class {
 		document.addEventListener('keydown', (event) => {
 			if (config.TOOL.name != this.name)
 				return;
-			if (this.POP.active == true)
+			if (this.POP.get_active_instances() > 0) {
 				return;
+			}
 			if (this.Helper.is_input(event.target))
 				return;
 			var k = event.key;
