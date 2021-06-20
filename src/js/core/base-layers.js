@@ -79,6 +79,8 @@ class Base_layers_class {
 			enable_background: false,
 			enable_borders: true,
 			enable_controls: false,
+			enable_rotation: false,
+			enable_move: false,
 			data_function: function () {
 				return config.layer;
 			},

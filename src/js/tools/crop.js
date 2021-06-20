@@ -28,6 +28,8 @@ class Crop_class extends Base_tools_class {
 			enable_borders: true,
 			enable_controls: true,
 			crop_lines: true,
+			enable_rotation: false,
+			enable_move: false,
 			data_function: function () {
 				return _this.selection;
 			},
@@ -143,7 +145,7 @@ class Crop_class extends Base_tools_class {
 			};
 		}
 
-		//controll boundaries
+		//control boundaries
 		if (this.selection.x < 0) {
 			this.selection.width += this.selection.x;
 			this.selection.x = 0;

@@ -41,6 +41,8 @@ class Selection_class extends Base_tools_class {
 			enable_background: true,
 			enable_borders: true,
 			enable_controls: false,
+			enable_rotation: false,
+			enable_move: false,
 			data_function: function () {
 				return _this.selection;
 			},

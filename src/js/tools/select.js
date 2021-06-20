@@ -5,7 +5,6 @@ import Base_layers_class from './../core/base-layers.js';
 import Base_selection_class from './../core/base-selection.js';
 import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
-import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Select_tool_class extends Base_tools_class {
 
@@ -28,6 +27,8 @@ class Select_tool_class extends Base_tools_class {
 			enable_borders: true,
 			enable_controls: true,
 			keep_ratio: true,
+			enable_rotation: true,
+			enable_move: true,
 			data_function: function () {
 				return config.layer;
 			},
