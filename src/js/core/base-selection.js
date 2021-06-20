@@ -250,8 +250,7 @@ class Base_selection_class {
 		const hitsBottomEdge = isRotated ? false : y + h > config.HEIGHT - handle_size;
 
 		//draw corners
-		var corner = (x, y, dx, dy, drag_type) => {
-			// var block_size = Math.round(block_size_default / 2) * 2;
+		var corner = (x, y, dx, dy, drag_type, cursor) => {
 			var angle = 0;
 			if (settings.data.rotate != null && settings.data.rotate != 0) {
 				angle = settings.data.rotate;
@@ -262,6 +261,7 @@ class Base_selection_class {
 				x: x + dx * block_size,
 				y: y + dy * block_size,
 				size: block_size,
+				cursor: cursor,
 			};
 
 			if (settings.enable_controls == false || angle != 0) {
@@ -282,21 +282,21 @@ class Base_selection_class {
 		};
 
 		if (settings.enable_controls == true) {
-			corner(x - corner_offset - wholeLineWidth, y - corner_offset - wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP);
-			corner(x + w + corner_offset + wholeLineWidth, y - corner_offset - wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP);
-			corner(x - corner_offset - wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM);
-			corner(x + w + corner_offset + wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM);
+			corner(x - corner_offset - wholeLineWidth, y - corner_offset - wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_TOP, 'nwse-resize');
+			corner(x + w + corner_offset + wholeLineWidth, y - corner_offset - wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_TOP, 'nesw-resize');
+			corner(x - corner_offset - wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsLeftEdge ? 0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_LEFT | DRAG_TYPE_BOTTOM, 'nesw-resize');
+			corner(x + w + corner_offset + wholeLineWidth, y + h + corner_offset + wholeLineWidth, hitsRightEdge ? -0.5 : 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_RIGHT | DRAG_TYPE_BOTTOM, 'nwse-resize');
 		}
 
 		if (settings.enable_controls == true) {
 			//draw centers
 			if (Math.abs(w) > block_size * 5) {
-				corner(x + w / 2, y - middle_offset - wholeLineWidth, 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_TOP);
-				corner(x + w / 2, y + h + middle_offset + wholeLineWidth, 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_BOTTOM);
+				corner(x + w / 2, y - middle_offset - wholeLineWidth, 0, hitsTopEdge ? 0.5 : 0, DRAG_TYPE_TOP, 'ns-resize');
+				corner(x + w / 2, y + h + middle_offset + wholeLineWidth, 0, hitsBottomEdge ? -0.5 : 0, DRAG_TYPE_BOTTOM, 'ns-resize');
 			}
 			if (Math.abs(h) > block_size * 5) {
-				corner(x - middle_offset - wholeLineWidth, y + h / 2, hitsLeftEdge ? 0.5 : 0, 0, DRAG_TYPE_LEFT);
-				corner(x + w + middle_offset + wholeLineWidth, y + h / 2, hitsRightEdge ? -0.5 : 0, 0, DRAG_TYPE_RIGHT);
+				corner(x - middle_offset - wholeLineWidth, y + h / 2, hitsLeftEdge ? 0.5 : 0, 0, DRAG_TYPE_LEFT, 'ew-resize');
+				corner(x + w + middle_offset + wholeLineWidth, y + h / 2, hitsRightEdge ? -0.5 : 0, 0, DRAG_TYPE_RIGHT, 'ew-resize');
 			}
 		}
 
@@ -356,7 +356,16 @@ class Base_selection_class {
 			const is_drag_type_right = Math.floor(drag_type / DRAG_TYPE_RIGHT) % 2 === 1;
 			const is_drag_type_top = Math.floor(drag_type / DRAG_TYPE_TOP) % 2 === 1;
 			const is_drag_type_bottom = Math.floor(drag_type / DRAG_TYPE_BOTTOM) % 2 === 1;
-			
+
+			if(is_drag_type_left && is_drag_type_top) mainWrapper.style.cursor = "nwse-resize";
+			else if(is_drag_type_top && is_drag_type_right) mainWrapper.style.cursor = "nesw-resize";
+			else if(is_drag_type_right && is_drag_type_bottom) mainWrapper.style.cursor = "nwse-resize";
+			else if(is_drag_type_bottom && is_drag_type_left) mainWrapper.style.cursor = "nesw-resize";
+			else if(is_drag_type_left) mainWrapper.style.cursor = "ew-resize";
+			else if(is_drag_type_right) mainWrapper.style.cursor = "ew-resize";
+			else if(is_drag_type_bottom) mainWrapper.style.cursor = "ns-resize";
+			else if(is_drag_type_left) mainWrapper.style.cursor = "ns-resize";
+
 			if (e.buttons == 1 || typeof e.buttons == "undefined") {
 				// Do transformations
 				var dx = Math.round(mouse.x - mouse.click_x);
@@ -424,6 +433,18 @@ class Base_selection_class {
 		}
 
 		if (!this.mouse_lock) {
+
+			var settings = this.find_settings();
+			var x = settings.data.x;
+			var y = settings.data.y;
+			var w = settings.data.width;
+			var h = settings.data.height;
+
+			//set mouse move cursor
+			if(mouse.x > x &&  mouse.x < x + w && mouse.y > y &&  mouse.y < y + h){
+				mainWrapper.style.cursor = "move";
+			}
+
 			for (let current_drag_type in this.selected_obj_positions) {
 				const position = this.selected_obj_positions[current_drag_type];
 
@@ -438,7 +459,7 @@ class Base_selection_class {
 						}
 					}
 					if (event_type == 'mousemove') {
-						mainWrapper.style.cursor = "pointer";
+						mainWrapper.style.cursor = position.cursor;
 					}
 				}
 			}
