@@ -35,10 +35,12 @@ var template = `
 	<div class="row">
 		<span class="trn label">Rotate:</span>
 		<input type="number" min="-360" max="360" id="detail_rotate" />
+		<button class="extra reset" type="button" id="reset_rotate" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Opacity:</span>
 		<input type="number" min="0" max="100" id="detail_opacity" />
+		<button class="extra reset" type="button" id="reset_opacity" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Color:</span>
@@ -482,6 +484,28 @@ class GUI_details_class {
 							new app.Actions.Update_layer_action(config.layer.id, {
 								width: config.layer.width_original,
 								height: config.layer.height_original
+							})
+						])
+					);
+				}
+			});
+			document.getElementById('reset_rotate').addEventListener('click', function (e) {
+				if (config.layer.rotate) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								rotate: 0
+							})
+						])
+					);
+				}
+			});
+			document.getElementById('reset_opacity').addEventListener('click', function (e) {
+				if (config.layer.opacity != 100) {
+					app.State.do_action(
+						new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+							new app.Actions.Update_layer_action(config.layer.id, {
+								opacity: 100
 							})
 						])
 					);
