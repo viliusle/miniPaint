@@ -10,8 +10,10 @@ class Help_shortcuts_class {
 	shortcuts() {
 		var settings = {
 			title: 'Keyboard Shortcuts',
+			className: 'shortcuts',
 			params: [
 				{title: "F", value: 'Auto Adjust Colors'},
+				{title: "F3", value: 'Search'},
 				{title: "Ctrl + C", value: 'Copy to Clipboard'},
 				{title: "D", value: 'Duplicate'},
 				{title: "S", value: 'Export'},

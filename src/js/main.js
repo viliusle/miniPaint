@@ -19,6 +19,7 @@ import Base_gui_class from './core/base-gui.js';
 import Base_layers_class from './core/base-layers.js';
 import Base_tools_class from './core/base-tools.js';
 import Base_state_class from './core/base-state.js';
+import Base_search_class from './core/base-search.js';
 import File_open_class from './modules/file/open.js';
 import File_save_class from './modules/file/save.js';
 import * as Actions from './actions/index.js';
@@ -31,6 +32,7 @@ window.addEventListener('load', function (e) {
 	var Base_state = new Base_state_class();
 	var File_open = new File_open_class();
 	var File_save = new File_save_class();
+	var Base_search = new Base_search_class();
 
 	// Register singletons in app module
 	app.Actions = Actions;

@@ -181,9 +181,7 @@ class Dialog_class {
 
 			if (code == "Escape") {
 				//escape
-				if (window.POP === this) {
-					this.hide(false);
-				}
+				this.hide(false);
 			}
 		}, false);
 
