@@ -723,6 +723,12 @@ const menuDefinition = [
 				]
 			},
 			{
+				name: 'Search',
+				shortcut: 'F3',
+				ellipsis: true,
+				target: 'tools/search.search'
+			},
+			{
 				name: 'Settings',
 				ellipsis: true,
 				target: 'tools/settings.settings'

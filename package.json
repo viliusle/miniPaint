@@ -1,6 +1,6 @@
 {
   "name": "miniPaint",
-  "version": "4.8.0",
+  "version": "4.9.0",
   "author": "Vilius L.",
   "description": "Online graphics editing tool lets create, edit images using HTML5 technologies.",
   "keywords": [
@@ -39,6 +39,7 @@
     "blueimp-canvas-to-blob": "^3.28.0",
     "exif-js": "^2.3.0",
     "file-saver": "^2.0.5",
+    "fuzzysort": "^1.1.4",
     "gif.js.optimized": "^1.0.1",
     "hermite-resize": "git+https://github.com/viliusle/Hermite-resize.git",
     "jquery": "^3.5.1",

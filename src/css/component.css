@@ -709,3 +709,24 @@ button img{
     background-color: var(--background-color-active);
     color: var(--text-color-active);
 }
+
+/* global search */
+#global_search_results{
+    padding-top: 10px;
+    font-size: 14px;
+}
+#global_search_results .search-result {
+    padding: 3px 5px;
+}
+#global_search_results .search-result.active{
+    background-color: var(--background-color-active);
+    color: var(--text-color-active);
+    border-radius: 2px;
+}
+#global_search_results b{
+    color: var(--text-color-red);
+}
+
+.popup.shortcuts table{
+    line-height: 1;
+}

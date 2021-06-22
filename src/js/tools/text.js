@@ -1982,6 +1982,8 @@ class Text_class extends Base_tools_class {
 				enable_background: false,
 				enable_borders: true,
 				enable_controls: true,
+				enable_rotation: false,
+				enable_move: false,
 				data_function: () => {
 					return this.selection;
 				},
