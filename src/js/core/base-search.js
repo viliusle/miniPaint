@@ -32,8 +32,8 @@ class Base_search_class {
 				return;
 			}
 
-			var code = event.key.toLowerCase();
-			if (code == "f3") {
+			var code = event.key;
+			if (code == "F3" || ( (event.ctrlKey == true || event.metaKey) && code == "f")) {
 				//open
 				this.search();
 				event.preventDefault();
