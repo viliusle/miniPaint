@@ -752,6 +752,7 @@ const menuDefinition = [
 			},
 			{
 				name: 'About',
+				ellipsis: true,
 				target: 'help/about.about'
 			}
 		]
