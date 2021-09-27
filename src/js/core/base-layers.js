@@ -300,60 +300,37 @@ class Base_layers_class {
         //example with canvas object - other types should overwrite this method
         if (object.type == "image") {
             //image - default behavior
-            var rotateSupport = true;
-            if (rotateSupport == false) {
-                if (object.link_canvas != null) {
-                    //we have draft canvas - use it
-                    ctx.drawImage(
-                        object.link_canvas,
-                        object.x,
-                        object.y,
-                        object.width,
-                        object.height
-                    );
-                } else {
-                    ctx.drawImage(
-                        object.link,
-                        object.x,
-                        object.y,
-                        object.width,
-                        object.height
-                    );
-                }
-            } else {
-                ctx.save();
+            ctx.save();
 
-                ctx.translate(
-                    object.x + object.width / 2,
-                    object.y + object.height / 2
+            ctx.translate(
+                object.x + object.width / 2,
+                object.y + object.height / 2
+            );
+            ctx.rotate((object.rotate * Math.PI) / 180);
+            if (object.link_canvas != null) {
+                //we have draft canvas - use it
+                ctx.drawImage(
+                    object.link_canvas,
+                    -object.width / 2,
+                    -object.height / 2,
+                    object.width,
+                    object.height
                 );
-                ctx.rotate((object.rotate * Math.PI) / 180);
-                if (object.link_canvas != null) {
-                    //we have draft canvas - use it
-                    ctx.drawImage(
-                        object.link_canvas,
-                        -object.width / 2,
-                        -object.height / 2,
-                        object.width,
-                        object.height
-                    );
-                } else {
-                    ctx.drawImage(
-                        object.link,
-                        -object.width / 2,
-                        -object.height / 2,
-                        object.width,
-                        object.height
-                    );
-                }
-
-                ctx.restore();
+            } else {
+                ctx.drawImage(
+                    object.link,
+                    -object.width / 2,
+                    -object.height / 2,
+                    object.width,
+                    object.height
+                );
             }
+
+            ctx.restore();
         } else {
             //call render function from other module
             var render_class = object.render_function[0];
             var render_function = object.render_function[1];
-
             if (
                 typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
                 "undefined"
