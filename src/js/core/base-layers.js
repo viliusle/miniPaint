@@ -268,6 +268,55 @@ class Base_layers_class {
     render_object(ctx, object, is_preview) {
         if (object.visible == false || object.type == null) return;
 
+        this.pre_render_object(ctx, object);
+
+        //example with canvas object - other types should overwrite this method
+        if (object.type == "image") {
+            //image - default behavior
+            ctx.save();
+
+            ctx.translate(
+                object.x + object.width / 2,
+                object.y + object.height / 2
+            );
+            ctx.rotate((object.rotate * Math.PI) / 180);
+            // TODO - Not sure why the check should be with null,
+            // if nothing will break, then better to check if it's just truthy
+            ctx.drawImage(
+                object.link_canvas != null ? object.link_canvas : object.link,
+                -object.width / 2,
+                -object.height / 2,
+                object.width,
+                object.height
+            );
+
+            ctx.restore();
+        } else {
+            //call render function from other module
+            var render_class = object.render_function[0];
+            var render_function = object.render_function[1];
+            if (
+                typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
+                "undefined"
+            ) {
+                this.Base_gui.GUI_tools.tools_modules[render_class].object[
+                    render_function
+                ](ctx, object, is_preview);
+            } else {
+                this.render_success = false;
+                console.log("Error: unknown layer type: " + object.type);
+            }
+        }
+
+        this.after_render_object(ctx, object);
+    }
+
+    /**
+     * Gets called before render_object starts it's job
+     * @param {canvas.context} ctx
+     * @param {object} object
+     */
+    pre_render_object(ctx, object) {
         //apply pre-filters
         for (var i in object.filters) {
             var filter = object.filters[i];
@@ -296,54 +345,14 @@ class Base_layers_class {
                 console.log("Error: can not find filter: " + filter.name);
             }
         }
+    }
 
-        //example with canvas object - other types should overwrite this method
-        if (object.type == "image") {
-            //image - default behavior
-            ctx.save();
-
-            ctx.translate(
-                object.x + object.width / 2,
-                object.y + object.height / 2
-            );
-            ctx.rotate((object.rotate * Math.PI) / 180);
-            if (object.link_canvas != null) {
-                //we have draft canvas - use it
-                ctx.drawImage(
-                    object.link_canvas,
-                    -object.width / 2,
-                    -object.height / 2,
-                    object.width,
-                    object.height
-                );
-            } else {
-                ctx.drawImage(
-                    object.link,
-                    -object.width / 2,
-                    -object.height / 2,
-                    object.width,
-                    object.height
-                );
-            }
-
-            ctx.restore();
-        } else {
-            //call render function from other module
-            var render_class = object.render_function[0];
-            var render_function = object.render_function[1];
-            if (
-                typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
-                "undefined"
-            ) {
-                this.Base_gui.GUI_tools.tools_modules[render_class].object[
-                    render_function
-                ](ctx, object, is_preview);
-            } else {
-                this.render_success = false;
-                console.log("Error: unknown layer type: " + object.type);
-            }
-        }
-
+    /**
+     * Gets called after when render_object finishes it's job
+     * @param {canvas.context} ctx
+     * @param {object} object
+     */
+    after_render_object(ctx, object) {
         //apply post-filters
         for (var i in object.filters) {
             var filter = object.filters[i];
