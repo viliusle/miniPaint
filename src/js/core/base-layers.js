@@ -170,13 +170,38 @@ class Base_layers_class {
 
             zoomView.apply();
 
+            const newCanvas = this.createNewCanvas(this.ctx);
+            const ctxForSourceAtop = newCanvas.getContext("2d");
+            let hasSourceAtopLayer = false;
+
+            // TODO - this line might be removed, it's added for later restore function
+            this.ctx.save();
+
             //render main canvas
             for (var i = layers_sorted.length - 1; i >= 0; i--) {
                 var value = layers_sorted[i];
-                this.ctx.globalAlpha = value.opacity / 100;
-                this.ctx.globalCompositeOperation = value.composition;
+                const nextValue = layers[i - 1];
 
-                this.render_object(this.ctx, value);
+                if (
+                    value.composition === "source-atop1" ||
+                    (nextValue && nextValue.composition === "source-atop1")
+                ) {
+                    hasSourceAtopLayer = true;
+                    ctxForSourceAtop.globalAlpha = value.opacity / 100;
+                    ctxForSourceAtop.globalCompositeOperation =
+                        value.composition;
+                    this.render_object(ctxForSourceAtop, value);
+                } else {
+                    this.ctx.globalAlpha = value.opacity / 100;
+                    this.ctx.globalCompositeOperation = value.composition;
+                    this.render_object(this.ctx, value);
+                }
+            }
+
+            // TODO - need some investigation here
+            if (hasSourceAtopLayer) {
+                this.ctx.restore();
+                this.ctx.drawImage(newCanvas, 0, 0);
             }
 
             //grid
@@ -196,6 +221,7 @@ class Base_layers_class {
 
             //reset
             this.after_render();
+
             this.last_zoom = config.ZOOM;
 
             this.Base_gui.GUI_details.render_details();
@@ -226,6 +252,17 @@ class Base_layers_class {
         }
     }
 
+    /**
+     * Creates a fresh new canvas with the same height and width as the provided one
+     * @param {canvas.context} ctx
+     */
+    createNewCanvas(ctx) {
+        const newCanvas = document.createElement("canvas");
+        newCanvas.height = ctx.canvas.height;
+        newCanvas.width = ctx.canvas.width;
+        return newCanvas;
+    }
+
     render_preview(layers) {
         var w = this.Base_gui.GUI_preview.PREVIEW_SIZE.w;
         var h = this.Base_gui.GUI_preview.PREVIEW_SIZE.h;
@@ -236,8 +273,14 @@ class Base_layers_class {
         //prepare scale
         this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 
+        const newCanvas = this.createNewCanvas(this.ctx_preview);
+        const ctxForSourceAtop = newCanvas.getContext("2d");
+        ctxForSourceAtop.scale(w / config.WIDTH, h / config.HEIGHT);
+        let hasSourceAtopLayer = false;
+
         for (var i = layers.length - 1; i >= 0; i--) {
-            var value = layers[i];
+            const value = layers[i];
+            const nextValue = layers[i - 1];
 
             if (value.visible == false) {
                 //not visible
@@ -248,10 +291,24 @@ class Base_layers_class {
                 continue;
             }
 
-            this.ctx_preview.globalAlpha = value.opacity / 100;
-            this.ctx_preview.globalCompositeOperation = value.composition;
+            if (
+                value.composition === "source-atop" ||
+                (nextValue && nextValue.composition === "source-atop")
+            ) {
+                hasSourceAtopLayer = true;
+                ctxForSourceAtop.globalAlpha = value.opacity / 100;
+                ctxForSourceAtop.globalCompositeOperation = value.composition;
+                this.render_object(ctxForSourceAtop, value);
+            } else {
+                this.ctx_preview.globalAlpha = value.opacity / 100;
+                this.ctx_preview.globalCompositeOperation = value.composition;
+                this.render_object(this.ctx_preview, value);
+            }
+        }
 
-            this.render_object(this.ctx_preview, value);
+        if (hasSourceAtopLayer) {
+            this.ctx_preview.restore();
+            this.ctx_preview.drawImage(newCanvas, 0, 0);
         }
 
         this.ctx_preview.restore();
