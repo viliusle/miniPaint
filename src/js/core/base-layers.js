@@ -170,21 +170,24 @@ class Base_layers_class {
 
             zoomView.apply();
 
-            const newCanvas = this.createNewCanvas(this.ctx);
+            const newCanvas = this.createNewCanvas(
+                this.ctx,
+                config.HEIGHT,
+                config.WIDTH
+            );
             const ctxForSourceAtop = newCanvas.getContext("2d");
             let hasSourceAtopLayer = false;
 
-            // TODO - this line might be removed, it's added for later restore function
             this.ctx.save();
 
             //render main canvas
             for (var i = layers_sorted.length - 1; i >= 0; i--) {
                 var value = layers_sorted[i];
-                const nextValue = layers[i - 1];
+                const nextValue = layers_sorted[i - 1];
 
                 if (
-                    value.composition === "source-atop1" ||
-                    (nextValue && nextValue.composition === "source-atop1")
+                    value.composition === "source-atop" ||
+                    (nextValue && nextValue.composition === "source-atop")
                 ) {
                     hasSourceAtopLayer = true;
                     ctxForSourceAtop.globalAlpha = value.opacity / 100;
@@ -198,7 +201,6 @@ class Base_layers_class {
                 }
             }
 
-            // TODO - need some investigation here
             if (hasSourceAtopLayer) {
                 this.ctx.restore();
                 this.ctx.drawImage(newCanvas, 0, 0);
@@ -255,11 +257,13 @@ class Base_layers_class {
     /**
      * Creates a fresh new canvas with the same height and width as the provided one
      * @param {canvas.context} ctx
+     * @param {number} [h]
+     * @param {number} [w]
      */
-    createNewCanvas(ctx) {
+    createNewCanvas(ctx, h, w) {
         const newCanvas = document.createElement("canvas");
-        newCanvas.height = ctx.canvas.height;
-        newCanvas.width = ctx.canvas.width;
+        newCanvas.height = h || ctx.canvas.height;
+        newCanvas.width = w || ctx.canvas.width;
         return newCanvas;
     }
 
