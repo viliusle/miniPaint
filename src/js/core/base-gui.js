@@ -152,13 +152,13 @@ class Base_gui_class {
 	}
 
 	init_service_worker() {
-		/*if ('serviceWorker' in navigator) {
+		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
 				//Successfully registered service worker
 			}).catch(function(err) {
 				console.warn('Error registering service worker', err);
 			});
-		}*/
+		}
 	}
 
 	set_events() {

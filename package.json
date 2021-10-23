@@ -31,7 +31,8 @@
     "style-loader": "^2.0.0",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.3.1",
+    "webpack-pwa-manifest": "^4.3.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.14.5",
