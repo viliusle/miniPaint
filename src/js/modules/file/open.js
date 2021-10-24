@@ -347,7 +347,7 @@ class File_open_class {
 			var items = e.dataTransfer.items;
 			for (var i=0; i<items.length; i++) {
 				var item = items[i].webkitGetAsEntry();
-				if (item) {
+				if (item && item.isDirectory == true) {
 					this.traverseFileTree(item);
 				}
 			}
@@ -365,7 +365,9 @@ class File_open_class {
 				FR.file = file;
 
 				FR.onload = function (event) {
-					if (this.file.type.match('image.*')) {
+					if (this.file.type.match('image.*')
+						//below is fix for firefox, it has empty type
+						|| (this.file.type == '' && this.file.name.match(/\.(png|jpg|jpeg|webp|gif|avif)/g))) {
 						//image
 						var new_layer = {
 							name: this.file.name,
