@@ -658,7 +658,8 @@ class Base_layers_class {
 	}
 
 	/**
-	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute at 100% zoom.
+	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute
+	 * at 100% zoom.
 	 *
 	 * @param {int} x
 	 * @param {int} y

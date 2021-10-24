@@ -428,7 +428,7 @@ class File_open_class {
 	}
 
 	/**
-	 * includes provided resource (iamge or json)
+	 * includes provided resource (image or json)
 	 *
 	 * @param string resource_url
 	 */
@@ -590,6 +590,9 @@ class File_open_class {
 		}
 
 		const actions = [];
+
+		//reset zoom
+		await this.Base_gui.GUI_preview.zoom(100); //reset zoom
 
 		//set attributes
 		actions.push(
