@@ -3,15 +3,15 @@
  * author: Vilius L.
  */
 
-import app from './../app.js';
-import config from './../config.js';
-import Base_gui_class from './base-gui.js';
-import Base_selection_class from './base-selection.js';
-import Image_trim_class from './../modules/image/trim.js';
-import View_ruler_class from './../modules/view/ruler.js';
-import zoomView from './../libs/zoomView.js';
-import Helper_class from './../libs/helpers.js';
-import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import app from "./../app.js";
+import config from "./../config.js";
+import Base_gui_class from "./base-gui.js";
+import Base_selection_class from "./base-selection.js";
+import Image_trim_class from "./../modules/image/trim.js";
+import View_ruler_class from "./../modules/view/ruler.js";
+import zoomView from "./../libs/zoomView.js";
+import Helper_class from "./../libs/helpers.js";
+import alertify from "./../../../node_modules/alertifyjs/build/alertify.min.js";
 
 var instance = null;
 
@@ -43,7 +43,6 @@ var instance = null;
  * - render_function (function)
  */
 class Base_layers_class {
-
 	constructor() {
 		//singleton
 		if (instance) {
@@ -56,9 +55,11 @@ class Base_layers_class {
 		this.Image_trim = new Image_trim_class();
 		this.View_ruler = new View_ruler_class();
 
-		this.canvas = document.getElementById('canvas_minipaint');
-		this.ctx = document.getElementById('canvas_minipaint').getContext("2d");
-		this.ctx_preview = document.getElementById('canvas_preview').getContext("2d");
+		this.canvas = document.getElementById("canvas_minipaint");
+		this.ctx = document.getElementById("canvas_minipaint").getContext("2d");
+		this.ctx_preview = document
+			.getElementById("canvas_preview")
+			.getContext("2d");
 		this.last_zoom = 1;
 		this.auto_increment = 1;
 		this.stable_dimensions = [];
@@ -85,7 +86,11 @@ class Base_layers_class {
 				return config.layer;
 			},
 		};
-		this.Base_selection = new Base_selection_class(this.ctx, sel_config, 'main');
+		this.Base_selection = new Base_selection_class(
+			this.ctx,
+			sel_config,
+			"main"
+		);
 
 		this.render(true);
 	}
@@ -93,16 +98,18 @@ class Base_layers_class {
 	init_zoom_lib() {
 		zoomView.setBounds(0, 0, config.WIDTH, config.HEIGHT);
 		zoomView.setContext(this.ctx);
-		this.stable_dimensions = [
-			config.WIDTH,
-			config.HEIGHT
-		];
+		this.stable_dimensions = [config.WIDTH, config.HEIGHT];
 	}
 
 	pre_render() {
 		this.ctx.save();
 		zoomView.canvasDefault();
-		this.ctx.clearRect(0, 0, config.WIDTH * config.ZOOM, config.HEIGHT * config.ZOOM);
+		this.ctx.clearRect(
+			0,
+			0,
+			config.WIDTH * config.ZOOM,
+			config.HEIGHT * config.ZOOM
+		);
 	}
 
 	after_render() {
@@ -125,7 +132,10 @@ class Base_layers_class {
 			return;
 		}
 
-		if (this.stable_dimensions[0] != config.WIDTH || this.stable_dimensions[1] != config.HEIGHT) {
+		if (
+			this.stable_dimensions[0] != config.WIDTH ||
+			this.stable_dimensions[1] != config.HEIGHT
+		) {
 			//dimensions changed - re-init zoom lib
 			this.init_zoom_lib();
 		}
@@ -133,8 +143,8 @@ class Base_layers_class {
 		if (config.need_render == true) {
 			this.render_success = null;
 
-			if(this.debug_rendering === true){
-				console.log('Rendering...');
+			if (this.debug_rendering === true) {
+				console.log("Rendering...");
 			}
 
 			if (this.last_zoom != config.ZOOM) {
@@ -144,8 +154,7 @@ class Base_layers_class {
 					this.Base_gui.GUI_preview.zoom_data.y,
 					config.ZOOM / this.last_zoom
 				);
-			}
-			else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
+			} else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
 				//move visible window
 				var pos = this.Base_gui.GUI_preview.zoom_data.move_pos;
 				var pos_global = zoomView.toScreen(pos);
@@ -161,13 +170,40 @@ class Base_layers_class {
 
 			zoomView.apply();
 
+			const newCanvas = this.createNewCanvas(
+				this.ctx,
+				config.HEIGHT,
+				config.WIDTH
+			);
+			const ctxForSourceAtop = newCanvas.getContext("2d");
+			let hasSourceAtopLayer = false;
+
+			this.ctx.save();
+
 			//render main canvas
 			for (var i = layers_sorted.length - 1; i >= 0; i--) {
 				var value = layers_sorted[i];
-				this.ctx.globalAlpha = value.opacity / 100;
-				this.ctx.globalCompositeOperation = value.composition;
+				const nextValue = layers_sorted[i - 1];
 
-				this.render_object(this.ctx, value);
+				if (
+					value.composition === "source-atop" ||
+					(nextValue && nextValue.composition === "source-atop")
+				) {
+					hasSourceAtopLayer = true;
+					ctxForSourceAtop.globalAlpha = value.opacity / 100;
+					ctxForSourceAtop.globalCompositeOperation =
+						value.composition;
+					this.render_object(ctxForSourceAtop, value);
+				} else {
+					this.ctx.globalAlpha = value.opacity / 100;
+					this.ctx.globalCompositeOperation = value.composition;
+					this.render_object(this.ctx, value);
+				}
+			}
+
+			if (hasSourceAtopLayer) {
+				this.ctx.restore();
+				this.ctx.drawImage(newCanvas, 0, 0);
 			}
 
 			//grid
@@ -187,13 +223,14 @@ class Base_layers_class {
 
 			//reset
 			this.after_render();
+
 			this.last_zoom = config.ZOOM;
 
 			this.Base_gui.GUI_details.render_details();
 			this.View_ruler.render_ruler();
 
-			if(this.render_success === false){
-				alertify.error('Rendered with errors.');
+			if (this.render_success === false) {
+				alertify.error("Rendered with errors.");
 			}
 		}
 
@@ -202,13 +239,32 @@ class Base_layers_class {
 		});
 	}
 
-	render_overlay(){
+	render_overlay() {
 		var render_class = config.TOOL.name;
-		var render_function = 'render_overlay';
+		var render_function = "render_overlay";
 
-		if(typeof this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function] != "undefined") {
-			this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](this.ctx);
+		if (
+			typeof this.Base_gui.GUI_tools.tools_modules[render_class].object[
+				render_function
+				] != "undefined"
+		) {
+			this.Base_gui.GUI_tools.tools_modules[render_class].object[
+				render_function
+				](this.ctx);
 		}
+	}
+
+	/**
+	 * Creates a fresh new canvas with the same height and width as the provided one
+	 * @param {canvas.context} ctx
+	 * @param {number} [h]
+	 * @param {number} [w]
+	 */
+	createNewCanvas(ctx, h, w) {
+		const newCanvas = document.createElement("canvas");
+		newCanvas.height = h || ctx.canvas.height;
+		newCanvas.width = w || ctx.canvas.width;
+		return newCanvas;
 	}
 
 	render_preview(layers) {
@@ -221,8 +277,14 @@ class Base_layers_class {
 		//prepare scale
 		this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 
+		const newCanvas = this.createNewCanvas(this.ctx_preview);
+		const ctxForSourceAtop = newCanvas.getContext("2d");
+		ctxForSourceAtop.scale(w / config.WIDTH, h / config.HEIGHT);
+		let hasSourceAtopLayer = false;
+
 		for (var i = layers.length - 1; i >= 0; i--) {
-			var value = layers[i];
+			const value = layers[i];
+			const nextValue = layers[i - 1];
 
 			if (value.visible == false) {
 				//not visible
@@ -233,10 +295,24 @@ class Base_layers_class {
 				continue;
 			}
 
-			this.ctx_preview.globalAlpha = value.opacity / 100;
-			this.ctx_preview.globalCompositeOperation = value.composition;
+			if (
+				value.composition === "source-atop" ||
+				(nextValue && nextValue.composition === "source-atop")
+			) {
+				hasSourceAtopLayer = true;
+				ctxForSourceAtop.globalAlpha = value.opacity / 100;
+				ctxForSourceAtop.globalCompositeOperation = value.composition;
+				this.render_object(ctxForSourceAtop, value);
+			} else {
+				this.ctx_preview.globalAlpha = value.opacity / 100;
+				this.ctx_preview.globalCompositeOperation = value.composition;
+				this.render_object(this.ctx_preview, value);
+			}
+		}
 
-			this.render_object(this.ctx_preview, value);
+		if (hasSourceAtopLayer) {
+			this.ctx_preview.restore();
+			this.ctx_preview.drawImage(newCanvas, 0, 0);
 		}
 
 		this.ctx_preview.restore();
@@ -251,17 +327,65 @@ class Base_layers_class {
 	 * @param {boolean} is_preview
 	 */
 	render_object(ctx, object, is_preview) {
-		if (object.visible == false || object.type == null)
-			return;
+		if (object.visible == false || object.type == null) return;
 
+		this.pre_render_object(ctx, object);
+
+		//example with canvas object - other types should overwrite this method
+		if (object.type == "image") {
+			//image - default behavior
+			ctx.save();
+
+			ctx.translate(
+				object.x + object.width / 2,
+				object.y + object.height / 2
+			);
+			ctx.rotate((object.rotate * Math.PI) / 180);
+			// TODO - Not sure why the check should be with null,
+			// if nothing will break, then better to check if it's just truthy
+			ctx.drawImage(
+				object.link_canvas != null ? object.link_canvas : object.link,
+				-object.width / 2,
+				-object.height / 2,
+				object.width,
+				object.height
+			);
+
+			ctx.restore();
+		} else {
+			//call render function from other module
+			var render_class = object.render_function[0];
+			var render_function = object.render_function[1];
+			if (
+				typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
+				"undefined"
+			) {
+				this.Base_gui.GUI_tools.tools_modules[render_class].object[
+					render_function
+					](ctx, object, is_preview);
+			} else {
+				this.render_success = false;
+				console.log("Error: unknown layer type: " + object.type);
+			}
+		}
+
+		this.after_render_object(ctx, object);
+	}
+
+	/**
+	 * Gets called before render_object starts it's job
+	 * @param {canvas.context} ctx
+	 * @param {object} object
+	 */
+	pre_render_object(ctx, object) {
 		//apply pre-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
-			if(filter.id == this.disabled_filter_id){
+			if (filter.id == this.disabled_filter_id) {
 				continue;
 			}
 
-			filter.name = filter.name.replace('drop-shadow', 'shadow');
+			filter.name = filter.name.replace("drop-shadow", "shadow");
 
 			//find filter
 			var found = false;
@@ -271,70 +395,32 @@ class Base_layers_class {
 
 				var filter_class = this.Base_gui.modules[i];
 				var module_name = i.split("/").pop();
-				if(module_name == filter.name){
+				if (module_name == filter.name) {
 					//found it
 					found = true;
 					filter_class.render_pre(ctx, filter, object);
 				}
 			}
-			if(found == false){
+			if (found == false) {
 				this.render_success = false;
-				console.log('Error: can not find filter: ' + filter.name);
+				console.log("Error: can not find filter: " + filter.name);
 			}
 		}
+	}
 
-		//example with canvas object - other types should overwrite this method
-		if (object.type == 'image') {
-			//image - default behavior
-			var rotateSupport = true;
-			if (rotateSupport == false) {
-				if (object.link_canvas != null) {
-					//we have draft canvas - use it
-					ctx.drawImage(object.link_canvas, object.x, object.y, object.width, object.height);
-				}
-				else {
-					ctx.drawImage(object.link, object.x, object.y, object.width, object.height);
-				}
-			}
-			else {
-				ctx.save();
-
-				ctx.translate(object.x + object.width / 2, object.y + object.height / 2);
-				ctx.rotate(object.rotate * Math.PI / 180);
-				if (object.link_canvas != null) {
-					//we have draft canvas - use it
-					ctx.drawImage(object.link_canvas, -object.width / 2, -object.height / 2,
-						object.width, object.height);
-				}
-				else {
-					ctx.drawImage(object.link, -object.width / 2, -object.height / 2,
-						object.width, object.height);
-				}
-
-				ctx.restore();
-			}
-		}
-		else {
-			//call render function from other module
-			var render_class = object.render_function[0];
-			var render_function = object.render_function[1];
-
-			if(typeof this.Base_gui.GUI_tools.tools_modules[render_class] != "undefined") {
-				this.Base_gui.GUI_tools.tools_modules[render_class].object[render_function](ctx, object, is_preview);
-			}
-			else{
-				this.render_success = false;
-				console.log('Error: unknown layer type: ' + object.type);
-			}
-		}
-
+	/**
+	 * Gets called after when render_object finishes it's job
+	 * @param {canvas.context} ctx
+	 * @param {object} object
+	 */
+	after_render_object(ctx, object) {
 		//apply post-filters
 		for (var i in object.filters) {
 			var filter = object.filters[i];
-			if(filter.id == this.disabled_filter_id){
+			if (filter.id == this.disabled_filter_id) {
 				continue;
 			}
-			filter.name = filter.name.replace('drop-shadow', 'shadow');
+			filter.name = filter.name.replace("drop-shadow", "shadow");
 
 			//find filter
 			var found = false;
@@ -344,15 +430,15 @@ class Base_layers_class {
 
 				var filter_class = this.Base_gui.modules[i];
 				var module_name = i.split("/").pop();
-				if(module_name == filter.name){
+				if (module_name == filter.name) {
 					//found it
 					found = true;
 					filter_class.render_post(ctx, filter, object);
 				}
 			}
-			if(found == false){
+			if (found == false) {
 				this.render_success = false;
-				console.log('Error: can not find filter: ' + filter.name);
+				console.log("Error: can not find filter: " + filter.name);
 			}
 		}
 	}
@@ -379,7 +465,12 @@ class Base_layers_class {
 	 */
 	async autoresize(width, height, layer_id, can_automate = true) {
 		return app.State.do_action(
-			new app.Actions.Autoresize_canvas_action(width, height, layer_id, can_automate)
+			new app.Actions.Autoresize_canvas_action(
+				width,
+				height,
+				layer_id,
+				can_automate
+			)
 		);
 	}
 
@@ -390,7 +481,7 @@ class Base_layers_class {
 	 * @returns {object}
 	 */
 	get_layer(id) {
-		if(id == undefined){
+		if (id == undefined) {
 			id = config.layer.id;
 		}
 		for (var i in config.layers) {
@@ -398,7 +489,7 @@ class Base_layers_class {
 				return config.layers[i];
 			}
 		}
-		alertify.error('Error: can not find layer with id:' + id);
+		alertify.error("Error: can not find layer with id:" + id);
 		return null;
 	}
 
@@ -447,9 +538,7 @@ class Base_layers_class {
 	 * @param {int} id
 	 */
 	async select(id) {
-		return app.State.do_action(
-			new app.Actions.Select_layer_action(id)
-		);
+		return app.State.do_action(new app.Actions.Select_layer_action(id));
 	}
 
 	/**
@@ -465,7 +554,7 @@ class Base_layers_class {
 			value = 100;
 		}
 		return app.State.do_action(
-			new app.Actions.Update_layer_action(id, { opacity: value })
+			new app.Actions.Update_layer_action(id, {opacity: value})
 		);
 	}
 
@@ -475,9 +564,7 @@ class Base_layers_class {
 	 * @param {int} id
 	 */
 	async layer_clear(id) {
-		return app.State.do_action(
-			new app.Actions.Clear_layer_action(id)
-		);
+		return app.State.do_action(new app.Actions.Clear_layer_action(id));
 	}
 
 	/**
@@ -498,8 +585,8 @@ class Base_layers_class {
 	get_sorted_layers() {
 		return config.layers.concat().sort(
 			//sort function
-				(a, b) => b.order - a.order
-			);
+			(a, b) => b.order - a.order
+		);
 	}
 
 	/**
@@ -511,7 +598,11 @@ class Base_layers_class {
 	is_layer_empty(id) {
 		var link = this.get_layer(id);
 
-		if ((link.width == 0 || link.width === null) && (link.height == 0 || link.height === null) && link.data == null) {
+		if (
+			(link.width == 0 || link.width === null) &&
+			(link.height == 0 || link.height === null) &&
+			link.data == null
+		) {
 			return true;
 		}
 
@@ -567,7 +658,8 @@ class Base_layers_class {
 	}
 
 	/**
-	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute at 100% zoom.
+	 * returns global position, for example if canvas is zoomed, it will convert relative mouse position to absolute
+	 * at 100% zoom.
 	 *
 	 * @param {int} x
 	 * @param {int} y
@@ -627,6 +719,7 @@ class Base_layers_class {
 			this.render_object(ctx, value, is_preview);
 		}
 	}
+
 	/**
 	 * exports (active) layer to canvas for saving
 	 *
@@ -636,45 +729,52 @@ class Base_layers_class {
 	 * @returns {canvas}
 	 */
 	convert_layer_to_canvas(layer_id, actual_area = false, can_trim) {
-		if(actual_area == null)
-			actual_area = false;
-		if (layer_id == null)
-			layer_id = config.layer.id;
+		if (actual_area == null) actual_area = false;
+		if (layer_id == null) layer_id = config.layer.id;
 		var link = this.get_layer(layer_id);
 		var offset_x = 0;
 		var offset_y = 0;
 
 		//create tmp canvas
-		var canvas = document.createElement('canvas');
-		if (actual_area === true && link.type == 'image') {
+		var canvas = document.createElement("canvas");
+		if (actual_area === true && link.type == "image") {
 			canvas.width = link.width_original;
 			canvas.height = link.height_original;
 			can_trim = false;
-		}
-		else {
+		} else {
 			canvas.width = Math.max(link.width, config.WIDTH);
 			canvas.height = Math.max(link.height, config.HEIGHT);
 		}
 
 		//add data
-		if (actual_area === true && link.type == 'image') {
+		if (actual_area === true && link.type == "image") {
 			canvas.getContext("2d").drawImage(link.link, 0, 0);
-		}
-		else {
+		} else {
 			this.render_object(canvas.getContext("2d"), link);
 		}
 
 		//trim
 		if ((can_trim == true || can_trim == undefined) && link.type != null) {
 			var trim_info = this.Image_trim.get_trim_info(layer_id);
-			if (trim_info.left > 0 || trim_info.top > 0 || trim_info.right > 0 || trim_info.bottom > 0) {
+			if (
+				trim_info.left > 0 ||
+				trim_info.top > 0 ||
+				trim_info.right > 0 ||
+				trim_info.bottom > 0
+			) {
 				offset_x = trim_info.left;
 				offset_y = trim_info.top;
 
 				var w = canvas.width - trim_info.left - trim_info.right;
 				var h = canvas.height - trim_info.top - trim_info.bottom;
-				if(w > 1 && h > 1) {
-					this.Helper.change_canvas_size(canvas, w, h, offset_x, offset_y);
+				if (w > 1 && h > 1) {
+					this.Helper.change_canvas_size(
+						canvas,
+						w,
+						h,
+						offset_x,
+						offset_y
+					);
 				}
 			}
 		}
@@ -736,23 +836,24 @@ class Base_layers_class {
 	 * @returns {object}
 	 */
 	find_filter_by_id(filter_id, filter_name, layer_id) {
-		if(typeof layer_id == 'undefined'){
+		if (typeof layer_id == "undefined") {
 			var layer = config.layer;
-		}
-		else{
+		} else {
 			var layer = this.get_layer(layer_id);
 		}
 
 		var filter = {};
-		for(var i in layer.filters){
-			if(layer.filters[i].name == filter_name && layer.filters[i].id == filter_id) {
+		for (var i in layer.filters) {
+			if (
+				layer.filters[i].name == filter_name &&
+				layer.filters[i].id == filter_id
+			) {
 				return layer.filters[i].params;
 			}
 		}
 
 		return filter;
 	}
-
 }
 
 export default Base_layers_class;
