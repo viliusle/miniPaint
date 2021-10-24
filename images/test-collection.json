@@ -1605,7 +1605,9 @@
 			"composition": "source-over",
 			"rotate": 0,
 			"data": null,
-			"params": {},
+			"params": {
+				"fill_color": "#555555"
+			},
 			"status": null,
 			"color": null,
 			"filters": [],
