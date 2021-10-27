@@ -170,13 +170,40 @@ class Base_layers_class {
 
             zoomView.apply();
 
+            const newCanvas = this.createNewCanvas(
+                this.ctx,
+                config.HEIGHT,
+                config.WIDTH
+            );
+            const ctxForSourceAtop = newCanvas.getContext("2d");
+            let hasSourceAtopLayer = false;
+
+            this.ctx.save();
+
             //render main canvas
             for (var i = layers_sorted.length - 1; i >= 0; i--) {
                 var value = layers_sorted[i];
-                this.ctx.globalAlpha = value.opacity / 100;
-                this.ctx.globalCompositeOperation = value.composition;
+                const nextValue = layers_sorted[i - 1];
 
-                this.render_object(this.ctx, value);
+                if (
+                    value.composition === "source-atop" ||
+                    (nextValue && nextValue.composition === "source-atop")
+                ) {
+                    hasSourceAtopLayer = true;
+                    ctxForSourceAtop.globalAlpha = value.opacity / 100;
+                    ctxForSourceAtop.globalCompositeOperation =
+                        value.composition;
+                    this.render_object(ctxForSourceAtop, value);
+                } else {
+                    this.ctx.globalAlpha = value.opacity / 100;
+                    this.ctx.globalCompositeOperation = value.composition;
+                    this.render_object(this.ctx, value);
+                }
+            }
+
+            if (hasSourceAtopLayer) {
+                this.ctx.restore();
+                this.ctx.drawImage(newCanvas, 0, 0);
             }
 
             //grid
@@ -196,6 +223,7 @@ class Base_layers_class {
 
             //reset
             this.after_render();
+
             this.last_zoom = config.ZOOM;
 
             this.Base_gui.GUI_details.render_details();
@@ -226,6 +254,19 @@ class Base_layers_class {
         }
     }
 
+    /**
+     * Creates a fresh new canvas with the same height and width as the provided one
+     * @param {canvas.context} ctx
+     * @param {number} [h]
+     * @param {number} [w]
+     */
+    createNewCanvas(ctx, h, w) {
+        const newCanvas = document.createElement("canvas");
+        newCanvas.height = h || ctx.canvas.height;
+        newCanvas.width = w || ctx.canvas.width;
+        return newCanvas;
+    }
+
     render_preview(layers) {
         var w = this.Base_gui.GUI_preview.PREVIEW_SIZE.w;
         var h = this.Base_gui.GUI_preview.PREVIEW_SIZE.h;
@@ -236,8 +277,14 @@ class Base_layers_class {
         //prepare scale
         this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 
+        const newCanvas = this.createNewCanvas(this.ctx_preview);
+        const ctxForSourceAtop = newCanvas.getContext("2d");
+        ctxForSourceAtop.scale(w / config.WIDTH, h / config.HEIGHT);
+        let hasSourceAtopLayer = false;
+
         for (var i = layers.length - 1; i >= 0; i--) {
-            var value = layers[i];
+            const value = layers[i];
+            const nextValue = layers[i - 1];
 
             if (value.visible == false) {
                 //not visible
@@ -248,10 +295,24 @@ class Base_layers_class {
                 continue;
             }
 
-            this.ctx_preview.globalAlpha = value.opacity / 100;
-            this.ctx_preview.globalCompositeOperation = value.composition;
+            if (
+                value.composition === "source-atop" ||
+                (nextValue && nextValue.composition === "source-atop")
+            ) {
+                hasSourceAtopLayer = true;
+                ctxForSourceAtop.globalAlpha = value.opacity / 100;
+                ctxForSourceAtop.globalCompositeOperation = value.composition;
+                this.render_object(ctxForSourceAtop, value);
+            } else {
+                this.ctx_preview.globalAlpha = value.opacity / 100;
+                this.ctx_preview.globalCompositeOperation = value.composition;
+                this.render_object(this.ctx_preview, value);
+            }
+        }
 
-            this.render_object(this.ctx_preview, value);
+        if (hasSourceAtopLayer) {
+            this.ctx_preview.restore();
+            this.ctx_preview.drawImage(newCanvas, 0, 0);
         }
 
         this.ctx_preview.restore();
@@ -268,6 +329,55 @@ class Base_layers_class {
     render_object(ctx, object, is_preview) {
         if (object.visible == false || object.type == null) return;
 
+        this.pre_render_object(ctx, object);
+
+        //example with canvas object - other types should overwrite this method
+        if (object.type == "image") {
+            //image - default behavior
+            ctx.save();
+
+            ctx.translate(
+                object.x + object.width / 2,
+                object.y + object.height / 2
+            );
+            ctx.rotate((object.rotate * Math.PI) / 180);
+            // TODO - Not sure why the check should be with null,
+            // if nothing will break, then better to check if it's just truthy
+            ctx.drawImage(
+                object.link_canvas != null ? object.link_canvas : object.link,
+                -object.width / 2,
+                -object.height / 2,
+                object.width,
+                object.height
+            );
+
+            ctx.restore();
+        } else {
+            //call render function from other module
+            var render_class = object.render_function[0];
+            var render_function = object.render_function[1];
+            if (
+                typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
+                "undefined"
+            ) {
+                this.Base_gui.GUI_tools.tools_modules[render_class].object[
+                    render_function
+                ](ctx, object, is_preview);
+            } else {
+                this.render_success = false;
+                console.log("Error: unknown layer type: " + object.type);
+            }
+        }
+
+        this.after_render_object(ctx, object);
+    }
+
+    /**
+     * Gets called before render_object starts it's job
+     * @param {canvas.context} ctx
+     * @param {object} object
+     */
+    pre_render_object(ctx, object) {
         //apply pre-filters
         for (var i in object.filters) {
             var filter = object.filters[i];
@@ -296,77 +406,14 @@ class Base_layers_class {
                 console.log("Error: can not find filter: " + filter.name);
             }
         }
+    }
 
-        //example with canvas object - other types should overwrite this method
-        if (object.type == "image") {
-            //image - default behavior
-            var rotateSupport = true;
-            if (rotateSupport == false) {
-                if (object.link_canvas != null) {
-                    //we have draft canvas - use it
-                    ctx.drawImage(
-                        object.link_canvas,
-                        object.x,
-                        object.y,
-                        object.width,
-                        object.height
-                    );
-                } else {
-                    ctx.drawImage(
-                        object.link,
-                        object.x,
-                        object.y,
-                        object.width,
-                        object.height
-                    );
-                }
-            } else {
-                ctx.save();
-
-                ctx.translate(
-                    object.x + object.width / 2,
-                    object.y + object.height / 2
-                );
-                ctx.rotate((object.rotate * Math.PI) / 180);
-                if (object.link_canvas != null) {
-                    //we have draft canvas - use it
-                    ctx.drawImage(
-                        object.link_canvas,
-                        -object.width / 2,
-                        -object.height / 2,
-                        object.width,
-                        object.height
-                    );
-                } else {
-                    ctx.drawImage(
-                        object.link,
-                        -object.width / 2,
-                        -object.height / 2,
-                        object.width,
-                        object.height
-                    );
-                }
-
-                ctx.restore();
-            }
-        } else {
-            //call render function from other module
-            var render_class = object.render_function[0];
-            var render_function = object.render_function[1];
-
-            if (
-                typeof this.Base_gui.GUI_tools.tools_modules[render_class] !=
-                "undefined"
-            ) {
-                this.Base_gui.GUI_tools.tools_modules[render_class].object[
-                    render_function
-                ](ctx, object, is_preview);
-            } else {
-                this.render_success = false;
-                console.log("Error: unknown layer type: " + object.type);
-            }
-        }
-
+    /**
+     * Gets called after when render_object finishes it's job
+     * @param {canvas.context} ctx
+     * @param {object} object
+     */
+    after_render_object(ctx, object) {
         //apply post-filters
         for (var i in object.filters) {
             var filter = object.filters[i];
