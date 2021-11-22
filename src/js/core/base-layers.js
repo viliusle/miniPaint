@@ -175,36 +175,8 @@ class Base_layers_class {
                 config.HEIGHT,
                 config.WIDTH
             );
-            const ctxForSourceAtop = newCanvas.getContext("2d");
-            let hasSourceAtopLayer = false;
 
-            this.ctx.save();
-
-            //render main canvas
-            for (var i = layers_sorted.length - 1; i >= 0; i--) {
-                var value = layers_sorted[i];
-                const nextValue = layers_sorted[i - 1];
-
-                if (
-                    value.composition === "source-atop" ||
-                    (nextValue && nextValue.composition === "source-atop")
-                ) {
-                    hasSourceAtopLayer = true;
-                    ctxForSourceAtop.globalAlpha = value.opacity / 100;
-                    ctxForSourceAtop.globalCompositeOperation =
-                        value.composition;
-                    this.render_object(ctxForSourceAtop, value);
-                } else {
-                    this.ctx.globalAlpha = value.opacity / 100;
-                    this.ctx.globalCompositeOperation = value.composition;
-                    this.render_object(this.ctx, value);
-                }
-            }
-
-            if (hasSourceAtopLayer) {
-                this.ctx.restore();
-                this.ctx.drawImage(newCanvas, 0, 0);
-            }
+            this.renderObjects(this.ctx, newCanvas, layers_sorted);
 
             //grid
             this.Base_gui.draw_grid(this.ctx);
@@ -267,6 +239,69 @@ class Base_layers_class {
         return newCanvas;
     }
 
+    /**
+     * Renders objects based on the provided layers
+     * @param {canvas.context} ctx - Main canvas context where it needs to be rendered
+     * @param {canvas} tempCanvas - A temporary canvas which is a copy of the original canvas, but will be used if there will be needed to isolate an effect from others
+     * @param {Object[]} layers - Array of layers
+     * @param {Function} prepare - An optional function to prepare temporary canvas before the render if needed
+     * @param {Function} shouldSkip - An optional boolean function for skipping those layers which are not needed to be rendered
+     */
+    renderObjects(ctx, tempCanvas, layers, prepare, shouldSkip) {
+        const tempCtx = tempCanvas.getContext("2d");
+        let hasSourceAtopLayer = false;
+
+        // Prepare the temporary canvas if needed
+        prepare && prepare(tempCtx);
+        this.ctx.save();
+
+        for (var i = layers.length - 1; i >= 0; i--) {
+            var layer = layers[i];
+            const nextLayer = layers[i - 1];
+
+            // Skip the layer if not needed to be rendered
+            if (shouldSkip && shouldSkip(layer)) {
+                continue;
+            }
+
+            // If the layer or next layer has clip masking effect (source-atop).
+            // If there are such layers, this will make sure that layers will be rendered
+            // in an isolated temporary canvas
+            if (
+                layer.composition === "source-atop" ||
+                (nextLayer && nextLayer.composition === "source-atop")
+            ) {
+                hasSourceAtopLayer = true;
+                // Apply the effect in a isolated temporary canvas
+                tempCtx.globalAlpha = layer.opacity / 100;
+                tempCtx.globalCompositeOperation = layer.composition;
+
+                // If the next layer has the clip masking effect then
+                // isolated the shadow filter from temporary canvas and keep that in the original canvas
+                if (nextLayer?.composition === "source-atop") {
+                    // Render the layer
+                    this.render_object(ctx, layer);
+                    // Then remove the shadow (if it exists) from the render process in the temporary canvas
+                    const filters = layer.filters.filter((filter) => {
+                        return filter.name !== "shadow";
+                    });
+                    this.render_object(tempCtx, { ...layer, filters });
+                } else {
+                    this.render_object(tempCtx, layer);
+                }
+            } else {
+                ctx.globalAlpha = layer.opacity / 100;
+                ctx.globalCompositeOperation = layer.composition;
+                this.render_object(ctx, layer);
+            }
+        }
+
+        if (hasSourceAtopLayer) {
+            ctx.restore();
+            ctx.drawImage(tempCanvas, 0, 0);
+        }
+    }
+
     render_preview(layers) {
         var w = this.Base_gui.GUI_preview.PREVIEW_SIZE.w;
         var h = this.Base_gui.GUI_preview.PREVIEW_SIZE.h;
@@ -278,42 +313,9 @@ class Base_layers_class {
         this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 
         const newCanvas = this.createNewCanvas(this.ctx_preview);
-        const ctxForSourceAtop = newCanvas.getContext("2d");
-        ctxForSourceAtop.scale(w / config.WIDTH, h / config.HEIGHT);
-        let hasSourceAtopLayer = false;
-
-        for (var i = layers.length - 1; i >= 0; i--) {
-            const value = layers[i];
-            const nextValue = layers[i - 1];
-
-            if (value.visible == false) {
-                //not visible
-                continue;
-            }
-            if (value.type == null) {
-                //empty type
-                continue;
-            }
-
-            if (
-                value.composition === "source-atop" ||
-                (nextValue && nextValue.composition === "source-atop")
-            ) {
-                hasSourceAtopLayer = true;
-                ctxForSourceAtop.globalAlpha = value.opacity / 100;
-                ctxForSourceAtop.globalCompositeOperation = value.composition;
-                this.render_object(ctxForSourceAtop, value);
-            } else {
-                this.ctx_preview.globalAlpha = value.opacity / 100;
-                this.ctx_preview.globalCompositeOperation = value.composition;
-                this.render_object(this.ctx_preview, value);
-            }
-        }
-
-        if (hasSourceAtopLayer) {
-            this.ctx_preview.restore();
-            this.ctx_preview.drawImage(newCanvas, 0, 0);
-        }
+        this.renderObjects(this.ctx_preview, newCanvas, layers, (tempCtx) => {
+            tempCtx.scale(w / config.WIDTH, h / config.HEIGHT);
+        });
 
         this.ctx_preview.restore();
         this.Base_gui.GUI_preview.render_preview_active_zone();
@@ -701,22 +703,20 @@ class Base_layers_class {
      * @param {boolean} is_preview Optional
      */
     convert_layers_to_canvas(ctx, layer_id = null, is_preview = true) {
-        var layers_sorted = this.get_sorted_layers();
-        for (var i = layers_sorted.length - 1; i >= 0; i--) {
-            var value = layers_sorted[i];
-
+        const newCanvas = this.createNewCanvas(
+            ctx,
+            ctx.canvas.width,
+            ctx.canvas.height
+        );
+        const layers_sorted = this.get_sorted_layers();
+        this.renderObjects(ctx, newCanvas, layers_sorted, null, (value) => {
             if (value.visible == false || value.type == null) {
-                continue;
+                return true;
             }
             if (layer_id != null && value.id != layer_id) {
-                continue;
+                return true;
             }
-
-            ctx.globalAlpha = value.opacity / 100;
-            ctx.globalCompositeOperation = value.composition;
-
-            this.render_object(ctx, value, is_preview);
-        }
+        });
     }
     /**
      * exports (active) layer to canvas for saving
