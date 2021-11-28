@@ -48,7 +48,9 @@ module.exports = {
 	devtool: "cheap-module-source-map",
 	devServer: {
 		// host: '0.0.0.0',
-		contentBase: "./",
-		compress: true
+		//contentBase: "./",
+		static: {
+			directory: path.resolve(__dirname, "./"),
+		},
 	}
 };

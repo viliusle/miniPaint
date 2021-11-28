@@ -16,7 +16,7 @@ var template = `
 	<div class="canvas_preview_details">
 		<div class="details">
 			<button title="Zoom out" class="layer_add trn" id="zoom_less"">-</button>
-			<button title="Reset zoom level"  class="layer_add trn" id="zoom_100"">100%</button>
+			<button title="Reset zoom level"  class="layer_add trn" id="zoom_100">100%</button>
 			<button title="Zoom in" class="layer_add trn" id="zoom_more"">+</button>
 			<button class="layer_add trn" id="zoom_fit">Fit</button>
 		</div>
@@ -209,7 +209,7 @@ class GUI_preview_class {
 		this.canvas_preview.stroke();
 	}
 
-	zoom(recalc) {
+	async zoom(recalc) {
 		if (recalc != undefined) {
 			//zoom-in or zoom-out
 			if (recalc == 1 || recalc == -1) {
@@ -275,6 +275,10 @@ class GUI_preview_class {
 
 		config.need_render = true;
 		this.GUI.prepare_canvas();
+
+		//sleep after last image import, it maybe not be finished yet
+		await new Promise(r => setTimeout(r, 10));
+
 		return true;
 	}
 

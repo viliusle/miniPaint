@@ -8,9 +8,9 @@
 	"description": "miniPaint is free online image editor using HTML5.",
 	"icons": [
 		{
-		"src": "images/manifest/48x48.png",
-		"sizes": "48x48",
-		"type": "image/png"
+			"src": "images/manifest/48x48.png",
+			"sizes": "48x48",
+			"type": "image/png"
 		},
 		{
 			"src": "images/manifest/72x72.png",

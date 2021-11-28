@@ -348,7 +348,9 @@ config.TOOLS = [
 	{
 		name: 'cog',
 		visible: false,
-		attributes: {},
+		attributes: {
+			fill_color: '#555555',
+		},
 	},
 	{
 		name: 'moon',
