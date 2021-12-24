@@ -15,7 +15,6 @@ import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
  * - Add leading, superscript, subscript
  * - Implement text direction (right to left, top to bottom, etc.); currently partial implementation
  * - Allow search & add google fonts
- * - Enable text layer rotation
  * - Undo history
  */
 
@@ -1622,6 +1621,16 @@ class Text_editor_class {
 			let wrapIndex = 0;
 			const cursorLine = this.selection.isActiveSideEnd ? this.selection.end.line : this.selection.start.line;
 			const cursorCharacter = this.selection.isActiveSideEnd ? this.selection.end.character : this.selection.start.character;
+			if(layer.rotate){
+				const alpha = (layer.rotate * Math.PI) / 180;
+				ctx.save();
+				// Move the canvas to the center before rotating
+				ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+				ctx.rotate(alpha);
+				// Move it back after it
+				ctx.translate(-layer.x - layer.width / 2, -layer.y - layer.height / 2);
+
+			}
 			for (let line of this.lineRenderInfo.lines) {
 				let lineLetterCount = 0;
 				for (let [localWrapIndex, wrap] of line.wraps.entries()) {
@@ -1674,6 +1683,8 @@ class Text_editor_class {
 							ctx.lineWidth = 0;
 						}
 
+						
+						
 						// Loop through each letter in each span and draw it
 						for (let c = 0; c < span.text.length; c++) {
 							const letter = span.text.charAt(c);
@@ -1750,6 +1761,8 @@ class Text_editor_class {
 							lineLetterCount++;
 						}
 
+						
+
 						if (span.text.length === 0) {
 							if (cursorLine === lineIndex && cursorCharacter === lineLetterCount) {
 								const lineStart = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset);
@@ -1794,6 +1807,9 @@ class Text_editor_class {
 					wrapIndex++;
 				}
 				lineIndex++;
+			}
+			if(layer.rotate){
+				ctx.restore();
 			}
 		} catch (error) {
 			console.warn(error);
@@ -1982,7 +1998,7 @@ class Text_class extends Base_tools_class {
 				enable_background: false,
 				enable_borders: true,
 				enable_controls: true,
-				enable_rotation: false,
+				enable_rotation: true,
 				enable_move: false,
 				data_function: () => {
 					return this.selection;
@@ -2517,6 +2533,7 @@ class Text_class extends Base_tools_class {
 			this.selection.y = layer.y;
 			this.selection.width = layer.width;
 			this.selection.height = layer.height;
+			this.selection.rotate = layer.rotate;
 		} else if (config.layer.type !== 'text') {
 			this.selection.x = -100000;
 			this.selection.y = -100000;
