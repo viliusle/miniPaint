@@ -289,7 +289,9 @@ class Base_selection_class {
 		var draw_rotation = () => {
 			var settings = this.find_settings();
 
-			if (settings.data === null || settings.data.status == 'draft'
+			if (settings.data === null
+				|| settings.data.status == 'draft'
+				|| settings.data.rotate === null
 				|| (settings.data.hide_selection_if_active === true && settings.data.type == config.TOOL.name)) {
 				return;
 			}

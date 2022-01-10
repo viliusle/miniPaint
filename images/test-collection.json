@@ -68,7 +68,7 @@
 			"opacity": 100,
 			"order": 2,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": null,
 			"params": {
 				"size": 45,
@@ -124,7 +124,7 @@
 			"opacity": 100,
 			"order": 3,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": null,
 			"params": {
 				"size": 30,
@@ -180,7 +180,7 @@
 			"opacity": 100,
 			"order": 4,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": [
 				[
 					{
@@ -351,7 +351,7 @@
 			"opacity": 100,
 			"order": 5,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": [
 				[
 					{
@@ -399,7 +399,7 @@
 			"opacity": 100,
 			"order": 6,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": [
 				[
 					{
@@ -447,7 +447,7 @@
 			"opacity": 100,
 			"order": 7,
 			"composition": "source-over",
-			"rotate": null,
+			"rotate": 0,
 			"data": [
 				[
 					{

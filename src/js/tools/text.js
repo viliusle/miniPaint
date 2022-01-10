@@ -2252,7 +2252,7 @@ class Text_class extends Base_tools_class {
 				render_function: [this.name, 'render'],
 				x: mouse.x,
 				y: mouse.y,
-				rotate: null,
+				rotate: 0,
 				is_vector: true,
 			};
 			app.State.do_action(
