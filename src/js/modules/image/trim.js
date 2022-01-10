@@ -38,7 +38,7 @@ class Image_trim_class {
 			}
 		}, false);
 	}
-	
+
 	trim() {
 		var _this = this;
 		var removeWhiteColor = false;
@@ -53,24 +53,22 @@ class Image_trim_class {
 				{name: "power", title: "Power:", value: 0, max: 255},
 				{name: "remove_white", title: "Trim white color?", value: removeWhiteColor},
 			],
-			on_finish: (params) => {
+			on_finish: async (params) => {
 				if (params.trim_layer == true) {
 					//first trim
 					let actions = [];
 					actions = actions.concat(this.trim_layer(config.layer.id, params.remove_white, params.power));
-					app.State.do_action(
+					await app.State.do_action(
 						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
 					);
 				}
 				if (params.trim_all == true) {
 					//second trim
-					setTimeout(function(){
-						let actions = [];
-						actions = actions.concat(_this.trim_all(params.remove_white, params.power));
-						app.State.do_action(
-							new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
-						);
-					}, 100); //ust wait a little after first trim, ugly, but works...
+					let actions = [];
+					actions = actions.concat(_this.trim_all(params.remove_white, params.power));
+					app.State.do_action(
+						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
+					);
 				}
 			},
 		};
