@@ -38,7 +38,7 @@ class Image_trim_class {
 			}
 		}, false);
 	}
-	
+
 	trim() {
 		var _this = this;
 		var removeWhiteColor = false;
@@ -50,27 +50,25 @@ class Image_trim_class {
 			params: [
 				{name: "trim_layer", title: "Trim layer:", value: true},
 				{name: "trim_all", title: "Trim borders:", value: true},
-				{}, //gap
+				{name: "power", title: "Power:", value: 0, max: 255},
 				{name: "remove_white", title: "Trim white color?", value: removeWhiteColor},
 			],
-			on_finish: (params) => {
+			on_finish: async (params) => {
 				if (params.trim_layer == true) {
 					//first trim
 					let actions = [];
-					actions = actions.concat(this.trim_layer(config.layer.id, params.remove_white));
-					app.State.do_action(
+					actions = actions.concat(this.trim_layer(config.layer.id, params.remove_white, params.power));
+					await app.State.do_action(
 						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
 					);
 				}
 				if (params.trim_all == true) {
 					//second trim
-					setTimeout(function(){
-						let actions = [];
-						actions = actions.concat(_this.trim_all(params.remove_white));
-						app.State.do_action(
-							new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
-						);
-					}, 100); //ust wait a little after first trim, ugly, but works...
+					let actions = [];
+					actions = actions.concat(_this.trim_all(params.remove_white, params.power));
+					app.State.do_action(
+						new app.Actions.Bundle_action('trim_layers', 'Trim Layers', actions)
+					);
 				}
 			},
 		};
@@ -83,8 +81,9 @@ class Image_trim_class {
 	 *
 	 * @param layer_id
 	 * @param removeWhiteColor
+	 * @param {int} power
 	 */
-	trim_layer(layer_id, removeWhiteColor = false) {
+	trim_layer(layer_id, removeWhiteColor = false, power = 0) {
 		var layer = this.Base_layers.get_layer(layer_id);
 		
 		if (layer.type != 'image') {
@@ -92,7 +91,7 @@ class Image_trim_class {
 			return false;
 		}
 		
-		var trim = this.get_trim_info(layer_id, removeWhiteColor);
+		var trim = this.get_trim_info(layer_id, removeWhiteColor, power);
 		trim = trim.relative;
 	
 		//if image was stretched
@@ -128,8 +127,9 @@ class Image_trim_class {
 	 * this affect canvas size and all layers positions
 	 *
 	 * @param removeWhiteColor
+	 * @param {int} power
 	 */
-	trim_all(removeWhiteColor = false) {
+	trim_all(removeWhiteColor = false, power = 0) {
 		let actions = [];
 
 		var all_top = config.HEIGHT;
@@ -150,7 +150,7 @@ class Image_trim_class {
 			
 			if (layer.width == null || layer.height == null || layer.x == null || layer.y == null) {
 				//layer without dimensions
-				const trim_info = this.get_trim_info(layer.id, removeWhiteColor);
+				const trim_info = this.get_trim_info(layer.id, removeWhiteColor, power);
 
 				all_top = Math.min(all_top, trim_info.top);
 				all_left = Math.min(all_left, trim_info.left);
@@ -196,9 +196,10 @@ class Image_trim_class {
 	 * 
 	 * @param {int} layer_id
 	 * @param {boolean} trim_white
+	 * @param {int} power
 	 * @returns {object} keys: top, left, bottom, right, width, height, relative
 	 */
-	get_trim_info(layer_id, trim_white) {
+	get_trim_info(layer_id, trim_white, power) {
 		if (trim_white == undefined) {
 			trim_white = false;
 			if (config.TRANSPARENCY == false) {
@@ -223,9 +224,10 @@ class Image_trim_class {
 			for (var y = 0; y < img.height; y++) {
 			for (var x = 0; x < img.width; x++) {
 				var k = ((y * (img.width * 4)) + (x * 4));
-				if (imgData[k + 3] == 0)
+				if (imgData[k + 3] <= power)
 					continue; //transparent 
-				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] >= 255 - power && imgData[k + 1] >= 255 - power
+					&& imgData[k + 2] >= 255 - power)
 					continue; //white
 				break main1;
 			}
@@ -236,9 +238,10 @@ class Image_trim_class {
 			for (var x = 0; x < img.width; x++) {
 			for (var y = 0; y < img.height; y++) {
 				var k = ((y * (img.width * 4)) + (x * 4));
-				if (imgData[k + 3] == 0)
+				if (imgData[k + 3] <= power)
 					continue; //transparent 
-				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] >= 255 - power && imgData[k + 1] >= 255 - power
+					&& imgData[k + 2] >= 255 - power)
 					continue; //white
 				break main2;
 			}
@@ -249,9 +252,10 @@ class Image_trim_class {
 			for (var y = img.height - 1; y >= 0; y--) {
 			for (var x = img.width - 1; x >= 0; x--) {
 				var k = ((y * (img.width * 4)) + (x * 4));
-				if (imgData[k + 3] == 0)
+				if (imgData[k + 3] <= power)
 					continue; //transparent 
-				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] >= 255 - power && imgData[k + 1] >= 255 - power
+					&& imgData[k + 2] >= 255 - power)
 					continue; //white
 				break main3;
 			}
@@ -262,9 +266,10 @@ class Image_trim_class {
 			for (var x = img.width - 1; x >= 0; x--) {
 			for (var y = img.height - 1; y >= 0; y--) {
 				var k = ((y * (img.width * 4)) + (x * 4));
-				if (imgData[k + 3] == 0)
+				if (imgData[k + 3] <= power)
 					continue; //transparent 
-				if (trim_white == true && imgData[k] == 255 && imgData[k + 1] == 255 && imgData[k + 2] == 255)
+				if (trim_white == true && imgData[k] >= 255 - power && imgData[k + 1] >= 255 - power
+					&& imgData[k + 2] >= 255 - power)
 					continue; //white
 				break main4;
 			}
