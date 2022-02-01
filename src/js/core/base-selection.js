@@ -366,11 +366,6 @@ class Base_selection_class {
 		var w = settings.data.width;
 		var h = settings.data.height;
 
-		var is_rotated = false;
-		if (settings.data != null && settings.data.rotate != null && settings.data.rotate > 0) {
-			is_rotated = true;
-		}
-
 		//simplify checks
 		var event_type = e.type;
 		if(event_type == 'touchstart') event_type = 'mousedown';
@@ -511,21 +506,18 @@ class Base_selection_class {
 				mainWrapper.style.cursor = "move";
 			}
 
-			if(is_rotated == false) {
-				for (let current_drag_type in this.selected_obj_positions) {
-					const position = this.selected_obj_positions[current_drag_type];
-
-					if (position.path && this.ctx.isPointInPath(position.path, mouse.x, mouse.y)) {
-						//match
-						if (event_type == 'mousedown') {
-							if (e.buttons == 1 || typeof e.buttons == "undefined") {
-								this.mouse_lock = 'selected_object_actions';
-								this.selected_object_drag_type = current_drag_type;
-							}
+			for (let current_drag_type in this.selected_obj_positions) {
+				const position = this.selected_obj_positions[current_drag_type];
+				if (position.path && this.ctx.isPointInPath(position.path, mouse.x, mouse.y)) {
+					// match
+					if (event_type == 'mousedown') {
+						if (e.buttons == 1 || typeof e.buttons == "undefined") {
+							this.mouse_lock = 'selected_object_actions';
+							this.selected_object_drag_type = current_drag_type;
 						}
-						if (event_type == 'mousemove') {
-							mainWrapper.style.cursor = position.cursor;
-						}
+					}
+					if (event_type == 'mousemove') {
+						mainWrapper.style.cursor = position.cursor;
 					}
 				}
 			}
