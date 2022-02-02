@@ -249,7 +249,6 @@ class Base_layers_class {
 	 */
 	renderObjects(ctx, tempCanvas, layers, prepare, shouldSkip) {
 		const tempCtx = tempCanvas.getContext("2d");
-		let hasSourceAtopLayer = false;
 
 		// Prepare the temporary canvas if needed
 		prepare && prepare(tempCtx);
@@ -259,6 +258,9 @@ class Base_layers_class {
 			var layer = layers[i];
 			const nextLayer = layers[i - 1];
 
+			// If the previous layer has clip masking effect and the current one is not the other end of the pair,
+			// then render the temporary canvas for clip masking on top of the current.
+			
 			// Skip the layer if not needed to be rendered
 			if (shouldSkip && shouldSkip(layer)) {
 				continue;
@@ -271,7 +273,6 @@ class Base_layers_class {
 				layer.composition === "source-atop" ||
 				(nextLayer && nextLayer.composition === "source-atop")
 			) {
-				hasSourceAtopLayer = true;
 				// Apply the effect in a isolated temporary canvas
 				tempCtx.globalAlpha = layer.opacity / 100;
 				tempCtx.globalCompositeOperation = layer.composition;
@@ -290,7 +291,16 @@ class Base_layers_class {
 						filters,
 					});
 				} else {
+					// If we are in this condition, then it means this is the last layer of clipped layers pair.
+					// Render clipped layers on the temporary canvas
 					this.render_object(tempCtx, layer);
+					
+					// Render the clipped layers on top of the current canvas
+					ctx.restore();
+					ctx.drawImage(tempCanvas, 0, 0);
+
+					// After render, let's clear the temporary canvas just in case there are other layers having clipping mask
+					tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 				}
 			} else {
 				ctx.globalAlpha = layer.opacity / 100;
@@ -299,10 +309,6 @@ class Base_layers_class {
 			}
 		}
 
-		if (hasSourceAtopLayer) {
-			ctx.restore();
-			ctx.drawImage(tempCanvas, 0, 0);
-		}
 	}
 
 	render_preview(layers) {
