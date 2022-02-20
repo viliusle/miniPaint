@@ -427,6 +427,25 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	background-color: var(--background-color-active);
 	color: var(--text-color-active);
 }
+.layers_list .arrow_down{
+	position: relative;
+	float:left;
+	margin-right: 5px;
+	width:10px;
+	height:19px;
+	opacity: 0.4;
+}
+.layers_list .arrow_down:after{
+	position: absolute;
+	content: '';
+	left:0;
+	top:0;
+	bottom:0;
+	right:0;
+	filter: var(--menu-icons-filter);
+	background: url('images/icons/arrow-down.svg') no-repeat center center;
+	background-size: 12px auto;
+}
 .layers_list .visibility{
 	position: relative;
 	float:left;
