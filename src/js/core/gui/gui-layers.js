@@ -138,6 +138,11 @@ class GUI_layers_class {
 				else
 					html += '	<span class="visibility" id="visibility" data-id="' + value.id + '" title="show"></span>';
 				html += '	<span class="delete" id="delete" data-id="' + value.id + '" title="delete"></span>';
+				
+				if(value.composition === 'source-atop'){
+					html += '	<span class="arrow_down" data-id="' + value.id + '" ></span>';
+				}
+				
 				html += '	<span class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</span>';
 				html += '	<div class="clear"></div>';
 				html += '</div>';
