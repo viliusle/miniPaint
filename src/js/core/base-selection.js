@@ -147,6 +147,14 @@ class Base_selection_class {
 		return settings;
 	}
 
+	calcRotateDistanceFromX(layerW) {
+		const block_size = handle_size / config.ZOOM;
+	
+		return Math.max(
+		  Math.min(layerW * 0.9, Math.abs(layerW - 2 * block_size)),
+		  layerW / 2 - block_size / 2
+		);
+	}
 	/**
 	 * marks object as selected, and draws corners
 	 */
@@ -295,8 +303,8 @@ class Base_selection_class {
 				|| (settings.data.hide_selection_if_active === true && settings.data.type == config.TOOL.name)) {
 				return;
 			}
-
-			var r_x = x + w * 0.9 + corner_offset + wholeLineWidth;
+			
+			var r_x = x + this.calcRotateDistanceFromX(w) + corner_offset + wholeLineWidth;
 			var r_y = y - corner_offset - wholeLineWidth;
 			var r_dx =  hitsRightEdge ? -0.5 : 0;
 			var r_dy = hitsTopEdge ? 0.5 : 0;
@@ -320,7 +328,7 @@ class Base_selection_class {
 			};
 
 		};
-		if (settings.enable_rotation == true && w * config.ZOOM / 10 > 20) {
+		if (settings.enable_rotation == true) {
 			draw_rotation();
 		}
 
@@ -423,7 +431,7 @@ class Base_selection_class {
 
 			if(drag_type == 'rotate'){
 				//rotate
-				var dx = (x + w * 0.9) - (x + w / 2);
+				var dx = x + this.calcRotateDistanceFromX(w) - (x + w / 2);
 				var dy = h / 2;
 				var original_angle = Math.atan2(dy, dx) / Math.PI * 180; //compensate rotation icon angle
 
