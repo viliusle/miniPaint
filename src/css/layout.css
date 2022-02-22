@@ -396,6 +396,7 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .layer_add{
 	display:inline-block;
 	padding:1px 8px;
+	margin-right: 10px;
 	background-color: #419147;
 	background-color: var(--background-color-active);
 	border:1px solid #444;
@@ -411,6 +412,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	display:block;
 	padding:1px 5px 3px 5px;
 	height:19px;
+	width: calc(100% - 44px);
+	text-align: left;
 	overflow:hidden;
 	background-color:#989898;
 	background-color: var(--area-background-color);
@@ -455,6 +458,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width:20px;
 	height:19px;
 	opacity:0.1;
+	border: none;
+	background: transparent;
+	box-shadow: none;
 }
 .layers_list .visibility:after{
 	position: absolute;
@@ -475,8 +481,10 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width:12px;
 	height:19px;
 	margin-left: 5px;
-	background: url(images/icons/delete.svg) no-repeat center center;
+	background: transparent url(images/icons/delete.svg) no-repeat center center;
 	background-size: 10px 10px;
+	border: none;
+	box-shadow: none;
 }
 /* filters */
 .layers_list .filters{

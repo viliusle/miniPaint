@@ -18,7 +18,7 @@ var template = `
 			<button title="Zoom out" class="layer_add trn" id="zoom_less"">-</button>
 			<button title="Reset zoom level"  class="layer_add trn" id="zoom_100">100%</button>
 			<button title="Zoom in" class="layer_add trn" id="zoom_more"">+</button>
-			<button class="layer_add trn" id="zoom_fit">Fit</button>
+			<button title="Fit window" class="layer_add trn" id="zoom_fit">Fit</button>
 		</div>
 		<input id="zoom_range" type="range" value="100" min="50" max="1000" step="50" />
 	</div>

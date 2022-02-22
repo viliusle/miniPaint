@@ -61,7 +61,7 @@ class Media_class extends Base_tools_class {
 
 			//paging
 			html_paging += '<div class="media-paging" id="media_paging">';
-			html_paging += '<button type="button" data-value="1">&lt;</button> ';
+			html_paging += '<button type="button" data-value="1" title="Previous">&lt;</button> ';
 			for(var i = 1; i <= Math.min(10, pages); i++) {
 				var selected = '';
 				if(this.page == i){
@@ -69,7 +69,7 @@ class Media_class extends Base_tools_class {
 				}
 				html_paging += '<button type="button" class="'+selected+'" data-value="'+i+'">'+i+'</button> ';
 			}
-			html_paging += '<button type="button" data-value="'+Math.min(this.page + 1, pages)+'">&gt;</button> ';
+			html_paging += '<button type="button" data-value="'+Math.min(this.page + 1, pages)+'" title="Next">&gt;</button> ';
 			html_paging += '</div>';
 		}
 		else{

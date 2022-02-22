@@ -9,13 +9,16 @@ import Base_layers_class from './../base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Layer_rename_class from './../../modules/layer/rename.js';
 import Effects_browser_class from './../../modules/effects/browser.js';
+import Layer_duplicate_class from './../../modules/layer/duplicate.js';
+import Layer_raster_class from './../../modules/layer/raster.js';
 
 var template = `
-	<span class="trn">Insert:</span>
-	<button type="button" class="layer_add" id="insert_layer">+</button>
+	<button type="button" class="layer_add" id="insert_layer" title="Insert new layer">+</button>
+	<button type="button" class="layer_duplicate" id="layer_duplicate" title="Duplicate layer">D</button>
+	<button type="button" class="layer_raster" id="layer_raster" title="Convert layer to raster">R</button>
 
-	<button type="button" class="layers_arrow" title="Move down" id="layer_down">&darr;</button>
-	<button type="button" class="layers_arrow" title="Move up" id="layer_up">&uarr;</button>
+	<button type="button" class="layers_arrow" title="Move layer down" id="layer_down">&darr;</button>
+	<button type="button" class="layers_arrow" title="Move layer up" id="layer_up">&uarr;</button>
 
 	<div class="layers_list" id="layers"></div>
 `;
@@ -30,6 +33,8 @@ class GUI_layers_class {
 		this.Helper = new Helper_class();
 		this.Layer_rename = new Layer_rename_class();
 		this.Effects_browser = new Effects_browser_class();
+		this.Layer_duplicate = new Layer_duplicate_class();
+		this.Layer_raster = new Layer_raster_class();
 	}
 
 	render_main_layers() {
@@ -49,6 +54,14 @@ class GUI_layers_class {
 				app.State.do_action(
 					new app.Actions.Insert_layer_action()
 				);
+			}
+			else if (target.id == 'layer_duplicate') {
+				//duplicate
+				_this.Layer_duplicate.duplicate();
+			}
+			else if (target.id == 'layer_raster') {
+				//raster
+				_this.Layer_raster.raster();
 			}
 			else if (target.id == 'layer_up') {
 				//move layer up
@@ -134,16 +147,16 @@ class GUI_layers_class {
 				else
 					html += '<div class="item">';
 				if (value.visible == true)
-					html += '	<span class="visibility visible" id="visibility" data-id="' + value.id + '" title="hide"></span>';
+					html += '	<button class="visibility visible" id="visibility" data-id="' + value.id + '" title="Hide"></button>';
 				else
-					html += '	<span class="visibility" id="visibility" data-id="' + value.id + '" title="show"></span>';
-				html += '	<span class="delete" id="delete" data-id="' + value.id + '" title="delete"></span>';
+					html += '	<button class="visibility" id="visibility" data-id="' + value.id + '" title="Show"></button>';
+				html += '	<button class="delete" id="delete" data-id="' + value.id + '" title="Delete"></button>';
 				
 				if(value.composition === 'source-atop'){
-					html += '	<span class="arrow_down" data-id="' + value.id + '" ></span>';
+					html += '	<button class="arrow_down" data-id="' + value.id + '" ></button>';
 				}
 				
-				html += '	<span class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</span>';
+				html += '	<button class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</button>';
 				html += '	<div class="clear"></div>';
 				html += '</div>';
 
