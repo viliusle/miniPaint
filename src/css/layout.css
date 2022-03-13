@@ -362,6 +362,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .canvas_preview_details{
 	padding: 0 5px;
 }
+.canvas_preview_details button{
+	margin: 0;
+}
 .preview canvas{
 	cursor: pointer;
 }
