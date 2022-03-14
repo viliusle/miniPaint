@@ -11,9 +11,21 @@ class Pencil_class extends Base_tools_class {
 		this.name = 'pencil';
 		this.layer = {};
 		this.params_hash = false;
+		this.pressure_supported = false;
+		this.pointer_pressure = 0; // has range [0 - 1]
 	}
 
 	load() {
+		var _this = this;
+
+		//pointer events
+		document.addEventListener('pointerdown', function (event) {
+			_this.pointerdown(event);
+		});
+		document.addEventListener('pointermove', function (event) {
+			_this.pointermove(event);
+		});
+
 		this.default_events();
 	}
 
@@ -23,13 +35,31 @@ class Pencil_class extends Base_tools_class {
 		this.mousemove(event);
 	}
 
+	pointerdown(e) {
+		// Devices that don't actually support pen pressure can give 0.5 as a false reading.
+		// It is highly unlikely a real pen will read exactly 0.5 at the start of a stroke.
+		if (e.pressure && e.pressure !== 0 && e.pressure !== 0.5 && e.pressure <= 1) {
+			this.pressure_supported = true;
+			this.pointer_pressure = e.pressure;
+		} else {
+			this.pressure_supported = false;
+		}
+	}
+
+	pointermove(e) {
+		// Pressure of exactly 1 seems to be an input error, sometimes I see it when lifting the pen
+		// off the screen when pressure reading should be near 0.
+		if (this.pressure_supported && e.pressure < 1) {
+			this.pointer_pressure = e.pressure;
+		}
+	}
+
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.click_valid == false)
 			return;
 
 		var params_hash = this.get_params_hash();
-		var params = this.getParams();
 		var opacity = Math.round(config.ALPHA / 255 * 100);
 		
 		if (config.layer.type != this.name || params_hash != this.params_hash) {
@@ -80,8 +110,20 @@ class Pencil_class extends Base_tools_class {
 			return;
 		}
 
+		//detect line size
+		var size = params.size;
+		var new_size = size;
+
+		if (this.pressure_supported) {
+			new_size = size * this.pointer_pressure * 2;
+		}
+
 		//more data
-		config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
+		config.layer.data.push([
+			Math.ceil(mouse.x - config.layer.x),
+			Math.ceil(mouse.y - config.layer.y),
+			new_size
+		]);
 		this.Base_layers.render();
 	}
 
@@ -93,8 +135,20 @@ class Pencil_class extends Base_tools_class {
 			return;
 		}
 
+		//detect line size
+		var size = params.size;
+		var new_size = size;
+
+		if (this.pressure_supported) {
+			new_size = size * this.pointer_pressure * 2;
+		}
+
 		//more data
-		config.layer.data.push([Math.ceil(mouse.x - config.layer.x), Math.ceil(mouse.y - config.layer.y)]);
+		config.layer.data.push([
+			Math.ceil(mouse.x - config.layer.x),
+			Math.ceil(mouse.y - config.layer.y),
+			new_size
+		]);
 
 		this.check_dimensions();
 
@@ -103,76 +157,9 @@ class Pencil_class extends Base_tools_class {
 	}
 
 	render(ctx, layer) {
-		var params = layer.params;
-
-		if (params.antialiasing == true) {
-			this.render_antialiased(ctx, layer);	// remove it in future, users should use brush
-		}
-		else {
-			this.render_aliased(ctx, layer);
-		}
+		this.render_aliased(ctx, layer);
 	}
 	
-	/**
-	 * draw with antialiasing, nice mode
-	 *
-	 * @param {object} ctx
-	 * @param {object} layer
-	 */
-	render_antialiased(ctx, layer) {
-		if (layer.data.length == 0)
-			return;
-
-		var params = layer.params;
-		var data = layer.data;
-		var n = data.length;
-		var size = params.size || 1;
-
-		//set styles
-		ctx.save();
-		ctx.fillStyle = layer.color;
-		ctx.strokeStyle = layer.color;
-		ctx.lineWidth = size;
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
-
-		ctx.translate(layer.x, layer.y);
-
-		//draw
-		ctx.beginPath();
-		ctx.moveTo(data[0][0], data[0][1]);
-		for (var i = 1; i < n; i++) {
-			if (data[i] === null) {
-				//break
-				ctx.beginPath();
-			}
-			else {
-				//line
-				if (data[i - 1] == null) {
-					//exception - point
-					ctx.arc(data[i][0], data[i][1], size / 2, 0, 2 * Math.PI, false);
-					ctx.fill();
-				}
-				else {
-					//lines
-					ctx.beginPath();
-					ctx.moveTo(data[i - 1][0], data[i - 1][1]);
-					ctx.lineTo(data[i][0], data[i][1]);
-					ctx.stroke();
-				}
-			}
-		}
-		if (n == 1 || data[1] == null) {
-			//point
-			ctx.beginPath();
-			ctx.arc(data[0][0], data[0][1], size / 2, 0, 2 * Math.PI, false);
-			ctx.fill();
-		}
-
-		ctx.translate(-layer.x, -layer.y);
-		ctx.restore();
-	}
-
 	/**
 	 * draw without antialiasing, sharp, ugly mode.
 	 *
@@ -183,13 +170,14 @@ class Pencil_class extends Base_tools_class {
 		if (layer.data.length == 0)
 			return;
 
+		var params = layer.params;
 		var data = layer.data;
 		var n = data.length;
+		var size = params.size;
 
 		//set styles
 		ctx.fillStyle = layer.color;
 		ctx.strokeStyle = layer.color;
-
 		ctx.translate(layer.x, layer.y);
 
 		//draw
@@ -202,21 +190,43 @@ class Pencil_class extends Base_tools_class {
 			}
 			else {
 				//line
+				size = data[i][2];
+				if(size == undefined){
+					size = 1;
+				}
+
 				if (data[i - 1] == null) {
 					//exception - point
-					ctx.fillRect(data[i][0] - 1, data[i][1] - 1, 1, 1);
+					ctx.fillRect(
+						data[i][0] - Math.floor(size / 2) - 1,
+						data[i][1] - Math.floor(size / 2) - 1,
+						size,
+						size
+					);
 				}
 				else {
 					//lines
 					ctx.beginPath();
-					this.draw_simple_line(ctx, data[i - 1][0], data[i - 1][1], data[i][0], data[i][1]);
+					this.draw_simple_line(
+						ctx,
+						data[i - 1][0],
+						data[i - 1][1],
+						data[i][0],
+						data[i][1],
+						size
+					);
 				}
 			}
 		}
 		if (n == 1 || data[1] == null) {
 			//point
 			ctx.beginPath();
-			ctx.fillRect(data[0][0] - 1, data[0][1] - 1, 1, 1);
+			ctx.fillRect(
+				data[0][0] - Math.floor(size / 2) - 1,
+				data[0][1] - Math.floor(size / 2) - 1,
+				size,
+				size
+			);
 		}
 
 		ctx.translate(-layer.x, -layer.y);
@@ -230,17 +240,19 @@ class Pencil_class extends Base_tools_class {
 	 * @param {int} from_y
 	 * @param {int} to_x
 	 * @param {int} to_y
+	 * @param {int} size
 	 */
-	draw_simple_line(ctx, from_x, from_y, to_x, to_y) {
+	draw_simple_line(ctx, from_x, from_y, to_x, to_y, size) {
 		var dist_x = from_x - to_x;
 		var dist_y = from_y - to_y;
 		var distance = Math.sqrt((dist_x * dist_x) + (dist_y * dist_y));
 		var radiance = Math.atan2(dist_y, dist_x);
-		for (var j = 0; j < distance; j++) {
-			var x_tmp = Math.round(to_x - 1 + Math.cos(radiance) * j);
-			var y_tmp = Math.round(to_y - 1 + Math.sin(radiance) * j);
 
-			ctx.fillRect(x_tmp, y_tmp, 1, 1);
+		for (var j = 0; j < distance; j++) {
+			var x_tmp = Math.round(to_x + Math.cos(radiance) * j) - Math.floor(size / 2) - 1;
+			var y_tmp = Math.round(to_y + Math.sin(radiance) * j) - Math.floor(size / 2) - 1;
+
+			ctx.fillRect(x_tmp, y_tmp, size, size);
 		}
 	}
 

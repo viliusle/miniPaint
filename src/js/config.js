@@ -99,6 +99,9 @@ config.TOOLS = [
 	},
 	{
 		name: 'pencil',
+		attributes: {
+			size: 1,
+		},
 	},
 	{
 		name: 'pick_color',
