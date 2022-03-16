@@ -101,6 +101,7 @@ config.TOOLS = [
 		name: 'pencil',
 		attributes: {
 			size: 1,
+			pressure: false,
 		},
 	},
 	{

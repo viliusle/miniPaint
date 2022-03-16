@@ -114,7 +114,7 @@ class Pencil_class extends Base_tools_class {
 		var size = params.size;
 		var new_size = size;
 
-		if (this.pressure_supported) {
+		if (params.pressure == true && this.pressure_supported) {
 			new_size = size * this.pointer_pressure * 2;
 		}
 
@@ -139,7 +139,7 @@ class Pencil_class extends Base_tools_class {
 		var size = params.size;
 		var new_size = size;
 
-		if (this.pressure_supported) {
+		if (params.pressure == true && this.pressure_supported) {
 			new_size = size * this.pointer_pressure * 2;
 		}
 
