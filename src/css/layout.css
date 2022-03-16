@@ -429,6 +429,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	color:var(--text-color);
 	white-space: nowrap;
 }
+.layers_list .item.shorter .layer_name{
+	width: calc(100% - 63px);
+}
 .layers_list .item.active .layer_name{
 	background-color: var(--background-color-active);
 	color: var(--text-color-active);

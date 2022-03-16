@@ -141,11 +141,15 @@ class GUI_layers_class {
 		if (config.layer) {
 			for (var i in layers) {
 				var value = layers[i];
+				var class_extra = '';
+				if(value.composition === 'source-atop'){
+					class_extra += ' shorter';
+				}
+				if (value.id == config.layer.id){
+					class_extra += ' active';
+				}
 
-				if (value.id == config.layer.id)
-					html += '<div class="item active">';
-				else
-					html += '<div class="item">';
+				html += '<div class="item ' + class_extra + '">';
 				if (value.visible == true)
 					html += '	<button class="visibility visible" id="visibility" data-id="' + value.id + '" title="Hide"></button>';
 				else
