@@ -10,11 +10,6 @@ class Layer_flatten_class {
 	}
 
 	flatten() {
-		if (config.layers.length == 1) {
-			alertify.error('Needs at least 2 layers.');
-			return;
-		}
-
 		//create tmp canvas
 		var canvas = document.createElement('canvas');
 		canvas.width = config.WIDTH;

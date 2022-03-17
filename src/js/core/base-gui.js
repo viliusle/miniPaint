@@ -222,6 +222,10 @@ class Base_gui_class {
 			}
 			return undefined;
 		});
+
+		document.getElementById('canvas_minipaint').addEventListener('contextmenu', function (e) {
+			e.preventDefault();
+		}, false);
 	}
 
 	check_canvas_offset() {

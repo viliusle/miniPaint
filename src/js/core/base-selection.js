@@ -147,6 +147,14 @@ class Base_selection_class {
 		return settings;
 	}
 
+	calcRotateDistanceFromX(layerW) {
+		const block_size = handle_size / config.ZOOM;
+	
+		return Math.max(
+		  Math.min(layerW * 0.9, Math.abs(layerW - 2 * block_size)),
+		  layerW / 2 - block_size / 2
+		);
+	}
 	/**
 	 * marks object as selected, and draws corners
 	 */
@@ -295,8 +303,8 @@ class Base_selection_class {
 				|| (settings.data.hide_selection_if_active === true && settings.data.type == config.TOOL.name)) {
 				return;
 			}
-
-			var r_x = x + w * 0.9 + corner_offset + wholeLineWidth;
+			
+			var r_x = x + this.calcRotateDistanceFromX(w) + corner_offset + wholeLineWidth;
 			var r_y = y - corner_offset - wholeLineWidth;
 			var r_dx =  hitsRightEdge ? -0.5 : 0;
 			var r_dy = hitsTopEdge ? 0.5 : 0;
@@ -320,7 +328,7 @@ class Base_selection_class {
 			};
 
 		};
-		if (settings.enable_rotation == true && w * config.ZOOM / 10 > 20) {
+		if (settings.enable_rotation == true) {
 			draw_rotation();
 		}
 
@@ -365,11 +373,6 @@ class Base_selection_class {
 		var y = settings.data.y;
 		var w = settings.data.width;
 		var h = settings.data.height;
-
-		var is_rotated = false;
-		if (settings.data != null && settings.data.rotate != null && settings.data.rotate > 0) {
-			is_rotated = true;
-		}
 
 		//simplify checks
 		var event_type = e.type;
@@ -428,7 +431,7 @@ class Base_selection_class {
 
 			if(drag_type == 'rotate'){
 				//rotate
-				var dx = (x + w * 0.9) - (x + w / 2);
+				var dx = x + this.calcRotateDistanceFromX(w) - (x + w / 2);
 				var dy = h / 2;
 				var original_angle = Math.atan2(dy, dx) / Math.PI * 180; //compensate rotation icon angle
 
@@ -511,21 +514,18 @@ class Base_selection_class {
 				mainWrapper.style.cursor = "move";
 			}
 
-			if(is_rotated == false) {
-				for (let current_drag_type in this.selected_obj_positions) {
-					const position = this.selected_obj_positions[current_drag_type];
-
-					if (position.path && this.ctx.isPointInPath(position.path, mouse.x, mouse.y)) {
-						//match
-						if (event_type == 'mousedown') {
-							if (e.buttons == 1 || typeof e.buttons == "undefined") {
-								this.mouse_lock = 'selected_object_actions';
-								this.selected_object_drag_type = current_drag_type;
-							}
+			for (let current_drag_type in this.selected_obj_positions) {
+				const position = this.selected_obj_positions[current_drag_type];
+				if (position.path && this.ctx.isPointInPath(position.path, mouse.x, mouse.y)) {
+					// match
+					if (event_type == 'mousedown') {
+						if (e.buttons == 1 || typeof e.buttons == "undefined") {
+							this.mouse_lock = 'selected_object_actions';
+							this.selected_object_drag_type = current_drag_type;
 						}
-						if (event_type == 'mousemove') {
-							mainWrapper.style.cursor = position.cursor;
-						}
+					}
+					if (event_type == 'mousemove') {
+						mainWrapper.style.cursor = position.cursor;
 					}
 				}
 			}

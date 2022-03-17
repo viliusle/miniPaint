@@ -362,6 +362,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .canvas_preview_details{
 	padding: 0 5px;
 }
+.canvas_preview_details button{
+	margin: 0;
+}
 .preview canvas{
 	cursor: pointer;
 }
@@ -396,6 +399,7 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .layer_add{
 	display:inline-block;
 	padding:1px 8px;
+	margin-right: 10px;
 	background-color: #419147;
 	background-color: var(--background-color-active);
 	border:1px solid #444;
@@ -411,6 +415,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	display:block;
 	padding:1px 5px 3px 5px;
 	height:19px;
+	width: calc(100% - 44px);
+	text-align: left;
 	overflow:hidden;
 	background-color:#989898;
 	background-color: var(--area-background-color);
@@ -423,9 +429,31 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	color:var(--text-color);
 	white-space: nowrap;
 }
+.layers_list .item.shorter .layer_name{
+	width: calc(100% - 63px);
+}
 .layers_list .item.active .layer_name{
 	background-color: var(--background-color-active);
 	color: var(--text-color-active);
+}
+.layers_list .arrow_down{
+	position: relative;
+	float:left;
+	margin-right: 5px;
+	width:10px;
+	height:19px;
+	opacity: 0.4;
+}
+.layers_list .arrow_down:after{
+	position: absolute;
+	content: '';
+	left:0;
+	top:0;
+	bottom:0;
+	right:0;
+	filter: var(--menu-icons-filter);
+	background: url('images/icons/arrow-down.svg') no-repeat center center;
+	background-size: 12px auto;
 }
 .layers_list .visibility{
 	position: relative;
@@ -436,6 +464,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width:20px;
 	height:19px;
 	opacity:0.1;
+	border: none;
+	background: transparent;
+	box-shadow: none;
 }
 .layers_list .visibility:after{
 	position: absolute;
@@ -456,8 +487,10 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width:12px;
 	height:19px;
 	margin-left: 5px;
-	background: url(images/icons/delete.svg) no-repeat center center;
+	background: transparent url(images/icons/delete.svg) no-repeat center center;
 	background-size: 10px 10px;
+	border: none;
+	box-shadow: none;
 }
 /* filters */
 .layers_list .filters{

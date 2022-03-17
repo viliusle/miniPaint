@@ -44,7 +44,7 @@ import Base_gui_class from './../core/base-gui.js';
 import Tools_translate_class from './../modules/tools/translate.js';
 
 var template = `
-	<button type="button" class="close" data-id="popup_close">&times;</button>
+	<button type="button" class="close" data-id="popup_close" title="Close">&times;</button>
 	<div data-id="pretitle_area"></div>
 	<span class="text_muted right" data-id="popup_comment"></span>
 	<h2 class="trn" data-id="popup_title"></h2>

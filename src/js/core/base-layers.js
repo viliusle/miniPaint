@@ -176,7 +176,9 @@ class Base_layers_class {
 				config.WIDTH
 			);
 
-			this.renderObjects(this.ctx, newCanvas, layers_sorted);
+			this.renderObjects(this.ctx, newCanvas, layers_sorted, ()=>{
+				this.ctx.save();
+			});
 
 			//grid
 			this.Base_gui.draw_grid(this.ctx);
@@ -244,21 +246,21 @@ class Base_layers_class {
 	 * @param {canvas.context} ctx - Main canvas context where it needs to be rendered
 	 * @param {canvas} tempCanvas - A temporary canvas which is a copy of the original canvas, but will be used if there will be needed to isolate an effect from others
 	 * @param {Object[]} layers - Array of layers
-	 * @param {Function} prepare - An optional function to prepare temporary canvas before the render if needed
+	 * @param {Function} prepare - An optional function to prepare temporary and main canvases before the render if needed
 	 * @param {Function} shouldSkip - An optional boolean function for skipping those layers which are not needed to be rendered
 	 */
 	renderObjects(ctx, tempCanvas, layers, prepare, shouldSkip) {
 		const tempCtx = tempCanvas.getContext("2d");
-		let hasSourceAtopLayer = false;
-
 		// Prepare the temporary canvas if needed
-		prepare && prepare(tempCtx);
-		this.ctx.save();
-
+		prepare && prepare();
+		
 		for (var i = layers.length - 1; i >= 0; i--) {
 			var layer = layers[i];
 			const nextLayer = layers[i - 1];
 
+			// If the previous layer has clip masking effect and the current one is not the other end of the pair,
+			// then render the temporary canvas for clip masking on top of the current.
+			
 			// Skip the layer if not needed to be rendered
 			if (shouldSkip && shouldSkip(layer)) {
 				continue;
@@ -271,7 +273,6 @@ class Base_layers_class {
 				layer.composition === "source-atop" ||
 				(nextLayer && nextLayer.composition === "source-atop")
 			) {
-				hasSourceAtopLayer = true;
 				// Apply the effect in a isolated temporary canvas
 				tempCtx.globalAlpha = layer.opacity / 100;
 				tempCtx.globalCompositeOperation = layer.composition;
@@ -290,7 +291,20 @@ class Base_layers_class {
 						filters,
 					});
 				} else {
+					// If we are in this condition, then it means this is the last layer of clipped layers pair.
+					// Render clipped layers on the temporary canvas
 					this.render_object(tempCtx, layer);
+					
+					// Render the clipped layers on top of the current canvas
+					ctx.restore();
+					ctx.drawImage(tempCanvas, 0, 0);
+
+					
+					// Prepare canvas to since we called restore
+					prepare && prepare();
+					// Clear temporary canvas 
+					tempCtx.globalCompositeOperation = null;
+					tempCtx.clearRect(0, 0, 1200, 1200);
 				}
 			} else {
 				ctx.globalAlpha = layer.opacity / 100;
@@ -299,10 +313,6 @@ class Base_layers_class {
 			}
 		}
 
-		if (hasSourceAtopLayer) {
-			ctx.restore();
-			ctx.drawImage(tempCanvas, 0, 0);
-		}
 	}
 
 	render_preview(layers) {
@@ -312,12 +322,13 @@ class Base_layers_class {
 		this.ctx_preview.save();
 		this.ctx_preview.clearRect(0, 0, w, h);
 
-		//prepare scale
-		this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 
 		const newCanvas = this.createNewCanvas(this.ctx_preview);
-		this.renderObjects(this.ctx_preview, newCanvas, layers, (tempCtx) => {
-			tempCtx.scale(w / config.WIDTH, h / config.HEIGHT);
+		newCanvas.getContext("2d").scale(w / config.WIDTH, h / config.HEIGHT);
+		this.renderObjects(this.ctx_preview, newCanvas, layers, () => {
+			this.ctx_preview.save();
+			//prepare scale
+			this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
 		});
 
 		this.ctx_preview.restore();
@@ -708,7 +719,9 @@ class Base_layers_class {
 			ctx.canvas.height
 		);
 		const layers_sorted = this.get_sorted_layers();
-		this.renderObjects(ctx, newCanvas, layers_sorted, null, (value) => {
+		this.renderObjects(ctx, newCanvas, layers_sorted, ()=>{
+			ctx.save();
+		}, (value) => {
 			if (value.visible == false || value.type == null) {
 				return true;
 			}
