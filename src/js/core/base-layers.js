@@ -229,7 +229,7 @@ class Base_layers_class {
 
 	/**
 	 * Creates a fresh new canvas with the same height and width as the provided one
-	 * @param {canvas.context} ctxOrWidth - Either an existing canvas's context to reference width and height from, or a numeric width to use.
+	 * @param {canvas.context | number} ctxOrWidth - Either an existing canvas's context to reference width and height from, or a numeric width to use.
 	 * @param {number} [height] - Numeric height of the new canvas, if the first argument is width.
 	 */
 	create_new_canvas(ctxOrWidth, height) {
