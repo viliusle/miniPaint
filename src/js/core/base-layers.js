@@ -170,13 +170,13 @@ class Base_layers_class {
 
 			zoomView.apply();
 
-			const newCanvas = this.createNewCanvas(
-				this.ctx,
-				config.HEIGHT,
-				config.WIDTH
+			const newCanvas = this.create_new_canvas(
+				null,
+				config.WIDTH,
+				config.HEIGHT
 			);
 
-			this.renderObjects(this.ctx, newCanvas, layers_sorted, ()=>{
+			this.render_objects(this.ctx, newCanvas, layers_sorted, ()=>{
 				this.ctx.save();
 			});
 
@@ -229,16 +229,42 @@ class Base_layers_class {
 	}
 
 	/**
-	 * Creates a fresh new canvas with the same height and width as the provided one
-	 * @param {canvas.context} ctx
-	 * @param {number} [h]
-	 * @param {number} [w]
+	 * LEGACY: use create_new_canvas();
 	 */
 	createNewCanvas(ctx, h, w) {
+		this.create_new_canvas(ctx, w, h);
+	}
+
+	/**
+	 * Creates a fresh new canvas with the same height and width as the provided one
+	 * @param {canvas.context|null} ctx
+	 * @param {number} [width]
+	 * @param {number} [height]
+	 */
+	create_new_canvas(ctx, width, height) {
 		const newCanvas = document.createElement("canvas");
-		newCanvas.height = h || ctx.canvas.height;
-		newCanvas.width = w || ctx.canvas.width;
+		if(width){
+			newCanvas.width = width;
+		}
+		else{
+			newCanvas.width = ctx.canvas.width;
+		}
+
+		if(height){
+			newCanvas.height = height;
+		}
+		else{
+			newCanvas.height = ctx.canvas.height;
+		}
+
 		return newCanvas;
+	}
+
+	/**
+	 * LEGACY: use render_objects()
+	 */
+	renderObjects(ctx, tempCanvas, layers, prepare, shouldSkip) {
+		this.render_objects(ctx, tempCanvas, layers, prepare, shouldSkip);
 	}
 
 	/**
@@ -249,7 +275,7 @@ class Base_layers_class {
 	 * @param {Function} prepare - An optional function to prepare temporary and main canvases before the render if needed
 	 * @param {Function} shouldSkip - An optional boolean function for skipping those layers which are not needed to be rendered
 	 */
-	renderObjects(ctx, tempCanvas, layers, prepare, shouldSkip) {
+	render_objects(ctx, tempCanvas, layers, prepare, shouldSkip) {
 		const tempCtx = tempCanvas.getContext("2d");
 		// Prepare the temporary canvas if needed
 		prepare && prepare();
@@ -304,7 +330,7 @@ class Base_layers_class {
 					prepare && prepare();
 					// Clear temporary canvas 
 					tempCtx.globalCompositeOperation = null;
-					tempCtx.clearRect(0, 0, 1200, 1200);
+					tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 				}
 			} else {
 				ctx.globalAlpha = layer.opacity / 100;
@@ -322,10 +348,9 @@ class Base_layers_class {
 		this.ctx_preview.save();
 		this.ctx_preview.clearRect(0, 0, w, h);
 
-
-		const newCanvas = this.createNewCanvas(this.ctx_preview);
+		const newCanvas = this.create_new_canvas(this.ctx_preview);
 		newCanvas.getContext("2d").scale(w / config.WIDTH, h / config.HEIGHT);
-		this.renderObjects(this.ctx_preview, newCanvas, layers, () => {
+		this.render_objects(this.ctx_preview, newCanvas, layers, () => {
 			this.ctx_preview.save();
 			//prepare scale
 			this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
@@ -713,13 +738,9 @@ class Base_layers_class {
 	 * @param {boolean} is_preview Optional
 	 */
 	convert_layers_to_canvas(ctx, layer_id = null, is_preview = true) {
-		const newCanvas = this.createNewCanvas(
-			ctx,
-			ctx.canvas.width,
-			ctx.canvas.height
-		);
+		const newCanvas = this.create_new_canvas(ctx);
 		const layers_sorted = this.get_sorted_layers();
-		this.renderObjects(ctx, newCanvas, layers_sorted, ()=>{
+		this.render_objects(ctx, newCanvas, layers_sorted, ()=>{
 			ctx.save();
 		}, (value) => {
 			if (value.visible == false || value.type == null) {
