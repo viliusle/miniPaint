@@ -8,6 +8,7 @@ import Clipboard_class from './../../libs/clipboard.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
+import semver_compare from './../../../../node_modules/semver-compare/';
 
 var instance = null;
 
@@ -498,11 +499,11 @@ class File_open_class {
 		else
 			json = data;
 		if (json.info.version == undefined) {
-			json.info.version = "3";
+			json.info.version = "3.0.0";
 		}
 
 		//migration
-		if (json.info.version < "4") {
+		if(semver_compare(json.info.version, '4.0.0') < 0) {
 			//convert from v3 to v4
 			for (var i in json.layers) {
 				//layers data
@@ -533,7 +534,7 @@ class File_open_class {
 				);
 			}
 		}
-		if(json.info.version < "4.5.0"){
+		if(semver_compare(json.info.version, '4.5.0') < 0) {
 			//migrate "rectangle", "circle" and "line" types to "shape"
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
@@ -549,7 +550,7 @@ class File_open_class {
 					json.layers[i].params.border_size = json.layers[i].params.size;
 					delete json.layers[i].params.size;
 
-					if(json.layers[i].params.fill == true){
+					if(json.layers[i].params.fill == true) {
 						json.layers[i].params.border = false;
 					}
 					else{
@@ -567,7 +568,7 @@ class File_open_class {
 				}
 			}
 		}
-		if(json.info.version < "4.8.0"){
+		if(semver_compare(json.info.version, '4.8.0') < 0) {
 			//migrate "borders" layer to rectangle
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
@@ -640,7 +641,12 @@ class File_open_class {
 			config.guides = json.info.guides;
 		}
 		actions.push(
-			new app.Actions.Set_object_property_action(this.Base_layers, 'auto_increment', max_id_order + 1)
+			new app.Actions.Set_object_property_action(this.Base_layers, 'auto_increment', max_id_order + 1),
+			new app.Actions.Update_config_action({
+				WIDTH: parseInt(json.info.width),
+				HEIGHT: parseInt(json.info.height),
+			}),
+			new app.Actions.Prepare_canvas_action('do')
 		);
 		await app.State.do_action(
 			new app.Actions.Bundle_action('open_json_file', 'Open JSON File', actions)
