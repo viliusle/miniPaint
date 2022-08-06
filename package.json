@@ -44,6 +44,7 @@
     "hermite-resize": "git+https://github.com/viliusle/Hermite-resize.git",
     "jquery": "^3.5.1",
     "pica": "^7.0.0",
+    "semver-compare": "^1.0.0",
     "uuid": "^8.3.2",
     "webfontloader": "^1.6.28"
   }
