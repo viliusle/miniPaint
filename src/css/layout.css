@@ -300,7 +300,7 @@ body .sp-preview{
 }
 
 /*
-IMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated !!!
+IMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED
  */
 .sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }
 .sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }
