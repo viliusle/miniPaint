@@ -21,6 +21,7 @@ class Select_tool_class extends Base_tools_class {
 		this.moving = false;
 		this.resizing = false;
 		this.snap_line_info = {x: null, y: null};
+		this.rotate_initial = null;
 
 		var sel_config = {
 			enable_background: false,
@@ -139,6 +140,8 @@ class Select_tool_class extends Base_tools_class {
 		if (mouse.click_valid == false)
 			return;
 
+		this.rotate_initial = config.layer.rotate;
+
 		if (this.Base_selection.mouse_lock != null) {
 			this.resizing = true;
 			this.Base_selection.find_settings().keep_ratio = config.layer.type === 'image';
@@ -169,6 +172,13 @@ class Select_tool_class extends Base_tools_class {
 			return;
 		}
 		if (this.resizing) {
+
+			//also handle rotation
+			let rotate = this.Base_selection.current_angle
+			if(config.layer.rotate != rotate && rotate !== null){
+				config.layer.rotate = rotate;
+			}
+
 			return;
 		}
 		else if (this.moving) {
@@ -201,6 +211,8 @@ class Select_tool_class extends Base_tools_class {
 			let y = config.layer.y;
 			let width = config.layer.width;
 			let height = config.layer.height;
+
+			//reset values
 			config.layer.x = this.mousedown_dimensions.x;
 			config.layer.y = this.mousedown_dimensions.y;
 			config.layer.width = this.mousedown_dimensions.width;
@@ -213,6 +225,20 @@ class Select_tool_class extends Base_tools_class {
 					new app.Actions.Bundle_action('resize_layer', 'Resize Layer', [
 						new app.Actions.Update_layer_action(config.layer.id, {
 							x, y, width, height
+						})
+					])
+				);
+			}
+
+			//also handle rotation
+			let rotate = this.Base_selection.current_angle;
+			if(this.rotate_initial != rotate && rotate !== null){
+				//save state
+				config.layer.rotate = this.rotate_initial;
+				app.State.do_action(
+					new app.Actions.Bundle_action('resize_layer', 'Resize Layer', [
+						new app.Actions.Update_layer_action(config.layer.id, {
+							rotate
 						})
 					])
 				);
