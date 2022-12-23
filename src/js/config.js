@@ -288,18 +288,8 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: true,
-			fill: true,
-			border_color: '#555555',
-			fill_color: '#aaaaaa',
-		},
-	},
-	{
-		name: 'star24',
-		title: '24-Points star',
-		visible: false,
-		attributes: {
-			border_size: 4,
+			corners: 5,
+			inner_radius: 40,
 			border: true,
 			fill: true,
 			border_color: '#555555',

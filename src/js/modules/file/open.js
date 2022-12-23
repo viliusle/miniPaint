@@ -589,6 +589,24 @@ class File_open_class {
 				}
 			}
 		}
+		if(semver_compare(json.info.version, '4.11.0') < 0) {
+			//migrate star and star24 objects
+			for (var i in json.layers) {
+				var old_type = json.layers[i].type;
+
+				if(old_type == 'star' && typeof json.layers[i].params.corners == "undefined"){
+					json.layers[i].params.corners = 5;
+					json.layers[i].params.inner_radius = 40;
+					json.layers[i].render_function = ["star", "render"];
+				}
+				else if(old_type == 'star24'){
+					json.layers[i].type = 'star';
+					json.layers[i].params.corners = 24;
+					json.layers[i].params.inner_radius = 80;
+					json.layers[i].render_function = ["star", "render"];
+				}
+			}
+		}
 
 		const actions = [];
 
