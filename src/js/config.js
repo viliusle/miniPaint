@@ -493,6 +493,18 @@ config.TOOLS = [
 			delay: 400,
 		},
 	},
+	{
+		name: 'polygon',
+		visible: false,
+		attributes: {
+			size: 4,
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
 ];
 
 //link to active tool

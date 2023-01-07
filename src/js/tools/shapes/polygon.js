@@ -4,14 +4,14 @@ import Base_tools_class from './../../core/base-tools.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 
-class Bezier_Curve_class extends Base_tools_class {
+class Polygon_class extends Base_tools_class {
 
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.ctx = ctx;
-		this.name = 'bezier_curve';
+		this.name = 'polygon';
 		this.layer = {};
 		this.best_ratio = 1;
 		this.snap_line_info = {x: null, y: null};
@@ -28,12 +28,10 @@ class Bezier_Curve_class extends Base_tools_class {
 		var _this = this;
 		this.default_events();
 		document.addEventListener('keydown', function (event) {
-			if (config.TOOL.name != _this.name) {
-				return;
-			}
 			var code = event.code;
-			if (code == "Escape") {
+			if (config.TOOL.name == _this.name && code == "Escape") {
 				//escape
+				config.layer.status = null;
 			}
 		});
 	}
@@ -86,19 +84,14 @@ class Bezier_Curve_class extends Base_tools_class {
 			}
 		}
 
-		const data_clone = JSON.parse(JSON.stringify(config.layer.data));
-
 		if (config.layer.type != this.name || params_hash != this.params_hash
-			|| (data_clone != null && data_clone.cp2.x !== null)) {
+			|| (config.layer.data != null && config.layer.status != 'draft')) {
 			//register new object - current layer is not ours or params changed
 			this.layer = {
 				type: this.name,
-				data: {
-					start: {x: mouse_x, y: mouse_y},
-					cp1: {x: null, y: null},
-					cp2: {x: null, y: null},
-					end: {x: null, y: null}
-				},
+				data: [
+					{x: mouse_x, y: mouse_y}
+				],
 				params: this.clone(this.getParams()),
 				render_function: [this.name, 'render'],
 				x: 0,
@@ -112,7 +105,7 @@ class Bezier_Curve_class extends Base_tools_class {
 				status: 'draft',
 			};
 			app.State.do_action(
-				new app.Actions.Bundle_action('new_bezier_layer', 'New Bezier Layer', [
+				new app.Actions.Bundle_action('new_polygon_layer', 'New Polygon Layer', [
 					new app.Actions.Insert_layer_action(this.layer)
 				])
 			);
@@ -120,8 +113,9 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 		else {
 			//add more data
-			config.layer.data.end.x = mouse_x;
-			config.layer.data.end.y = mouse_y;
+			config.layer.data.push(
+				{x: mouse_x, y: mouse_y}
+			);
 		}
 
 		this.Base_layers.render();
@@ -151,15 +145,7 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 
 		//add more data
-		if(config.layer.data.end.x === null){
-			//still first step
-			config.layer.data.cp1.x = mouse_x;
-			config.layer.data.cp1.y = mouse_y;
-		}
-		else{
-			config.layer.data.cp2.x = mouse_x;
-			config.layer.data.cp2.y = mouse_y;
-		}
+		config.layer.data[config.layer.data.length - 1] = {x: mouse_x, y: mouse_y};
 
 		this.Base_layers.render();
 	}
@@ -186,16 +172,7 @@ class Bezier_Curve_class extends Base_tools_class {
 		this.snap_line_info = {x: null, y: null};
 
 		//add more data
-		if(config.layer.data.end.x === null){
-			//still first step
-			config.layer.data.cp1.x = mouse_x;
-			config.layer.data.cp1.y = mouse_y;
-		}
-		else{
-			config.layer.data.cp2.x = mouse_x;
-			config.layer.data.cp2.y = mouse_y;
-			config.layer.status = null;
-		}
+		config.layer.data[config.layer.data.length - 1] = {x: mouse_x, y: mouse_y};
 
 		this.Base_layers.render();
 	}
@@ -204,56 +181,24 @@ class Bezier_Curve_class extends Base_tools_class {
 		var ctx = this.Base_layers.ctx;
 		this.render_overlay_parent(ctx);
 
+		if(config.TOOL.name != 'select'){
+			return;
+		}
+
 		//also draw control lines
 		if(config.layer.type == this.name){
-			var bezier = config.layer.data;
+			var data = config.layer.data;
 			this.selected_obj_positions = {};
 
-			var x = config.layer.x;
-			var y = config.layer.y;
-
 			//draw corners
-			if (bezier.start.x != null) {
-				this.Helper.draw_special_line(
+			for(var i in data) {
+				var point = data[i];
+
+				this.selected_obj_positions[i] = this.Helper.draw_control_point(
 					this.ctx,
-					x + bezier.start.x,
-					y + bezier.start.y,
-					x + bezier.cp1.x,
-					y + bezier.cp1.y
+					config.layer.x + point.x,
+					config.layer.y + point.y
 				);
-				if(config.TOOL.name == 'select') {
-					this.selected_obj_positions.cp1_start = this.Helper.draw_control_point(
-						this.ctx,
-						x + bezier.start.x,
-						y + bezier.start.y
-					);
-					this.selected_obj_positions.cp1_end = this.Helper.draw_control_point(
-						this.ctx,
-						x + bezier.cp1.x,
-						y + bezier.cp1.y
-					);
-				}
-			}
-			if (bezier.end.x != null && bezier.cp2.x != null) {
-				this.Helper.draw_special_line(
-					this.ctx,
-					x + bezier.end.x,
-					y + bezier.end.y,
-					x + bezier.cp2.x,
-					y + bezier.cp2.y
-				);
-				if(config.TOOL.name == 'select') {
-					this.selected_obj_positions.cp2_start = this.Helper.draw_control_point(
-						this.ctx,
-						x + bezier.end.x,
-						y + bezier.end.y
-					);
-					this.selected_obj_positions.cp2_end = this.Helper.draw_control_point(
-						this.ctx,
-						x + bezier.cp2.x,
-						y + bezier.cp2.y
-					);
-				}
 			}
 		}
 	}
@@ -263,45 +208,72 @@ class Bezier_Curve_class extends Base_tools_class {
 	}
 
 	demo(ctx, x, y, width, height) {
-		var data = {
-			start: {x: x, y: y},
-			cp1: {x: x + width, y: y},
-			cp2: {x: x, y: y + height},
-			end: {x: x + width, y: y + height}
-		};
+		ctx.fillStyle = '#aaa';
+		ctx.strokeStyle = '#555';
+		ctx.lineWidth = 2;
 
-		this.draw_bezier(ctx, 0, 0, data, 2, '#555');
+		var width_all = width + x * 2;
+		width = height * this.best_ratio;
+		x = (width_all - width) / 2;
+
+		var data = [
+			{x: 0, y: 0},
+			{x: width, y: 0},
+			{x: width * 1.1, y: height * 2 / 3},
+			{x: width / 2, y: height / 3},
+			{x: -1 * width * 0.2, y: height},
+		];
+
+		ctx.save();
+		ctx.translate(x + width / 2, y + height / 2);
+		this.draw_polygon(ctx, -width / 2, -height / 2, width, height, data);
+		ctx.restore();
 	}
 
 	render(ctx, layer) {
 		var params = layer.params;
-		this.draw_bezier(ctx, layer.x, layer.y, layer.data, params.size, layer.color);
+
+		ctx.save();
+
+		//set styles
+		ctx.strokeStyle = 'transparent';
+		ctx.fillStyle = 'transparent';
+		if(params.border)
+			ctx.strokeStyle = params.border_color;
+		if(params.fill)
+			ctx.fillStyle = params.fill_color;
+		ctx.lineWidth = params.border_size;
+
+		//draw with rotation support
+		ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+		ctx.rotate(layer.rotate * Math.PI / 180);
+		this.draw_polygon(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, layer.data);
+
+		ctx.restore();
 	}
 
-	draw_bezier(ctx, x, y, data, lineWidth, color) {
-		if(data.end.x == null || data.cp2.x == null){
+	draw_polygon(ctx, x, y, width, height, data) {
+		if(data.length == 0){
 			return;
 		}
 
-		//set styles
-		ctx.fillStyle = color;
-		ctx.strokeStyle = color;
-		ctx.lineWidth = lineWidth;
-		ctx.lineCap = 'round';
-
-		//draw bezier
+		//draw
 		ctx.beginPath();
-		ctx.moveTo(x + data.start.x, y + data.start.y);
-		ctx.bezierCurveTo(
-			x + data.cp1.x, y + data.cp1.y,
-			x + data.cp2.x, y + data.cp2.y,
-			x + data.end.x, y + data.end.y
-		);
+		for(var i in data) {
+			if(i == 0){
+				ctx.moveTo(x + data[i].x, y + data[i].y);
+			}
+			else{
+				ctx.lineTo(x + data[i].x, y + data[i].y);
+			}
+		}
+		ctx.closePath();
+		ctx.fill()
 		ctx.stroke();
 	}
 
 	selected_object_actions(e) {
-		if(config.TOOL.name != 'select' || config.layer.type != this.name || config.layer.status == 'draft'){
+		if(config.TOOL.name != 'select' || config.layer.type != this.name){
 			return;
 		}
 
@@ -339,22 +311,10 @@ class Bezier_Curve_class extends Base_tools_class {
 				var dy = Math.round(mouse.y - mouse.click_y) - config.layer.y;
 
 				// Set values
-				if(type == 'cp1_start') {
-					bezier.start.x = mouse.click_x + dx;
-					bezier.start.y = mouse.click_y + dy;
-				}
-				else if(type == 'cp1_end') {
-					bezier.cp1.x = mouse.click_x + dx;
-					bezier.cp1.y = mouse.click_y + dy;
-				}
-				else if(type == 'cp2_start') {
-					bezier.end.x = mouse.click_x+ dx;
-					bezier.end.y = mouse.click_y + dy;
-				}
-				else if(type == 'cp2_end') {
-					bezier.cp2.x = mouse.click_x + dx;
-					bezier.cp2.y = mouse.click_y + dy;
-				}
+				config.layer.data[type] = {
+					x: mouse.click_x + dx,
+					y: mouse.click_y + dy
+				};
 
 				config.need_render = true;
 			}
@@ -362,7 +322,6 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 		if (event_type == 'mouseup' && this.mouse_lock == 'move_point') {
 			this.mouse_lock = null;
-			var type = this.selected_object_drag_type;
 			var bezier = config.layer.data;
 
 			//reset sate
@@ -407,4 +366,4 @@ class Bezier_Curve_class extends Base_tools_class {
 
 }
 
-export default Bezier_Curve_class;
+export default Polygon_class;
