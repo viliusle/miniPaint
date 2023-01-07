@@ -637,6 +637,35 @@ class Helper_class {
 	}
 
 	/**
+	 * draws control point that is visible on white and black backgrounds.
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @returns {Path2D}
+	 */
+	draw_control_point(ctx, x, y) {
+		var dx = 0;
+		var dy = 0;
+		var block_size = 12 / config.ZOOM;
+		const wholeLineWidth = 2 / config.ZOOM;
+
+		ctx.strokeStyle = "#000000";
+		ctx.fillStyle = "#ffffff";
+		ctx.lineWidth = wholeLineWidth;
+
+		//create path
+		const circle = new Path2D();
+		circle.arc(x + dx * block_size, y + dy * block_size, block_size / 2, 0, 2 * Math.PI);
+
+		//draw
+		ctx.fill(circle);
+		ctx.stroke(circle);
+
+		return circle;
+	}
+
+	/**
 	 * converts internal unit (pixel) to user defined
 	 *
 	 * @param data

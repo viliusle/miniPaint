@@ -137,8 +137,9 @@ class Select_tool_class extends Base_tools_class {
 
 	async mousedown(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.click_valid == false)
+		if (mouse.click_valid == false || config.mouse_lock === true) {
 			return;
+		}
 
 		this.rotate_initial = config.layer.rotate;
 
@@ -166,9 +167,7 @@ class Select_tool_class extends Base_tools_class {
 
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.is_drag == false)
-			return;
-		if (mouse.click_valid == false) {
+		if (mouse.is_drag == false || mouse.click_valid == false || config.mouse_lock === true) {
 			return;
 		}
 		if (this.resizing) {
@@ -203,7 +202,7 @@ class Select_tool_class extends Base_tools_class {
 
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
-		if (mouse.click_valid == false) {
+		if (mouse.click_valid == false || config.mouse_lock === true) {
 			return;
 		}
 		if (this.resizing) {
@@ -280,6 +279,21 @@ class Select_tool_class extends Base_tools_class {
 	render_overlay(ctx){
 		var ctx = this.Base_layers.ctx;
 		var mouse = this.get_mouse_info(event);
+
+		//maybe related tool have additional overlay render handlers?
+		if(config.layer.render_function != null) {
+			var render_class = config.layer.render_function[0];
+			var render_function = 'select';
+			if (
+				typeof this.Base_gui.GUI_tools.tools_modules[render_class].object[
+					render_function
+					] != "undefined"
+			) {
+				this.Base_gui.GUI_tools.tools_modules[render_class].object[
+					render_function
+					](this.ctx);
+			}
+		}
 
 		if (mouse.is_drag == false)
 			return;

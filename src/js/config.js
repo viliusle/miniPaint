@@ -21,6 +21,7 @@ config.layer = null;
 config.need_render = false;
 config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
+config.mouse_lock = null;
 config.swatches = {
 	default: [] // Only default used right now, object format for swatch swapping in future.
 };
@@ -344,6 +345,13 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			fill_color: '#555555',
+		},
+	},
+	{
+		name: 'bezier_curve',
+		visible: false,
+		attributes: {
+			size: 4,
 		},
 	},
 	{
