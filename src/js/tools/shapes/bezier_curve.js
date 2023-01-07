@@ -19,6 +19,7 @@ class Bezier_Curve_class extends Base_tools_class {
 		this.selected_obj_positions = {};
 		this.mouse_lock = null;
 		this.selected_object_drag_type = null;
+		this.old_data = null;
 
 		this.events();
 	}
@@ -119,17 +120,8 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 		else {
 			//add more data
-			const data_clone = JSON.parse(JSON.stringify(config.layer.data));
-			data_clone.end.x = mouse_x;
-			data_clone.end.y = mouse_y;
-
-			app.State.do_action(
-				new app.Actions.Bundle_action('update_bezier_layer', 'Update Bezier Layer', [
-					new app.Actions.Update_layer_action(config.layer.id, {
-						data: data_clone
-					})
-				])
-			);
+			config.layer.data.end.x = mouse_x;
+			config.layer.data.end.y = mouse_y;
 		}
 
 		this.Base_layers.render();
@@ -159,24 +151,15 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 
 		//add more data
-		const data_clone = JSON.parse(JSON.stringify(config.layer.data));
-		if(data_clone.end.x === null){
+		if(config.layer.data.end.x === null){
 			//still first step
-			data_clone.cp1.x = mouse_x;
-			data_clone.cp1.y = mouse_y;
+			config.layer.data.cp1.x = mouse_x;
+			config.layer.data.cp1.y = mouse_y;
 		}
 		else{
-			data_clone.cp2.x = mouse_x;
-			data_clone.cp2.y = mouse_y;
+			config.layer.data.cp2.x = mouse_x;
+			config.layer.data.cp2.y = mouse_y;
 		}
-
-		app.State.do_action(
-			new app.Actions.Bundle_action('update_bezier_layer', 'Update Bezier Layer', [
-				new app.Actions.Update_layer_action(config.layer.id, {
-					data: data_clone
-				})
-			])
-		);
 
 		this.Base_layers.render();
 	}
@@ -203,25 +186,16 @@ class Bezier_Curve_class extends Base_tools_class {
 		this.snap_line_info = {x: null, y: null};
 
 		//add more data
-		const data_clone = JSON.parse(JSON.stringify(config.layer.data));
-		if(data_clone.end.x === null){
+		if(config.layer.data.end.x === null){
 			//still first step
-			data_clone.cp1.x = mouse_x;
-			data_clone.cp1.y = mouse_y;
+			config.layer.data.cp1.x = mouse_x;
+			config.layer.data.cp1.y = mouse_y;
 		}
 		else{
-			data_clone.cp2.x = mouse_x;
-			data_clone.cp2.y = mouse_y;
+			config.layer.data.cp2.x = mouse_x;
+			config.layer.data.cp2.y = mouse_y;
 			config.layer.status = null;
 		}
-
-		app.State.do_action(
-			new app.Actions.Bundle_action('update_bezier_layer', 'Update Bezier Layer', [
-				new app.Actions.Update_layer_action(config.layer.id, {
-					data: data_clone
-				})
-			])
-		);
 
 		this.Base_layers.render();
 	}
@@ -247,18 +221,20 @@ class Bezier_Curve_class extends Base_tools_class {
 					x + bezier.cp1.x,
 					y + bezier.cp1.y
 				);
-				this.selected_obj_positions.cp1_start = this.Helper.draw_control_point(
-					this.ctx,
-					x + bezier.start.x,
-					y + bezier.start.y
-				);
-				this.selected_obj_positions.cp1_end = this.Helper.draw_control_point(
-					this.ctx,
-					x + bezier.cp1.x,
-					y + bezier.cp1.y
-				);
+				if(config.TOOL.name == 'select') {
+					this.selected_obj_positions.cp1_start = this.Helper.draw_control_point(
+						this.ctx,
+						x + bezier.start.x,
+						y + bezier.start.y
+					);
+					this.selected_obj_positions.cp1_end = this.Helper.draw_control_point(
+						this.ctx,
+						x + bezier.cp1.x,
+						y + bezier.cp1.y
+					);
+				}
 			}
-			if (bezier.end.x != null) {
+			if (bezier.end.x != null && bezier.cp2.x != null) {
 				this.Helper.draw_special_line(
 					this.ctx,
 					x + bezier.end.x,
@@ -266,16 +242,18 @@ class Bezier_Curve_class extends Base_tools_class {
 					x + bezier.cp2.x,
 					y + bezier.cp2.y
 				);
-				this.selected_obj_positions.cp2_start = this.Helper.draw_control_point(
-					this.ctx,
-					x + bezier.end.x,
-					y + bezier.end.y
-				);
-				this.selected_obj_positions.cp2_end = this.Helper.draw_control_point(
-					this.ctx,
-					x + bezier.cp2.x,
-					y + bezier.cp2.y
-				);
+				if(config.TOOL.name == 'select') {
+					this.selected_obj_positions.cp2_start = this.Helper.draw_control_point(
+						this.ctx,
+						x + bezier.end.x,
+						y + bezier.end.y
+					);
+					this.selected_obj_positions.cp2_end = this.Helper.draw_control_point(
+						this.ctx,
+						x + bezier.cp2.x,
+						y + bezier.cp2.y
+					);
+				}
 			}
 		}
 	}
@@ -301,7 +279,7 @@ class Bezier_Curve_class extends Base_tools_class {
 	}
 
 	draw_bezier(ctx, x, y, data, lineWidth, color, is_demo, layer_id) {
-		if(data.end.x == null){
+		if(data.end.x == null || data.cp2.x == null){
 			return;
 		}
 
@@ -329,6 +307,7 @@ class Bezier_Curve_class extends Base_tools_class {
 
 		var ctx = this.Base_layers.ctx;
 		var mouse = this.get_mouse_info(e);
+		const mainWrapper = document.getElementById('main_wrapper');
 
 		//simplify checks
 		var event_type = e.type;
@@ -338,18 +317,12 @@ class Bezier_Curve_class extends Base_tools_class {
 
 		if (event_type == 'mouseup') {
 			//reset
-			this.mouse_lock = null;
 			config.mouse_lock = null;
-		}
-		if (!mouse.is_drag && ['mousedown', 'mouseup'].includes(event_type)) {
-			return;
+			if (mainWrapper.style.cursor != 'default') {
+				mainWrapper.style.cursor = 'default';
+			}
 		}
 
-		const mainWrapper = document.getElementById('main_wrapper');
-		const defaultCursor = 'default';
-		if (mainWrapper.style.cursor != defaultCursor) {
-			mainWrapper.style.cursor = defaultCursor;
-		}
 		if (event_type == 'mousedown' && config.mouse.valid == false) {
 			return;
 		}
@@ -387,6 +360,30 @@ class Bezier_Curve_class extends Base_tools_class {
 			}
 			return;
 		}
+		if (event_type == 'mouseup' && this.mouse_lock == 'move_point') {
+			this.mouse_lock = null;
+			var type = this.selected_object_drag_type;
+			var bezier = config.layer.data;
+
+			//reset sate
+			config.layer.data = this.old_data;
+
+			//save state
+			app.State.do_action(
+				new app.Actions.Bundle_action('change_layer_details', 'Change Layer Details', [
+					new app.Actions.Update_layer_action(config.layer.id, {
+						data: bezier,
+					})
+				])
+			);
+
+			config.need_render = true;
+		}
+
+		if (!mouse.is_drag && ['mousedown', 'mouseup'].includes(event_type)) {
+			return;
+		}
+
 		if (!this.mouse_lock) {
 			for (let current_drag_type in this.selected_obj_positions) {
 				const position = this.selected_obj_positions[current_drag_type];
@@ -398,6 +395,7 @@ class Bezier_Curve_class extends Base_tools_class {
 							this.selected_object_drag_type = current_drag_type;
 						}
 						config.mouse_lock = true;
+						this.old_data = JSON.parse(JSON.stringify(config.layer.data));
 					}
 					if (event_type == 'mousemove') {
 						mainWrapper.style.cursor = 'move';
