@@ -479,7 +479,7 @@ class Base_gui_class {
 				theme_name = theme_cookie;
 			}
 			else {
-				theme_name = config.themes[0];
+				theme_name = this.Tools_settings.get_setting('theme');
 			}
 		}
 

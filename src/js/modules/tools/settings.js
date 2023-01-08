@@ -109,7 +109,7 @@ class Tools_settings_class {
 	 */
 	get_setting(key) {
 		var default_values = {
-			'theme': config.themes[0],
+			'theme': null,
 			'transparency': false,
 			'snap': true,
 			'guides': true,
@@ -128,6 +128,19 @@ class Tools_settings_class {
 		if(key == 'safe_search' && config.safe_search_can_be_disabled === false){
 			//not allowed
 			value = 1;
+		}
+		if(key == 'theme' && value == null) {
+			value = config.themes[0];
+			/*if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+				&& config.themes.includes('dark')) {
+				//dark mode
+				value = 'dark';
+			}
+			else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+				&& config.themes.includes('light')) {
+				//light mode
+				value = 'light';
+			}*/
 		}
 
 		//finalize values
