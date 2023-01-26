@@ -131,12 +131,25 @@ class Bezier_Curve_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
 
 		if (mouse.click_valid == false) {
 			return;
 		}
 		if (mouse.is_drag == false) {
 			return;
+		}
+
+		if (e.ctrlKey == true || e.metaKey) {
+			//one direction only
+			var width = mouse_x - click_x;
+			var height = mouse_y - click_y;
+
+			if (Math.abs(width) > Math.abs(height))
+				mouse_y = click_y;
+			else
+				mouse_x = click_x;
 		}
 
 		//apply snap
@@ -172,6 +185,19 @@ class Bezier_Curve_class extends Base_tools_class {
 
 		var mouse_x = Math.round(mouse.x);
 		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+
+		if (e.ctrlKey == true || e.metaKey) {
+			//one direction only
+			var width = mouse_x - click_x;
+			var height = mouse_y - click_y;
+
+			if (Math.abs(width) > Math.abs(height))
+				mouse_y = click_y;
+			else
+				mouse_x = click_x;
+		}
 
 		//apply snap
 		var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, config.layer.id);
@@ -306,7 +332,13 @@ class Bezier_Curve_class extends Base_tools_class {
 		}
 
 		var ctx = this.Base_layers.ctx;
+
 		var mouse = this.get_mouse_info(e);
+		var mouse_x = Math.round(mouse.x);
+		var mouse_y = Math.round(mouse.y);
+		var click_x = Math.round(mouse.click_x);
+		var click_y = Math.round(mouse.click_y);
+
 		const mainWrapper = document.getElementById('main_wrapper');
 
 		//simplify checks
@@ -342,18 +374,58 @@ class Bezier_Curve_class extends Base_tools_class {
 				if(type == 'cp1_start') {
 					bezier.start.x = mouse.click_x + dx;
 					bezier.start.y = mouse.click_y + dy;
+
+					if (e.ctrlKey == true || e.metaKey) {
+						//one direction only
+						var width = mouse_x - bezier.cp1.x;
+						var height = mouse_y - bezier.cp1.y;
+						if (Math.abs(width) > Math.abs(height))
+							bezier.start.y = bezier.cp1.y;
+						else
+							bezier.start.x = bezier.cp1.x;
+					}
 				}
 				else if(type == 'cp1_end') {
 					bezier.cp1.x = mouse.click_x + dx;
 					bezier.cp1.y = mouse.click_y + dy;
+
+					if (e.ctrlKey == true || e.metaKey) {
+						//one direction only
+						var width = mouse_x -bezier.start.x;
+						var height = mouse_y - bezier.start.y;
+						if (Math.abs(width) > Math.abs(height))
+							bezier.cp1.y = bezier.start.y;
+						else
+							bezier.cp1.x = bezier.start.x;
+					}
 				}
 				else if(type == 'cp2_start') {
 					bezier.end.x = mouse.click_x+ dx;
 					bezier.end.y = mouse.click_y + dy;
+
+					if (e.ctrlKey == true || e.metaKey) {
+						//one direction only
+						var width = mouse_x - bezier.cp2.x;
+						var height = mouse_y - bezier.cp2.y;
+						if (Math.abs(width) > Math.abs(height))
+							bezier.end.y = bezier.cp2.y;
+						else
+							bezier.end.x = bezier.cp2.x;
+					}
 				}
 				else if(type == 'cp2_end') {
 					bezier.cp2.x = mouse.click_x + dx;
 					bezier.cp2.y = mouse.click_y + dy;
+
+					if (e.ctrlKey == true || e.metaKey) {
+						//one direction only
+						var width = mouse_x - bezier.end.x;
+						var height = mouse_y -  bezier.end.y;
+						if (Math.abs(width) > Math.abs(height))
+							bezier.cp2.y = bezier.end.y;
+						else
+							bezier.cp2.x = bezier.end.x;
+					}
 				}
 
 				config.need_render = true;
