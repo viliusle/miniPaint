@@ -11,14 +11,13 @@ class Star_class extends Base_tools_class {
 		this.ctx = ctx;
 		this.name = 'star';
 		this.layer = {};
-		this.best_ratio = 1.051;
+		this.best_ratio = 1;
 		this.coords = [];
 		this.snap_line_info = {x: null, y: null};
 	}
 
 	load() {
 		this.default_events();
-		this.generate_coords();
 	}
 
 	mousedown(e) {
@@ -38,13 +37,26 @@ class Star_class extends Base_tools_class {
 		this.render_overlay_parent(ctx);
 	}
 
-	generate_coords() {
+	generate_coords(spikes, innerRadius) {
 		//settings
-		var spikes = 5;
-		var outerRadius = 53;
-		var innerRadius = 20;
+
+		innerRadius = parseInt(innerRadius) / 2;
+		innerRadius = Math.min(Math.max(innerRadius, 0), 100);
+
+		spikes = parseInt(spikes);
+		spikes = Math.max(spikes, 3);
+
+		var outerRadius = 50;
+		if(spikes == 5){
+			outerRadius = 53;
+		}
+
 		var cx = 50;
-		var cy = 55;
+
+		var cy = 50;
+		if(spikes == 5){
+			cy = 55;
+		}
 
 		var rot = Math.PI / 2 * 3;
 		var x = cx;
@@ -67,16 +79,15 @@ class Star_class extends Base_tools_class {
 	}
 
 	demo(ctx, x, y, width, height) {
-		ctx.fillStyle = '#aaa';
-		ctx.strokeStyle = '#555';
-		ctx.lineWidth = 2;
-
+		this.generate_coords(5, 40);
 		this.draw_shape(ctx, x, y, width, height, this.coords);
 	}
 
 	render(ctx, layer) {
 		var params = layer.params;
 		var fill = params.fill;
+
+		this.generate_coords(params.corners, params.inner_radius);
 
 		ctx.save();
 
@@ -95,37 +106,6 @@ class Star_class extends Base_tools_class {
 		this.draw_shape(ctx, -layer.width / 2, -layer.height / 2, layer.width, layer.height, this.coords, false);
 
 		ctx.restore();
-	}
-
-	draw_shape(ctx, x, y, width, height, coords) {
-		ctx.lineJoin = "round";
-
-		ctx.beginPath();
-
-		ctx.scale(1, 1.051);
-
-		for(var i in coords){
-			if(coords[i] === null){
-				ctx.closePath();
-				ctx.fill();
-				ctx.stroke();
-				ctx.beginPath();
-				continue;
-			}
-
-			//coords in 100x100 box
-			var pos_x = x + coords[i][0] * width / 100;
-			var pos_y = y + coords[i][1] * height / 100;
-
-			if(i == '0')
-				ctx.moveTo(pos_x, pos_y);
-			else
-				ctx.lineTo(pos_x, pos_y);
-		}
-		ctx.closePath();
-
-		ctx.fill();
-		ctx.stroke();
 	}
 
 }

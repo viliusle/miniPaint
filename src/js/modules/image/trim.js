@@ -206,6 +206,9 @@ class Image_trim_class {
 				trim_white = true;
 			}
 		}
+		if (power == undefined) {
+			power = 0;
+		}
 		var layer = this.Base_layers.get_layer(layer_id);
 
 		var canvas = this.Base_layers.convert_layer_to_canvas(layer_id, null, false);
@@ -217,8 +220,7 @@ class Image_trim_class {
 		var left = 0;
 		var bottom = 0;
 		var right = 0;
-		if (trim_white == undefined)
-			trim_white = true;
+
 		//check top
 		main1:
 			for (var y = 0; y < img.height; y++) {

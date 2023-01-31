@@ -1,3 +1,7 @@
+
+//IMPORTANT - this file is not used !!!
+
+
 // use a cacheName for cache versioning
 var cacheName = 'v1:static';
 

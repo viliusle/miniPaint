@@ -134,10 +134,12 @@ class Base_tools_class {
 		}
 
 		if (eventType === 'mousedown' || eventType === 'touchstart') {
-			if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.which != 1 && eventType !== 'touchstart'))
+			if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.which != 1 && eventType !== 'touchstart')) {
 				this.mouse_click_valid = false;
-			else
+			}
+			else {
 				this.mouse_click_valid = true;
+			}
 			this.mouse_valid = true;
 		}
 

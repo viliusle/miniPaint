@@ -38,7 +38,18 @@ class Layer_duplicate_class {
 		var params = JSON.parse(JSON.stringify(config.layer));
 		delete params.id;
 		delete params.order;
-		params.name = "Copy: " + params.name;
+
+		//generate name
+		var name_number = params.name.match(/^(.*) #([0-9]+)$/);
+		if(name_number == null){
+			//first duplicate
+			params.name = params.name + " #2";
+		}
+		else{
+			//nth duplicate - name like "query #17"
+			params.name = name_number[1] + " #" + (parseInt(name_number[2]) + 1)
+		}
+
 		if(params.x != 0 || params.y != 0 || params.width != config.WIDTH || params.height != config.HEIGHT){
 			params.x += 10;
 			params.y += 10;

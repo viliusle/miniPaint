@@ -21,6 +21,7 @@ config.layer = null;
 config.need_render = false;
 config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
 config.mouse = {};
+config.mouse_lock = null;
 config.swatches = {
 	default: [] // Only default used right now, object format for swatch swapping in future.
 };
@@ -288,18 +289,8 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			border_size: 4,
-			border: true,
-			fill: true,
-			border_color: '#555555',
-			fill_color: '#aaaaaa',
-		},
-	},
-	{
-		name: 'star24',
-		title: '24-Points star',
-		visible: false,
-		attributes: {
-			border_size: 4,
+			corners: 5,
+			inner_radius: 40,
 			border: true,
 			fill: true,
 			border_color: '#555555',
@@ -354,6 +345,13 @@ config.TOOLS = [
 		visible: false,
 		attributes: {
 			fill_color: '#555555',
+		},
+	},
+	{
+		name: 'bezier_curve',
+		visible: false,
+		attributes: {
+			size: 4,
 		},
 	},
 	{
@@ -493,6 +491,18 @@ config.TOOLS = [
 		attributes: {
 			play: false,
 			delay: 400,
+		},
+	},
+	{
+		name: 'polygon',
+		visible: false,
+		attributes: {
+			size: 4,
+			border_size: 4,
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
 		},
 	},
 ];

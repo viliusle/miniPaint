@@ -44,8 +44,7 @@ class Effects_brightness_class extends Effects_common_class {
 			params.value = params.value * diff;
 		}
 
-		return (params.x * config.ZOOM) + "px " + (params.y * config.ZOOM) + "px " + (params.value * config.ZOOM) + "px "
-			+ params.color;
+		return params.x + "px " + params.y + "px " + params.value + "px " + params.color;
 	}
 
 	demo(canvas_id, canvas_thumb){

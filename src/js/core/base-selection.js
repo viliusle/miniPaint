@@ -53,6 +53,7 @@ class Base_selection_class {
 		this.is_touch = false;
 		// True if dragging from inside canvas area
 		this.is_drag = false;
+		this.current_angle = null;
 
 		this.events();
 	}
@@ -402,6 +403,7 @@ class Base_selection_class {
 				width: settings.data.width,
 				height: settings.data.height,
 			};
+			this.current_angle = null;
 		}
 		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions' && this.is_drag) {
 
@@ -439,7 +441,9 @@ class Base_selection_class {
 				var dy = mouse.y - (y + h / 2);
 				var angle = Math.atan2(dy, dx) / Math.PI * 180 + original_angle;
 
-				settings.data.rotate = angle;
+				//settings.data.rotate = angle;
+				this.current_angle = angle;
+
 				config.need_render = true;
 			}
 			else if (e.buttons == 1 || typeof e.buttons == "undefined") {

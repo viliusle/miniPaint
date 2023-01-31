@@ -1720,6 +1720,84 @@
 				"callout",
 				"render"
 			]
+		},
+		{
+			"id": 48,
+			"parent_id": 0,
+			"name": "Bezier_curve #48",
+			"type": "bezier_curve",
+			"link": null,
+			"x": 0,
+			"y": 0,
+			"width": null,
+			"width_original": null,
+			"height": null,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": true,
+			"opacity": 100,
+			"order": 48,
+			"composition": "source-over",
+			"rotate": null,
+			"data": {
+				"start": {"x": 400, "y": 660.5},
+				"cp1": {"x": 477.5, "y": 661.5},
+				"cp2": {"x": 400, "y": 708},
+				"end": {"x": 480, "y": 707.5}
+			},
+			"params": {
+				"size": 4
+			},
+			"status": null,
+			"color": "#ff0000",
+			"filters": [],
+			"render_function": [
+				"bezier_curve",
+				"render"
+			]
+		},
+		{
+			"id": 49,
+			"parent_id": 0,
+			"name": "Polygon #49",
+			"type": "polygon",
+			"link": null,
+			"x": 0,
+			"y": 0,
+			"width": null,
+			"width_original": null,
+			"height": null,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": true,
+			"opacity": 100,
+			"order": 49,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				{"x": 950, "y": 551},
+				{"x": 950, "y": 599},
+				{"x": 900, "y": 599},
+				{"x": 935, "y": 586},
+				{"x": 915, "y": 533.2}
+			],
+			"params": {
+				"size": 4,
+				"border_size": 4,
+				"border": true,
+				"fill": true,
+				"border_color": "#555555",
+				"fill_color": "#aaaaaa"
+			},
+			"status": "draft",
+			"color": "#ff0000",
+			"filters": [],
+			"render_function": [
+				"polygon",
+				"render"
+			]
 		}
 	],
 	"data": [
