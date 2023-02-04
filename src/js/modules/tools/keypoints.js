@@ -28,15 +28,18 @@ class Tools_keypoints_class {
 
 	//generate key points for image
 	keypoints(return_data) {
-		var W = config.WIDTH;
-		var H = config.HEIGHT;
+
+		if (config.layer.type != 'image') {
+			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
+			return;
+		}
+
+		var W = config.layer.width;
+		var H = config.layer.height;
 
 		//get canvas from layer
 		var clone = this.Base_layers.convert_layer_to_canvas();
 		var ctx = clone.getContext("2d");
-
-		//get source data
-		this.Base_layers.render_object(ctx, config.layer);
 
 		//greyscale
 		var imageData = ctx.getImageData(0, 0, W, H);
