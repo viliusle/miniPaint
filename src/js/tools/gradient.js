@@ -43,7 +43,7 @@ class Gradient_class extends Base_tools_class {
 			y: mouse.y,
 			rotate: null,
 			is_vector: is_vector,
-			color: params.color_1,
+			color: null,
 			data: {
 				center_x: mouse.x,
 				center_y: mouse.y,
@@ -138,7 +138,7 @@ class Gradient_class extends Base_tools_class {
 			power = 255;
 		}
 
-		var color1 = layer.color;
+		var color1 = params.color_1;
 		var color2 = params.color_2;
 		var radial = params.radial;
 
