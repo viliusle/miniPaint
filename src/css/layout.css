@@ -514,22 +514,36 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 }
 .sidebar_right .label{
 	display: inline-block;
-	width: 60px;
 }
 .info .toggle.toggled{
 	margin-bottom: -3px;
 }
 .block.details .row{
 	clear:both;
-	margin-bottom: 2px;
+	margin-bottom: 4px;
+	min-height: 23px;
 }
 .block.details input[type="number"]{
 	width: 70px;
 	padding: 3px 5px;
+	float: right;
+}
+.block.details .ui_color_input{
+	width: 70px;
+	float: right;
+}
+.block.details .ui_color_input input{
+	width: 100%;
+	height: 23px;
+}
+.block.details button.ui_toggle_button{
+	width: 90px;
+	float: right;
 }
 .block.details select{
 	width: calc(100% - 70px);
 	height: 23px;
+	float: right;
 }
 .block.details button{
 	width: calc(100% - 70px);
@@ -539,6 +553,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .block.details button.reset{
 	position: relative;
 	width: 25px;
+	float: right;
+	margin-right: 3px;
 	overflow: hidden;
 	opacity: 0.5;
 	color: transparent;
@@ -557,6 +573,10 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .block.details button.active{
 	background-color: var(--background-color-active);
 	color: var(--text-color-active);
+}
+.details-content{
+	height: 206px;
+	overflow-y: auto;
 }
 
 @media screen and (max-width:700px){

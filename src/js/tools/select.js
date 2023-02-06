@@ -117,20 +117,35 @@ class Select_tool_class extends Base_tools_class {
 	}
 
 	dragStart(event) {
+		var mouse = this.get_mouse_info(event);
 		if (config.TOOL.name != this.name)
 			return;
+		if (mouse.click_valid == false) {
+			return;
+		}
+
 		this.mousedown(event);
 	}
 
 	dragMove(event) {
+		var mouse = this.get_mouse_info(event);
 		if (config.TOOL.name != this.name)
 			return;
+		if (mouse.click_valid == false) {
+			return;
+		}
+
 		this.mousemove(event);
 	}
 
 	dragEnd(event) {
+		var mouse = this.get_mouse_info(event);
 		if (config.TOOL.name != this.name)
 			return;
+		if (mouse.click_valid == false) {
+			return;
+		}
+
 		this.mouseup(event);
 		this.Base_layers.render();
 	}

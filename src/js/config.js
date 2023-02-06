@@ -497,7 +497,6 @@ config.TOOLS = [
 		name: 'polygon',
 		visible: false,
 		attributes: {
-			size: 4,
 			border_size: 4,
 			border: true,
 			fill: true,
