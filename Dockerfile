@@ -1,3 +1,4 @@
+# https://github.com/bluenevus/docker-minipaint
 FROM centos:latest
 EXPOSE 8080/tcp
 RUN yum update -y
