@@ -11,9 +11,11 @@
     "effects"
   ],
   "scripts": {
-    "server": "webpack serve --mode development --env development --open",
     "dev": "webpack --mode development",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "server": "webpack serve --mode development --env development --open",
+    "server-prod": "webpack serve --mode production --env production",
+    "docker": "docker build -t minipaint . && docker run -itp 8080:8080 minipaint"
   },
   "repository": {
     "type": "git",
