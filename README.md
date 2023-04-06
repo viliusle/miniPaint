@@ -51,6 +51,11 @@ See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build
 ## Wiki
 See [Wiki](https://github.com/viliusle/miniPaint/wiki)
 
+## Contributors
+<a align="center" href="https://github.com/viliusle/miniPaint/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=viliusle/miniPaint" />
+</a>
+
 ## License
 MIT License
 
