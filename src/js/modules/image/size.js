@@ -53,10 +53,10 @@ class Image_size_class {
 		var units = this.Tools_settings.get_setting('default_units');
 		var resolution = this.Tools_settings.get_setting('resolution');
 
-		if (width < 1){
+		if (width < 0){
 			width = 1;
 		}
-		if (height < 1){
+		if (height < 0){
 			height = 1;
 		}
 		

@@ -10,10 +10,15 @@ import Helper_class from './../../libs/helpers.js';
 
 var template = `
 	<span class="trn label">Size:</span>
-	<span id="mouse_info_size">-</span>
+	<span id="mouse_info_size">-</span> 
+	<span class="id-mouse_info_units"></span>
 	<br />
 	<span class="trn label">Mouse:</span>
 	<span id="mouse_info_mouse">-</span>
+	<span class="id-mouse_info_units"></span>
+	<br />
+	<span class="trn label">Resolution:</span>
+	<span id="mouse_info_resolution">-</span>
 `;
 
 /**
@@ -76,6 +81,17 @@ class GUI_information_class {
 		var height = this.Helper.get_user_unit(config.HEIGHT, this.units, this.resolution);
 
 		document.getElementById('mouse_info_size').innerHTML = width + ' x ' + height;
+
+		var resolution = this.Tools_settings.get_setting('resolution');
+		document.getElementById('mouse_info_resolution').innerHTML = resolution;
+
+		//show units
+		var default_units = this.Tools_settings.get_setting('default_units_short');
+		var targets = document.querySelectorAll('.id-mouse_info_units');
+		for (var i = 0; i < targets.length; i++) {
+			targets[i].innerHTML = default_units;
+		}
+
 		this.last_width = config.WIDTH;
 		this.last_height = config.HEIGHT;
 	}

@@ -422,20 +422,16 @@ class Helper_class {
 	 * JavaScript Number Formatter, author: KPL, KHL
 	 * 
 	 * @param {int} n
-	 * @param {int} decPlaces
-	 * @param {string} thouSeparator
-	 * @param {string} decSeparator
+	 * @param {int} maximumFractionDigits
 	 * @returns {string}
 	 */
-	number_format(n, decPlaces, thouSeparator, decSeparator) {
-		var decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces;
-		var decSeparator = decSeparator == undefined ? "." : decSeparator;
-		var thouSeparator = thouSeparator == undefined ? "," : thouSeparator;
-		var sign = n < 0 ? "-" : "";
-		var i = parseInt(n = Math.abs(+n || 0).toFixed(decPlaces)) + "";
-		var j = (j = i.length) > 3 ? j % 3 : 0;
-		var result = sign + (j ? i.substr(0, j) + thouSeparator : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thouSeparator) + (decPlaces ? decSeparator + Math.abs(n - i).toFixed(decPlaces).slice(2) : "");
-		return parseFloat(result);
+	number_format(n, maximumFractionDigits) {
+		let x = parseFloat(n);
+		var number = x.toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: maximumFractionDigits});
+		number = number.replaceAll(',', '');
+		number = parseFloat(number);
+
+		return number;
 	}
 
 	check_input_color_support() {

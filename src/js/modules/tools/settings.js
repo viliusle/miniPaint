@@ -9,14 +9,20 @@ class Tools_settings_class {
 		this.Base_gui = new Base_gui_class();
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
+
+		this.default_units_config = {
+			pixels: 'px',
+			inches: '"',
+			centimeters: 'cm',
+			millimetres: 'mm',
+		};
 	}
 
 	settings() {
 		var _this = this;
 		var transparency_values = ['squares', 'green', 'grey'];
-		var default_units_all = ['pixels', 'inches', 'centimeters', 'millimetres'];
 		var resolutions_values = [72, 150, 300, 600];
-
+		var default_units_all = Object.keys(this.default_units_config);
 		var transparency = this.get_setting('transparency');
 		var theme = this.get_setting('theme');
 		var snap = this.get_setting('snap');
@@ -67,6 +73,7 @@ class Tools_settings_class {
 		this.save_setting('safe_search', params.safe_search);
 		this.save_setting('exit_confirm', params.exit_confirm);
 		this.save_setting('default_units', params.default_units);
+		this.save_setting('default_units_short', this.default_units_config[params.default_units]);
 		this.save_setting('resolution', params.resolution);
 		this.save_setting('thick_guides', params.thick_guides);
 
@@ -115,7 +122,8 @@ class Tools_settings_class {
 			'guides': true,
 			'safe_search': true,
 			'exit_confirm': true,
-			'default_units': 'pixels',
+			'default_units': Object.keys(this.default_units_config)[0],
+			'default_units_short': Object.values(this.default_units_config)[0],
 			'resolution': 72,
 			'thick_guides': false,
 		};
