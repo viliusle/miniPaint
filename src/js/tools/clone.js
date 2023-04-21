@@ -127,7 +127,7 @@ class Clone_class extends Base_tools_class {
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
-			alertify.error('Erase on rotate object is disabled. Sorry.');
+			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
 		if (e.which == 3 && mouse.valid == true) {
@@ -156,7 +156,7 @@ class Clone_class extends Base_tools_class {
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
-			alertify.error('Erase on rotate object is disabled. Sorry.');
+			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
 
@@ -189,7 +189,7 @@ class Clone_class extends Base_tools_class {
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
-			alertify.error('Erase on rotate object is disabled. Sorry.');
+			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
 		if (this.clone_coords === null) {
@@ -197,13 +197,13 @@ class Clone_class extends Base_tools_class {
 			return;
 		}
 		if (layer.width != layer.width_original || layer.height != layer.height_original) {
-			alertify.error('Clone tool disabled for resized image. Sorry.');
+			alertify.error('Clone tool disabled for resized image. Please rasterize first.');
 			return;
 		}
 		if (params.source_layer.value == 'Previous' &&
 			(previous_layer.width != previous_layer.width_original
 				|| previous_layer.height != previous_layer.height_original)) {
-			alertify.error('Clone tool disabled for resized image. Sorry.');
+			alertify.error('Clone tool disabled for resized image. Please rasterize first.');
 			return;
 		}
 		if (params.source_layer.value == 'Previous') {
