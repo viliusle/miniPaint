@@ -32,6 +32,7 @@ class Tools_settings_class {
 		var default_units = this.get_setting('default_units');
 		var resolution = this.get_setting('resolution');
 		var thick_guides = this.get_setting('thick_guides');
+		var enable_autoresize = this.get_setting('enable_autoresize');
 
 		var settings = {
 			title: 'Settings',
@@ -48,6 +49,7 @@ class Tools_settings_class {
 				{name: "safe_search", title: "Safe search:", value: safe_search},
 				{name: "exit_confirm", title: "Exit confirmation:", value: exit_confirm},
 				{name: "thick_guides", title: "Thick guides:", value: thick_guides},
+				{name: "enable_autoresize", title: "Enable autoresize:", value: enable_autoresize},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -76,6 +78,7 @@ class Tools_settings_class {
 		this.save_setting('default_units_short', this.default_units_config[params.default_units]);
 		this.save_setting('resolution', params.resolution);
 		this.save_setting('thick_guides', params.thick_guides);
+		this.save_setting('enable_autoresize', params.enable_autoresize);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -126,6 +129,7 @@ class Tools_settings_class {
 			'default_units_short': Object.values(this.default_units_config)[0],
 			'resolution': 72,
 			'thick_guides': false,
+			'enable_autoresize': config.enable_autoresize_by_default,
 		};
 
 		var value = this.Helper.getCookie(key);
