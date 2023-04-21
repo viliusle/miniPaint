@@ -29,6 +29,7 @@ config.user_fonts = {};
 config.guides_enabled = true;
 config.guides = [];
 config.ruler_active = false;
+config.enable_autoresize_by_default = true;
 
 //requires styles in reset.css
 config.themes = [

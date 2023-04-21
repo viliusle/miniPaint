@@ -20,6 +20,7 @@ class Image_size_class {
 		var common_dimensions = this.Base_gui.common_dimensions;
 		var units = this.Tools_settings.get_setting('default_units');
 		var resolution = this.Tools_settings.get_setting('resolution');
+		var enable_autoresize = this.Tools_settings.get_setting('enable_autoresize');
 
 		var resolutions = ['Custom'];
 		for (var i in common_dimensions) {
@@ -38,6 +39,8 @@ class Image_size_class {
 				{name: "h", title: "Height:", value: height, placeholder: height, comment: units},
 				{name: "resolution", title: "Resolution:", values: resolutions},
 				{name: "layout", title: "Layout:", value: "Custom", values: ["Custom", "Landscape", "Portrait"]},
+				{name: "enable_autoresize", title: "Enable autoresize:", value: enable_autoresize},
+				{name: "in_proportion", title: "In proportion:", value: false},
 			],
 			on_finish: function (params) {
 				_this.size_handler(params);
@@ -53,12 +56,14 @@ class Image_size_class {
 		var units = this.Tools_settings.get_setting('default_units');
 		var resolution = this.Tools_settings.get_setting('resolution');
 
-		if (width < 1){
+		if (width < 0){
 			width = 1;
 		}
-		if (height < 1){
+		if (height < 0){
 			height = 1;
 		}
+
+		this.Tools_settings.save_setting('enable_autoresize', data.enable_autoresize);
 		
 		//aspect ratio
 		if (isNaN(width) && isNaN(height)){
@@ -90,15 +95,44 @@ class Image_size_class {
 			height = this.Helper.get_internal_unit(height, units, resolution);
 		}
 
+		var actions = [
+			new app.Actions.Prepare_canvas_action('undo'),
+			new app.Actions.Update_config_action({
+				WIDTH: parseInt(width),
+				HEIGHT: parseInt(height)
+			}),
+		];
+
+		if(data.in_proportion == true) {
+			//resize object and change coordinates
+			var width_ratio =  config.WIDTH / width;
+			var height_ratio = config.HEIGHT / height;
+			var ratio = Math.max(width_ratio, height_ratio);
+
+			for (var i in config.layers) {
+				var layer = config.layers[i];
+				if(layer.x != null && layer.y != null) {
+					var data_new = {
+						x: Math.round(layer.x / width_ratio),
+						y: Math.round(layer.y / height_ratio),
+					};
+					actions.push(new app.Actions.Update_layer_action(layer.id, data_new));
+				}
+				if(layer.width != null && layer.height != null) {
+					var data_new = {
+						width: Math.round(layer.width / ratio),
+						height: Math.round(layer.height / ratio),
+					};
+					actions.push(new app.Actions.Update_layer_action(layer.id, data_new));
+				}
+			}
+		}
+
+		actions.push(new app.Actions.Prepare_canvas_action('do'));
+
+		//execute
 		app.State.do_action(
-			new app.Actions.Bundle_action('set_image_size', 'Set Image Size', [
-				new app.Actions.Prepare_canvas_action('undo'),
-				new app.Actions.Update_config_action({
-					WIDTH: parseInt(width),
-					HEIGHT: parseInt(height)
-				}),
-				new app.Actions.Prepare_canvas_action('do')
-			])
+			new app.Actions.Bundle_action('set_image_size', 'Set Image Size', actions)
 		);
 	}
 }

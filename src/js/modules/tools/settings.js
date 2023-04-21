@@ -9,14 +9,20 @@ class Tools_settings_class {
 		this.Base_gui = new Base_gui_class();
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
+
+		this.default_units_config = {
+			pixels: 'px',
+			inches: '"',
+			centimeters: 'cm',
+			millimetres: 'mm',
+		};
 	}
 
 	settings() {
 		var _this = this;
 		var transparency_values = ['squares', 'green', 'grey'];
-		var default_units_all = ['pixels', 'inches', 'centimeters', 'millimetres'];
 		var resolutions_values = [72, 150, 300, 600];
-
+		var default_units_all = Object.keys(this.default_units_config);
 		var transparency = this.get_setting('transparency');
 		var theme = this.get_setting('theme');
 		var snap = this.get_setting('snap');
@@ -26,6 +32,7 @@ class Tools_settings_class {
 		var default_units = this.get_setting('default_units');
 		var resolution = this.get_setting('resolution');
 		var thick_guides = this.get_setting('thick_guides');
+		var enable_autoresize = this.get_setting('enable_autoresize');
 
 		var settings = {
 			title: 'Settings',
@@ -42,6 +49,7 @@ class Tools_settings_class {
 				{name: "safe_search", title: "Safe search:", value: safe_search},
 				{name: "exit_confirm", title: "Exit confirmation:", value: exit_confirm},
 				{name: "thick_guides", title: "Thick guides:", value: thick_guides},
+				{name: "enable_autoresize", title: "Enable autoresize:", value: enable_autoresize},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -67,8 +75,10 @@ class Tools_settings_class {
 		this.save_setting('safe_search', params.safe_search);
 		this.save_setting('exit_confirm', params.exit_confirm);
 		this.save_setting('default_units', params.default_units);
+		this.save_setting('default_units_short', this.default_units_config[params.default_units]);
 		this.save_setting('resolution', params.resolution);
 		this.save_setting('thick_guides', params.thick_guides);
+		this.save_setting('enable_autoresize', params.enable_autoresize);
 
 		//update config
 		config.TRANSPARENCY = this.get_setting('transparency');
@@ -115,9 +125,11 @@ class Tools_settings_class {
 			'guides': true,
 			'safe_search': true,
 			'exit_confirm': true,
-			'default_units': 'pixels',
+			'default_units': Object.keys(this.default_units_config)[0],
+			'default_units_short': Object.values(this.default_units_config)[0],
 			'resolution': 72,
 			'thick_guides': false,
+			'enable_autoresize': config.enable_autoresize_by_default,
 		};
 
 		var value = this.Helper.getCookie(key);

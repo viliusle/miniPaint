@@ -1,6 +1,7 @@
 import app from '../app.js';
 import config from '../config.js';
 import { Base_action } from './base.js';
+import Tools_settings_class from './../modules/tools/settings.js';
 
 export class Autoresize_canvas_action extends Base_action {
 	/**
@@ -13,6 +14,7 @@ export class Autoresize_canvas_action extends Base_action {
 	 */
 	constructor(width, height, layer_id, can_automate = true, ignore_same_size = false) {
 		super('autoresize_canvas', 'Auto-resize Canvas');
+		this.Tools_settings = new Tools_settings_class();
 		this.width = width;
 		this.height = height;
 		this.layer_id = layer_id;
@@ -30,6 +32,11 @@ export class Autoresize_canvas_action extends Base_action {
 		let need_fit = false;
 		let new_config_width = config.WIDTH;
 		let new_config_height = config.HEIGHT;
+		var enable_autoresize = this.Tools_settings.get_setting('enable_autoresize');
+
+		if(enable_autoresize == false){
+			return;
+		}
 
 		// Resize up
 		if (width > new_config_width || height > new_config_height) {

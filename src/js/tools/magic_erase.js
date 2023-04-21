@@ -41,7 +41,7 @@ class Magic_erase_class extends Base_tools_class {
 			return;
 		}
 		if (config.layer.rotate || 0 > 0) {
-			alertify.error('Erase on rotate object is disabled. Sorry.');
+			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
 
