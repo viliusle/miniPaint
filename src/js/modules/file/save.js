@@ -144,7 +144,7 @@ class File_save_class {
 				{name: "type", title: "Save as type:", values: save_types, value: save_default},
 				{name: "quality", title: "Quality:", value: 90, range: [1, 100]},
 				{title: "File size:", html: '<span id="file_size">-</span>'},
-				{title: "Resolution:",  html: resolution + ' ' + '(not saved)'},
+				{title: "Resolution:",  value: resolution},
 				{name: "calc_size", title: "Show file size:", value: calc_size_value},
 				{name: "layers", title: "Save layers:", values: save_layers_types},
 				{name: "delay", title: "Gif delay:", value: 400},
