@@ -8,6 +8,7 @@ import canvasToBlob from './../../../../node_modules/blueimp-canvas-to-blob/js/c
 import filesaver from './../../../../node_modules/file-saver/dist/FileSaver.min.js';
 import GIF from './../../../../node_modules/gif.js.optimized/';
 import CanvasToTIFF from './../../libs/canvastotiff.js';
+import Tools_settings_class from "../tools/settings";
 
 var instance = null;
 
@@ -28,6 +29,7 @@ class File_save_class {
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.POP = new Dialog_class();
+		this.Tools_settings = new Tools_settings_class();
 
 		this.set_events();
 
@@ -133,6 +135,7 @@ class File_save_class {
 			'Separated',
 			'Separated (original types)',
 		];
+		var resolution = this.Tools_settings.get_setting('resolution');
 
 		var settings = {
 			title: title,
@@ -141,6 +144,7 @@ class File_save_class {
 				{name: "type", title: "Save as type:", values: save_types, value: save_default},
 				{name: "quality", title: "Quality:", value: 90, range: [1, 100]},
 				{title: "File size:", html: '<span id="file_size">-</span>'},
+				{title: "Resolution:",  html: resolution + ' ' + '(not saved)'},
 				{name: "calc_size", title: "Show file size:", value: calc_size_value},
 				{name: "layers", title: "Save layers:", values: save_layers_types},
 				{name: "delay", title: "Gif delay:", value: 400},
