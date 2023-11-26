@@ -254,6 +254,7 @@ class GUI_tools_class {
 				var elementTitle = document.createElement('label');
 				elementTitle.innerHTML = title + ': ';
 				elementTitle.id = 'attribute_label_' + k;
+				elementTitle.className = 'trn';
 
 				const elementInput = document.createElement('input');
 				elementInput.type = 'number';
@@ -295,6 +296,7 @@ class GUI_tools_class {
 				var elementTitle = document.createElement('label');
 				elementTitle.innerHTML = title + ': ';
 				elementTitle.for = k;
+				elementTitle.className = 'trn';
 
 				var selectList = document.createElement("select");
 				selectList.id = k;
@@ -342,6 +344,7 @@ class GUI_tools_class {
 				var elementTitle = document.createElement('label');
 				elementTitle.innerHTML = title + ': ';
 				elementTitle.for = k;
+				elementTitle.className = 'trn';
 
 				var colorInput = document.createElement('input');
 				colorInput.type = 'color';
