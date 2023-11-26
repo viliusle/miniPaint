@@ -15,17 +15,17 @@ var template = `
 	<div class="row">
 		<span class="trn label">X</span>
 		<input type="number" id="detail_x" step="any" />
-		<button class="extra reset" type="button" id="reset_x" title="Reset">Reset</button>
+		<button class="extra reset trn" type="button" id="reset_x" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Y:</span>
 		<input type="number" id="detail_y" step="any" />
-		<button class="extra reset" type="button" id="reset_y" title="Reset">Reset</button>
+		<button class="extra reset trn" type="button" id="reset_y" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Width:</span>
 		<input type="number" id="detail_width" step="any" />
-		<button class="extra reset" type="button" id="reset_size" title="Reset">Reset</button>
+		<button class="extra reset trn" type="button" id="reset_size" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Height:</span>
@@ -35,12 +35,12 @@ var template = `
 	<div class="row">
 		<span class="trn label">Rotate:</span>
 		<input type="number" min="-360" max="360" id="detail_rotate" />
-		<button class="extra reset" type="button" id="reset_rotate" title="Reset">Reset</button>
+		<button class="extra reset trn" type="button" id="reset_rotate" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Opacity:</span>
 		<input type="number" min="0" max="100" id="detail_opacity" />
-		<button class="extra reset" type="button" id="reset_opacity" title="Reset">Reset</button>
+		<button class="extra reset trn" type="button" id="reset_opacity" title="Reset">Reset</button>
 	</div>
 	<div class="row">
 		<span class="trn label">Color:</span>
@@ -122,11 +122,14 @@ class GUI_details_class {
 		this.Tools_settings = new Tools_settings_class();
 		this.Helper = new Helper_class();
 		this.layer_details_active = false;
+		this.Tools_translate = new Tools_translate_class();
 	}
 
 	render_main_details() {
 		document.getElementById('toggle_details').innerHTML = template;
-
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, document.getElementById('toggle_details'));
+		}
 		this.render_details(true);
 	}
 
