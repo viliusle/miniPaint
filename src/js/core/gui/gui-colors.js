@@ -5,6 +5,7 @@
 
 import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 
 const Helper = new Helper_class();
 
@@ -12,7 +13,7 @@ const sidebarTemplate = `
 	<div class="ui_flex_group justify_content_space_between stacked">
 		<div id="selected_color_sample" class="ui_color_sample" title="Current Color Preview"></div>
 		<div class="ui_button_group">
-			<button id="toggle_color_picker_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Color Picker">
+			<button id="toggle_color_picker_section_button" aria-pressed="true" class="ui_icon_button trn" title="Toggle Color Picker">
 				<span class="sr_only">Toggle Color Picker</span>
 				<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 					<rect width="24" height="24" opacity="0" />
@@ -23,7 +24,7 @@ const sidebarTemplate = `
 					<path d="M6.16 11.26a1.5 1.5 0 1 0 2.08.4 1.49 1.49 0 0 0-2.08-.4z" />
 				</svg>
 			</button>
-			<button id="toggle_color_channels_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Color Channels">
+			<button id="toggle_color_channels_section_button" aria-pressed="true" class="ui_icon_button trn" title="Toggle Color Channels">
 				<span class="sr_only">Toggle Color Channels</span>
 				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-list" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 					<path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
@@ -33,7 +34,7 @@ const sidebarTemplate = `
 					<circle cx="3.5" cy="10.5" r=".5"/>
 				</svg>
 			</button>
-			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button" title="Toggle Swatches">
+			<button id="toggle_color_swatches_section_button" aria-pressed="true" class="ui_icon_button trn" title="Toggle Swatches">
 				<span class="sr_only">Toggle Swatches</span>
 				<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-grid-3x2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 					<path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-8zM1.5 3a.5.5 0 0 0-.5.5V7h4V3H1.5zM5 8H1v3.5a.5.5 0 0 0 .5.5H5V8zm1 0h4v4H6V8zm4-1H6V3h4v4zm1 1v4h3.5a.5.5 0 0 0 .5-.5V8h-4zm0-1V3h3.5a.5.5 0 0 1 .5.5V7h-4z"/>
@@ -101,11 +102,11 @@ const dialogTemplate = `
 			<div class="block_section">
 				<div class="ui_input_grid stacked">
 					<div class="ui_input_group">
-						<label class="label_width_medium">Current</label>
+						<label class="label_width_medium trn">Current</label>
 						<div id="dialog_selected_color_sample" class="ui_color_sample"></div>
 					</div>
 					<div class="ui_input_group">
-						<label class="label_width_medium">Previous</label>
+						<label class="label_width_medium trn">Previous</label>
 						<div id="dialog_previous_color_sample" class="ui_color_sample"></div>
 					</div>
 				</div>
@@ -177,6 +178,7 @@ class GUI_colors_class {
 		this.sections = null;
 		this.inputs = null;
 		this.Helper = new Helper_class();
+		this.Tools_translate = new Tools_translate_class();
 	}
 
 	render_main_colors(uiType) {
@@ -189,6 +191,9 @@ class GUI_colors_class {
 			if (saved_color != null) config.COLOR = saved_color;
 			this.el = document.getElementById('toggle_colors');
 			this.el.innerHTML = sidebarTemplate;
+		}
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, this.el);
 		}
 		this.init_components();
 		this.render_ui_deferred = Helper.throttle(this.render_ui_deferred, 50);
