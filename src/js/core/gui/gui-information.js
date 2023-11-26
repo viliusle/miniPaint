@@ -7,6 +7,7 @@ import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
 import Tools_settings_class from './../../modules/tools/settings.js';
 import Helper_class from './../../libs/helpers.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 
 var template = `
 	<span class="trn label">Size:</span>
@@ -30,7 +31,7 @@ class GUI_information_class {
 		this.Base_layers = new Base_layers_class();
 		this.Tools_settings = new Tools_settings_class();
 		this.Helper = new Helper_class();
-
+		this.Tools_translate = new Tools_translate_class();
 		this.last_width = null;
 		this.last_height = null;
 		this.units = this.Tools_settings.get_setting('default_units');
@@ -39,6 +40,9 @@ class GUI_information_class {
 
 	render_main_information() {
 		document.getElementById('toggle_info').innerHTML = template;
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, document.getElementById('toggle_info'));
+		}
 		this.set_events();
 		this.show_size();
 	}
