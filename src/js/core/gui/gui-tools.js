@@ -252,7 +252,7 @@ class GUI_tools_class {
 				}
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.id = 'attribute_label_' + k;
 				elementTitle.className = 'trn';
 
@@ -294,7 +294,7 @@ class GUI_tools_class {
 				//select
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.for = k;
 				elementTitle.className = 'trn';
 
@@ -342,7 +342,7 @@ class GUI_tools_class {
 				//color
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.for = k;
 				elementTitle.className = 'trn';
 
