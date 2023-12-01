@@ -163,8 +163,10 @@ class GUI_layers_class {
 				if(value.composition === 'source-atop'){
 					html += '	<button class="arrow_down" data-id="' + value.id + '" ></button>';
 				}
+
+				var layer_title = this.Helper.escapeHtml(value.name);
 				
-				html += '	<button class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</button>';
+				html += '	<button class="layer_name" id="layer_name" data-id="' + value.id + '">' + layer_title + '</button>';
 				html += '	<div class="clear"></div>';
 				html += '</div>';
 
