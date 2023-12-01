@@ -81,6 +81,7 @@ class Translator {
 					'\.style\.',
 					'aria-label',
 					'\.font',
+					'Path2D\(',
 				];
 				foreach ($ignore_matches as $ignore_match) {
 					$content = preg_replace('/' . $ignore_match . '.*/', '', $content);
@@ -250,13 +251,22 @@ class Translator {
 	 *
 	 * @throws Exception
 	 */
-	public function auto_translate() {
+	public function auto_translate($action_string) {
 		global $LANGUAGES, $LANG_DIR;
+
+		$action_string = str_replace('Auto Translate: ', '', $action_string);
+		if($action_string == 'all'){
+			$action_string = '';
+		}
 
 		$service = new GoogleTranslate();
 		$text = implode("\n", $this->strings);
 
 		foreach ($LANGUAGES as $lang) {
+			if($action_string != '' && $action_string != $lang){
+				continue;
+			}
+
 			echo "<br />$lang: ";
 
 			$file_path = $LANG_DIR . strtolower($lang) . ".json";

@@ -33,7 +33,7 @@ class Image_size_class {
 		var height = this.Helper.get_user_unit(config.HEIGHT, units, resolution);
 
 		var settings = {
-			title: 'Canvas size',
+			title: 'Canvas Size',
 			params: [
 				{name: "w", title: "Width:", value: width, placeholder: width, comment: units},
 				{name: "h", title: "Height:", value: height, placeholder: height, comment: units},

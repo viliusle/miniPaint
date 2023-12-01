@@ -252,8 +252,9 @@ class GUI_tools_class {
 				}
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.id = 'attribute_label_' + k;
+				elementTitle.className = 'trn';
 
 				const elementInput = document.createElement('input');
 				elementInput.type = 'number';
@@ -293,13 +294,14 @@ class GUI_tools_class {
 				//select
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.for = k;
+				elementTitle.className = 'trn';
 
 				var selectList = document.createElement("select");
 				selectList.id = k;
 				const values = typeof item.values === 'function' ? item.values() : item.values;
-				for (var j in values) {
+				for (let j in values) {
 					var option = document.createElement("option");
 					if (item.value == values[j]) {
 						option.selected = 'selected';
@@ -340,8 +342,9 @@ class GUI_tools_class {
 				//color
 
 				var elementTitle = document.createElement('label');
-				elementTitle.innerHTML = title + ': ';
+				elementTitle.innerHTML = title + ':';
 				elementTitle.for = k;
+				elementTitle.className = 'trn';
 
 				var colorInput = document.createElement('input');
 				colorInput.type = 'color';

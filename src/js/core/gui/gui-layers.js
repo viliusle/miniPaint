@@ -11,14 +11,15 @@ import Layer_rename_class from './../../modules/layer/rename.js';
 import Effects_browser_class from './../../modules/effects/browser.js';
 import Layer_duplicate_class from './../../modules/layer/duplicate.js';
 import Layer_raster_class from './../../modules/layer/raster.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 
 var template = `
-	<button type="button" class="layer_add" id="insert_layer" title="Insert new layer">+</button>
-	<button type="button" class="layer_duplicate" id="layer_duplicate" title="Duplicate layer">D</button>
-	<button type="button" class="layer_raster" id="layer_raster" title="Convert layer to raster">R</button>
+	<button type="button" class="layer_add trn" id="insert_layer" title="Insert new layer">+</button>
+	<button type="button" class="layer_duplicate trn" id="layer_duplicate" title="Duplicate layer">D</button>
+	<button type="button" class="layer_raster trn" id="layer_raster" title="Convert layer to raster">R</button>
 
-	<button type="button" class="layers_arrow" title="Move layer down" id="layer_down">&darr;</button>
-	<button type="button" class="layers_arrow" title="Move layer up" id="layer_up">&uarr;</button>
+	<button type="button" class="layers_arrow trn" title="Move layer down" id="layer_down">&darr;</button>
+	<button type="button" class="layers_arrow trn" title="Move layer up" id="layer_up">&uarr;</button>
 
 	<div class="layers_list" id="layers"></div>
 `;
@@ -35,12 +36,15 @@ class GUI_layers_class {
 		this.Effects_browser = new Effects_browser_class();
 		this.Layer_duplicate = new Layer_duplicate_class();
 		this.Layer_raster = new Layer_raster_class();
+		this.Tools_translate = new Tools_translate_class();
 	}
 
 	render_main_layers() {
 		document.getElementById('layers_base').innerHTML = template;
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, document.getElementById('layers_base'));
+		}
 		this.render_layers();
-
 		this.set_events();
 	}
 
@@ -151,16 +155,18 @@ class GUI_layers_class {
 
 				html += '<div class="item ' + class_extra + '">';
 				if (value.visible == true)
-					html += '	<button class="visibility visible" id="visibility" data-id="' + value.id + '" title="Hide"></button>';
+					html += '	<button class="visibility visible trn" id="visibility" data-id="' + value.id + '" title="Hide"></button>';
 				else
-					html += '	<button class="visibility" id="visibility" data-id="' + value.id + '" title="Show"></button>';
-				html += '	<button class="delete" id="delete" data-id="' + value.id + '" title="Delete"></button>';
+					html += '	<button class="visibility trn" id="visibility" data-id="' + value.id + '" title="Show"></button>';
+				html += '	<button class="delete trn" id="delete" data-id="' + value.id + '" title="Delete"></button>';
 				
 				if(value.composition === 'source-atop'){
 					html += '	<button class="arrow_down" data-id="' + value.id + '" ></button>';
 				}
+
+				var layer_title = this.Helper.escapeHtml(value.name);
 				
-				html += '	<button class="layer_name" id="layer_name" data-id="' + value.id + '">' + value.name + '</button>';
+				html += '	<button class="layer_name" id="layer_name" data-id="' + value.id + '">' + layer_title + '</button>';
 				html += '	<div class="clear"></div>';
 				html += '</div>';
 
@@ -185,6 +191,9 @@ class GUI_layers_class {
 
 		//register
 		document.getElementById(target_id).innerHTML = html;
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, document.getElementById(target_id));
+		}
 	}
 }
 

@@ -1,3 +1,4 @@
+import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import File_open_class from './../modules/file/open.js';
@@ -98,6 +99,8 @@ class Media_class extends Base_tools_class {
 						};
 						_this.File_open.file_open_url_handler(data);
 						_this.POP.hide();
+
+						new app.Actions.Activate_tool_action('select', true).do();
 					});
 				}
 				var targets = popup.el.querySelectorAll('#media_paging button');
@@ -153,6 +156,8 @@ class Media_class extends Base_tools_class {
 			},
 		};
 		this.POP.show(settings);
+
+		document.getElementById("pop_data_query").select();
 	}
 }
 

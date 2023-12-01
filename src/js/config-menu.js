@@ -664,6 +664,11 @@ const menuDefinition = [
 						parameter: 'de',
 					},
 					{
+						name: 'Dutch',
+						target: 'tools/translate.translate',
+						parameter: 'nl',
+					},
+					{
 						name: 'English (UK)',
 						target: 'tools/translate.translate',
 						parameter: 'uk',
