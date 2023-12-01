@@ -81,6 +81,7 @@ class Translator {
 					'\.style\.',
 					'aria-label',
 					'\.font',
+					'Path2D\(',
 				];
 				foreach ($ignore_matches as $ignore_match) {
 					$content = preg_replace('/' . $ignore_match . '.*/', '', $content);
