@@ -301,7 +301,7 @@ class GUI_tools_class {
 				var selectList = document.createElement("select");
 				selectList.id = k;
 				const values = typeof item.values === 'function' ? item.values() : item.values;
-				for (var j in values) {
+				for (let j in values) {
 					var option = document.createElement("option");
 					if (item.value == values[j]) {
 						option.selected = 'selected';
