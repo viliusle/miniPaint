@@ -156,6 +156,8 @@ class Media_class extends Base_tools_class {
 			},
 		};
 		this.POP.show(settings);
+
+		document.getElementById("pop_data_query").select();
 	}
 }
 

@@ -74,6 +74,8 @@ class Image_resize_class {
 			},
 		};
 		this.POP.show(settings);
+
+		document.getElementById("pop_data_width").select();
 	}
 
 	async do_resize(params) {
