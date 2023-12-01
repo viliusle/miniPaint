@@ -123,6 +123,7 @@ class File_save_class {
 		if (parts.length > 1)
 			file_name = parts[parts.length - 2];
 		file_name = file_name.replace(/ /g, "-");
+		file_name = this.Helper.escapeHtml(file_name);
 
 		var save_types = [];
 		for(var i in file_types) {
