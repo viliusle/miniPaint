@@ -10,6 +10,7 @@ import Text_class from './../../tools/text.js';
 import Base_layers_class from "../base-layers";
 import Tools_settings_class from './../../modules/tools/settings.js';
 import Helper_class from './../../libs/helpers.js';
+import Tools_translate_class from './../../modules/tools/translate.js';
 
 var template = `
 	<div class="row">
