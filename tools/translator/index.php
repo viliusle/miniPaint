@@ -1,4 +1,6 @@
 <?php
+global $LANGUAGES;
+
 require_once(__DIR__ . '/libs/translator.php');
 $translator = new Translator();
 ?>
@@ -20,7 +22,13 @@ $translator = new Translator();
 		<br /><br />
 		<b>Actions</b>:
 		<input type="submit" name="action" value="Generate empty.json" />
-		<input style="font-weight:bold;" type="submit" name="action" value="Auto Translate" />
+		<input type="submit" name="action" value="Auto Translate: all" /> or
+
+		<?php
+		foreach ($LANGUAGES as $lang) {
+			echo '<button type="submit" name="action" value="Auto Translate: '.strtolower($lang).'">'.strtoupper($lang).'</button> ';
+		}
+		?>
 		<br /><br />
 		<?php
 		if (count($_POST) > 0) {
@@ -54,13 +62,13 @@ $translator = new Translator();
 				if ($_POST['action'] == 'Merge') {
 					$translator->merge();
 				}
-				if ($_POST['action'] == 'Auto Translate') {
+				if (stripos($_POST['action'], 'Auto Translate') !== false) {
 					//prepare
 					$translator->scan();
 					$translator->extract();
 					$translator->filter();
 
-					$translator->auto_translate();
+					$translator->auto_translate($_POST['action']);
 				}
 				if ($_POST['action'] == 'Generate empty.json') {
 					//prepare
