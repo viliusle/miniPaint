@@ -46,8 +46,12 @@ class GUI_menu_class {
 		document.body.addEventListener('mousedown', (event) => { return this.on_mouse_down_body(event); }, true);
 		document.body.addEventListener('touchstart', (event) => { return this.on_mouse_down_body(event); }, true);
 		window.addEventListener('resize', (event) => { return this.on_resize_window(event); }, true);
-
+		
 		document.body.classList.add('loaded');
+		
+		if (config.LANG != 'en') {
+			this.Tools_translate.translate(config.LANG, this.menuContainer);
+		}
 	}
 
 	on(eventName, callback) {
