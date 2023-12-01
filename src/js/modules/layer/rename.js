@@ -30,7 +30,7 @@ class Layer_rename_class {
 					new app.Actions.Bundle_action('rename_layer', 'Rename Layer', [
 						new app.Actions.Refresh_layers_gui_action('undo'),
 						new app.Actions.Update_layer_action(id || config.layer.id, {
-							name: params.name
+							name: _this.validate_name(params.name)
 						}),
 						new app.Actions.Refresh_layers_gui_action('do')
 					])
@@ -38,6 +38,17 @@ class Layer_rename_class {
 			},
 		};
 		this.POP.show(settings);
+	}
+
+	validate_name(text) {
+		text = text
+			.replace(/&/g, "-")
+			.replace(/</g, "-")
+			.replace(/>/g, "-")
+			.replace(/"/g, "-")
+			.replace(/'/g, "-");
+
+		return text;
 	}
 }
 
