@@ -1233,6 +1233,50 @@ class Text_editor_class {
 		return fontMetrics;
 	}
 
+	/**
+	 * Returns the complete text of the document.
+	 */
+	get_complete_text() {
+		let completeText = '';
+		for (let line of this.document.lines) {
+			for (let span of line) {
+					completeText += span.text;
+			}
+			if (this.document.lines.indexOf(line) !== this.document.lines.length - 1) {
+					completeText += '\n';
+			}
+		}
+		return completeText;
+	}
+
+	replace_entire_IME_text(beforeTempText, newText) {
+		const cursorPosition = this.selection.get_position();
+		let allText = beforeTempText;
+		let lines = allText.split('\n');
+		let currentLineText = lines[cursorPosition.line];
+		let beforeText = currentLineText.substring(0, cursorPosition.character);
+		let afterText = currentLineText.substring(cursorPosition.character);
+		let updatedLineText = beforeText + newText + afterText;
+		lines[cursorPosition.line] = updatedLineText;
+
+		const newLines = lines.map(lineText => {
+				return [{ text: lineText, meta: {} }];
+		});
+		this.set_lines(newLines);
+		this.hasValueChanged = true;
+	}
+
+	set_IME_position(newText) {
+		const cursorPosition = this.selection.get_position();
+		let newTextLines = newText.split('\n');
+		let newCursorLine = cursorPosition.line + newTextLines.length - 1;
+		let newCursorCharacter = newText.length;
+		this.selection.set_position(newCursorLine, newCursorCharacter + cursorPosition.character);
+		this.hasValueChanged = true;
+	}
+
+
+
 	insert_text_at_current_position(text) {
 		if (!this.selection.is_empty()) {
 			this.delete_character_at_current_position();
@@ -2040,8 +2084,33 @@ class Text_class extends Base_tools_class {
 				this.Base_layers.render();
 			}, true);
 
+			let isComposing = false;
+			let beforeImeText = "";
+			this.textarea.addEventListener('compositionstart', () => {
+				beforeImeText = "";
+					isComposing = true;
+					if (config.layer) {
+						const editor = this.get_editor(config.layer);
+						beforeImeText = editor.get_complete_text();
+					}
+			});
+
+			this.textarea.addEventListener('compositionend', (e) => {
+				const editor = this.get_editor(config.layer);
+				editor.set_IME_position(e.target.value);
+				beforeImeText = "";
+				isComposing = false;
+				e.target.value = '';
+			});
+
 			this.textarea.addEventListener('input', (e) => {
-				if (config.layer) {
+				if(isComposing){
+					const editor = this.get_editor(config.layer);
+					editor.replace_entire_IME_text(beforeImeText, e.target.value);
+					this.Base_layers.render();
+					this.extend_fixed_bounds(config.layer, editor);
+				}
+				else if (config.layer) {
 					const editor = this.get_editor(config.layer);
 					editor.insert_text_at_current_position(e.target.value);
 					e.target.value = '';
