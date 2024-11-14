@@ -1,12 +1,8 @@
 # miniPaint
 
-Online image editor lets you create, edit images using HTML5 technologies.
-No need to buy, download, install or have obsolete flash. No ads.
-Key features: layers, filters, HTML5, open source, Photoshop alternative.
+Online image editor lets you create and edit images using HTML5 technologies. No need to buy, download, install, or have outdated flash. No ads. Key features: layers, filters, open source Photoshop alternative.
 
-miniPaint operates directly in the browser. You can create images, paste from the clipboard (ctrl+v) 
-or upload from the computer (using menu or drag & drop). Nothing will be sent to any server. Everything stays in your 
-browser. 
+miniPaint operates directly in the browser. You can create images by pasting from the clipboard (ctrl+v) or uploading from the computer (_using menu or drag & drop_). Nothing will be sent to any server. Everything stays in your browser. 
 
 ## URL:
 **https://viliusle.github.io/miniPaint/**
@@ -23,25 +19,26 @@ browser.
 - Opera
 - Edge
 - Safari
+- Yandex
 
 ## Features
 
-- **Files**: open images, directories, URL, data URL, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON 
-(layers data), print.
-- **Edit**: Undo, cut, copy, paste, selection, paste from clipboard.
-- **Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, 
-color corrections (brightness, contrast, hue, saturation, luminance), auto adjust colors, grid, histogram, negative.
-- **Layers**: multiple layers system, differences, merge, flatten, Transparency support.
-- **Effects**: Black and White, Blur (box, Gaussian, stack, zoom), Bulge/Pinch, Denoise, Desaturate, Dither, Dot Screen, 
-Edge, Emboss, Enrich, Gamma, Grains, GrayScale, Heatmap, JPG Compression, Mosaic, Oil, Sepia, Sharpen, Solarize, 
-Tilt Shift, Vignette, Vibrance, Vintage, Blueprint, Night Vision, Pencil, also Instagram Filters: 1977, Aden, Clarendon, 
-Gingham, Inkwell, Lo-fi, Toaster, Valencia, X-Pro II.
-- **Tools**: pencil, brush, magic wand, erase, fill, color picker, letters, crop, blur, sharpen, desaturate, clone,
- borders, sprites, key-points, color zoom, replace color, restore alpha, content fill.
-- **Help**: keyboard shortcuts, translations.
+**Files**: open images, directories, URLs, data URLs, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON (layers data), print.
+
+**Edit**: undo, cut, copy, paste, selection, paste from the clipboard.
+
+**Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, color corrections (brightness, contrast, hue, saturation, luminance), automatic color adjustment, grid, histogram, negative.
+
+**Layers**: multi-layer system, differences, merging, flattening, transparency support.
+
+**Effects**: black and white, blur (box, gaussian, stack, zoom), bulge/pinch, denoise, desaturation, dither, dot screen, edge, emboss, enrich, gamma, grains, grayscale, heatmap, jpg compression, mosaic, oil, sepia, sharpen, solarize, tilt shift, vignette, vibrance, vintage, blueprint, night vision, pencil, also instagram filters: 1977, aden, clarendon, gingham, inkwell, lo-fi, toaster, valencia, x-pro ii.
+
+**Tools**: pencil, brush, magic wand, eraser, fill, color picker, letter, crop, blur, sharpener, desaturation, clone, borders, sprites, keypoints, color zoom, change color, restore transparency, content fill. 
+
+**Help**: keyboard shortcuts, translation.
 
 ## Embed
-To embed this app in the other page, use this HTML code:
+To embed this app on another page, use the following HTML code:
 
     <iframe style="width:100%; height:1000px;" id="miniPaint" src="https://viliusle.github.io/miniPaint/" allow="camera"></iframe>
 
@@ -60,4 +57,4 @@ See [Wiki](https://github.com/viliusle/miniPaint/wiki)
 MIT License
 
 ## Support
-Please use the GitHub issues for support, features, issues or use mail www.viliusl@gmail.com for contacts.
+Please use the GitHub issues for support, feature requests and bug reports, or contact us by sending an email to www.viliusl@gmail.com.
