@@ -49,6 +49,7 @@ module.exports = {
 	devServer: {
 		// host: '0.0.0.0',
 		//contentBase: "./",
+		allowedHosts: 'all',
 		static: {
 			directory: path.resolve(__dirname, "./"),
 		},
