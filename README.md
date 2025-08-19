@@ -40,7 +40,7 @@ miniPaint operates directly in the browser. You can create images by pasting fro
 ## Embed
 To embed this app on another page, use the following HTML code:
 
-    <iframe style="width:100%; height:1000px;" id="miniPaint" src="https://viliusle.github.io/miniPaint/" allow="camera"></iframe>
+    <iframe style="box-sizing:border-box; width:100%; height:100vh;" id="miniPaint" src="https://viliusle.github.io/miniPaint/" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Build instructions
 See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions)
