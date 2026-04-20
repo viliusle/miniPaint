@@ -1,6 +1,6 @@
 {
   "name": "miniPaint",
-  "version": "4.14.2",
+  "version": "4.14.3",
   "author": "Vilius L.",
   "description": "Online graphics editing tool lets create, edit images using HTML5 technologies.",
   "keywords": [
@@ -29,9 +29,9 @@
     "css-loader": "^5.2.6",
     "source-map-loader": "^3.0.0",
     "style-loader": "^2.0.0",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^4.3.1"
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2",
+    "webpack-dev-server": "^5.2.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.14.5",

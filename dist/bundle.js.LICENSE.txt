@@ -35,9 +35,9 @@ https://github.com/nodeca/pica
  * @license
  */
 
-/*! alertifyjs - v1.13.1 - Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com) */
+/*! alertifyjs - v1.14.0 - Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com) */
 
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
 
 /**
  * hermite-resize - Canvas image resize/resample using Hermite filter with JavaScript.
