@@ -58,3 +58,17 @@ MIT License
 
 ## Support
 Please use the GitHub issues for support, feature requests and bug reports, or contact us by sending an email to www.viliusl@gmail.com.
+
+## Deployment via Docker
+
+Pre-compiled, tracker-free builds are automatically broadcast directly via the GitHub Container Registry (GHCR). 
+
+```yaml
+services:
+  minipaint:
+    image: ghcr.io/viliusle/minipaint:latest
+    container_name: minipaint
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+```
