@@ -2,7 +2,7 @@ name: Build and Package Container Release
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "feature/native-docker-ci-pipeline" ]
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "master" ]
@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' || github.ref == 'refs/heads/feature/native-docker-ci-pipeline' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
