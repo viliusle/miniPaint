@@ -378,6 +378,22 @@ config.TOOLS = [
 		},
 	},
 	{
+		name: 'pie',
+		visible: false,
+		attributes: {
+			border_size: 4,
+			angle: {
+				value: 270,
+				min: 1,
+				max: 360,
+			},
+			border: true,
+			fill: true,
+			border_color: '#555555',
+			fill_color: '#aaaaaa',
+		},
+	},
+	{
 		name: 'text',
 		on_update: 'on_params_update',
 		attributes: {

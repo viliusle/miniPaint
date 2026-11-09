@@ -1798,6 +1798,42 @@
 				"polygon",
 				"render"
 			]
+		},
+		{
+			"id": 50,
+			"parent_id": 0,
+			"name": "Pie",
+			"type": "pie",
+			"link": null,
+			"x": 500,
+			"y": 650,
+			"width": 70,
+			"height": 70,
+			"width_original": null,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"hide_selection_if_active": false,
+			"opacity": 100,
+			"order": 50,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {
+				"border_size": 4,
+				"angle": 270,
+				"border": true,
+				"fill": true,
+				"border_color": "#555555",
+				"fill_color": "#aaaaaa"
+			},
+			"status": null,
+			"color": null,
+			"filters": [],
+			"render_function": [
+				"pie",
+				"render"
+			]
 		}
 	],
 	"data": [
